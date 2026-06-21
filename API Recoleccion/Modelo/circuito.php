@@ -1,0 +1,161 @@
+<?php
+
+require_once 'conexion.php';
+
+class Circuito {
+
+    protected $Id = "";
+    protected $MunicipioId = "";
+    protected $Nombre = "";
+    protected $Actividad = "";
+    protected $Turno = "";
+    protected $Frecuencia = "";
+    protected $conn;
+
+    public function __construct($MunicipioId, $Nombre, $Actividad, $Turno, $Frecuencia) {
+        $this->MunicipioId = $MunicipioId;
+        $this->Nombre = $Nombre;
+        $this->Actividad = $Actividad;
+        $this->Turno = $Turno;
+        $this->Frecuencia = $Frecuencia;
+        $this->conn = new conexion();
+        $this->altaCircuito($MunicipioId, $Nombre, $Actividad, $Turno, $Frecuencia);
+    }
+
+    public function getId() {
+        return $this->Id;
+    }
+
+    public function getMunicipioId() {
+        return $this->MunicipioId;
+    }
+
+    public function getNombre() {
+        return $this->Nombre;
+    }
+
+    public function getActividad() {
+        return $this->Actividad;
+    }
+
+    public function getTurno() {
+        return $this->Turno;
+    }
+
+    public function getFrecuencia() {
+        return $this->Frecuencia;
+    }
+
+    public function setNombre($Nombre) {
+        $this->Nombre = $Nombre;
+    }
+
+    public function setActividad($Actividad) {
+        $this->Actividad = $Actividad;
+    }
+
+    public function setTurno($Turno) {
+        $turnosValidos = ["mañana", "tarde", "noche"];
+        if (in_array($Turno, $turnosValidos)) {
+            $this->Turno = $Turno;
+        } else {
+            throw new Exception("Turno no válido. Los turnos válidos son: " . implode(", ", $turnosValidos));
+        }
+    }
+
+    public function setFrecuencia($Frecuencia) {
+        $this->Frecuencia = $Frecuencia;
+    }
+
+    public function __toString() {
+        return "Circuito [Id: " . $this->Id . ", MunicipioId: " . $this->MunicipioId . ", Nombre: " . $this->Nombre . ", Actividad: " . $this->Actividad . ", Turno: " . $this->Turno . ", Frecuencia: " . $this->Frecuencia . "]";
+    }
+
+    public function altaCircuito($municipioId, $nombre, $actividad, $turno, $frecuencia) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "INSERT INTO circuitos (MunicipioId, Nombre, Actividad, Turno, Frecuencia) VALUES (?, ?, ?, ?, ?)");
+        mysqli_stmt_bind_param($stmt, "issss", $municipioId, $nombre, $actividad, $turno, $frecuencia);
+        mysqli_stmt_execute($stmt);
+        $this->Id = mysqli_insert_id($this->conn->getConexion());
+        mysqli_stmt_close($stmt);
+    }
+
+    public function bajaCircuito($id) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE circuitos SET Actividad = 'inactivo' WHERE Id = ?");
+        mysqli_stmt_bind_param($stmt, "i", $id);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+    }
+
+    public function actualizarCircuito($id, $municipioId, $nombre, $actividad, $turno, $frecuencia) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE circuitos SET MunicipioId = ?, Nombre = ?, Actividad = ?, Turno = ?, Frecuencia = ? WHERE Id = ?");
+        mysqli_stmt_bind_param($stmt, "issssi", $municipioId, $nombre, $actividad, $turno, $frecuencia, $id);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+    }
+
+    public function registrarFrecuencia($id, $frecuencia) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE circuitos SET Frecuencia = ? WHERE Id = ?");
+        mysqli_stmt_bind_param($stmt, "si", $frecuencia, $id);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+    }
+
+    public function listarCircuitos() {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM circuitos");
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $circuitos = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $circuito = new Circuito($row['MunicipioId'], $row['Nombre'], $row['Actividad'], $row['Turno'], $row['Frecuencia']);
+            $circuito->Id = $row['Id'];
+            $circuitos[] = $circuito;
+        }
+        mysqli_stmt_close($stmt);
+        return $circuitos;
+    }
+
+    public function filtrarPorMunicipio($municipioId) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM circuitos WHERE MunicipioId = ?");
+        mysqli_stmt_bind_param($stmt, "i", $municipioId);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $circuitos = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $circuito = new Circuito($row['MunicipioId'], $row['Nombre'], $row['Actividad'], $row['Turno'], $row['Frecuencia']);
+            $circuito->Id = $row['Id'];
+            $circuitos[] = $circuito;
+        }
+        mysqli_stmt_close($stmt);
+        return $circuitos;
+    }
+
+    public function filtrarPorTurno($turno) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM circuitos WHERE Turno = ?");
+        mysqli_stmt_bind_param($stmt, "s", $turno);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $circuitos = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $circuito = new Circuito($row['MunicipioId'], $row['Nombre'], $row['Actividad'], $row['Turno'], $row['Frecuencia']);
+            $circuito->Id = $row['Id'];
+            $circuitos[] = $circuito;
+        }
+        mysqli_stmt_close($stmt);
+        return $circuitos;
+    }
+
+    public function filtrarPorActividad($actividad) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM circuitos WHERE Actividad = ?");
+        mysqli_stmt_bind_param($stmt, "s", $actividad);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $circuitos = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $circuito = new Circuito($row['MunicipioId'], $row['Nombre'], $row['Actividad'], $row['Turno'], $row['Frecuencia']);
+            $circuito->Id = $row['Id'];
+            $circuitos[] = $circuito;
+        }
+        mysqli_stmt_close($stmt);
+        return $circuitos;
+    }
+}
