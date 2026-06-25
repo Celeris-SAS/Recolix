@@ -25,7 +25,11 @@
         }
 
         public function deleteCamion($id) {
-            return $this->camionModel->deleteCamion($id);
+            return $this->camionModel->bajaCamion($id);
+        }
+
+        public function esDisponible($id) {
+            return $this->camionModel->esDisponible($id);
         }
 
         public function filtrarEstado($estado) {
@@ -38,22 +42,6 @@
 
         public function filtrarDisponibilidad() {
             return $this->camionModel->filtrarDisponibilidad();
-        }
-
-        public function listarCamiones() {
-            return $this->camionModel->listarCamiones();
-        }
-
-        public function actualizarEstado($id, $nuevoEstado) {
-            return $this->camionModel->actualizarEstado($id, $nuevoEstado);
-        }
-
-        public function esDisponible($id) {
-            return $this->camionModel->esDisponible($id);
-        }
-
-        public function bajaCamion($id) {
-            return $this->camionModel->bajaCamion($id);
         }
 
         public function filtrarMantenimiento() {
@@ -72,8 +60,8 @@
             return $this->camionModel->filtrarCapacidad($capacidad);
         }
 
-        public function obtenerHistorial($id) {
-            return $this->camionModel->obtenerHistorial($id);
+        public function obtenerHistorial($camionId) {
+            return $this->camionModel->obtenerHistorial($camionId);
         }
 
     }

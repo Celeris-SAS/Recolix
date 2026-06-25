@@ -17,7 +17,7 @@
         }
 
         public function insertEventoCamion($camionId, $tipoEvento, $fecha, $descripcion) {
-            return $this->eventoCamionModel->insertEventoCamion($camionId, $tipoEvento, $fecha, $descripcion);
+            return $this->eventoCamionModel->registrarEvento($camionId, $tipoEvento, $descripcion, $fecha);
         }
 
         public function updateEventoCamion($id, $camionId, $tipoEvento, $fecha, $descripcion) {
@@ -26,10 +26,6 @@
 
         public function deleteEventoCamion($id) {
             return $this->eventoCamionModel->deleteEventoCamion($id);
-        }
-
-        public function registrarEvento($camionId, $tipoEvento, $detalle, $fecha) {
-            return $this->eventoCamionModel->registrarEvento($camionId, $tipoEvento, $detalle, $fecha);
         }
 
         public function obtenerPorCamion($camionId) {

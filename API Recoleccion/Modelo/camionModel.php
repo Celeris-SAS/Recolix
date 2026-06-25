@@ -2,7 +2,7 @@
 
 require_once 'conexion.php';
 
-class Camion {
+class CamionModel {
 
     protected $Id = "";
     protected $Matricula = "";
@@ -13,153 +13,97 @@ class Camion {
     protected $Estado = "";
     protected $conn;
 
-    public function __construct($Id, $Matricula, $TipoCarga, $Capacidad, $Anio, $Modelo, $Estado) {
-        $this->Id = $Id;
-        $this->Matricula = $Matricula;
-        $this->TipoCarga = $TipoCarga;
-        $this->Capacidad = $Capacidad;
-        $this->Anio = $Anio;
-        $this->Modelo = $Modelo;
-        $this->Estado = $Estado;
+    public function __construct() {
         $this->conn = new conexion();
-
-        $this->altaCamion($Id, $Matricula, $TipoCarga, $Capacidad, $Anio, $Modelo, $Estado);
     }
 
-    public function getId() {
-        return $this->Id;
-    }
-
-    public function getMatricula() {
-        return $this->Matricula;
-    }
-
-    public function getTipoCarga() {
-        return $this->TipoCarga;
-    }
-
-    public function getCapacidad() {
-        return $this->Capacidad;
-    }
-
-    public function getAnio() {
-        return $this->Anio;
-    }
-
-    public function getModelo() {
-        return $this->Modelo;
-    }
-
-    public function getEstado() {
-        return $this->Estado;
-    }
-
-    public function setMatricula($Matricula) {
-        $this->Matricula = $Matricula;
-    }
-
-    public function setTipoCarga($TipoCarga) {
-        $this->TipoCarga = $TipoCarga;
-    }
-
-    public function setCapacidad($Capacidad) {
-        $this->Capacidad = $Capacidad;
-    }
-
-    public function setAnio($Anio) {
-        $this->Anio = $Anio;
-    }
-
-    public function setModelo($Modelo) {
-        $this->Modelo = $Modelo;
-    }
-
-    public function setEstado($Estado) {
-        $this->Estado = $Estado;
-    }
-
-    public function __toString() {
-        return "Camión [Id: " . $this->Id . ", Matrícula: " . $this->Matricula . ", Tipo de Carga: " . $this->TipoCarga . ", Capacidad: " . $this->Capacidad . " m³, Año: " . $this->Anio . ", Modelo: " . $this->Modelo . ", Estado: " . $this->Estado . "]";
-    }
-
-    public function actualizarEstado($nuevoEstado) {
-        $estadosValidos = ["disponible", "en ruta", "en mantenimiento", "de baja"];
-        if (in_array($nuevoEstado, $estadosValidos)) {
-            $this->Estado = $nuevoEstado;
-        } else {
-            throw new Exception("Estado no válido. Los estados válidos son: " . implode(", ", $estadosValidos));
-        }
-    }
-
-    // Verifica estado y que no tenga levantes activos
-    public function esDisponible() {
-        if ($this->Estado !== "disponible") {
-            return false;
-        }
-        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT COUNT(*) FROM levantes WHERE CamionId = ? AND Estado IN ('pendiente', 'en curso')");
-        mysqli_stmt_bind_param($stmt, "i", $this->Id);
+    // Métodos públicos del modelo que usan la BD
+    public function esDisponible($id) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT Estado FROM camiones WHERE Id = ?");
+        mysqli_stmt_bind_param($stmt, "i", $id);
         mysqli_stmt_execute($stmt);
-        mysqli_stmt_bind_result($stmt, $count);
-        mysqli_stmt_fetch($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $row = mysqli_fetch_assoc($result);
         mysqli_stmt_close($stmt);
-        return $count === 0;
-    }
-
-    public function altaCamion($id, $matricula, $tipoCarga, $capacidad, $anio, $modelo, $estado) {
-        $stmt = mysqli_prepare($this->conn->getConexion(), "INSERT INTO camiones (Id, Matricula, TipoCarga, Capacidad, Anio, Modelo, Estado) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        mysqli_stmt_bind_param($stmt, "issiiss", $id, $matricula, $tipoCarga, $capacidad, $anio, $modelo, $estado);
+        if (!$row) return false;
+        if ($row['Estado'] !== 'disponible') return false;
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT COUNT(*) as cnt FROM levantes WHERE CamionId = ? AND Estado IN ('pendiente', 'en curso')");
+        mysqli_stmt_bind_param($stmt, "i", $id);
         mysqli_stmt_execute($stmt);
+        $res = mysqli_stmt_get_result($stmt);
+        $c = mysqli_fetch_assoc($res);
         mysqli_stmt_close($stmt);
+        return intval($c['cnt']) === 0;
     }
 
-    // Da de baja cambiando el Estado, sin eliminar el registro
+    public function insertCamion($matricula, $tipoCarga, $capacidad, $anio, $modelo, $estado) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "INSERT INTO camiones (Matricula, TipoCarga, Capacidad, Anio, Modelo, Estado) VALUES (?, ?, ?, ?, ?, ?)");
+        mysqli_stmt_bind_param($stmt, "ssiiis", $matricula, $tipoCarga, $capacidad, $anio, $modelo, $estado);
+        mysqli_stmt_execute($stmt);
+        $id = mysqli_insert_id($this->conn->getConexion());
+        mysqli_stmt_close($stmt);
+        return $id;
+    }
+
     public function bajaCamion($id) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE camiones SET Estado = 'de baja' WHERE Id = ?");
         mysqli_stmt_bind_param($stmt, "i", $id);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
+        return true;
     }
 
-    public function actualizarCamion($id, $matricula, $tipoCarga, $capacidad, $anio, $modelo, $estado) {
+    public function updateCamion($id, $matricula, $tipoCarga, $capacidad, $anio, $modelo, $estado) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE camiones SET Matricula = ?, TipoCarga = ?, Capacidad = ?, Anio = ?, Modelo = ?, Estado = ? WHERE Id = ?");
-        mysqli_stmt_bind_param($stmt, "ssiissi", $matricula, $tipoCarga, $capacidad, $anio, $modelo, $estado, $id);
+        mysqli_stmt_bind_param($stmt, "ssiiisi", $matricula, $tipoCarga, $capacidad, $anio, $modelo, $estado, $id);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
+        return true;
     }
 
-    public function listarCamiones() {
+    public function getAllCamiones() {
         $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM camiones");
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
         $camiones = [];
         while ($row = mysqli_fetch_assoc($result)) {
-            $camiones[] = new Camion($row['Id'], $row['Matricula'], $row['TipoCarga'], $row['Capacidad'], $row['Anio'], $row['Modelo'], $row['Estado']);
+            $camiones[] = $row;
         }
         mysqli_stmt_close($stmt);
         return $camiones;
     }
 
-    public function filtrarEstado() {
+    public function getCamion($id) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM camiones WHERE Id = ?");
+        mysqli_stmt_bind_param($stmt, "i", $id);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $row = mysqli_fetch_assoc($result);
+        mysqli_stmt_close($stmt);
+        return $row;
+    }
+
+    public function filtrarEstado($estado) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM camiones WHERE Estado = ?");
-        mysqli_stmt_bind_param($stmt, "s", $this->Estado);
+        mysqli_stmt_bind_param($stmt, "s", $estado);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
         $camiones = [];
         while ($row = mysqli_fetch_assoc($result)) {
-            $camiones[] = new Camion($row['Id'], $row['Matricula'], $row['TipoCarga'], $row['Capacidad'], $row['Anio'], $row['Modelo'], $row['Estado']);
+            $camiones[] = $row;
         }
         mysqli_stmt_close($stmt);
         return $camiones;
     }
 
-    public function filtrarTipoCarga() {
+    public function filtrarTipoCarga($tipoCarga) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM camiones WHERE TipoCarga = ?");
-        mysqli_stmt_bind_param($stmt, "s", $this->TipoCarga);
+        mysqli_stmt_bind_param($stmt, "s", $tipoCarga);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
         $camiones = [];
         while ($row = mysqli_fetch_assoc($result)) {
-            $camiones[] = new Camion($row['Id'], $row['Matricula'], $row['TipoCarga'], $row['Capacidad'], $row['Anio'], $row['Modelo'], $row['Estado']);
+            $camiones[] = $row;
         }
         mysqli_stmt_close($stmt);
         return $camiones;
@@ -171,7 +115,7 @@ class Camion {
         $result = mysqli_stmt_get_result($stmt);
         $camiones = [];
         while ($row = mysqli_fetch_assoc($result)) {
-            $camiones[] = new Camion($row['Id'], $row['Matricula'], $row['TipoCarga'], $row['Capacidad'], $row['Anio'], $row['Modelo'], $row['Estado']);
+            $camiones[] = $row;
         }
         mysqli_stmt_close($stmt);
         return $camiones;
@@ -183,7 +127,7 @@ class Camion {
         $result = mysqli_stmt_get_result($stmt);
         $camiones = [];
         while ($row = mysqli_fetch_assoc($result)) {
-            $camiones[] = new Camion($row['Id'], $row['Matricula'], $row['TipoCarga'], $row['Capacidad'], $row['Anio'], $row['Modelo'], $row['Estado']);
+            $camiones[] = $row;
         }
         mysqli_stmt_close($stmt);
         return $camiones;
@@ -196,7 +140,7 @@ class Camion {
         $result = mysqli_stmt_get_result($stmt);
         $camiones = [];
         while ($row = mysqli_fetch_assoc($result)) {
-            $camiones[] = new Camion($row['Id'], $row['Matricula'], $row['TipoCarga'], $row['Capacidad'], $row['Anio'], $row['Modelo'], $row['Estado']);
+            $camiones[] = $row;
         }
         mysqli_stmt_close($stmt);
         return $camiones;
@@ -209,7 +153,7 @@ class Camion {
         $result = mysqli_stmt_get_result($stmt);
         $camiones = [];
         while ($row = mysqli_fetch_assoc($result)) {
-            $camiones[] = new Camion($row['Id'], $row['Matricula'], $row['TipoCarga'], $row['Capacidad'], $row['Anio'], $row['Modelo'], $row['Estado']);
+            $camiones[] = $row;
         }
         mysqli_stmt_close($stmt);
         return $camiones;
@@ -222,15 +166,15 @@ class Camion {
         $result = mysqli_stmt_get_result($stmt);
         $camiones = [];
         while ($row = mysqli_fetch_assoc($result)) {
-            $camiones[] = new Camion($row['Id'], $row['Matricula'], $row['TipoCarga'], $row['Capacidad'], $row['Anio'], $row['Modelo'], $row['Estado']);
+            $camiones[] = $row;
         }
         mysqli_stmt_close($stmt);
         return $camiones;
     }
 
-    public function obtenerHistorial() {
+    public function obtenerHistorial($camionId) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM eventos_camion WHERE CamionId = ? ORDER BY Fecha DESC");
-        mysqli_stmt_bind_param($stmt, "i", $this->Id);
+        mysqli_stmt_bind_param($stmt, "i", $camionId);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
         $eventos = [];
@@ -241,3 +185,4 @@ class Camion {
         return $eventos;
     }
 }
+
