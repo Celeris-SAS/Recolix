@@ -4,7 +4,7 @@
         private $mantenimientoModel;
 
         public function __construct() {
-            require_once '../Modelo/MantenimientoModel.php';
+            require_once __DIR__ . '/../Modelo/MantenimientoModel.php';
             $this->mantenimientoModel = new MantenimientoModel();
         }
 

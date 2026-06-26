@@ -4,7 +4,7 @@
         private $eventoCamionModel;
 
         public function __construct() {
-            require_once '../Modelo/EventoCamionModel.php';
+            require_once __DIR__ . '/../Modelo/EventoCamionModel.php';
             $this->eventoCamionModel = new EventoCamionModel();
         }
 

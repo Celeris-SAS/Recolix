@@ -4,7 +4,7 @@
         private $camionModel;
 
         public function __construct() {
-            require_once '../Modelo/CamionModel.php';
+            require_once __DIR__ . '/../Modelo/CamionModel.php';
             $this->camionModel = new CamionModel();
         }
 

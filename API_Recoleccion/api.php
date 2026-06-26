@@ -121,10 +121,16 @@ if (strpos($uri, $basePath) === 0) {
 
     // Cargar el controller correspondiente
     $resourceConfig = $config['resources'][$resource];
-    require_once $resourceConfig['file'];
+    require_once __DIR__ . '/' . $resourceConfig['file'];
 
     $controllerClass = $resourceConfig['controller'];
-    $controller = new $controllerClass();
+    try {
+        $controller = new $controllerClass();
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => 'Error al inicializar controller: ' . $e->getMessage()]);
+        exit;
+    }
 
     // Determinar si la ruta contiene una acción: /resource/{action}/{id} o /resource/{id}/{action}
     $action = null;
