@@ -11,8 +11,13 @@ class EventoCamionModel {
     protected $Fecha = "";
     protected $conn;
 
-    public function __construct() {
+    public function __construct($CamionId, $TipoEvento, $Detalle, $Fecha) {
+        $this->CamionId = $CamionId;
+        $this->TipoEvento = $TipoEvento;
+        $this->Detalle = $Detalle;
+        $this->Fecha = $Fecha;
         $this->conn = new conexion();
+        $this->Id = $this->registrarEvento($CamionId, $TipoEvento, $Detalle, $Fecha);
     }
 
     public function getId() {

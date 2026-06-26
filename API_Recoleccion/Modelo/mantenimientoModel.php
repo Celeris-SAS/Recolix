@@ -13,8 +13,15 @@ class MantenimientoModel {
     protected $Costo = 0;
     protected $conn;
 
-    public function __construct() {
+    public function __construct($CamionId, $Tipo, $Descripcion, $FechaInicio, $FechaFin, $Costo) {
+        $this->CamionId = $CamionId;
+        $this->Tipo = $Tipo;
+        $this->Descripcion = $Descripcion;
+        $this->FechaInicio = $FechaInicio;
+        $this->FechaFin = $FechaFin;
+        $this->Costo = $Costo;
         $this->conn = new conexion();
+        $this->Id = $this->registrar($CamionId, $Tipo, $Descripcion, $FechaInicio, $FechaFin, $Costo);
     }
 
     public function getId() {
