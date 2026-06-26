@@ -25,7 +25,9 @@
             </nav>
         </div>
         <div class="nav-right">
-            <a href="#" class="btn-login">Iniciar Sesión</a>
+            <a href="/recolix/API_Usuarios/Vista/perfil.html" class="btn-user" title="Perfil de usuario">
+                <img src="img/user.svg" alt="Usuario" class="nav-user-icon">
+            </a>
         </div>
     </div>
     <div class="nav-hr"></div>
@@ -43,7 +45,7 @@
 
         <div class="card-operar" onclick="listarCamiones()">
             <div class="card-content">
-                <div class="card-icon">🚛</div>
+                <div class="card-icon"><img src="img/truck-svgrepo-com.svg" alt="" class="card-svg-icon"></div>
                 <h3>Ver Todos</h3>
                 <p>Listar todos los camiones registrados</p>
                 <button class="card-btn">Ver Lista</button>
@@ -52,7 +54,7 @@
 
         <div class="card-operar" onclick="abrirModalAgregar()">
             <div class="card-content">
-                <div class="card-icon">➕</div>
+                <div class="card-icon"><img src="img/plus.svg" alt="" class="card-svg-icon"></div>
                 <h3>Agregar Camión</h3>
                 <p>Registrar un nuevo vehículo</p>
                 <button class="card-btn">Agregar</button>
@@ -61,7 +63,7 @@
 
         <div class="card-operar" onclick="toggleFiltros()">
             <div class="card-content">
-                <div class="card-icon">🔍</div>
+                <div class="card-icon"><img src="img/loupe.svg" alt="" class="card-svg-icon"></div>
                 <h3>Filtrar</h3>
                 <p>Buscar por estado, tipo, modelo...</p>
                 <button class="card-btn">Filtrar</button>
@@ -70,10 +72,28 @@
 
         <div class="card-operar" onclick="toggleBusquedaId()">
             <div class="card-content">
-                <div class="card-icon">📋</div>
+                <div class="card-icon"><img src="img/question.svg" alt="" class="card-svg-icon"></div>
                 <h3>Buscar por ID</h3>
                 <p>Obtener un camión específico</p>
                 <button class="card-btn">Buscar</button>
+            </div>
+        </div>
+
+        <div class="card-operar" onclick="toggleModificar()">
+            <div class="card-content">
+                <div class="card-icon"><img src="img/refresh.svg" alt="" class="card-svg-icon"></div>
+                <h3>Modificar Camión</h3>
+                <p>Editar datos de un vehículo existente</p>
+                <button class="card-btn">Modificar</button>
+            </div>
+        </div>
+
+        <div class="card-operar" onclick="toggleDarDeBaja()">
+            <div class="card-content">
+                <div class="card-icon"><img src="img/minus.svg" alt="" class="card-svg-icon"></div>
+                <h3>Dar de Baja</h3>
+                <p>Desactivar un camión del registro</p>
+                <button class="card-btn">Dar de Baja</button>
             </div>
         </div>
 
@@ -106,6 +126,26 @@
                placeholder="ID del camión..." min="1" style="max-width:200px">
         <button class="btn-primary" onclick="buscarPorId()">Buscar</button>
         <button class="btn-secondary" onclick="listarCamiones()">Ver Todos</button>
+    </div>
+</section>
+
+<!-- ── MODIFY BAR ─────────────────────────────────────────────── -->
+<section class="control-bar" id="modificarBar" style="display:none">
+    <div class="control-inner">
+        <input type="number" id="modificarId" class="ctrl-input"
+               placeholder="ID del camión a modificar..." min="1" style="max-width:240px">
+        <button class="btn-primary" onclick="modificarCamion()">Modificar</button>
+        <button class="btn-secondary" onclick="ocultarControles()">Cancelar</button>
+    </div>
+</section>
+
+<!-- ── DELETE BAR ──────────────────────────────────────────────── -->
+<section class="control-bar" id="deleteBar" style="display:none">
+    <div class="control-inner">
+        <input type="number" id="deleteId" class="ctrl-input"
+               placeholder="ID del camión a dar de baja..." min="1" style="max-width:240px">
+        <button class="btn-danger" onclick="darDeBajaCamion()">Dar de Baja</button>
+        <button class="btn-secondary" onclick="ocultarControles()">Cancelar</button>
     </div>
 </section>
 
@@ -411,6 +451,48 @@ async function verificarDisponibilidad(id, matricula) {
     }
 }
 
+// ── MODIFY (by ID bar) ────────────────────────────────────────────────
+async function modificarCamion() {
+    const id = document.getElementById('modificarId').value.trim();
+    if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
+    setLoading(true);
+    try {
+        const res  = await fetch(`${API_BASE}/camiones/${id}`);
+        const json = await res.json();
+        if (json.status === 'success' && json.data) {
+            abrirModalEditar(json.data);
+            ocultarControles();
+        } else {
+            mostrarToast('Camión no encontrado', 'error');
+        }
+    } catch {
+        mostrarToast('Error al conectar con la API', 'error');
+    } finally {
+        setLoading(false);
+    }
+}
+
+// ── DEACTIVATE (by ID bar) ────────────────────────────────────────────
+async function darDeBajaCamion() {
+    const id = document.getElementById('deleteId').value.trim();
+    if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
+    setLoading(true);
+    try {
+        const res  = await fetch(`${API_BASE}/camiones/${id}`);
+        const json = await res.json();
+        if (json.status === 'success' && json.data) {
+            confirmarBorrar(json.data.Id, json.data.Matricula);
+            ocultarControles();
+        } else {
+            mostrarToast('Camión no encontrado', 'error');
+        }
+    } catch {
+        mostrarToast('Error al conectar con la API', 'error');
+    } finally {
+        setLoading(false);
+    }
+}
+
 // ── RENDER TABLE ──────────────────────────────────────────────────────
 function renderTabla(camiones) {
     const tbody = document.getElementById('camionesBody');
@@ -457,20 +539,52 @@ function badgeClass(estado) {
 function toggleFiltros() {
     const fb = document.getElementById('filterBar');
     const sb = document.getElementById('searchBar');
+    const mb = document.getElementById('modificarBar');
+    const db = document.getElementById('deleteBar');
     sb.style.display = 'none';
+    mb.style.display = 'none';
+    db.style.display = 'none';
     fb.style.display = fb.style.display === 'none' ? 'block' : 'none';
 }
 
 function toggleBusquedaId() {
     const sb = document.getElementById('searchBar');
     const fb = document.getElementById('filterBar');
+    const mb = document.getElementById('modificarBar');
+    const db = document.getElementById('deleteBar');
     fb.style.display = 'none';
+    mb.style.display = 'none';
+    db.style.display = 'none';
     sb.style.display = sb.style.display === 'none' ? 'block' : 'none';
 }
 
 function ocultarControles() {
     document.getElementById('filterBar').style.display = 'none';
     document.getElementById('searchBar').style.display = 'none';
+    document.getElementById('modificarBar').style.display = 'none';
+    document.getElementById('deleteBar').style.display = 'none';
+}
+
+function toggleModificar() {
+    const mb = document.getElementById('modificarBar');
+    const fb = document.getElementById('filterBar');
+    const sb = document.getElementById('searchBar');
+    const db = document.getElementById('deleteBar');
+    fb.style.display = 'none';
+    sb.style.display = 'none';
+    db.style.display = 'none';
+    mb.style.display = mb.style.display === 'none' ? 'block' : 'none';
+}
+
+function toggleDarDeBaja() {
+    const db = document.getElementById('deleteBar');
+    const fb = document.getElementById('filterBar');
+    const sb = document.getElementById('searchBar');
+    const mb = document.getElementById('modificarBar');
+    fb.style.display = 'none';
+    sb.style.display = 'none';
+    mb.style.display = 'none';
+    db.style.display = db.style.display === 'none' ? 'block' : 'none';
 }
 
 function cerrarModal() {

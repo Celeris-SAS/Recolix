@@ -110,16 +110,23 @@ a { text-decoration: none; color: inherit; }
     gap: 16px;
 }
 
-.btn-login {
+.btn-user {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
     border: 1.5px solid var(--text);
-    color: var(--text);
-    padding: 6px 20px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    transition: background 0.2s, color 0.2s;
+    border-radius: 50%;
+    transition: background 0.2s;
 }
-.btn-login:hover { background: var(--text); color: #fff; }
+.btn-user:hover { background: var(--bg2); }
+
+.nav-user-icon {
+    width: 20px;
+    height: 20px;
+    display: block;
+}
 
 /* ── HERO ──────────────────────────────────────────────────────────── */
 .hero { padding: 36px 32px 18px; }
@@ -192,7 +199,13 @@ a { text-decoration: none; color: inherit; }
     gap: 5px;
 }
 
-.card-icon { font-size: 1.7rem; margin-bottom: 2px; }
+.card-icon { font-size: 1.7rem; margin-bottom: 2px; display: flex; align-items: center; justify-content: center; }
+
+.card-svg-icon {
+    width: 32px;
+    height: 32px;
+    display: block;
+}
 
 .card-content h3 {
     color: var(--text);
