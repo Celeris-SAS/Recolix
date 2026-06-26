@@ -308,7 +308,7 @@ async function buscarPorId() {
             setTableTitle(`Camión #${id}`);
         } else {
             renderTabla([]);
-            mostrarToast('Camión no encontrado', 'error');
+            mostrarToast(json.message || 'Camión no encontrado', 'error');
         }
     } catch {
         mostrarToast('Error al conectar con la API', 'error');
@@ -445,6 +445,8 @@ async function verificarDisponibilidad(id, matricula) {
                 json.data ? `${matricula} está disponible ✓` : `${matricula} no está disponible`,
                 json.data ? 'success' : 'warning'
             );
+        } else {
+            mostrarToast(json.message || 'Error al verificar disponibilidad', 'error');
         }
     } catch {
         mostrarToast('Error al verificar disponibilidad', 'error');
@@ -463,7 +465,7 @@ async function modificarCamion() {
             abrirModalEditar(json.data);
             ocultarControles();
         } else {
-            mostrarToast('Camión no encontrado', 'error');
+            mostrarToast(json.message || 'Camión no encontrado', 'error');
         }
     } catch {
         mostrarToast('Error al conectar con la API', 'error');
@@ -484,7 +486,7 @@ async function darDeBajaCamion() {
             confirmarBorrar(json.data.Id, json.data.Matricula);
             ocultarControles();
         } else {
-            mostrarToast('Camión no encontrado', 'error');
+            mostrarToast(json.message || 'Camión no encontrado', 'error');
         }
     } catch {
         mostrarToast('Error al conectar con la API', 'error');
