@@ -35,7 +35,7 @@ class TrasladoModel {
         return $this->FechaIngreso;
     }
 
-    // Inserta traslado
+    // Inserta un traslado de residuos
     public function insertTrasladoResiduo($camionId, $centroId, $peso, $fechaIngreso) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "INSERT INTO traslado_residuo (CamionId, CentroId, Peso, FechaIngreso) VALUES (?, ?, ?, ?)");
         mysqli_stmt_bind_param($stmt, "iids", $camionId, $centroId, $peso, $fechaIngreso);

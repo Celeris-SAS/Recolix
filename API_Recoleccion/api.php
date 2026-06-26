@@ -28,7 +28,7 @@ $config = [
                 'filtrarCapacidad',
                 'obtenerHistorial'
             ],
-            // filtros por query param: paramName => controllerMethod (null param means no param passed)
+            // filtros por query param: paramName => controllerMethod (null significa que no se pasa parámetro)
             'filters' => [
                 'estado' => 'filtrarEstado',
                 'tipoCarga' => 'filtrarTipoCarga',
@@ -138,12 +138,12 @@ if (strpos($uri, $basePath) === 0) {
 
     // Determinar si la ruta contiene una acción: /resource/{action}/{id} o /resource/{id}/{action}
     $action = null;
-    // recompute segments to support action as second segment
+    // recalcular segments para soportar acción como segundo segmento
     $action = isset($uriSegments[1]) && !is_numeric($uriSegments[1]) ? $uriSegments[1] : null;
     if ($action) {
         $id = isset($uriSegments[2]) ? $uriSegments[2] : null;
     } else {
-        // if second segment numeric, it's the id; if third exists and non-numeric, it's an action
+        // si el segundo segmento es numérico, es el id; si el tercero existe y no es numérico, es una acción
         if (isset($uriSegments[1]) && is_numeric($uriSegments[1])) {
             $id = $uriSegments[1];
             if (isset($uriSegments[2]) && !is_numeric($uriSegments[2])) {
@@ -152,27 +152,27 @@ if (strpos($uri, $basePath) === 0) {
         }
     }
 
-    // allow overriding action via query parameter `action`
+    // permitir override de acción vía query parameter `action`
     if (isset($_GET['action']) && $_GET['action']) {
         $action = $_GET['action'];
     }
 
-    // If an action is requested and the controller exposes it, call it directly
+    // Si se solicita una acción y el controller la expone, llamarla directamente
     if ($action && isset($resourceConfig['actions']) && in_array($action, $resourceConfig['actions']) && method_exists($controller, $action)) {
-        // build parameters: prefer ID as first param, then body (for POST/PUT) or query params (for GET)
+        // construir parámetros: preferir ID como primer param, luego body (para POST/PUT) o query params (para GET)
         $callParams = [];
         if ($id) $callParams[] = $id;
         if ($method === 'GET') {
             $query = $_GET;
             unset($query['action']);
-            // append query values
+            // agregar valores de query
             if (!empty($query)) $callParams = array_merge($callParams, array_values($query));
         } else {
             $body = json_decode(file_get_contents('php://input'), true);
             if (is_array($body) && !empty($body)) {
                 $callParams = array_merge($callParams, array_values($body));
             } else {
-                // fallback to query params
+                // fallback a query params
                 $query = $_GET; unset($query['action']);
                 if (!empty($query)) $callParams = array_merge($callParams, array_values($query));
             }
