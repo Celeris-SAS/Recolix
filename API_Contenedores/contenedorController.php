@@ -5,8 +5,7 @@
         private $contenedorModel;
 
         public function __construct() {
-            // Asumo la misma estructura de carpetas que en CamionController
-            require_once __DIR__ . '/../Modelo/ContenedorModel.php';
+            require_once __DIR__ . '/ContenedorModel.php';
             $this->contenedorModel = new ContenedorModel();
         }
 
