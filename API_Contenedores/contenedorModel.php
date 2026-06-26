@@ -17,19 +17,7 @@ class ContenedorModel {
     protected $FechaReparacion = null;
     protected $conn;
 
-    public function __construct(
-        $Id = null, 
-        $IdCircuito = null, 
-        $IdTipoResiduo = null, 
-        $Calle = "", 
-        $NumCalle = "", 
-        $Latitud = 0.0, 
-        $Longitud = 0.0, 
-        $Capacidad = 0, 
-        $NivelLlenado = 0, 
-        $Estado = "funcional", 
-        $FechaReparacion = null
-    ) {
+    public function __construct($Id = null, $IdCircuito = null, $IdTipoResiduo = null, $Calle = "", $NumCalle = "", $Latitud = 0.0, $Longitud = 0.0, $Capacidad = 0, $NivelLlenado = 0, $Estado = "funcional", $FechaReparacion = null) {
         $this->Id = $Id;
         $this->IdCircuito = $IdCircuito;
         $this->IdTipoResiduo = $IdTipoResiduo;
@@ -43,7 +31,6 @@ class ContenedorModel {
         $this->FechaReparacion = $FechaReparacion;
         $this->conn = new conexion();
     }
-
     // ==========================================
     // GETTERS
     // ==========================================
