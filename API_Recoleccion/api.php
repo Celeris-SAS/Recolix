@@ -9,6 +9,7 @@ $config = [
     'base_path' => '/recolix/API_Recoleccion/',
     'resources' => [
         'camiones' => [
+            'singular' => 'Camion',
             'controller' => 'CamionController',
             'file' => 'Controlador/camionController.php',
             'getAllMethod' => 'getAllCamiones',
@@ -41,6 +42,7 @@ $config = [
             ]
         ],
         'traslados' => [
+            'singular' => 'Traslado',
             'controller' => 'TrasladoController',
             'file' => 'Controlador/trasladoController.php',
             'getAllMethod' => 'getAllTrasladosResiduos',
@@ -63,6 +65,7 @@ $config = [
             ]
         ],
         'mantenimientos' => [
+            'singular' => 'Mantenimiento',
             'controller' => 'MantenimientoController',
             'file' => 'Controlador/mantenimientoController.php',
             'getAllMethod' => 'getAllMantenimientos',
@@ -83,6 +86,7 @@ $config = [
             ]
         ],
         'eventos' => [
+            'singular' => 'Evento',
             'controller' => 'EventoCamionController',
             'file' => 'Controlador/eventoCamionController.php',
             'getAllMethod' => 'getAllEventosCamion',
@@ -198,7 +202,7 @@ if (strpos($uri, $basePath) === 0) {
                     echo json_encode(['status' => 'success', 'data' => $result]);
                 } else {
                     http_response_code(404);
-                    echo json_encode(['status' => 'error', 'message' => ucfirst(rtrim($resource, 's')) . ' no encontrado']);
+                    echo json_encode(['status' => 'error', 'message' => $resourceConfig['singular'] . ' no encontrado']);
                 }
             } else {
                 // GET sin ID (listar todos) — comprobar filtros por query params
@@ -256,7 +260,7 @@ if (strpos($uri, $basePath) === 0) {
                         array_values($data)
                     );
                     http_response_code(201);
-                    echo json_encode(['status' => 'success', 'message' => ucfirst(rtrim($resource, 's')) . ' creado', 'data' => $result]);
+                    echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' creado', 'data' => $result]);
                 } catch (Exception $e) {
                     http_response_code(400);
                     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
@@ -282,7 +286,7 @@ if (strpos($uri, $basePath) === 0) {
                             [$controller, $resourceConfig['updateMethod']], 
                             $params
                         );
-                        echo json_encode(['status' => 'success', 'message' => ucfirst(rtrim($resource, 's')) . ' actualizado', 'data' => $result]);
+                        echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' actualizado', 'data' => $result]);
                     } catch (Exception $e) {
                         http_response_code(400);
                         echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
@@ -298,7 +302,7 @@ if (strpos($uri, $basePath) === 0) {
             } else {
                 try {
                     $result = $controller->{$resourceConfig['deleteMethod']}($id);
-                    echo json_encode(['status' => 'success', 'message' => ucfirst(rtrim($resource, 's')) . ' eliminado']);
+                    echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' eliminado']);
                 } catch (Exception $e) {
                     http_response_code(400);
                     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);

@@ -7,7 +7,12 @@
 
         public function __construct() {
             require_once __DIR__ . '/../Modelo/CamionModel.php';
-            $this->camionModel = new CamionModel();
+            require_once __DIR__ . '/../Modelo/conexion.php';
+            $this->camionModel = new class extends CamionModel {
+                public function __construct() {
+                    $this->conn = new conexion();
+                }
+            };
         }
 
         private function validarId($id) {
