@@ -483,6 +483,7 @@ tbody td { padding: 12px 16px; color: var(--text); }
 .form-input:focus { border-color: var(--green); }
 .form-input::placeholder { color: var(--muted); }
 
+
 .modal-actions {
     display: flex;
     justify-content: flex-end;

@@ -8,14 +8,16 @@
             $this->eventoCamionModel = new EventoCamionModel();
         }
 
-        private function validarId($valor, $nombre = 'ID') {
+        private function validarId($valor) {
+            $nombre = 'ID';
             if (!is_numeric($valor) || intval($valor) <= 0) {
                 throw new InvalidArgumentException("$nombre debe ser un número entero positivo");
             }
             return intval($valor);
         }
 
-        private function validarString($valor, $nombre, $max = 255) {
+        private function validarString($valor, $nombre) {
+            $max = 255;
             if (!is_string($valor) || trim($valor) === '') {
                 throw new InvalidArgumentException("$nombre debe ser un texto válido");
             }
@@ -38,44 +40,53 @@
             return $fecha;
         }
 
+        public function reglasValidacion() {
+            return [
+                'camionId' => ['tipo' => 'entero', 'min' => 1, 'label' => 'ID del camión'],
+                'tipoEvento' => ['max' => 50, 'label' => 'Tipo de evento'],
+                'fecha' => ['tipo' => 'fecha', 'pattern' => '\\d{4}-\\d{2}-\\d{2}', 'label' => 'Fecha', 'mensaje' => 'Debe tener formato YYYY-MM-DD'],
+                'descripcion' => ['max' => 500, 'label' => 'Descripción']
+            ];
+        }
+
         public function getAllEventosCamion() {
             return $this->eventoCamionModel->getAllEventosCamion();
         }
 
         public function getEventoCamion($id) {
-            $id = $this->validarId($id, 'ID del evento');
+            $id = $this->validarId($id);
             return $this->eventoCamionModel->getEventoCamion($id);
         }
 
         public function insertEventoCamion($camionId, $tipoEvento, $fecha, $descripcion) {
-            $camionId = $this->validarId($camionId, 'ID del camión');
-            $tipoEvento = $this->validarString($tipoEvento, 'Tipo de evento', 50);
+            $camionId = $this->validarId($camionId);
+            $tipoEvento = $this->validarString($tipoEvento, 'Tipo de evento');
             $fecha = $this->validarFecha($fecha, 'Fecha');
-            $descripcion = $this->validarString($descripcion, 'Descripción', 500);
+            $descripcion = $this->validarString($descripcion, 'Descripción');
             return $this->eventoCamionModel->registrarEvento($camionId, $tipoEvento, $descripcion, $fecha);
         }
 
         public function updateEventoCamion($id, $camionId, $tipoEvento, $fecha, $descripcion) {
-            $id = $this->validarId($id, 'ID del evento');
-            $camionId = $this->validarId($camionId, 'ID del camión');
-            $tipoEvento = $this->validarString($tipoEvento, 'Tipo de evento', 50);
+            $id = $this->validarId($id);
+            $camionId = $this->validarId($camionId);
+            $tipoEvento = $this->validarString($tipoEvento, 'Tipo de evento');
             $fecha = $this->validarFecha($fecha, 'Fecha');
-            $descripcion = $this->validarString($descripcion, 'Descripción', 500);
+            $descripcion = $this->validarString($descripcion, 'Descripción');
             return $this->eventoCamionModel->updateEventoCamion($id, $camionId, $tipoEvento, $fecha, $descripcion);
         }
 
         public function deleteEventoCamion($id) {
-            $id = $this->validarId($id, 'ID del evento');
+            $id = $this->validarId($id);
             return $this->eventoCamionModel->deleteEventoCamion($id);
         }
 
         public function obtenerPorCamion($camionId) {
-            $camionId = $this->validarId($camionId, 'ID del camión');
+            $camionId = $this->validarId($camionId);
             return $this->eventoCamionModel->obtenerPorCamion($camionId);
         }
 
         public function filtrarPorTipo($tipoEvento) {
-            $tipoEvento = $this->validarString($tipoEvento, 'Tipo de evento', 50);
+            $tipoEvento = $this->validarString($tipoEvento, 'Tipo de evento');
             return $this->eventoCamionModel->filtrarPorTipo($tipoEvento);
         }
 

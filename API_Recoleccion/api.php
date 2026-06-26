@@ -17,6 +17,7 @@ $config = [
             'updateMethod' => 'updateCamion',
             'deleteMethod' => 'deleteCamion',
             'actions' => [
+                'reglasValidacion',
                 'esDisponible',
                 'filtrarEstado',
                 'filtrarTipoCarga',
@@ -48,6 +49,7 @@ $config = [
             'updateMethod' => 'updateTrasladoResiduo',
             'deleteMethod' => 'deleteTrasladoResiduo',
             'actions' => [
+                'reglasValidacion',
                 'obtenerPorCamion',
                 'obtenerPorCentro',
                 'filtrarPorFecha',
@@ -69,6 +71,7 @@ $config = [
             'updateMethod' => 'updateMantenimiento',
             'deleteMethod' => 'deleteMantenimiento',
             'actions' => [
+                'reglasValidacion',
                 'programar',
                 'obtenerPorCamion',
                 'filtrarPorTipo',
@@ -88,6 +91,7 @@ $config = [
             'updateMethod' => 'updateEventoCamion',
             'deleteMethod' => 'deleteEventoCamion',
             'actions' => [
+                'reglasValidacion',
                 'obtenerPorCamion',
                 'filtrarPorTipo',
                 'obtenerEventosPorFecha'

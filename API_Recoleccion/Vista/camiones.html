@@ -19,6 +19,10 @@
             <nav class="nav-links">
                 <a href="#">Inicio</a>
                 <a href="#" class="nav-active">Camiones</a>
+                <a href="#">Cuadrillas</a>
+                <a href="#">Contenedores</a>
+                <a href="#">Vertederos</a>
+                <a href="#">Centros de Acopio</a>
                 <a href="#">Mapa</a>
                 <a href="#">Reportes</a>
                 <a href="#">Incidencias</a>
@@ -133,7 +137,18 @@
 <section class="control-bar" id="modificarBar" style="display:none">
     <div class="control-inner">
         <input type="number" id="modificarId" class="ctrl-input"
-               placeholder="ID del camión a modificar..." min="1" style="max-width:240px">
+               placeholder="ID del camión..." min="1" style="max-width:120px">
+        <select id="modificarCampo" class="ctrl-select" onchange="actualizarPlaceholderModificar()">
+            <option value="">— Campo —</option>
+            <option value="matricula">Matrícula</option>
+            <option value="tipoCarga">Tipo de Carga</option>
+            <option value="capacidad">Capacidad (kg)</option>
+            <option value="anio">Año</option>
+            <option value="modelo">Modelo</option>
+            <option value="estado">Estado</option>
+        </select>
+        <input type="text" id="modificarValor" class="ctrl-input" style="display:none" placeholder="Seleccioná un campo...">
+        <select id="modificarValorSelect" class="ctrl-select" style="display:none"></select>
         <button class="btn-primary" onclick="modificarCamion()">Modificar</button>
         <button class="btn-secondary" onclick="ocultarControles()">Cancelar</button>
     </div>
@@ -194,7 +209,8 @@
                 <div class="form-group">
                     <label for="matricula">Matrícula</label>
                     <input type="text" id="matricula" class="form-input"
-                           placeholder="ABC 1234" required>
+                           placeholder="ABC123" maxlength="6" required
+                           oninput="this.setCustomValidity('')">
                 </div>
                 <div class="form-group">
                     <label for="tipoCarga">Tipo de Carga</label>
@@ -272,8 +288,37 @@
 const API_BASE = '/recolix/API_Recoleccion';
 let camionIdParaEliminar = null;
 let toastTimeout;
+let reglas = {};
 
-document.addEventListener('DOMContentLoaded', listarCamiones);
+document.addEventListener('DOMContentLoaded', async () => {
+    await cargarReglas();
+    listarCamiones();
+});
+
+function reglasFallback() {
+    return {
+        matricula: { pattern: '^[A-Z]{3}\\d{3}$', max: 6, label: 'Matrícula', mensaje: 'Debe tener 3 letras seguidas de 3 números (ej: ABC123)' },
+        tipoCarga: { valores: ['residuos', 'reciclaje', 'voluminosos', 'mixto'], max: 50, label: 'Tipo de carga' },
+        capacidad: { tipo: 'entero', min: 1, max: 100000, label: 'Capacidad' },
+        anio: { tipo: 'entero', min: 1990, max: 2030, label: 'Año' },
+        modelo: { max: 100, label: 'Modelo' },
+        estado: { valores: ['disponible', 'en mantenimiento', 'de baja'], max: 50, label: 'Estado' }
+    };
+}
+
+async function cargarReglas() {
+    try {
+        const res = await fetch(`${API_BASE}/camiones/reglasValidacion`);
+        const json = await res.json();
+        if (json.status === 'success') {
+            reglas = json.data;
+        } else {
+            reglas = reglasFallback();
+        }
+    } catch {
+        reglas = reglasFallback();
+    }
+}
 
 // ── LIST ALL ──────────────────────────────────────────────────────────
 async function listarCamiones() {
@@ -379,10 +424,73 @@ async function guardarCamion(e) {
     e.preventDefault();
     const id = document.getElementById('camionId').value;
 
+    const matInput = document.getElementById('matricula');
+    const matricula = matInput.value.toUpperCase();
+    matInput.setCustomValidity('');
+    if (matricula.length !== 6) {
+        matInput.setCustomValidity('Debe tener 3 letras seguidas de 3 números (ej: ABC123)');
+        matInput.reportValidity();
+        return;
+    }
+    for (let i = 0; i < 3; i++) {
+        if (matricula[i] < 'A' || matricula[i] > 'Z') {
+            matInput.setCustomValidity('Los primeros 3 caracteres deben ser letras (ej: ABC123)');
+            matInput.reportValidity();
+            return;
+        }
+    }
+    for (let i = 3; i < 6; i++) {
+        if (matricula[i] < '0' || matricula[i] > '9') {
+            matInput.setCustomValidity('Los últimos 3 caracteres deben ser números (ej: ABC123)');
+            matInput.reportValidity();
+            return;
+        }
+    }
+
+    const campos = {
+        matricula,
+        tipoCarga: document.getElementById('tipoCarga').value,
+        capacidad: document.getElementById('capacidad').value,
+        anio:      document.getElementById('anio').value,
+        modelo:    document.getElementById('modelo').value,
+        estado:    document.getElementById('estado').value
+    };
+
+    for (const [campo, valor] of Object.entries(campos)) {
+        const regla = reglas[campo];
+        if (!regla) continue;
+        if (regla.pattern) {
+            const re = new RegExp(regla.pattern);
+            if (!re.test(valor)) {
+                mostrarToast(regla.mensaje || `${regla.label} no válido`, 'warning');
+                return;
+            }
+        }
+        if (regla.valores && !regla.valores.includes(valor)) {
+            mostrarToast(`${regla.label} no válido`, 'warning');
+            return;
+        }
+        if (regla.tipo === 'entero') {
+            const num = parseInt(valor);
+            if (isNaN(num)) {
+                mostrarToast(`${regla.label} debe ser un número entero`, 'warning');
+                return;
+            }
+            if (regla.min !== undefined && num < regla.min) {
+                mostrarToast(`${regla.label} no puede ser menor que ${regla.min}`, 'warning');
+                return;
+            }
+            if (regla.max !== undefined && num > regla.max) {
+                mostrarToast(`${regla.label} no puede ser mayor que ${regla.max}`, 'warning');
+                return;
+            }
+        }
+    }
+
     // El orden de las claves debe coincidir con los parámetros del controller:
     // insertCamion($matricula, $tipoCarga, $capacidad, $anio, $modelo, $estado)
     const body = {
-        matricula: document.getElementById('matricula').value,
+        matricula: matricula.toUpperCase(),
         tipoCarga: document.getElementById('tipoCarga').value,
         capacidad: parseInt(document.getElementById('capacidad').value),
         anio:      parseInt(document.getElementById('anio').value),
@@ -453,22 +561,130 @@ async function verificarDisponibilidad(id, matricula) {
     }
 }
 
-// ── MODIFY (by ID bar) ────────────────────────────────────────────────
+function actualizarPlaceholderModificar() {
+    const campo = document.getElementById('modificarCampo').value;
+    const input = document.getElementById('modificarValor');
+    const select = document.getElementById('modificarValorSelect');
+
+    input.value = '';
+    select.value = '';
+    input.style.display = 'none';
+    select.style.display = 'none';
+
+    const listas = {
+        tipoCarga: ['residuos', 'reciclaje', 'voluminosos', 'mixto'],
+        estado:    ['disponible', 'en mantenimiento', 'de baja']
+    };
+
+    if (listas[campo]) {
+        select.innerHTML = '<option value="">— Seleccionar —</option>' +
+            listas[campo].map(v => `<option value="${v}">${v}</option>`).join('');
+        select.style.display = '';
+    } else {
+        const placeholders = {
+            matricula: 'ABC123',
+            capacidad: 'kg (ej: 5000)',
+            anio:      'ej: 2020',
+            modelo:    'ej: Ford F-550'
+        };
+        const maxlengths = {
+            matricula: 6,
+            capacidad: 6,
+            anio:      4,
+            modelo:    100
+        };
+        input.placeholder = placeholders[campo] || 'Seleccioná un campo...';
+        input.maxLength = maxlengths[campo] || '';
+        input.style.display = '';
+    }
+}
+
+// ── MODIFY ────────────────────────────────────────────────────────────────
 async function modificarCamion() {
     const id = document.getElementById('modificarId').value.trim();
     if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
+    const campo = document.getElementById('modificarCampo').value;
+    if (!campo) { mostrarToast('Seleccioná un campo a modificar', 'warning'); return; }
+
+    const input = document.getElementById('modificarValor');
+    const select = document.getElementById('modificarValorSelect');
+    const valor = (select.style.display !== 'none' ? select : input).value.trim();
+    if (!valor) { mostrarToast('Ingresá el nuevo valor', 'warning'); return; }
+
+    const regla = reglas[campo];
+    if (regla) {
+        const valorFinal = campo === 'matricula' ? valor.toUpperCase() : valor;
+        if (regla.pattern) {
+            const re = new RegExp(regla.pattern);
+            if (!re.test(valorFinal)) {
+                mostrarToast(regla.mensaje || `${regla.label} no válido`, 'warning');
+                return;
+            }
+        }
+        if (regla.valores && !regla.valores.includes(valorFinal)) {
+            mostrarToast(`${regla.label} no válido`, 'warning');
+            return;
+        }
+        if (regla.tipo === 'entero') {
+            const num = parseInt(valor);
+            if (isNaN(num)) {
+                mostrarToast(`${regla.label} debe ser un número entero`, 'warning');
+                return;
+            }
+            if (regla.min !== undefined && num < regla.min) {
+                mostrarToast(`${regla.label} no puede ser menor que ${regla.min}`, 'warning');
+                return;
+            }
+            if (regla.max !== undefined && num > regla.max) {
+                mostrarToast(`${regla.label} no puede ser mayor que ${regla.max}`, 'warning');
+                return;
+            }
+        }
+    }
+
     setLoading(true);
     try {
         const res  = await fetch(`${API_BASE}/camiones/${id}`);
         const json = await res.json();
-        if (json.status === 'success' && json.data) {
-            abrirModalEditar(json.data);
-            ocultarControles();
-        } else {
+        if (json.status !== 'success' || !json.data) {
             mostrarToast(json.message || 'Camión no encontrado', 'error');
+            return;
+        }
+        const camion = json.data;
+
+        const campoMap = {
+            matricula: 'Matricula',
+            tipoCarga: 'TipoCarga',
+            capacidad: 'Capacidad',
+            anio:      'Anio',
+            modelo:    'Modelo',
+            estado:    'Estado'
+        };
+
+        camion[campoMap[campo]] = campo === 'matricula' ? valor.toUpperCase() : valor;
+
+        const putRes = await fetch(`${API_BASE}/camiones/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                matricula: camion.Matricula,
+                tipoCarga: camion.TipoCarga,
+                capacidad: parseInt(camion.Capacidad),
+                anio:      parseInt(camion.Anio),
+                modelo:    camion.Modelo,
+                estado:    camion.Estado
+            })
+        });
+        const putJson = await putRes.json();
+        if (putJson.status === 'success') {
+            mostrarToast(putJson.message, 'success');
+            ocultarControles();
+            listarCamiones();
+        } else {
+            mostrarToast(putJson.message, 'error');
         }
     } catch {
-        mostrarToast('Error al conectar con la API', 'error');
+        mostrarToast('Error al modificar', 'error');
     } finally {
         setLoading(false);
     }
