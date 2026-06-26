@@ -8,7 +8,7 @@
 </head>
 <body>
 
-<!-- ── NAVBAR ──────────────────────────────────────────────────────── -->
+<!-- ── BARRA DE NAVEGACIÓN ─────────────────────────────────────────── -->
 <header class="navbar">
     <div class="nav-inner">
         <div class="nav-left">
@@ -37,13 +37,13 @@
     <div class="nav-hr"></div>
 </header>
 
-<!-- ── HERO ────────────────────────────────────────────────────────── -->
+<!-- ── HERO (ENCABEZADO) ───────────────────────────────────────────── -->
 <section class="hero">
     <h1 class="hero-title">Camiones</h1>
     <p class="hero-sub">Gestioná la flota de vehículos de recolección de residuos.</p>
 </section>
 
-<!-- ── CARDS ───────────────────────────────────────────────────────── -->
+<!-- ── TARJETAS ─────────────────────────────────────────────────────── -->
 <section class="cards-section">
     <div class="cards-grid">
 
@@ -104,7 +104,7 @@
     </div>
 </section>
 
-<!-- ── FILTER BAR ───────────────────────────────────────────────────── -->
+<!-- ── BARRA DE FILTROS ─────────────────────────────────────────────── -->
 <section class="control-bar" id="filterBar" style="display:none">
     <div class="control-inner">
         <select id="filtroTipo" class="ctrl-select">
@@ -123,7 +123,7 @@
     </div>
 </section>
 
-<!-- ── SEARCH BY ID BAR ─────────────────────────────────────────────── -->
+<!-- ── BARRA DE BÚSQUEDA POR ID ─────────────────────────────────────── -->
 <section class="control-bar" id="searchBar" style="display:none">
     <div class="control-inner">
         <input type="number" id="buscarId" class="ctrl-input"
@@ -133,7 +133,7 @@
     </div>
 </section>
 
-<!-- ── MODIFY BAR ─────────────────────────────────────────────── -->
+<!-- ── BARRA DE MODIFICACIÓN ──────────────────────────────────────── -->
 <section class="control-bar" id="modificarBar" style="display:none">
     <div class="control-inner">
         <input type="number" id="modificarId" class="ctrl-input"
@@ -154,7 +154,7 @@
     </div>
 </section>
 
-<!-- ── DELETE BAR ──────────────────────────────────────────────── -->
+<!-- ── BARRA DE ELIMINACIÓN ───────────────────────────────────────── -->
 <section class="control-bar" id="deleteBar" style="display:none">
     <div class="control-inner">
         <input type="number" id="deleteId" class="ctrl-input"
@@ -164,7 +164,7 @@
     </div>
 </section>
 
-<!-- ── TABLE ────────────────────────────────────────────────────────── -->
+<!-- ── TABLA ────────────────────────────────────────────────────────── -->
 <section class="table-section">
     <div class="table-header">
         <h2 class="table-title" id="tableTitle">Camiones</h2>
@@ -195,7 +195,7 @@
     </div>
 </section>
 
-<!-- ── MODAL AGREGAR / EDITAR ───────────────────────────────────────── -->
+<!-- ── MODAL AGREGAR / MODIFICAR ────────────────────────────────────── -->
 <div class="modal-overlay" id="modalForm" style="display:none"
      onclick="onOverlayClick(event,'modalForm')">
     <div class="modal">
@@ -257,7 +257,7 @@
     </div>
 </div>
 
-<!-- ── MODAL CONFIRMAR ELIMINAR ─────────────────────────────────────── -->
+<!-- ── MODAL CONFIRMAR BAJA ─────────────────────────────────────────── -->
 <div class="modal-overlay" id="modalDelete" style="display:none"
      onclick="onOverlayClick(event,'modalDelete')">
     <div class="modal modal-sm">
@@ -275,10 +275,10 @@
     </div>
 </div>
 
-<!-- ── TOAST ────────────────────────────────────────────────────────── -->
+<!-- ── NOTIFICACIÓN (TOAST) ─────────────────────────────────────────── -->
 <div id="toast" class="toast"></div>
 
-<!-- ── FOOTER ───────────────────────────────────────────────────────── -->
+<!-- ── PIE DE PÁGINA ────────────────────────────────────────────────── -->
 <footer class="footer">
     <div class="footer-hr"></div>
     <p>&copy; 2024 Celeris SAS. Todos los derechos reservados.</p>
@@ -320,7 +320,7 @@ async function cargarReglas() {
     }
 }
 
-// ── LIST ALL ──────────────────────────────────────────────────────────
+// ── LISTAR TODOS ──────────────────────────────────────────────────────
 async function listarCamiones() {
     ocultarControles();
     setLoading(true);
@@ -340,7 +340,7 @@ async function listarCamiones() {
     }
 }
 
-// ── SEARCH BY ID ──────────────────────────────────────────────────────
+// ── BUSCAR POR ID ─────────────────────────────────────────────────────
 async function buscarPorId() {
     const id = document.getElementById('buscarId').value.trim();
     if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
@@ -362,7 +362,7 @@ async function buscarPorId() {
     }
 }
 
-// ── FILTER ────────────────────────────────────────────────────────────
+// ── FILTRAR ───────────────────────────────────────────────────────────
 async function aplicarFiltro() {
     const tipo  = document.getElementById('filtroTipo').value;
     const valor = document.getElementById('filtroValor').value.trim();
@@ -398,7 +398,7 @@ async function aplicarFiltro() {
     }
 }
 
-// ── ADD MODAL ─────────────────────────────────────────────────────────
+// ── AGREGAR ───────────────────────────────────────────────────────────
 function abrirModalAgregar() {
     document.getElementById('modalTitle').textContent = 'Agregar Camión';
     document.getElementById('camionId').value = '';
@@ -406,7 +406,7 @@ function abrirModalAgregar() {
     document.getElementById('modalForm').style.display = 'flex';
 }
 
-// ── EDIT MODAL ────────────────────────────────────────────────────────
+// ── MODAL EDITAR ──────────────────────────────────────────────────────
 function abrirModalEditar(camion) {
     document.getElementById('modalTitle').textContent = 'Editar Camión';
     document.getElementById('camionId').value  = camion.Id;
@@ -419,7 +419,7 @@ function abrirModalEditar(camion) {
     document.getElementById('modalForm').style.display = 'flex';
 }
 
-// ── SAVE (POST / PUT) ─────────────────────────────────────────────────
+// ── GUARDAR (POST / PUT) ──────────────────────────────────────────────
 async function guardarCamion(e) {
     e.preventDefault();
     const id = document.getElementById('camionId').value;
@@ -520,7 +520,7 @@ async function guardarCamion(e) {
     }
 }
 
-// ── DELETE ────────────────────────────────────────────────────────────
+// ── ELIMINAR ──────────────────────────────────────────────────────────
 function confirmarBorrar(id, matricula) {
     camionIdParaEliminar = id;
     document.getElementById('deleteNombre').textContent = matricula;
@@ -543,7 +543,7 @@ async function confirmarDelete() {
     }
 }
 
-// ── VERIFY AVAILABILITY ───────────────────────────────────────────────
+// ── VERIFICAR DISPONIBILIDAD ──────────────────────────────────────────
 async function verificarDisponibilidad(id, matricula) {
     try {
         const res  = await fetch(`${API_BASE}/camiones/${id}/esDisponible`);
@@ -599,7 +599,7 @@ function actualizarPlaceholderModificar() {
     }
 }
 
-// ── MODIFY ────────────────────────────────────────────────────────────────
+// ── MODIFICAR ─────────────────────────────────────────────────────────────
 async function modificarCamion() {
     const id = document.getElementById('modificarId').value.trim();
     if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
@@ -690,7 +690,7 @@ async function modificarCamion() {
     }
 }
 
-// ── DEACTIVATE (by ID bar) ────────────────────────────────────────────
+// ── DAR DE BAJA ───────────────────────────────────────────────────────
 async function darDeBajaCamion() {
     const id = document.getElementById('deleteId').value.trim();
     if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
@@ -711,7 +711,7 @@ async function darDeBajaCamion() {
     }
 }
 
-// ── RENDER TABLE ──────────────────────────────────────────────────────
+// ── RENDERIZAR TABLA ──────────────────────────────────────────────────
 function renderTabla(camiones) {
     const tbody = document.getElementById('camionesBody');
     const noRes = document.getElementById('noResultados');
@@ -753,7 +753,7 @@ function badgeClass(estado) {
     return map[estado] ?? 'neutral';
 }
 
-// ── UI HELPERS ────────────────────────────────────────────────────────
+// ── UTILIDADES ────────────────────────────────────────────────────────
 function toggleFiltros() {
     const fb = document.getElementById('filterBar');
     const sb = document.getElementById('searchBar');

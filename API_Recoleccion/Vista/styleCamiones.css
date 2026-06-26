@@ -1,4 +1,4 @@
-/* ── RESET & BASE ──────────────────────────────────────────────────── */
+/* ── RESET Y BASE ──────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
@@ -27,7 +27,7 @@ body {
 
 a { text-decoration: none; color: inherit; }
 
-/* ── NAVBAR ────────────────────────────────────────────────────────── */
+/* ── BARRA DE NAVEGACIÓN ──────────────────────────────────────────── */
 .navbar {
     background: #ffffff;
     border-bottom: 1px solid var(--border);
@@ -128,7 +128,7 @@ a { text-decoration: none; color: inherit; }
     display: block;
 }
 
-/* ── HERO ──────────────────────────────────────────────────────────── */
+/* ── ENCABEZADO ────────────────────────────────────────────────────── */
 .hero { padding: 36px 32px 18px; }
 
 .hero-title {
@@ -140,7 +140,7 @@ a { text-decoration: none; color: inherit; }
 
 .hero-sub { color: var(--muted); font-size: 0.95rem; }
 
-/* ── CARDS ─────────────────────────────────────────────────────────── */
+/* ── TARJETAS ──────────────────────────────────────────────────────── */
 .cards-section { padding: 20px 32px 32px; }
 
 .cards-grid {
@@ -233,7 +233,7 @@ a { text-decoration: none; color: inherit; }
 }
 .card-btn:hover { filter: brightness(1.1); transform: scale(1.04); }
 
-/* ── CONTROL BARS ──────────────────────────────────────────────────── */
+/* ── BARRAS DE CONTROL ────────────────────────────────────────────── */
 .control-bar {
     padding: 14px 32px;
     background: var(--bg2);
@@ -262,7 +262,7 @@ a { text-decoration: none; color: inherit; }
 .ctrl-input { min-width: 180px; }
 .ctrl-input::placeholder { color: var(--muted); }
 
-/* ── SHARED BUTTONS ────────────────────────────────────────────────── */
+/* ── BOTONES COMPARTIDOS ──────────────────────────────────────────── */
 .btn-primary {
     background: var(--green);
     color: #fff;
@@ -301,7 +301,7 @@ a { text-decoration: none; color: inherit; }
 }
 .btn-danger:hover { filter: brightness(1.1); }
 
-/* ── TABLE ─────────────────────────────────────────────────────────── */
+/* ── TABLA ─────────────────────────────────────────────────────────── */
 .table-section {
     padding: 28px 32px;
     flex: 1;
@@ -362,7 +362,7 @@ tbody td { padding: 12px 16px; color: var(--text); }
 
 .td-id { color: var(--muted); font-size: 0.8rem; }
 
-/* Badges */
+/* Insignias */
 .badge {
     display: inline-block;
     padding: 3px 10px;
@@ -377,7 +377,7 @@ tbody td { padding: 12px 16px; color: var(--text); }
 .badge-danger  { background: rgba(192,57,43,0.10);  color: #922b21; border: 1px solid rgba(192,57,43,0.3); }
 .badge-neutral { background: rgba(92,100,88,0.10);  color: var(--muted); border: 1px solid var(--border); }
 
-/* Action buttons */
+/* Botones de acción */
 .td-actions { display: flex; gap: 6px; }
 
 .btn-action {
@@ -392,7 +392,7 @@ tbody td { padding: 12px 16px; color: var(--text); }
 }
 .btn-action:hover { background: var(--bg3); border-color: var(--muted); }
 
-/* Empty & loading states */
+/* Estados vacío y de carga */
 .empty-state, .loading-state {
     display: flex;
     align-items: center;
@@ -403,7 +403,7 @@ tbody td { padding: 12px 16px; color: var(--text); }
     gap: 8px;
 }
 
-/* ── MODALS ────────────────────────────────────────────────────────── */
+/* ── MODALES ───────────────────────────────────────────────────────── */
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -494,7 +494,7 @@ tbody td { padding: 12px 16px; color: var(--text); }
 .delete-msg { color: var(--muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 4px; }
 .delete-msg strong { color: var(--text); }
 
-/* ── TOAST ─────────────────────────────────────────────────────────── */
+/* ── NOTIFICACIÓN (TOAST) ──────────────────────────────────────────── */
 .toast {
     position: fixed;
     bottom: 28px;
@@ -517,7 +517,7 @@ tbody td { padding: 12px 16px; color: var(--text); }
 .toast-warning { background: #4d3612; border: 1px solid #8c6422; }
 .toast-info    { background: #12284d; border: 1px solid #224d8c; }
 
-/* ── FOOTER ────────────────────────────────────────────────────────── */
+/* ── PIE DE PÁGINA ─────────────────────────────────────────────────── */
 .footer {
     background: #fff;
     padding: 16px 32px;
