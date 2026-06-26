@@ -4,7 +4,7 @@
         private $trasladoModel;
 
         public function __construct() {
-            require_once 'TrasladoModel.php';
+            require_once '../Modelo/TrasladoModel.php';
             $this->trasladoModel = new TrasladoModel();
         }
 
@@ -28,20 +28,12 @@
             return $this->trasladoModel->deleteTrasladoResiduo($id);
         }
 
-        public function registrarTraslado($camionId, $centroId, $peso, $fechaIngreso) {
-            return $this->trasladoModel->registrarTraslado($camionId, $centroId, $peso, $fechaIngreso);
-        }
-
         public function obtenerPorCamion($camionId) {
             return $this->trasladoModel->obtenerPorCamion($camionId);
         }
 
         public function obtenerPorCentro($centroId) {
             return $this->trasladoModel->obtenerPorCentro($centroId);
-        }
-
-        public function listarTrasladosResiduos() {
-            return $this->trasladoModel->listarTrasladosResiduos();
         }
 
         public function filtrarPorFecha($fecha) {
