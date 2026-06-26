@@ -13,10 +13,16 @@ class CamionModel {
     protected $Estado = "";
     protected $conn;
 
-    public function __construct() {
+    public function __construct($Matricula, $TipoCarga, $Capacidad, $Anio, $Modelo, $Estado) {
+        $this->Matricula = $Matricula;
+        $this->TipoCarga = $TipoCarga;
+        $this->Capacidad = $Capacidad;
+        $this->Anio = $Anio;
+        $this->Modelo = $Modelo;
+        $this->Estado = $Estado;
         $this->conn = new conexion();
+        $this->Id = $this->insertCamion($Matricula, $TipoCarga, $Capacidad, $Anio, $Modelo, $Estado);
     }
-
     // Métodos públicos del modelo que usan la BD
     public function esDisponible($id) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT Estado FROM camiones WHERE Id = ?");

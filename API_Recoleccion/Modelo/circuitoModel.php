@@ -12,8 +12,14 @@ class CircuitoModel {
     protected $Frecuencia = "";
     protected $conn;
 
-    public function __construct() {
+    public function __construct($MunicipioId, $Nombre, $Actividad, $Turno, $Frecuencia) {
+        $this->MunicipioId = $MunicipioId;
+        $this->Nombre = $Nombre;
+        $this->Actividad = $Actividad;
+        $this->Turno = $Turno;
+        $this->Frecuencia = $Frecuencia;
         $this->conn = new conexion();
+        $this->Id = $this->altaCircuito($MunicipioId, $Nombre, $Actividad, $Turno, $Frecuencia);
     }
 
     public function getId() {

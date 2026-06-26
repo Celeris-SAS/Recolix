@@ -11,8 +11,13 @@ class TrasladoModel {
     protected $FechaIngreso = "";
     protected $conn;
 
-    public function __construct() {
+    public function __construct($CamionId, $CentroId, $Peso, $FechaIngreso) {
+        $this->CamionId = $CamionId;
+        $this->CentroId = $CentroId;
+        $this->Peso = $Peso;
+        $this->FechaIngreso = $FechaIngreso;
         $this->conn = new conexion();
+        $this->Id = $this->insertTrasladoResiduo($CamionId, $CentroId, $Peso, $FechaIngreso);
     }
 
     public function getId() {
