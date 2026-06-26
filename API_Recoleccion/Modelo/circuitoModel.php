@@ -2,7 +2,7 @@
 
 require_once 'conexion.php';
 
-class Circuito {
+class CircuitoModel {
 
     protected $Id = "";
     protected $MunicipioId = "";
@@ -12,14 +12,8 @@ class Circuito {
     protected $Frecuencia = "";
     protected $conn;
 
-    public function __construct($MunicipioId, $Nombre, $Actividad, $Turno, $Frecuencia) {
-        $this->MunicipioId = $MunicipioId;
-        $this->Nombre = $Nombre;
-        $this->Actividad = $Actividad;
-        $this->Turno = $Turno;
-        $this->Frecuencia = $Frecuencia;
+    public function __construct() {
         $this->conn = new conexion();
-        $this->altaCircuito($MunicipioId, $Nombre, $Actividad, $Turno, $Frecuencia);
     }
 
     public function getId() {
@@ -77,6 +71,7 @@ class Circuito {
         mysqli_stmt_execute($stmt);
         $this->Id = mysqli_insert_id($this->conn->getConexion());
         mysqli_stmt_close($stmt);
+        return $this->Id;
     }
 
     public function bajaCircuito($id) {
@@ -84,6 +79,7 @@ class Circuito {
         mysqli_stmt_bind_param($stmt, "i", $id);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
+        return true;
     }
 
     public function actualizarCircuito($id, $municipioId, $nombre, $actividad, $turno, $frecuencia) {
@@ -91,6 +87,7 @@ class Circuito {
         mysqli_stmt_bind_param($stmt, "issssi", $municipioId, $nombre, $actividad, $turno, $frecuencia, $id);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
+        return true;
     }
 
     public function registrarFrecuencia($id, $frecuencia) {
@@ -98,6 +95,7 @@ class Circuito {
         mysqli_stmt_bind_param($stmt, "si", $frecuencia, $id);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
+        return true;
     }
 
     public function listarCircuitos() {
@@ -106,9 +104,7 @@ class Circuito {
         $result = mysqli_stmt_get_result($stmt);
         $circuitos = [];
         while ($row = mysqli_fetch_assoc($result)) {
-            $circuito = new Circuito($row['MunicipioId'], $row['Nombre'], $row['Actividad'], $row['Turno'], $row['Frecuencia']);
-            $circuito->Id = $row['Id'];
-            $circuitos[] = $circuito;
+            $circuitos[] = $row;
         }
         mysqli_stmt_close($stmt);
         return $circuitos;
@@ -121,9 +117,7 @@ class Circuito {
         $result = mysqli_stmt_get_result($stmt);
         $circuitos = [];
         while ($row = mysqli_fetch_assoc($result)) {
-            $circuito = new Circuito($row['MunicipioId'], $row['Nombre'], $row['Actividad'], $row['Turno'], $row['Frecuencia']);
-            $circuito->Id = $row['Id'];
-            $circuitos[] = $circuito;
+            $circuitos[] = $row;
         }
         mysqli_stmt_close($stmt);
         return $circuitos;
@@ -136,9 +130,7 @@ class Circuito {
         $result = mysqli_stmt_get_result($stmt);
         $circuitos = [];
         while ($row = mysqli_fetch_assoc($result)) {
-            $circuito = new Circuito($row['MunicipioId'], $row['Nombre'], $row['Actividad'], $row['Turno'], $row['Frecuencia']);
-            $circuito->Id = $row['Id'];
-            $circuitos[] = $circuito;
+            $circuitos[] = $row;
         }
         mysqli_stmt_close($stmt);
         return $circuitos;
@@ -151,9 +143,7 @@ class Circuito {
         $result = mysqli_stmt_get_result($stmt);
         $circuitos = [];
         while ($row = mysqli_fetch_assoc($result)) {
-            $circuito = new Circuito($row['MunicipioId'], $row['Nombre'], $row['Actividad'], $row['Turno'], $row['Frecuencia']);
-            $circuito->Id = $row['Id'];
-            $circuitos[] = $circuito;
+            $circuitos[] = $row;
         }
         mysqli_stmt_close($stmt);
         return $circuitos;
