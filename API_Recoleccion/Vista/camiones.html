@@ -47,15 +47,6 @@
 <section class="cards-section">
     <div class="cards-grid">
 
-        <div class="card-operar" onclick="listarCamiones()">
-            <div class="card-content">
-                <div class="card-icon"><img src="img/truck-svgrepo-com.svg" alt="" class="card-svg-icon"></div>
-                <h3>Ver Todos</h3>
-                <p>Listar todos los camiones registrados</p>
-                <button class="card-btn">Ver Lista</button>
-            </div>
-        </div>
-
         <div class="card-operar" onclick="abrirModalAgregar()">
             <div class="card-content">
                 <div class="card-icon"><img src="img/plus.svg" alt="" class="card-svg-icon"></div>
@@ -107,7 +98,7 @@
 <!-- ── BARRA DE FILTROS ─────────────────────────────────────────────── -->
 <section class="control-bar" id="filterBar" style="display:none">
     <div class="control-inner">
-        <select id="filtroTipo" class="ctrl-select">
+        <select id="filtroTipo" class="ctrl-select" onchange="actualizarFiltroValor()">
             <option value="">— Filtrar por —</option>
             <option value="estado">Estado</option>
             <option value="tipoCarga">Tipo de Carga</option>
@@ -117,7 +108,8 @@
             <option value="modelo">Modelo</option>
             <option value="capacidad">Capacidad mínima (kg)</option>
         </select>
-        <input type="text" id="filtroValor" class="ctrl-input" placeholder="Valor del filtro...">
+        <input type="text" id="filtroValor" class="ctrl-input" placeholder="Valor del filtro..." style="display:none">
+        <select id="filtroValorSelect" class="ctrl-select" style="display:none"></select>
         <button class="btn-primary" onclick="aplicarFiltro()">Aplicar</button>
         <button class="btn-secondary" onclick="listarCamiones()">Limpiar</button>
     </div>
@@ -363,14 +355,47 @@ async function buscarPorId() {
 }
 
 // ── FILTRAR ───────────────────────────────────────────────────────────
+function actualizarFiltroValor() {
+    const tipo   = document.getElementById('filtroTipo').value;
+    const input  = document.getElementById('filtroValor');
+    const select = document.getElementById('filtroValorSelect');
+
+    input.value  = '';
+    select.value = '';
+    input.style.display  = 'none';
+    select.style.display = 'none';
+
+    const sinValor = ['disponibilidad', 'mantenimiento'];
+    if (sinValor.includes(tipo) || !tipo) return;
+
+    const listas = {
+        estado:    ['disponible', 'en mantenimiento', 'de baja'],
+        tipoCarga: ['residuos', 'reciclaje', 'voluminosos', 'mixto']
+    };
+
+    if (listas[tipo]) {
+        select.innerHTML = '<option value="">— Seleccionar —</option>' +
+            listas[tipo].map(v => `<option value="${v}">${v}</option>`).join('');
+        select.style.display = '';
+    } else {
+        const placeholders = { anio: 'ej: 2020', modelo: 'ej: Ford F-550', capacidad: 'kg (ej: 5000)' };
+        input.placeholder = placeholders[tipo] || 'Valor del filtro...';
+        input.style.display = '';
+    }
+}
+
 async function aplicarFiltro() {
-    const tipo  = document.getElementById('filtroTipo').value;
-    const valor = document.getElementById('filtroValor').value.trim();
+    const tipo   = document.getElementById('filtroTipo').value;
+    const input  = document.getElementById('filtroValor');
+    const select = document.getElementById('filtroValorSelect');
     if (!tipo) { mostrarToast('Seleccioná un filtro', 'warning'); return; }
 
     const sinValor = ['disponibilidad', 'mantenimiento'];
+    const valor = sinValor.includes(tipo) ? '' :
+        (select.style.display !== 'none' ? select.value : input.value).trim();
+
     if (!sinValor.includes(tipo) && !valor) {
-        mostrarToast('Ingresá un valor para el filtro', 'warning');
+        mostrarToast('Seleccioná un valor para el filtro', 'warning');
         return;
     }
 
