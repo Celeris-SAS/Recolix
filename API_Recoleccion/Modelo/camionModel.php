@@ -44,7 +44,7 @@ class CamionModel {
 
     public function insertCamion($matricula, $tipoCarga, $capacidad, $anio, $modelo, $estado) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "INSERT INTO camiones (Matricula, TipoCarga, Capacidad, Anio, Modelo, Estado) VALUES (?, ?, ?, ?, ?, ?)");
-        mysqli_stmt_bind_param($stmt, "ssiiis", $matricula, $tipoCarga, $capacidad, $anio, $modelo, $estado);
+        mysqli_stmt_bind_param($stmt, "ssiiss", $matricula, $tipoCarga, $capacidad, $anio, $modelo, $estado);
         mysqli_stmt_execute($stmt);
         $id = mysqli_insert_id($this->conn->getConexion());
         mysqli_stmt_close($stmt);
@@ -61,7 +61,7 @@ class CamionModel {
 
     public function updateCamion($id, $matricula, $tipoCarga, $capacidad, $anio, $modelo, $estado) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE camiones SET Matricula = ?, TipoCarga = ?, Capacidad = ?, Anio = ?, Modelo = ?, Estado = ? WHERE Id = ?");
-        mysqli_stmt_bind_param($stmt, "ssiiisi", $matricula, $tipoCarga, $capacidad, $anio, $modelo, $estado, $id);
+        mysqli_stmt_bind_param($stmt, "ssiissi", $matricula, $tipoCarga, $capacidad, $anio, $modelo, $estado, $id);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
         return true;

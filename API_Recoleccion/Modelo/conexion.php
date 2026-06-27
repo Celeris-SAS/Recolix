@@ -4,7 +4,7 @@ class conexion {
     private $host = '127.0.0.1';
     private $user = 'root';
     private $pass = '';
-    private $db = 'prueba';
+    private $db = 'recolix_provisoria';
     private $conn = null;
 
     public function __construct() {
