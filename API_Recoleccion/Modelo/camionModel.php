@@ -190,5 +190,15 @@ class CamionModel {
         mysqli_stmt_close($stmt);
         return $eventos;
     }
+
+    public function getMatricula($matricula) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT Id FROM camiones WHERE  Matricula = ?");
+        mysqli_stmt_bind_param($stmt, "s", $matricula);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $row = mysqli_fetch_assoc($result);
+        mysqli_stmt_close($stmt);
+        return $row;
+        }
 }
 

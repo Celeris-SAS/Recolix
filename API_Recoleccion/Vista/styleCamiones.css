@@ -376,6 +376,7 @@ tbody td { padding: 12px 16px; color: var(--text); }
 .badge-warning { background: rgba(183,120,10,0.10); color: #8a5a00; border: 1px solid rgba(183,120,10,0.3); }
 .badge-danger  { background: rgba(192,57,43,0.10);  color: #922b21; border: 1px solid rgba(192,57,43,0.3); }
 .badge-neutral { background: rgba(92,100,88,0.10);  color: var(--muted); border: 1px solid var(--border); }
+.badge-info    { background: rgba(34,77,140,0.10);  color: #1a3a6b; border: 1px solid rgba(34,77,140,0.3); }
 
 /* Botones de acción */
 .td-actions { display: flex; gap: 6px; }
@@ -525,3 +526,136 @@ tbody td { padding: 12px 16px; color: var(--text); }
     border-top: 1px solid var(--border);
 }
 .footer p { color: var(--muted); font-size: 0.8rem; text-align: center; }
+
+/* ── HAMBURGER (oculto en desktop) ────────────────────────────────── */
+.nav-hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    width: 36px;
+    height: 36px;
+}
+.nav-hamburger span {
+    display: block;
+    height: 2px;
+    width: 24px;
+    background: var(--text);
+    border-radius: 2px;
+    transition: background 0.2s;
+}
+.nav-hamburger:hover span { background: var(--green); }
+
+/* ── MENÚ MOBILE (oculto por defecto) ─────────────────────────────── */
+.nav-mobile {
+    display: none;
+    flex-direction: column;
+    background: #fff;
+    border-top: 1px solid var(--border);
+    padding: 8px 0;
+}
+.nav-mobile a {
+    padding: 12px 20px;
+    color: var(--muted);
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s, color 0.15s;
+}
+.nav-mobile a:last-child { border-bottom: none; }
+.nav-mobile a:hover { background: var(--bg2); color: var(--text); }
+.nav-mobile a.nav-active { color: var(--green); font-weight: 600; }
+.nav-mobile.nav-mobile-open { display: flex; }
+
+/* ── RESPONSIVE — 1024px (tablet grande / escritorio pequeño) ──────── */
+@media (max-width: 1024px) {
+    .nav-inner { padding: 0 20px; }
+    .nav-left  { gap: 20px; }
+    .nav-links { gap: 16px; }
+    .hero, .cards-section, .table-section { padding-left: 20px; padding-right: 20px; }
+    .control-bar { padding-left: 20px; padding-right: 20px; }
+    .footer { padding-left: 20px; padding-right: 20px; }
+}
+
+/* ── RESPONSIVE — 768px (tablet / móvil) ──────────────────────────── */
+@media (max-width: 768px) {
+    .nav-inner { padding: 0 16px; }
+
+    .cards-section { padding: 16px 16px 24px; }
+    .cards-grid { justify-content: center; }
+    .card-operar { width: calc(50% - 12px); height: 170px; flex-shrink: 1; }
+}
+
+/* ── RESPONSIVE — hamburger y tabla desde 1024px ───────────────────── */
+@media (max-width: 1024px) {
+    .nav-links { display: none; }
+    .nav-hamburger { display: flex; }
+
+    .hero { padding: 24px 16px 12px; }
+    .hero-title { font-size: 1.5rem; }
+
+    .cards-section { padding: 16px 16px 24px; }
+    .cards-grid { justify-content: center; }
+    .card-operar { width: calc(50% - 12px); height: 170px; flex-shrink: 1; }
+
+    .control-bar { padding: 12px 16px; }
+    .ctrl-input  { min-width: 0; width: 100%; }
+    .ctrl-select { width: 100%; }
+    .control-inner { flex-direction: column; align-items: stretch; }
+    .control-inner .btn-primary,
+    .control-inner .btn-secondary,
+    .control-inner .btn-danger { width: 100%; }
+
+    .table-section { padding: 20px 16px; }
+
+    /* Tabla → formato tarjeta */
+    .table-wrapper { border: none; background: transparent; }
+    table thead { display: none; }
+    table, tbody, tr, td { display: block; width: 100%; }
+    tbody tr {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        margin-bottom: 12px;
+        padding: 4px 0;
+    }
+    tbody tr:hover { background: #fff; }
+    tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.875rem;
+    }
+    tbody td:last-child { border-bottom: none; }
+    tbody td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        font-size: 0.75rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        flex-shrink: 0;
+        margin-right: 12px;
+    }
+    .td-actions { flex-wrap: wrap; gap: 8px; }
+
+    .form-row { grid-template-columns: 1fr; }
+    .modal { padding: 20px 16px; margin: 0 12px; }
+    .footer { padding: 12px 16px; }
+}
+
+/* ── RESPONSIVE — 320px (móvil pequeño) ───────────────────────────── */
+@media (max-width: 320px) {
+    .hero-title { font-size: 1.2rem; }
+    .card-operar { width: 100%; }
+    .modal { margin: 0 8px; padding: 16px 12px; }
+    .modal-actions { flex-direction: column; }
+    .modal-actions button { width: 100%; }
+    .toast { right: 12px; left: 12px; max-width: none; bottom: 16px; }
+}
