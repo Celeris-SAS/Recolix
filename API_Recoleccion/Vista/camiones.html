@@ -32,8 +32,22 @@
             <a href="/recolix/API_Usuarios/Vista/perfil.html" class="btn-user" title="Perfil de usuario">
                 <img src="img/user.svg" alt="Usuario" class="nav-user-icon">
             </a>
+            <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menú">
+                <span></span><span></span><span></span>
+            </button>
         </div>
     </div>
+    <nav class="nav-mobile" id="navMobile">
+        <a href="#">Inicio</a>
+        <a href="#" class="nav-active">Camiones</a>
+        <a href="#">Cuadrillas</a>
+        <a href="#">Contenedores</a>
+        <a href="#">Vertederos</a>
+        <a href="#">Centros de Acopio</a>
+        <a href="#">Mapa</a>
+        <a href="#">Reportes</a>
+        <a href="#">Incidencias</a>
+    </nav>
     <div class="nav-hr"></div>
 </header>
 
@@ -201,16 +215,15 @@
                 <div class="form-group">
                     <label for="matricula">Matrícula</label>
                     <input type="text" id="matricula" class="form-input"
-                           placeholder="ABC123" maxlength="6" required
+                           placeholder="ABC1234" maxlength="7" required
                            oninput="this.setCustomValidity('')">
                 </div>
                 <div class="form-group">
                     <label for="tipoCarga">Tipo de Carga</label>
                     <select id="tipoCarga" class="form-input">
-                        <option value="residuos">Residuos</option>
-                        <option value="reciclaje">Reciclaje</option>
-                        <option value="voluminosos">Voluminosos</option>
-                        <option value="mixto">Mixto</option>
+                        <option value="carga_lateral" selected>Carga lateral</option>
+                        <option value="carga_trasera">Carga trasera</option>
+                        <option value="puerta_a_puerta">Puerta a puerta</option>
                     </select>
                 </div>
             </div>
@@ -236,6 +249,7 @@
                     <label for="estado">Estado</label>
                     <select id="estado" class="form-input">
                         <option value="disponible">Disponible</option>
+                        <option value="en ruta">En ruta</option>
                         <option value="en mantenimiento">En mantenimiento</option>
                         <option value="de baja">De baja</option>
                     </select>
@@ -289,12 +303,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function reglasFallback() {
     return {
-        matricula: { pattern: '^[A-Z]{3}\\d{3}$', max: 6, label: 'Matrícula', mensaje: 'Debe tener 3 letras seguidas de 3 números (ej: ABC123)' },
-        tipoCarga: { valores: ['residuos', 'reciclaje', 'voluminosos', 'mixto'], max: 50, label: 'Tipo de carga' },
+        matricula: { pattern: '^[A-Z]{3}\\d{4}$', max: 7, label: 'Matrícula', mensaje: 'Debe tener 3 letras seguidas de 4 números (ej: ABC1234)' },
+        tipoCarga: { valores: ['carga_lateral', 'carga_trasera', 'puerta_a_puerta'], max: 50, label: 'Tipo de carga' },
         capacidad: { tipo: 'entero', min: 1, max: 100000, label: 'Capacidad' },
         anio: { tipo: 'entero', min: 1990, max: 2030, label: 'Año' },
         modelo: { max: 100, label: 'Modelo' },
-        estado: { valores: ['disponible', 'en mantenimiento', 'de baja'], max: 50, label: 'Estado' }
+        estado: { valores: ['disponible', 'en ruta', 'en mantenimiento', 'de baja'], max: 50, label: 'Estado' }
     };
 }
 
@@ -369,8 +383,8 @@ function actualizarFiltroValor() {
     if (sinValor.includes(tipo) || !tipo) return;
 
     const listas = {
-        estado:    ['disponible', 'en mantenimiento', 'de baja'],
-        tipoCarga: ['residuos', 'reciclaje', 'voluminosos', 'mixto']
+        estado:    ['disponible', 'en ruta', 'en mantenimiento', 'de baja'],
+        tipoCarga: ['carga_lateral', 'carga_trasera', 'puerta_a_puerta']
     };
 
     if (listas[tipo]) {
@@ -436,11 +450,18 @@ function abrirModalEditar(camion) {
     document.getElementById('modalTitle').textContent = 'Editar Camión';
     document.getElementById('camionId').value  = camion.Id;
     document.getElementById('matricula').value = camion.Matricula;
-    document.getElementById('tipoCarga').value = camion.TipoCarga;
     document.getElementById('capacidad').value = camion.Capacidad;
     document.getElementById('anio').value      = camion.Anio;
     document.getElementById('modelo').value    = camion.Modelo;
-    document.getElementById('estado').value    = camion.Estado;
+
+    const tipoCargaEl = document.getElementById('tipoCarga');
+    tipoCargaEl.value = camion.TipoCarga;
+    if (!tipoCargaEl.value) tipoCargaEl.selectedIndex = 0;
+
+    const estadoEl = document.getElementById('estado');
+    estadoEl.value = camion.Estado;
+    if (!estadoEl.value) estadoEl.selectedIndex = 0;
+
     document.getElementById('modalForm').style.display = 'flex';
 }
 
@@ -452,21 +473,21 @@ async function guardarCamion(e) {
     const matInput = document.getElementById('matricula');
     const matricula = matInput.value.toUpperCase();
     matInput.setCustomValidity('');
-    if (matricula.length !== 6) {
-        matInput.setCustomValidity('Debe tener 3 letras seguidas de 3 números (ej: ABC123)');
+    if (matricula.length !== 7) {
+        matInput.setCustomValidity('Debe tener 3 letras seguidas de 4 números (ej: ABC1234)');
         matInput.reportValidity();
         return;
     }
     for (let i = 0; i < 3; i++) {
         if (matricula[i] < 'A' || matricula[i] > 'Z') {
-            matInput.setCustomValidity('Los primeros 3 caracteres deben ser letras (ej: ABC123)');
+            matInput.setCustomValidity('Los primeros 3 caracteres deben ser letras (ej: ABC1234)');
             matInput.reportValidity();
             return;
         }
     }
-    for (let i = 3; i < 6; i++) {
+    for (let i = 3; i < 7; i++) {
         if (matricula[i] < '0' || matricula[i] > '9') {
-            matInput.setCustomValidity('Los últimos 3 caracteres deben ser números (ej: ABC123)');
+            matInput.setCustomValidity('Los últimos 4 caracteres deben ser números (ej: ABC1234)');
             matInput.reportValidity();
             return;
         }
@@ -597,17 +618,18 @@ function actualizarPlaceholderModificar() {
     select.style.display = 'none';
 
     const listas = {
-        tipoCarga: ['residuos', 'reciclaje', 'voluminosos', 'mixto'],
-        estado:    ['disponible', 'en mantenimiento', 'de baja']
+        tipoCarga: ['carga_lateral', 'carga_trasera', 'puerta_a_puerta'],
+        estado:    ['disponible', 'en ruta', 'en mantenimiento', 'de baja']
     };
 
     if (listas[campo]) {
-        select.innerHTML = '<option value="">— Seleccionar —</option>' +
-            listas[campo].map(v => `<option value="${v}">${v}</option>`).join('');
+        select.innerHTML = listas[campo].map((v, i) =>
+            `<option value="${v}"${i === 0 ? ' selected' : ''}>${v}</option>`
+        ).join('');
         select.style.display = '';
     } else {
         const placeholders = {
-            matricula: 'ABC123',
+            matricula: 'ABC1234',
             capacidad: 'kg (ej: 5000)',
             anio:      'ej: 2020',
             modelo:    'ej: Ford F-550'
@@ -756,14 +778,14 @@ function renderTabla(camiones) {
     camiones.forEach(c => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td class="td-id">${c.Id}</td>
-            <td><strong>${c.Matricula}</strong></td>
-            <td>${c.TipoCarga}</td>
-            <td>${Number(c.Capacidad).toLocaleString()}</td>
-            <td>${c.Anio}</td>
-            <td>${c.Modelo}</td>
-            <td><span class="badge badge-${badgeClass(c.Estado)}">${c.Estado}</span></td>
-            <td class="td-actions">
+            <td class="td-id" data-label="ID">${c.Id}</td>
+            <td data-label="Matrícula"><strong>${c.Matricula}</strong></td>
+            <td data-label="Tipo de Carga">${c.TipoCarga}</td>
+            <td data-label="Capacidad (kg)">${Number(c.Capacidad).toLocaleString()}</td>
+            <td data-label="Año">${c.Anio}</td>
+            <td data-label="Modelo">${c.Modelo}</td>
+            <td data-label="Estado"><span class="badge badge-${badgeClass(c.Estado)}">${c.Estado}</span></td>
+            <td class="td-actions" data-label="Acciones">
                 <button class="btn-action" onclick='abrirModalEditar(${JSON.stringify(c)})' title="Editar">✏️</button>
                 <button class="btn-action" onclick="verificarDisponibilidad(${c.Id},'${c.Matricula}')" title="Verificar disponibilidad">✅</button>
                 <button class="btn-action" onclick="confirmarBorrar(${c.Id},'${c.Matricula}')" title="Eliminar">🗑️</button>
@@ -774,7 +796,7 @@ function renderTabla(camiones) {
 }
 
 function badgeClass(estado) {
-    const map = { 'disponible': 'success', 'en mantenimiento': 'warning', 'de baja': 'danger' };
+    const map = { 'disponible': 'success', 'en ruta': 'info', 'en mantenimiento': 'warning', 'de baja': 'danger' };
     return map[estado] ?? 'neutral';
 }
 
@@ -852,6 +874,10 @@ function setTableTitle(title) {
 function setLoading(show) {
     document.getElementById('loadingState').style.display = show ? 'flex' : 'none';
     document.getElementById('camionesBody').style.opacity = show ? '0.3' : '1';
+}
+
+function toggleMobileMenu() {
+    document.getElementById('navMobile').classList.toggle('nav-mobile-open');
 }
 
 function mostrarToast(msg, tipo = 'info') {
