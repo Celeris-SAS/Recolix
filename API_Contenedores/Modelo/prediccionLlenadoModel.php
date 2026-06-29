@@ -10,7 +10,7 @@ class PrediccionLlenadoModel {
     protected $fechaCalculo;
     protected $conn;
 
-    public function __construct( $id,$idContenedor,$nivelProyectado,$fechaCalculo) {
+    public function __construct($id,$idContenedor,$nivelProyectado,$fechaCalculo) {
         $this->id              = $id;
         $this->idContenedor    = $idContenedor;
         $this->nivelProyectado = $nivelProyectado;
@@ -57,7 +57,7 @@ class PrediccionLlenadoModel {
     // ==========================================
     // CRUD PRINCIPAL
     // ==========================================
-  
+
     public function insertPrediccion($idContenedor, $nivelProyectado) {
         $fechaCalculo = date("Y-m-d H:i:s");
         $stmt = mysqli_prepare($this->conn->getConexion(), "INSERT INTO PREDICCION_LLENADO (id_contenedor, nivel_proyectado, fecha_calculo) VALUES (?, ?, ?)");
@@ -87,38 +87,31 @@ class PrediccionLlenadoModel {
         mysqli_stmt_close($stmt);
         return $row;
     }
+
     public function getAllPredicciones($idContenedor) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM PREDICCION_LLENADO WHERE id_contenedor = ? ORDER BY fecha_calculo DESC");
         mysqli_stmt_bind_param($stmt, "i", $idContenedor);
         mysqli_stmt_execute($stmt);
-        $result        = mysqli_stmt_get_result($stmt);
-        $predicciones  = [];
+        $result = mysqli_stmt_get_result($stmt);
+        $rows   = [];
         while ($row = mysqli_fetch_assoc($result)) {
-            $predicciones[] = new PrediccionLlenadoModel(
-                $row['id_prediccion'],
-                $row['id_contenedor'],
-                $row['nivel_proyectado'],
-                $row['fecha_calculo']
-            );
+            $rows[] = $row;
         }
         mysqli_stmt_close($stmt);
-        return $predicciones;
+        return $rows;
     }
 
-    // Obtiene los pesos de los últimos levantes de un contenedor.
-    // El controlador usa estos datos para calcular el nivel proyectado.
-    // Se limita a los últimos 5 levantes para que el cálculo sea representativo.
     public function getDatosLevantes($idContenedor) {
-        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT cl.peso, l.hora_levante FROM CONTENEDOR_LEVANTE cl JOIN LEVANTE l ON cl.id_levante = l.id_levante WHERE cl.id_contenedor = ? ORDER BY l.hora_levante DESC LIMIT 5");
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT cl.peso, l.hora_levante FROM CONTENEDOR_LEVANTE cl JOIN LEVANTE l ON cl.id_levante = l.id_levante WHERE cl.id_contenedor = ? ORDER BY l.hora_levante DESC");
         mysqli_stmt_bind_param($stmt, "i", $idContenedor);
         mysqli_stmt_execute($stmt);
-        $result  = mysqli_stmt_get_result($stmt);
-        $levantes = [];
+        $result   = mysqli_stmt_get_result($stmt);
+        $rows     = [];
         while ($row = mysqli_fetch_assoc($result)) {
-            $levantes[] = $row;
+            $rows[] = $row;
         }
         mysqli_stmt_close($stmt);
-        return $levantes;
+        return $rows;
     }
 }
 ?>
