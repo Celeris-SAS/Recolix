@@ -1,20 +1,20 @@
+
 <?php
 
 require_once 'conexion.php';
 
-class contenedorModel {
+class ContenedorModel {
 
-    protected $Id = "";
-    protected $IdCircuito = "";
-    protected $IdTipoResiduo = "";
-    protected $Calle = "";
-    protected $NumCalle = "";
-    protected $Latitud = 0.0;
-    protected $Longitud = 0.0;
-    protected $Capacidad = 0;
-    protected $NivelLlenado = 0;
-    protected $Estado = "";
-    protected $FechaReparacion = null;
+    protected $id;
+    protected $idCircuito;
+    protected $idTipo;
+    protected $calle;
+    protected $numCalle;
+    protected $latitud;
+    protected $longitud;
+    protected $capacidad;
+    protected $estado;
+    protected $fechaReparacion;
     protected $conn;
 
     public function __construct($Id = null, $IdCircuito = null, $IdTipoResiduo = null, $Calle = "", $NumCalle = "", $Latitud = 0.0, $Longitud = 0.0, $Capacidad = 0, $NivelLlenado = 0, $Estado = "funcional", $FechaReparacion = null) {
@@ -31,259 +31,266 @@ class contenedorModel {
         $this->FechaReparacion = $FechaReparacion;
         $this->conn = new conexion();
     }
+
     // ==========================================
     // GETTERS
     // ==========================================
-    
-    public function getId() { 
-        return $this->Id; 
+
+    public function getId() {
+        return $this->id;
     }
-    
-    public function getIdCircuito() { 
-        return $this->IdCircuito; 
+
+    public function getIdCircuito() {
+        return $this->idCircuito;
     }
-    
-    public function getIdTipoResiduo() { 
-        return $this->IdTipoResiduo; 
+
+    public function getIdTipo() {
+        return $this->idTipo;
     }
-    
-    public function getCalle() { 
-        return $this->Calle; 
+
+    public function getCalle() {
+        return $this->calle;
     }
-    
-    public function getNumCalle() { 
-        return $this->NumCalle; 
+
+    public function getNumCalle() {
+        return $this->numCalle;
     }
-    
-    public function getLatitud() { 
-        return $this->Latitud; 
+
+    public function getLatitud() {
+        return $this->latitud;
     }
-    
-    public function getLongitud() { 
-        return $this->Longitud; 
+
+    public function getLongitud() {
+        return $this->longitud;
     }
-    
-    public function getCapacidad() { 
-        return $this->Capacidad; 
+
+    public function getCapacidad() {
+        return $this->capacidad;
     }
-    
-    public function getNivelLlenado() { 
-        return $this->NivelLlenado; 
+
+    public function getEstado() {
+        return $this->estado;
     }
-    
-    public function getEstado() { 
-        return $this->Estado; 
-    }
-    
-    public function getFechaReparacion() { 
-        return $this->FechaReparacion; 
+
+    public function getFechaReparacion() {
+        return $this->fechaReparacion;
     }
 
     // ==========================================
-    // SETTERS (Modificar atributos)
+    // SETTERS
     // ==========================================
-    
-    public function setIdCircuito($IdCircuito) { 
-        $this->IdCircuito = $IdCircuito; 
+
+    public function setIdCircuito($idCircuito) {
+        $this->idCircuito = $idCircuito;
     }
-    
-    public function setIdTipoResiduo($IdTipoResiduo) { 
-        $this->IdTipoResiduo = $IdTipoResiduo; 
+
+    public function setIdTipo($idTipo) {
+        $this->idTipo = $idTipo;
     }
-    
-    public function setCalle($Calle) { 
-        $this->Calle = $Calle; 
+
+    public function setCalle($calle) {
+        $this->calle = $calle;
     }
-    
-    public function setNumCalle($NumCalle) { 
-        $this->NumCalle = $NumCalle; 
+
+    public function setNumCalle($numCalle) {
+        $this->numCalle = $numCalle;
     }
-    
-    public function setLatitud($Latitud) { 
-        $this->Latitud = $Latitud; 
+
+    public function setLatitud($latitud) {
+        $this->latitud = $latitud;
     }
-    
-    public function setLongitud($Longitud) { 
-        $this->Longitud = $Longitud; 
+
+    public function setLongitud($longitud) {
+        $this->longitud = $longitud;
     }
-    
-    public function setCapacidad($Capacidad) { 
-        $this->Capacidad = $Capacidad; 
+
+    public function setCapacidad($capacidad) {
+        $this->capacidad = $capacidad;
     }
-    
-    public function __toString() {
-        return "Contenedor [Id: " . $this->Id . 
-               ", Circuito: " . $this->IdCircuito . 
-               ", Residuo: " . $this->IdTipoResiduo . 
-               ", Ubicación: " . $this->Calle . " " . $this->NumCalle . 
-               ", Capacidad: " . $this->Capacidad . "L" . 
-               ", Estado: " . $this->Estado . 
-               ", Nivel: " . $this->NivelLlenado . "%]";
+
+    public function setEstado($estado) {
+        $this->estado = $estado;
+    }
+
+    public function setFechaReparacion($fechaReparacion) {
+        $this->fechaReparacion = $fechaReparacion;
     }
 
     // ==========================================
-    // ACCIONES PRINCIPALES (CRUD)
+    // CRUD PRINCIPAL
     // ==========================================
 
-    public function altaContenedor($id, $idCircuito, $idTipoResiduo, $calle, $numCalle, $latitud, $longitud, $capacidad, $estado) {
-        $stmt = mysqli_prepare(
-            $this->conn->getConexion(), 
-            "INSERT INTO contenedores (Id, IdCircuito, IdTipoResiduo, Calle, NumCalle, Latitud, Longitud, Capacidad, Estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
-        );
-        mysqli_stmt_bind_param($stmt, "iiissddis", $id, $idCircuito, $idTipoResiduo, $calle, $numCalle, $latitud, $longitud, $capacidad, $estado);
+    public function insertContenedor($idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad, $estado) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "INSERT INTO CONTENEDOR (id_circuito, id_tipo, calle, num_calle, latitud, longitud, capacidad, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        mysqli_stmt_bind_param($stmt, "iissddds", $idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad, $estado);
+        mysqli_stmt_execute($stmt);
+        $id = mysqli_insert_id($this->conn->getConexion());
+        mysqli_stmt_close($stmt);
+        return $id;
+    }
+
+    public function updateContenedor($id, $idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE CONTENEDOR SET id_circuito = ?, id_tipo = ?, calle = ?, num_calle = ?, latitud = ?, longitud = ?, capacidad = ? WHERE id_contenedor = ?");
+        mysqli_stmt_bind_param($stmt, "iissdddi", $idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad, $id);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
-    }
-
-    public function modificarContenedor($id, $calle, $numCalle, $latitud, $longitud, $capacidad) {
-        $stmt = mysqli_prepare(
-            $this->conn->getConexion(), 
-            "UPDATE contenedores SET Calle = ?, NumCalle = ?, Latitud = ?, Longitud = ?, Capacidad = ? WHERE Id = ?"
-        );
-        mysqli_stmt_bind_param($stmt, "ssddii", $calle, $numCalle, $latitud, $longitud, $capacidad, $id);
-        mysqli_stmt_execute($stmt);
-        mysqli_stmt_close($stmt);
+        return true;
     }
 
     public function bajaContenedor($id) {
-        $stmt = mysqli_prepare(
-            $this->conn->getConexion(), 
-            "UPDATE contenedores SET Estado = 'inactivo' WHERE Id = ?"
-        );
+        $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE CONTENEDOR SET estado = 'inactivo' WHERE id_contenedor = ?");
         mysqli_stmt_bind_param($stmt, "i", $id);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
+        return true;
     }
 
-    // ==========================================
-    // REGLAS DE NEGOCIO Y OPERACIONES
-    // ==========================================
-
-    public function cambiarEstado($nuevoEstado) {
-        $estadosValidos = ["funcional", "roto", "desbordado", "inactivo", "en depósito"];
-        
-        if (in_array($nuevoEstado, $estadosValidos)) {
-            $this->Estado = $nuevoEstado;
-            
-            $stmt = mysqli_prepare(
-                $this->conn->getConexion(), 
-                "UPDATE contenedores SET Estado = ? WHERE Id = ?"
-            );
-            mysqli_stmt_bind_param($stmt, "si", $this->Estado, $this->Id);
-            mysqli_stmt_execute($stmt);
-            mysqli_stmt_close($stmt);
-        } else {
-            throw new Exception("Estado no válido. Opciones: " . implode(", ", $estadosValidos));
-        }
-    }
-
-    public function registrarReparacion() {
-        $this->Estado = "funcional";
-        $this->FechaReparacion = date("Y-m-d H:i:s");
-        
-        $stmt = mysqli_prepare(
-            $this->conn->getConexion(), 
-            "UPDATE contenedores SET Estado = ?, FechaReparacion = ? WHERE Id = ?"
-        );
-        mysqli_stmt_bind_param($stmt, "ssi", $this->Estado, $this->FechaReparacion, $this->Id);
-        mysqli_stmt_execute($stmt);
-        mysqli_stmt_close($stmt);
-    }
-
-    public function clasificarPorTipoResiduo($idTipoResiduo) {
-        $this->IdTipoResiduo = $idTipoResiduo;
-        
-        $stmt = mysqli_prepare(
-            $this->conn->getConexion(), 
-            "UPDATE contenedores SET IdTipoResiduo = ? WHERE Id = ?"
-        );
-        mysqli_stmt_bind_param($stmt, "ii", $this->IdTipoResiduo, $this->Id);
-        mysqli_stmt_execute($stmt);
-        mysqli_stmt_close($stmt);
-    }
-
-    public function asignarACircuito($idCircuito) {
-        $this->IdCircuito = $idCircuito;
-        
-        $stmt = mysqli_prepare(
-            $this->conn->getConexion(), 
-            "UPDATE contenedores SET IdCircuito = ? WHERE Id = ?"
-        );
-        mysqli_stmt_bind_param($stmt, "ii", $this->IdCircuito, $this->Id);
-        mysqli_stmt_execute($stmt);
-        mysqli_stmt_close($stmt);
-    }
-
-    public function consultarNivelLlenado() {
-        $stmt = mysqli_prepare(
-            $this->conn->getConexion(), 
-            "SELECT NivelEncontrado FROM levantes WHERE IdContenedor = ? ORDER BY `Fecha Levante` DESC LIMIT 1"
-        );
-        mysqli_stmt_bind_param($stmt, "i", $this->Id);
-        mysqli_stmt_execute($stmt);
-        mysqli_stmt_bind_result($stmt, $nivelLlenado);
-        
-        if (mysqli_stmt_fetch($stmt)) {
-            $this->NivelLlenado = $nivelLlenado;
-        } else {
-            $this->NivelLlenado = 0; 
-        }
-        
-        mysqli_stmt_close($stmt);
-        return $this->NivelLlenado;
-    }
-
-    public function obtenerHistorial() {
-        $stmt = mysqli_prepare(
-            $this->conn->getConexion(), 
-            "SELECT * FROM eventos_contenedor WHERE IdContenedor = ? ORDER BY Fecha DESC"
-        );
-        mysqli_stmt_bind_param($stmt, "i", $this->Id);
+    public function getContenedor($id) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM CONTENEDOR WHERE id_contenedor = ?");
+        mysqli_stmt_bind_param($stmt, "i", $id);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
-        
-        $historial = [];
-        
-        while ($row = mysqli_fetch_assoc($result)) {
-            $historial[] = $row;
-        }
-        
+        $row    = mysqli_fetch_assoc($result);
         mysqli_stmt_close($stmt);
+        return $row;
+    }
+
+    public function getAllContenedores() {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM CONTENEDOR");
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $rows   = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $rows[] = $row;
+        }
+        mysqli_stmt_close($stmt);
+        return $rows;
+    }
+
+    // ==========================================
+    // OPERACIONES DE NEGOCIO
+    // ==========================================
+
+    public function cambiarEstado($id, $nuevoEstado) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE CONTENEDOR SET estado = ? WHERE id_contenedor = ?");
+        mysqli_stmt_bind_param($stmt, "si", $nuevoEstado, $id);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        return true;
+    }
+
+    public function clasificarPorTipoResiduo($id, $idTipo) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE CONTENEDOR SET id_tipo = ? WHERE id_contenedor = ?");
+        mysqli_stmt_bind_param($stmt, "ii", $idTipo, $id);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        return true;
+    }
+
+    public function asignarACircuito($id, $idCircuito) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE CONTENEDOR SET id_circuito = ? WHERE id_contenedor = ?");
+        mysqli_stmt_bind_param($stmt, "ii", $idCircuito, $id);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        return true;
+    }
+
+    public function registrarReparacion($id) {
+        $fechaHoy = date("Y-m-d");
+        $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE CONTENEDOR SET estado = 'funcional', fecha_reparacion = ? WHERE id_contenedor = ?");
+        mysqli_stmt_bind_param($stmt, "si", $fechaHoy, $id);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        return true;
+    }
+
+    public function getNivelLlenado($id) {
+    $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT cl.peso, c.capacidad FROM CONTENEDOR_LEVANTE cl JOIN LEVANTE l ON cl.id_levante = l.id_levante JOIN CONTENEDOR c ON cl.id_contenedor = c.id_contenedor WHERE cl.id_contenedor = ? ORDER BY l.hora_levante DESC LIMIT 1");
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $row    = mysqli_fetch_assoc($result);
+    mysqli_stmt_close($stmt);
+    return $row;
+   }
+
+    public function getHistorial($id) {
+        $historial = [];
+
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT 'incidencia' AS tipo_evento, i.tipo AS descripcion, i.fecha_apertura AS fecha FROM INCIDENCIA i JOIN INCIDENCIA_CONTENEDOR ic ON i.id_incidencia = ic.id_incidencia WHERE ic.id_contenedor = ?");
+        mysqli_stmt_bind_param($stmt, "i", $id);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        while ($row = mysqli_fetch_assoc($result)) 
+        {
+            $historial[] = $row; 
+        }
+        mysqli_stmt_close($stmt);
+
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT 'levante' AS tipo_evento, cl.estado_encontrado AS descripcion, l.hora_levante AS fecha FROM CONTENEDOR_LEVANTE cl JOIN LEVANTE l ON cl.id_levante = l.id_levante WHERE cl.id_contenedor = ?");
+        mysqli_stmt_bind_param($stmt, "i", $id);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        while ($row = mysqli_fetch_assoc($result))
+            { 
+                $historial[] = $row;
+            }
+        mysqli_stmt_close($stmt);
+
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT 'reparacion' AS tipo_evento, 'Reparación registrada' AS descripcion, fecha_reparacion AS fecha FROM CONTENEDOR WHERE id_contenedor = ? AND fecha_reparacion IS NOT NULL");
+        mysqli_stmt_bind_param($stmt, "i", $id);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        while ($row = mysqli_fetch_assoc($result))
+            { 
+                $historial[] = $row; 
+            }
+        mysqli_stmt_close($stmt);
+
+        usort($historial, function ($a, $b) { return strtotime($b['fecha']) - strtotime($a['fecha']); });
         return $historial;
     }
 
-    // ==========================================
-    // LISTADOS GENERALES
-    // ==========================================
-
-    public function listarContenedores() {
-        $stmt = mysqli_prepare(
-            $this->conn->getConexion(), 
-            "SELECT * FROM contenedores"
-        );
+    public function filtrarMunicipio($idMunicipio) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT c.* FROM CONTENEDOR c JOIN CIRCUITO ci ON c.id_circuito = ci.id_circuito WHERE ci.id_municipio = ?");
+        mysqli_stmt_bind_param($stmt, "i", $idMunicipio);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
-        
-        $contenedores = [];
-        
-        while ($row = mysqli_fetch_assoc($result)) {
-            $contenedores[] = new ContenedorModel(
-                $row['Id'], 
-                $row['IdCircuito'], 
-                $row['IdTipoResiduo'], 
-                $row['Calle'], 
-                $row['NumCalle'], 
-                $row['Latitud'], 
-                $row['Longitud'], 
-                $row['Capacidad'], 
-                $row['NivelLlenado'], 
-                $row['Estado'], 
-                $row['FechaReparacion']
-            );
-        }
-        
+        $rows   = [];
+        while ($row = mysqli_fetch_assoc($result))
+            { 
+                $rows[] = $row;
+            }
         mysqli_stmt_close($stmt);
-        return $contenedores;
+        return $rows;
+    }
+
+    public function filtrarTipoResiduo($idTipo) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM CONTENEDOR WHERE id_tipo = ?");
+        mysqli_stmt_bind_param($stmt, "i", $idTipo);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $rows   = [];
+        while ($row = mysqli_fetch_assoc($result)) 
+        { 
+            $rows[] = $row; 
+        }
+        mysqli_stmt_close($stmt);
+        return $rows;
+    }
+
+    public function filtrarEstado($estado) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM CONTENEDOR WHERE estado = ?");
+        mysqli_stmt_bind_param($stmt, "s", $estado);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $rows   = [];
+        while ($row = mysqli_fetch_assoc($result)) 
+        { 
+            $rows[] = $row;
+        }
+        mysqli_stmt_close($stmt);
+        return $rows;
     }
 }
 ?>
