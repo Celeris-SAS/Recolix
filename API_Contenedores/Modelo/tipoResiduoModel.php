@@ -79,8 +79,9 @@ class TipoResiduoModel {
         $stmt = mysqli_prepare($this->conn->getConexion(), "DELETE FROM TIPO_RESIDUO WHERE id_tipo = ?");
         mysqli_stmt_bind_param($stmt, "i", $id);
         mysqli_stmt_execute($stmt);
+        $afectadas = mysqli_stmt_affected_rows($stmt);
         mysqli_stmt_close($stmt);
-        return true;
+        return $afectadas > 0;
     }
 
     public function getTipoResiduo($id) {
@@ -97,17 +98,29 @@ class TipoResiduoModel {
         $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM TIPO_RESIDUO");
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
-        $tipos  = [];
+        $rows   = [];
         while ($row = mysqli_fetch_assoc($result)) {
-            $tipos[] = new TipoResiduoModel(
-                $row['id_tipo'],
-                $row['color'],
-                $row['descripcion'],
-                $row['reciclable']
-            );
+            $rows[] = $row;
         }
         mysqli_stmt_close($stmt);
-        return $tipos;
+        return $rows;
+    }
+
+    // ==========================================
+    // FILTROS
+    // ==========================================
+
+    public function filtrarReciclable($reciclable) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM TIPO_RESIDUO WHERE reciclable = ?");
+        mysqli_stmt_bind_param($stmt, "i", $reciclable);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $rows   = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $rows[] = $row;
+        }
+        mysqli_stmt_close($stmt);
+        return $rows;
     }
 }
 ?>
