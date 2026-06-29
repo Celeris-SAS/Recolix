@@ -237,10 +237,7 @@ class ContenedorController {
  
         return $historial;
     }
- 
-    // ==========================================
-    // FILTROS (RF18)
-    // ==========================================
+
  
     // RF18 — Filtrar por municipio.
     public function filtrarMunicipio($idMunicipio) {
