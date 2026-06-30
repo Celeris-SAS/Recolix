@@ -2,7 +2,7 @@
 
 require_once 'conexion.php';
 
-class PrediccionLlenadoModel {
+class prediccionLlenadoModel {
 
     protected $id;
     protected $idContenedor;
