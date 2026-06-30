@@ -1,6 +1,6 @@
 <?php
  
-class PrediccionLlenadoController {
+class prediccionLlenadoController {
  
     private $prediccionModel;
     private $contenedorModel;
