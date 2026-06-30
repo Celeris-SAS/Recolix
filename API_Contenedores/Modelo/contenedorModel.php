@@ -247,7 +247,6 @@ class contenedorModel {
             }
         mysqli_stmt_close($stmt);
 
-        usort($historial, function ($a, $b) { return strtotime($b['fecha']) - strtotime($a['fecha']); });
         return $historial;
     }
 
