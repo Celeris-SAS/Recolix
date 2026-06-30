@@ -80,7 +80,8 @@ if (strpos($uri, $basePath) === 0) {
     $uriSegments  = explode('/', trim($relativePath, '/'));
 
     $resource = isset($uriSegments[0]) ? $uriSegments[0] : null;
-    $id       = isset($uriSegments[1]) ? $uriSegments[1] : null;
+    $id= null;   
+    
 
     if (!$resource || !isset($config['resources'][$resource])) {
         http_response_code(404);
