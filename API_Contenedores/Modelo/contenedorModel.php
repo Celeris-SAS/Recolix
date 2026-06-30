@@ -3,7 +3,7 @@
 
 require_once 'conexion.php';
 
-class ContenedorModel {
+class contenedorModel {
 
     protected $id;
     protected $idCircuito;
