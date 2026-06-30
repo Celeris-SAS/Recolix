@@ -2,7 +2,7 @@
 
 require_once 'conexion.php';
 
-class TipoResiduoModel {
+class tipoResiduoModel {
 
     protected $id;
     protected $color;
