@@ -1,6 +1,6 @@
 <?php
  
-class TipoResiduoController {
+class tipoResiduoController {
  
     private $tipoResiduoModel;
  
