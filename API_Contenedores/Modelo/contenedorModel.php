@@ -17,17 +17,17 @@ class contenedorModel {
     protected $fechaReparacion;
     protected $conn;
 
-    public function __construct($IdCircuito, $IdTipoResiduo, $Calle, $NumCalle, $Latitud, $Longitud, $Capacidad, $NivelLlenado, $Estado, $FechaReparacion) {
-        $this->IdCircuito = $IdCircuito;
-        $this->IdTipoResiduo = $IdTipoResiduo;
-        $this->Calle = $Calle;
-        $this->NumCalle = $NumCalle;
-        $this->Latitud = $Latitud;
-        $this->Longitud = $Longitud;
-        $this->Capacidad = $Capacidad;
-        $this->NivelLlenado = $NivelLlenado;
-        $this->Estado = $Estado;
-        $this->FechaReparacion = $FechaReparacion;
+    public function __construct($idCircuito, $idTipoResiduo, $calle, $numCalle, $latitud, $longitud, $capacidad, $nivelLlenado, $estado, $fechaReparacion) {
+        $this->idCircuito = $idCircuito;
+        $this->idTipoResiduo = $idTipoResiduo;
+        $this->calle = $calle;
+        $this->numCalle = $numCalle;
+        $this->latitud = $latitud;
+        $this->longitud = $longitud;
+        $this->capacidad = $capacidad;
+        $this->nivelLlenado = $nivelLlenado;
+        $this->estado = $estado;
+        $this->fechaReparacion = $fechaReparacion;
         $this->conn = new conexion();
         $this->id = $this->insertContenedor($idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad, $estado);
     }
