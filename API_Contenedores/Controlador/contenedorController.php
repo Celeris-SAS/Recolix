@@ -1,6 +1,6 @@
 <?php
  
-class ContenedorController {
+class contenedorController {
  
     private $contenedorModel;
     private $estadosValidos = ['funcional', 'roto', 'desbordado', 'inactivo', 'en_deposito'];
