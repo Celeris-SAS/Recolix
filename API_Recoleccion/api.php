@@ -32,12 +32,9 @@ $config = [
             'filters' => [
                 'estado' => 'filtrarEstado',
                 'tipoCarga' => 'filtrarTipoCarga',
-                'disponibilidad' => 'filtrarDisponibilidad',
-                'mantenimiento' => 'filtrarMantenimiento',
                 'anio' => 'filtrarAnio',
                 'modelo' => 'filtrarModelo',
-                'capacidad' => 'filtrarCapacidad',
-                'historial' => 'obtenerHistorial'
+                'capacidad' => 'filtrarCapacidad'
             ]
         ],
         'traslados' => [
@@ -82,26 +79,6 @@ $config = [
                 'tipo' => 'filtrarPorTipo'
             ]
         ],
-        'eventos' => [
-            'controller' => 'EventoCamionController',
-            'file' => 'Controlador/eventoCamionController.php',
-            'getAllMethod' => 'getAllEventosCamion',
-            'getMethod' => 'getEventoCamion',
-            'insertMethod' => 'insertEventoCamion',
-            'updateMethod' => 'updateEventoCamion',
-            'deleteMethod' => 'deleteEventoCamion',
-            'actions' => [
-                'reglasValidacion',
-                'obtenerPorCamion',
-                'filtrarPorTipo',
-                'obtenerEventosPorFecha'
-            ],
-            'filters' => [
-                'camionId' => 'obtenerPorCamion',
-                'tipoEvento' => 'filtrarPorTipo',
-                'fecha' => 'obtenerEventosPorFecha'
-            ]
-        ]
     ]
 ];
 

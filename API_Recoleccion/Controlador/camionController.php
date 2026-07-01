@@ -2,8 +2,8 @@
     class CamionController {
 
         private $camionModel;
-        private $tiposCargaValidos = ['residuos', 'reciclaje', 'voluminosos', 'mixto'];
-        private $estadosValidos = ['disponible', 'en mantenimiento', 'de baja'];
+        private $tiposCargaValidos = ['carga_lateral', 'carga_trasera', 'puerta_a_puerta'];
+        private $estadosValidos = ['disponible', 'en_ruta', 'en_mantenimiento', 'baja'];
 
         public function __construct() {
             require_once __DIR__ . '/../Modelo/CamionModel.php';
@@ -30,17 +30,24 @@
         }
 
         private function validarEntero($valor, $nombre) {
-            $min = null;
-            $max = null;
             if (!is_numeric($valor) || intval($valor) != $valor) {
                 throw new InvalidArgumentException("$nombre debe ser un número entero");
             }
-            $val = intval($valor);
-            if ($min !== null && $val < $min) {
-                throw new InvalidArgumentException("$nombre no puede ser menor que $min");
+            return intval($valor);
+        }
+
+        private function validarCapacidad($valor) {
+            $val = $this->validarEntero($valor, 'Capacidad');
+            if ($val < 1 || $val > 100000) {
+                throw new InvalidArgumentException("Capacidad debe estar entre 1 y 100000");
             }
-            if ($max !== null && $val > $max) {
-                throw new InvalidArgumentException("$nombre no puede ser mayor que $max");
+            return $val;
+        }
+
+        private function validarAnio($valor) {
+            $val = $this->validarEntero($valor, 'Año');
+            if ($val < 1990 || $val > 2030) {
+                throw new InvalidArgumentException("Año debe estar entre 1990 y 2030");
             }
             return $val;
         }
@@ -101,8 +108,8 @@
             if (!in_array($tipoCarga, $this->tiposCargaValidos)) {
                 throw new InvalidArgumentException("Tipo de carga no válido. Valores: " . implode(', ', $this->tiposCargaValidos));
             }
-            $capacidad = $this->validarEntero($capacidad, 'Capacidad');
-            $anio = $this->validarEntero($anio, 'Año');
+            $capacidad = $this->validarCapacidad($capacidad);
+            $anio = $this->validarAnio($anio);
             $modelo = $this->validarString($modelo, 'Modelo');
             $estado = $this->validarString($estado, 'Estado');
             if (!in_array($estado, $this->estadosValidos)) {
@@ -122,8 +129,8 @@
             if (!in_array($tipoCarga, $this->tiposCargaValidos)) {
                 throw new InvalidArgumentException("Tipo de carga no válido. Valores: " . implode(', ', $this->tiposCargaValidos));
             }
-            $capacidad = $this->validarEntero($capacidad, 'Capacidad');
-            $anio = $this->validarEntero($anio, 'Año');
+            $capacidad = $this->validarCapacidad($capacidad);
+            $anio = $this->validarAnio($anio);
             $modelo = $this->validarString($modelo, 'Modelo');
             $estado = $this->validarString($estado, 'Estado');
             if (!in_array($estado, $this->estadosValidos)) {
@@ -167,7 +174,7 @@
         }
 
         public function filtrarAnio($anio) {
-            $anio = $this->validarEntero($anio, 'Año');
+            $anio = $this->validarAnio($anio);
             return $this->camionModel->filtrarAnio($anio);
         }
 
@@ -177,7 +184,7 @@
         }
 
         public function filtrarCapacidad($capacidad) {
-            $capacidad = $this->validarEntero($capacidad, 'Capacidad');
+            $capacidad = $this->validarCapacidad($capacidad);
             return $this->camionModel->filtrarCapacidad($capacidad);
         }
 
