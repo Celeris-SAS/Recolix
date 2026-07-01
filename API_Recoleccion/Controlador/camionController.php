@@ -55,10 +55,10 @@
         public function reglasValidacion() {
             return [
                 'matricula' => [
-                    'pattern' => '^[A-Z]{3}\\d{3}$',
-                    'max' => 6,
+                    'pattern' => '^[A-Z]{3}\\d{4}$',
+                    'max' => 7,
                     'label' => 'Matrícula',
-                    'mensaje' => 'Debe tener 3 letras seguidas de 3 números (ej: ABC123)'
+                    'mensaje' => 'Debe tener 3 letras seguidas de 4 números (ej: ABC1234)'
                 ],
                 'tipoCarga' => [
                     'valores' => $this->tiposCargaValidos,
@@ -101,8 +101,8 @@
         public function insertCamion($matricula, $tipoCarga, $capacidad, $anio, $modelo, $estado) {
             $matricula = $this->validarString($matricula, 'Matrícula');
             $matricula = strtoupper($matricula);
-            if (!preg_match('/^[A-Z]{3}\d{3}$/', $matricula)) {
-                throw new InvalidArgumentException("Matrícula debe tener formato 3 letras y 3 números (ej: ABC123)");
+            if (!preg_match('/^[A-Z]{3}\d{4}$/', $matricula)) {
+                throw new InvalidArgumentException("Matrícula debe tener formato 3 letras y 4 números (ej: ABC1234)");
             }
             $tipoCarga = $this->validarString($tipoCarga, 'Tipo de carga');
             if (!in_array($tipoCarga, $this->tiposCargaValidos)) {
@@ -115,6 +115,9 @@
             if (!in_array($estado, $this->estadosValidos)) {
                 throw new InvalidArgumentException("Estado no válido. Valores: " . implode(', ', $this->estadosValidos));
             }
+            if ($this->camionModel->getMatricula($matricula)) {
+                throw new InvalidArgumentException("Ya hay un camion con la matricula " . $matricula . ".");
+            }
             return $this->camionModel->insertCamion($matricula, $tipoCarga, $capacidad, $anio, $modelo, $estado);
         }
 
@@ -122,8 +125,8 @@
             $id = $this->validarId($id);
             $matricula = $this->validarString($matricula, 'Matrícula');
             $matricula = strtoupper($matricula);
-            if (!preg_match('/^[A-Z]{3}\d{3}$/', $matricula)) {
-                throw new InvalidArgumentException("Matrícula debe tener formato 3 letras y 3 números (ej: ABC123)");
+            if (!preg_match('/^[A-Z]{3}\d{4}$/', $matricula)) {
+                throw new InvalidArgumentException("Matrícula debe tener formato 3 letras y 4 números (ej: ABC1234)");
             }
             $tipoCarga = $this->validarString($tipoCarga, 'Tipo de carga');
             if (!in_array($tipoCarga, $this->tiposCargaValidos)) {
