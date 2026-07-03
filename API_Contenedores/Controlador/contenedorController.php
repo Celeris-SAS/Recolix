@@ -1,15 +1,19 @@
 <?php
  
 class contenedorController {
- 
+
     private $contenedorModel;
     private $estadosValidos = ['funcional', 'roto', 'desbordado', 'inactivo', 'en_deposito'];
- 
-    $this->contenedorModel = new class extends ContenedorModel {
+
     public function __construct() {
-        $this->conn = new conexion();
+        require_once __DIR__ . '/../Modelo/ContenedorModel.php';
+        require_once __DIR__ . '/../Modelo/conexion.php';
+        $this->contenedorModel = new class extends ContenedorModel {
+            public function __construct() {
+                $this->conn = new conexion();
+            }
+        };
     }
-};
  
     // ==========================================
     // VALIDACIONES
