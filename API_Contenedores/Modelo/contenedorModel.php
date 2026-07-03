@@ -209,7 +209,7 @@ class ContenedorModel {
         return true;
     }
 
-    public function getNivelLlenado($id) {
+    public function consultarNivelLlenado($id) {
     $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT cl.peso, c.capacidad FROM CONTENEDOR_LEVANTE cl JOIN LEVANTE l ON cl.id_levante = l.id_levante JOIN CONTENEDOR c ON cl.id_contenedor = c.id_contenedor WHERE cl.id_contenedor = ? ORDER BY l.hora_levante DESC LIMIT 1");
     mysqli_stmt_bind_param($stmt, "i", $id);
     mysqli_stmt_execute($stmt);
