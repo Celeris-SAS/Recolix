@@ -74,6 +74,9 @@ class ContenedorModel {
     public function getFechaReparacion() {
         return $this->fechaReparacion;
     }
+    public function getNivelLlenado() {
+    return $this->nivelLlenado;
+    }
 
     // ==========================================
     // SETTERS
@@ -113,6 +116,9 @@ class ContenedorModel {
 
     public function setFechaReparacion($fechaReparacion) {
         $this->fechaReparacion = $fechaReparacion;
+    }
+    public function setNivelLlenado($nivelLlenado) {
+    $this->nivelLlenado = $nivelLlenado;
     }
 
     // ==========================================
