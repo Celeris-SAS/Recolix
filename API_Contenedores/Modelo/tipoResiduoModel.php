@@ -10,8 +10,7 @@ class tipoResiduoModel {
     protected $reciclable;
     protected $conn;
 
-    public function __construct($id,$color,$descripcion,$reciclable) {
-        $this->id          = $id;
+    public function __construct($color,$descripcion,$reciclable) {
         $this->color       = $color;
         $this->descripcion = $descripcion;
         $this->reciclable  = $reciclable;
@@ -41,6 +40,9 @@ class tipoResiduoModel {
     // ==========================================
     // SETTERS
     // ==========================================
+    public function setId($id) {
+    $this->id = $id;
+     }
 
     public function setColor($color) {
         $this->color = $color;
