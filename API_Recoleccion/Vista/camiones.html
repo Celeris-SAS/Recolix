@@ -249,9 +249,9 @@
                     <label for="estado">Estado</label>
                     <select id="estado" class="form-input">
                         <option value="disponible">Disponible</option>
-                        <option value="en ruta">En ruta</option>
-                        <option value="en mantenimiento">En mantenimiento</option>
-                        <option value="de baja">De baja</option>
+                        <option value="en_ruta">En ruta</option>
+                        <option value="en_mantenimiento">En mantenimiento</option>
+                        <option value="baja">De baja</option>
                     </select>
                 </div>
             </div>
@@ -287,7 +287,7 @@
 <!-- ── PIE DE PÁGINA ────────────────────────────────────────────────── -->
 <footer class="footer">
     <div class="footer-hr"></div>
-    <p>&copy; 2024 Celeris SAS. Todos los derechos reservados.</p>
+    <p>&copy; 2026 Celeris SAS. Todos los derechos reservados.</p>
 </footer>
 
 <script>
@@ -308,7 +308,7 @@ function reglasFallback() {
         capacidad: { tipo: 'entero', min: 1, max: 100000, label: 'Capacidad' },
         anio: { tipo: 'entero', min: 1990, max: 2030, label: 'Año' },
         modelo: { max: 100, label: 'Modelo' },
-        estado: { valores: ['disponible', 'en ruta', 'en mantenimiento', 'de baja'], max: 50, label: 'Estado' }
+        estado: { valores: ['disponible', 'en_ruta', 'en_mantenimiento', 'baja'], max: 50, label: 'Estado' }
     };
 }
 
@@ -383,7 +383,7 @@ function actualizarFiltroValor() {
     if (sinValor.includes(tipo) || !tipo) return;
 
     const listas = {
-        estado:    ['disponible', 'en ruta', 'en mantenimiento', 'de baja'],
+        estado:    ['disponible', 'en_ruta', 'en_mantenimiento', 'baja'],
         tipoCarga: ['carga_lateral', 'carga_trasera', 'puerta_a_puerta']
     };
 
@@ -413,10 +413,13 @@ async function aplicarFiltro() {
         return;
     }
 
-    const qv = sinValor.includes(tipo) ? '1' : encodeURIComponent(valor);
+    const accionMap = { disponibilidad: 'filtrarDisponibilidad', mantenimiento: 'filtrarMantenimiento' };
+    const url = sinValor.includes(tipo)
+        ? `${API_BASE}/camiones/${accionMap[tipo]}`
+        : `${API_BASE}/camiones?${tipo}=${encodeURIComponent(valor)}`;
     setLoading(true);
     try {
-        const res  = await fetch(`${API_BASE}/camiones?${tipo}=${qv}`);
+        const res  = await fetch(url);
         const json = await res.json();
         if (json.status === 'success') {
             renderTabla(json.data);
@@ -619,7 +622,7 @@ function actualizarPlaceholderModificar() {
 
     const listas = {
         tipoCarga: ['carga_lateral', 'carga_trasera', 'puerta_a_puerta'],
-        estado:    ['disponible', 'en ruta', 'en mantenimiento', 'de baja']
+        estado:    ['disponible', 'en_ruta', 'en_mantenimiento', 'baja']
     };
 
     if (listas[campo]) {
@@ -635,7 +638,7 @@ function actualizarPlaceholderModificar() {
             modelo:    'ej: Ford F-550'
         };
         const maxlengths = {
-            matricula: 6,
+            matricula: 7,
             capacidad: 6,
             anio:      4,
             modelo:    100
@@ -796,7 +799,7 @@ function renderTabla(camiones) {
 }
 
 function badgeClass(estado) {
-    const map = { 'disponible': 'success', 'en ruta': 'info', 'en mantenimiento': 'warning', 'de baja': 'danger' };
+    const map = { 'disponible': 'success', 'en_ruta': 'info', 'en_mantenimiento': 'warning', 'baja': 'danger' };
     return map[estado] ?? 'neutral';
 }
 
