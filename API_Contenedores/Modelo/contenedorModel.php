@@ -81,7 +81,9 @@ class ContenedorModel {
     // ==========================================
     // SETTERS
     // ==========================================
-
+    public function setId($id) {
+        $this->id = $id;
+    }
     public function setIdCircuito($idCircuito) {
         $this->idCircuito = $idCircuito;
     }
