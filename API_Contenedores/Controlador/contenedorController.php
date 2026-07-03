@@ -5,11 +5,11 @@ class contenedorController {
     private $contenedorModel;
     private $estadosValidos = ['funcional', 'roto', 'desbordado', 'inactivo', 'en_deposito'];
  
+    $this->contenedorModel = new class extends ContenedorModel {
     public function __construct() {
-        require_once __DIR__ . '/../Modelo/ContenedorModel.php';
-        require_once __DIR__ . '/../Modelo/conexion.php';
-        $this->contenedorModel = new ContenedorModel();
+        $this->conn = new conexion();
     }
+};
  
     // ==========================================
     // VALIDACIONES
@@ -213,7 +213,7 @@ class contenedorController {
     // El controlador calcula el porcentaje a partir de los datos crudos del modelo.
     public function getNivelLlenado($id) {
         $id   = $this->validarId($id);
-        $dato = $this->contenedorModel->getNivelLlenado($id);
+        $dato = $this->contenedorModel->consultarNivelLlenado($id);
  
         if (!$dato) {
             return null;
