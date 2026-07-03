@@ -1,9 +1,8 @@
 
 <?php
+require_once __DIR__ . '/conexion.php';
 
-require_once 'conexion.php';
-
-class contenedorModel {
+class ContenedorModel {
 
     protected $id;
     protected $idCircuito;
@@ -13,24 +12,23 @@ class contenedorModel {
     protected $latitud;
     protected $longitud;
     protected $capacidad;
-    protected $estado;
     protected $nivelLlenado;
+    protected $estado;
     protected $fechaReparacion;
     protected $conn;
 
-    public function __construct($idCircuito, $idTipoResiduo, $calle, $numCalle, $latitud, $longitud, $capacidad, $estado, $fechaReparacion) {
-    $this->conn = new conexion();
-    $this->idCircuito = $idCircuito;
-    $this->idTipo = $idTipoResiduo;
-    $this->calle = $calle;
-    $this->numCalle = $numCalle;
-    $this->latitud = $latitud;
-    $this->longitud = $longitud;
-    $this->capacidad = $capacidad;
-    $this->estado = $estado;
-    $this->nivelLlenado = null;
-    $this->fechaReparacion = $fechaReparacion;
-    $this->id = $this->insertContenedor($idCircuito, $idTipoResiduo, $calle, $numCalle, $latitud, $longitud, $capacidad, $estado);
+    public function __construct($idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad, $estado, $fechaReparacion) {
+        $this->idCircuito      = $idCircuito;
+        $this->idTipo          = $idTipo;
+        $this->calle           = $calle;
+        $this->numCalle        = $numCalle;
+        $this->latitud         = $latitud;
+        $this->longitud        = $longitud;
+        $this->capacidad       = $capacidad;
+        $this->estado          = $estado;
+        $this->fechaReparacion = $fechaReparacion;
+        $this->conn            = new conexion();
+        $this->id              = $this->insertContenedor($idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad, $estado);
     }
 
     // ==========================================
