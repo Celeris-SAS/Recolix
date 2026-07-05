@@ -5,43 +5,53 @@ header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('Access-Control-Allow-Headers: Content-Type');
 
 $config = [
-    'base_path' => '/recolix/API_Usuarios/',
+    'base_path' => '/recolix/App_Vecino/',
     'resources' => [
+
+        // RF02 — Solicitud de registro de vecino (formulario de la Landing Page).
+        // Solo acepta POST; el alta la completa el administrador desde su módulo.
+        'solicitudes' => [
+            'singular'    => 'SolicitudRegistro',
+            'controller'  => 'SolicitudRegistroController',
+            'file'        => 'Controlador/SolicitudRegistroController.php',
+            'getAllMethod' => null,
+            'getMethod'   => null,
+            'insertMethod' => 'crearSolicitud',
+            'updateMethod' => null,
+            'deleteMethod' => null,
+            'actions' => ['reglasValidacion'],
+            'filters' => []
+        ],
+
+        // RF81, RF82, RF83, RF90, RF91, RF92 — Login, perfil y contraseña del vecino.
         'usuarios' => [
             'singular'    => 'Usuario',
             'controller'  => 'UsuarioController',
             'file'        => 'Controlador/UsuarioController.php',
-            'getAllMethod' => 'getAllUsuarios',
-            'getMethod'   => 'getUsuario',
-            'insertMethod' => 'insertUsuario',
-            'updateMethod' => 'updateUsuario',
-            'deleteMethod' => 'bajaUsuario',
+            'getAllMethod' => null,
+            'getMethod'   => 'getPerfil',
+            'insertMethod' => null,
+            'updateMethod' => 'updatePerfil',
+            'deleteMethod' => null,
             'actions' => [
                 'reglasValidacion',
                 'login',
                 'logout',
-                'aprobar',
-                'rechazar',
-                'asignarRol',
                 'cambiarContrasenia',
-                'updatePerfil',
-                'filtrarRol',
-                'filtrarEstado',
-                'filtrarAcceso'
+                'getIncidencias',
+                'getNotificaciones',
+                'marcarNotificacionLeida'
             ],
-            'filters' => [
-                'rol'    => 'filtrarRol',
-                'estado' => 'filtrarEstado',
-                'acceso' => 'filtrarAcceso'
-            ]
+            'filters' => []
         ]
+
     ]
 ];
 
 $method = $_SERVER['REQUEST_METHOD'];
-$uri    = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$uri    = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); // El sistema analiza la url que escribió el usuario o que llamó la aplicación
 
-$basePath = rtrim($config['base_path'], '/');
+$basePath = rtrim($config['base_path'], '/'); // Si la ruta termina en / se la borra
 
 if (strpos($uri, $basePath) === 0) {
     $relativePath = substr($uri, strlen($basePath));
@@ -119,6 +129,11 @@ if (strpos($uri, $basePath) === 0) {
     switch ($method) {
         case 'GET':
             if ($id) {
+                if (!$resourceConfig['getMethod']) {
+                    http_response_code(405);
+                    echo json_encode(['status' => 'error', 'message' => 'Este recurso no admite consulta por ID']);
+                    break;
+                }
                 $result = $controller->{$resourceConfig['getMethod']}($id);
                 if ($result) {
                     echo json_encode(['status' => 'success', 'data' => $result]);
@@ -127,42 +142,22 @@ if (strpos($uri, $basePath) === 0) {
                     echo json_encode(['status' => 'error', 'message' => $resourceConfig['singular'] . ' no encontrado']);
                 }
             } else {
-                $query   = $_GET;
-                unset($query['action']);
-                $handled = false;
-
-                if (!empty($query) && isset($resourceConfig['filters']) && is_array($resourceConfig['filters'])) {
-                    foreach ($query as $qk => $qv) {
-                        if (isset($resourceConfig['filters'][$qk])) {
-                            $filterMethod = $resourceConfig['filters'][$qk];
-                            if (method_exists($controller, $filterMethod)) {
-                                try {
-                                    $result = $controller->{$filterMethod}($qv);
-                                    echo json_encode(['status' => 'success', 'data' => $result]);
-                                } catch (Exception $e) {
-                                    http_response_code(400);
-                                    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
-                                }
-                                $handled = true;
-                                break;
-                            } else {
-                                http_response_code(400);
-                                echo json_encode(['status' => 'error', 'message' => 'Filtro no soportado por el controller']);
-                                $handled = true;
-                                break;
-                            }
-                        }
-                    }
+                if (!$resourceConfig['getAllMethod']) {
+                    http_response_code(405);
+                    echo json_encode(['status' => 'error', 'message' => 'Este recurso no admite listado general']);
+                    break;
                 }
-
-                if (!$handled) {
-                    $result = $controller->{$resourceConfig['getAllMethod']}();
-                    echo json_encode(['status' => 'success', 'data' => $result]);
-                }
+                $result = $controller->{$resourceConfig['getAllMethod']}();
+                echo json_encode(['status' => 'success', 'data' => $result]);
             }
             break;
 
         case 'POST':
+            if (!$resourceConfig['insertMethod']) {
+                http_response_code(405);
+                echo json_encode(['status' => 'error', 'message' => 'Este recurso no admite creación directa']);
+                break;
+            }
             $data = json_decode(file_get_contents('php://input'), true);
             if (!$data) {
                 http_response_code(400);
@@ -197,10 +192,7 @@ if (strpos($uri, $basePath) === 0) {
                 } else {
                     try {
                         $params = array_merge([$id], array_values($data));
-                        $result = call_user_func_array(
-                            [$controller, $resourceConfig['updateMethod']],
-                            $params
-                        );
+                        $result = call_user_func_array([$controller, $resourceConfig['updateMethod']], $params);
                         echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' actualizado', 'data' => $result]);
                     } catch (Exception $e) {
                         http_response_code(400);
@@ -210,26 +202,12 @@ if (strpos($uri, $basePath) === 0) {
             }
             break;
 
-        case 'DELETE':
-            if (!$id) {
-                http_response_code(400);
-                echo json_encode(['status' => 'error', 'message' => 'ID requerido']);
-            } else {
-                try {
-                    $result = $controller->{$resourceConfig['deleteMethod']}($id);
-                    echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' dado de baja']);
-                } catch (Exception $e) {
-                    http_response_code(400);
-                    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
-                }
-            }
-            break;
-
         default:
             http_response_code(405);
             echo json_encode(['status' => 'error', 'message' => 'Método no permitido']);
             break;
     }
+
 } else {
     http_response_code(400);
     echo json_encode(['status' => 'error', 'message' => 'Ruta base inválida. Use: ' . $config['base_path']]);
