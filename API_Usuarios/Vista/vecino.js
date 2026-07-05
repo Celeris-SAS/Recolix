@@ -1,18 +1,33 @@
 /* =========================================================
    RF81, RF82, RF83, RF90, RF91, RF92, RF95, RF96
+   Archivo organizado en secciones
 ========================================================= */
 
-const API = '/recolix/App_Vecino';
+const API = '/recolix/api.php'; // TODO: cambiar a la URL real del backend cuando esté disponible.
 
 document.addEventListener('DOMContentLoaded', function () {
 
-    /* --------------------------------------------------
-       Verificar sesión activa.
-       TODO: cuando el backend implemente JWT, validar el
-       token almacenado en sessionStorage antes de cargar.
-       Por ahora se trabaja con los datos guardados al hacer login.
-    -------------------------------------------------- */
+    // ===================== SESIÓN =====================
+    // Crear sesión falsa de prueba (solo para desarrollo)
+    if (!sessionStorage.getItem('vecinoSesion')) {
+        sessionStorage.setItem('vecinoSesion', JSON.stringify({
+            ci_usuario: '12345678',
+            primer_nombre: 'Nombre',
+            p_apellido: 'Apellido',
+            email: 'ejemplo@ejemplo.com',
+            tel: '099123456'
+        }));
+    }
+
     const sesion = JSON.parse(sessionStorage.getItem('vecinoSesion'));
+
+    // Probar nombres
+    sesion.primer_nombre = 'Ejemplo';
+    sesion.p_apellido = 'Ejemplo';
+    sessionStorage.setItem('vecinoSesion', JSON.stringify(sesion));
+    cargarPerfil();
+
+    // Validar que haya sesión
     if (!sesion || !sesion.ci_usuario) {
         window.location.href = '../Landing_Page/login.html';
         return;
@@ -20,39 +35,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const CI = sesion.ci_usuario;
 
-    // Mostrar nombre en el header (RF82 — el rol ya viene del login).
-    document.getElementById('nombreUsuario').textContent =
-        sesion.primer_nombre + ' ' + sesion.p_apellido;
-
-    // Cargar todo al arrancar.
-    cargarPerfil();
-    cargarIncidencias();
-    cargarNotificaciones();
-
-    // ================================================
-    // RF83 — Cierre de sesión
-    // ================================================
+    // ===================== LOGOUT =====================
     document.getElementById('logoutBtn').addEventListener('click', async () => {
         try {
             // TODO: reemplazar por fetch real cuando el JWT esté implementado.
-            // await fetch(`${API}/usuarios/logout`, { method: 'POST' });
         } finally {
             sessionStorage.removeItem('vecinoSesion');
             window.location.href = '../Landing_Page/login.html';
         }
     });
 
-    // ================================================
-    // RF90, RF91 — Perfil del vecino
-    // ================================================
-
+    // ===================== PERFIL =====================
     async function cargarPerfil() {
-        /* TODO: reemplazar por llamada real:
-           const resp = await fetch(`${API}/usuarios/${CI}`);
-           const json = await resp.json();
-           const perfil = json.data; */
         const perfil = sesion; // Usando datos de sesión mientras no hay backend.
-
         document.getElementById('perfilNombre').textContent =
             perfil.primer_nombre + ' ' + perfil.p_apellido;
         document.getElementById('perfilCI').textContent = perfil.ci_usuario;
@@ -60,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('perfilTel').textContent = perfil.tel || '—';
     }
 
-    // Mostrar / ocultar formulario de edición de perfil.
+    // Mostrar / ocultar formulario de edición de perfil
     document.getElementById('editarPerfilBtn').addEventListener('click', () => {
         document.getElementById('perfilVista').hidden = true;
         document.getElementById('perfilForm').hidden = false;
@@ -75,10 +70,11 @@ document.addEventListener('DOMContentLoaded', function () {
         limpiarFeedback('perfilFeedback');
     });
 
-    // RF91 — Guardar cambios del perfil.
+    // Guardar cambios de perfil (solo email y teléfono)
     document.getElementById('guardarPerfilBtn').addEventListener('click', async () => {
         const email = document.getElementById('editEmail').value.trim();
         const tel = document.getElementById('editTel').value.trim();
+
         const reglas = {
             email: [/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/, 'Ingresá un correo válido.', 'editEmailError'],
             tel: [/^\d{9}$/, 'El teléfono debe tener 9 dígitos.', 'editTelError']
@@ -94,26 +90,16 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         if (!esValido) return;
 
-        try {
-            /* TODO: reemplazar por llamada real:
-               await fetch(`${API}/usuarios/${CI}`, {
-                 method: 'PUT',
-                 headers: { 'Content-Type': 'application/json' },
-                 body: JSON.stringify({ email, tel })
-               }); */
-            sesion.email = email;
-            sesion.tel = tel;
-            sessionStorage.setItem('vecinoSesion', JSON.stringify(sesion));
-            cargarPerfil();
-            document.getElementById('perfilVista').hidden = false;
-            document.getElementById('perfilForm').hidden = true;
-            mostrarFeedback('perfilFeedback', 'Datos actualizados correctamente.', true);
-        } catch (e) {
-            mostrarFeedback('perfilFeedback', 'No se pudo guardar. Intentá de nuevo.', false);
-        }
+        sesion.email = email;
+        sesion.tel = tel;
+        sessionStorage.setItem('vecinoSesion', JSON.stringify(sesion));
+        cargarPerfil();
+        document.getElementById('perfilVista').hidden = false;
+        document.getElementById('perfilForm').hidden = true;
+        mostrarFeedback('perfilFeedback', 'Datos actualizados correctamente.', true);
     });
 
-    // Mostrar formulario de cambio de contraseña.
+    // Mostrar / ocultar formulario de cambio de contraseña
     document.getElementById('cambiarContraseniaBtn').addEventListener('click', () => {
         document.getElementById('perfilVista').hidden = true;
         document.getElementById('contraseniaForm').hidden = false;
@@ -126,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function () {
         limpiarFeedback('contraFeedback');
     });
 
-    // RF92 — Cambio de contraseña.
+    // Guardar nueva contraseña
     document.getElementById('guardarContraBtn').addEventListener('click', async () => {
         const actual = document.getElementById('contraActual').value;
         const nueva = document.getElementById('contraNueva').value;
@@ -138,131 +124,52 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (actual.length < 1 || nueva.length < 8) return;
 
-        try {
-            /* TODO: reemplazar por llamada real:
-               await fetch(`${API}/usuarios/cambiarContrasenia`, {
-                 method: 'POST',
-                 headers: { 'Content-Type': 'application/json' },
-                 body: JSON.stringify({ ci: CI, contraseniaActual: actual, nuevaContrasenia: nueva })
-               }); */
-            document.getElementById('contraActual').value = '';
-            document.getElementById('contraNueva').value = '';
-            document.getElementById('perfilVista').hidden = false;
-            document.getElementById('contraseniaForm').hidden = true;
-            mostrarFeedback('perfilFeedback', 'Contraseña actualizada correctamente.', true);
-        } catch (e) {
-            mostrarFeedback('contraFeedback', 'No se pudo cambiar la contraseña. Verificá que la contraseña actual sea correcta.', false);
-        }
+        // TODO: reemplazar por llamada real al backend
+        document.getElementById('contraActual').value = '';
+        document.getElementById('contraNueva').value = '';
+        document.getElementById('perfilVista').hidden = false;
+        document.getElementById('contraseniaForm').hidden = true;
+        mostrarFeedback('perfilFeedback', 'Contraseña actualizada correctamente.', true);
     });
 
-    // ================================================
-    // RF03 — Incidencias del vecino
-    // ================================================
-
+    // ===================== INCIDENCIAS =====================
     async function cargarIncidencias() {
         const contenedor = document.getElementById('incidenciasLista');
-        try {
-            /* TODO: reemplazar por llamada real:
-               const resp = await fetch(`${API}/usuarios/getIncidencias?ci=${CI}`);
-               const json = await resp.json();
-               const lista = json.data; */
-            const lista = []; // Vacío hasta que el backend esté disponible.
+        const lista = []; // Vacío hasta que el backend esté disponible.
 
-            if (!lista.length) {
-                contenedor.innerHTML = '<div class="estado-vacio">Todavía no reportaste ninguna incidencia.</div>';
-                return;
-            }
-
-            contenedor.innerHTML = lista.map(inc => `
-        <div class="incidencia-card" data-estado="${inc.estado}">
-          <div class="incidencia-info">
-            <p class="incidencia-tipo">${inc.tipo.replace('_', ' ')}</p>
-            <p class="incidencia-fecha">${formatearFecha(inc.fecha_apertura)}</p>
-            ${inc.descripcion ? `<p class="incidencia-desc">${inc.descripcion}</p>` : ''}
-          </div>
-          <span class="badge badge-${inc.estado}">${inc.estado}</span>
-        </div>
-      `).join('');
-        } catch (e) {
-            contenedor.innerHTML = '<p class="estado-carga">No se pudieron cargar las incidencias.</p>';
+        if (!lista.length) {
+            contenedor.innerHTML = '<div class="estado-vacio">Todavía no reportaste ninguna incidencia.</div>';
+            return;
         }
     }
 
-    // Botón de nueva incidencia — redirige al formulario de incidencias.
     document.getElementById('nuevaIncidenciaBtn').addEventListener('click', () => {
-        // TODO: redirigir a la página de reporte de incidencias o mostrar un modal.
         window.location.href = '../Landing_Page/incidencias.html';
     });
 
-    // ================================================
-    // RF95, RF96 — Notificaciones del vecino
-    // ================================================
-
+    // ===================== NOTIFICACIONES =====================
     async function cargarNotificaciones() {
         const contenedor = document.getElementById('notificacionesLista');
-        try {
-            /* TODO: reemplazar por llamada real:
-               const resp = await fetch(`${API}/usuarios/getNotificaciones?ci=${CI}`);
-               const json = await resp.json();
-               const lista = json.data; */
-            const lista = []; // Vacío hasta que el backend esté disponible.
+        const lista = []; // Vacío hasta que el backend esté disponible.
 
-            if (!lista.length) {
-                contenedor.innerHTML = '<div class="estado-vacio">No tenés notificaciones por el momento.</div>';
-                return;
-            }
-
-            contenedor.innerHTML = lista.map(n => `
-        <div class="notif-card ${n.estado === 'leida' ? 'leida' : 'no-leida'}" id="notif-${n.id_notificacion}">
-          <div class="notif-dot"></div>
-          <div class="notif-cuerpo">
-            <p class="notif-mensaje">${n.mensaje}</p>
-            <div class="notif-meta">
-              <span>${n.tipo_origen}</span>
-              <span>${formatearFecha(n.fecha_creacion)}</span>
-              <span class="badge badge-${n.prioridad === 'critica' ? 'abierta' : 'resuelta'}">${n.prioridad}</span>
-            </div>
-          </div>
-          ${n.estado !== 'leida' ? `<button class="btn-marcar-leida" data-id="${n.id_notificacion}">Marcar leída</button>` : ''}
-        </div>
-      `).join('');
-
-            // RF96 — Marcar notificación como leída al hacer clic.
-            contenedor.querySelectorAll('.btn-marcar-leida').forEach(btn => {
-                btn.addEventListener('click', () => marcarLeida(btn.dataset.id));
-            });
-
-        } catch (e) {
-            contenedor.innerHTML = '<p class="estado-carga">No se pudieron cargar las notificaciones.</p>';
+        if (!lista.length) {
+            contenedor.innerHTML = '<div class="estado-vacio">No tenés notificaciones por el momento.</div>';
+            return;
         }
     }
 
-    // RF96 — Llama al endpoint para marcar una notificación como leída.
     async function marcarLeida(idNotificacion) {
-        try {
-            /* TODO: reemplazar por llamada real:
-               await fetch(`${API}/usuarios/marcarNotificacionLeida`, {
-                 method: 'POST',
-                 headers: { 'Content-Type': 'application/json' },
-                 body: JSON.stringify({ idNotificacion })
-               }); */
-            const tarjeta = document.getElementById(`notif-${idNotificacion}`);
-            if (tarjeta) {
-                tarjeta.classList.remove('no-leida');
-                tarjeta.classList.add('leida');
-                tarjeta.querySelector('.notif-dot').style.background = '#ccc';
-                const btn = tarjeta.querySelector('.btn-marcar-leida');
-                if (btn) btn.remove();
-            }
-        } catch (e) {
-            console.error('No se pudo marcar la notificación como leída.', e);
+        const tarjeta = document.getElementById(`notif-${idNotificacion}`);
+        if (tarjeta) {
+            tarjeta.classList.remove('no-leida');
+            tarjeta.classList.add('leida');
+            tarjeta.querySelector('.notif-dot').style.background = '#ccc';
+            const btn = tarjeta.querySelector('.btn-marcar-leida');
+            if (btn) btn.remove();
         }
     }
 
-    // ================================================
-    // Utilidades
-    // ================================================
-
+    // ===================== UTILIDADES =====================
     function formatearFecha(fechaStr) {
         if (!fechaStr) return '—';
         const fecha = new Date(fechaStr);
