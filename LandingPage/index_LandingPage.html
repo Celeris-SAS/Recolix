@@ -19,12 +19,14 @@
 <style>
   #hero-mapa {
     position: absolute;
-    top: 0; left: 0;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
   }
-  hero-mapa .leaflet-control-attribution { 
-    display: none; 
+
+  hero-mapa .leaflet-control-attribution {
+    display: none;
   }
 </style>
 
@@ -103,12 +105,10 @@
             <p class="stat-value" id="statContenedores">0</p>
             <p class="stat-label">Contenedores registrados</p>
           </div>
-
           <div class="stat-card" data-status="warn">
             <p class="stat-value" id="statIncidencias">0</p>
             <p class="stat-label">Incidencias reportadas hoy</p>
           </div>
-
           <div class="stat-card">
             <p class="stat-value" id="statVolumen">0</p>
             <p class="stat-label">Toneladas recolectadas este mes</p>
@@ -128,9 +128,8 @@
 
         <div class="features-grid">
           <div class="feature-card">
-            <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-              class="lucide lucide-map-pinned-icon lucide-map-pinned">
+            <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path
                 d="M18 8c0 3.613-3.869 7.429-5.393 8.795a1 1 0 0 1-1.214 0C9.87 15.429 6 11.613 6 8a6 6 0 0 1 12 0" />
               <circle cx="12" cy="8" r="2" />
@@ -142,9 +141,8 @@
           </div>
 
           <div class="feature-card">
-            <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-              class="lucide lucide-trash2-icon lucide-trash-2">
+            <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M10 11v6" />
               <path d="M14 11v6" />
               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
@@ -156,9 +154,8 @@
           </div>
 
           <div class="feature-card">
-            <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-              class="lucide lucide-chart-no-axes-combined-icon lucide-chart-no-axes-combined">
+            <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 16v5" />
               <path d="M16 14.639V21" />
               <path d="M20 10.656V21" />
@@ -171,9 +168,8 @@
           </div>
 
           <div class="feature-card">
-            <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-              class="lucide lucide-bell-ring-icon lucide-bell-ring">
+            <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M10.268 21a2 2 0 0 0 3.464 0" />
               <path d="M22 8c0-2.3-.8-4.3-2-6" />
               <path
@@ -214,7 +210,6 @@
             <input type="text" id="ci" name="ci" placeholder="Ej: 4123456" required>
             <p class="error-msg" id="ciError"></p>
           </div>
-
           <div class="form-row-2col">
             <div>
               <label for="nombre">Nombre</label>
@@ -227,23 +222,17 @@
               <p class="error-msg" id="apellidoError"></p>
             </div>
           </div>
-
           <div class="form-row">
             <label for="email">Correo electrónico</label>
             <input type="email" id="email" name="email" placeholder="nombre@correo.com" required>
             <p class="error-msg" id="emailError"></p>
           </div>
-
           <div class="form-row">
             <label for="telefono">Teléfono</label>
             <input type="tel" id="telefono" name="telefono" placeholder="Ej: 099123456" required>
             <p class="error-msg" id="telefonoError"></p>
           </div>
-
-          <button type="submit" class="btn btn-primary btn-block" id="registerSubmitBtn">
-            Enviar solicitud
-          </button>
-
+          <button type="submit" class="btn btn-primary btn-block" id="registerSubmitBtn">Enviar solicitud</button>
           <p class="form-feedback" id="formFeedback"></p>
         </form>
       </div>
@@ -260,7 +249,6 @@
           </a>
           <p>Plataforma de gestión de residuos urbanos para Montevideo.</p>
         </div>
-
         <div class="footer-col">
           <h3>Navegación</h3>
           <ul>
@@ -268,11 +256,10 @@
             <li><a href="mapa.html">Mapa</a></li>
           </ul>
         </div>
-
         <div class="footer-col">
           <h3>Canales de la Intendencia</h3>
           <ul>
-            <li>Línea 1950 300</li>
+            <li>Línea 1950 3000</li>
             <li>Whatsapp: 092 250 260</li>
           </ul>
         </div>
@@ -285,6 +272,7 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
+
       /* Mini-mapa interactivo en el hero */
       (async function () {
         if (!window.L) return;
@@ -301,9 +289,7 @@
           attributionControl: false
         }).setView([-34.901, -56.165], 12);
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          maxZoom: 19
-        }).addTo(heroMap);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(heroMap);
 
         const COLORES = {
           funcional: '#4CAF50',
@@ -313,6 +299,8 @@
           en_deposito: '#4a5568'
         };
 
+        /* Pool de estados para asignar a los puntos del servidor.
+           'desbordado' sin 's' — así coincide con la clave de COLORES. */
         const pool = [
           ...Array(68).fill('funcional'),
           ...Array(14).fill('inactivo'),
@@ -322,26 +310,15 @@
         ];
 
         let s = 0x9e3779b9;
-        const rand = () => {
-          s ^= s << 13;
-          s ^= s >> 17;
-          s ^= s << 5;
-          return (s >>> 0) / 4294967296;
-        };
+        const rand = () => { s ^= s << 13; s ^= s >> 17; s ^= s << 5; return (s >>> 0) / 4294967296; };
 
         const addPoint = (lat, lon, estado) => {
           if (!estado || !COLORES[estado]) return;
           L.circleMarker([lat, lon], {
-            radius: 4,
-            color: '#fff',
-            opacity: 0.6,
-            weight: 1.5,
-            fillColor: COLORES[estado],
-            fillOpacity: 0.85
+            radius: 4, color: '#fff', opacity: 0.6,
+            weight: 1.5, fillColor: COLORES[estado], fillOpacity: 0.85
           }).addTo(heroMap);
         };
-
-        const fallbackPoints = [];
 
         try {
           const resp = await fetch('https://localhost/APIS%proyecto/convertirDatosContenedores.php', {
@@ -350,23 +327,13 @@
           const puntos = await resp.json();
 
           if (Array.isArray(puntos)) {
-            heroMap.eachLayer((layer) => {
-              if (layer instanceof L.CircleMarker) {
-                heroMap.removeLayer(layer);
-              }
-            });
-
+            heroMap.eachLayer(layer => { if (layer instanceof L.CircleMarker) heroMap.removeLayer(layer); });
             for (const p of puntos) {
               if (p.x == null || p.y == null) continue;
-
               try {
-                let lat = p.y;
-                let lon = p.x;
-                if (window.proj4) {
-                  [lon, lat] = proj4('EPSG:32721', 'EPSG:4326', [p.x, p.y]);
-                }
-                const estado = pool[Math.floor(rand() * pool.length)];
-                addPoint(lat, lon, estado);
+                let lat = p.y, lon = p.x;
+                if (window.proj4) [lon, lat] = proj4('EPSG:32721', 'EPSG:4326', [p.x, p.y]);
+                addPoint(lat, lon, pool[Math.floor(rand() * pool.length)]);
               } catch (_) { }
             }
           }
@@ -391,8 +358,7 @@
       });
 
       /* Estadísticas (RF01).
-         TODO: reemplazar por fetch('/api/estadisticas/landing') cuando
-         el backend esté disponible. Por ahora se simulan datos. */
+         TODO: reemplazar por fetch('/api/estadisticas/landing') cuando el backend esté disponible. */
       setTimeout(() => {
         document.getElementById('statContenedores').textContent = '13.420';
         document.getElementById('statIncidencias').textContent = '27';

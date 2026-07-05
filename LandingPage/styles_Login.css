@@ -1,27 +1,3 @@
-:root {
-  --ink: #1c2117;
-  --ink-soft: #4b5446;
-  --moss: #3f5a33;
-  --moss-dark: #2c4022;
-  --leaf: #8bbd3f;
-  --paper: #f6f5ef;
-  --paper-dim: #ece9df;
-  --white: #ffffff;
-  --status-ok: #4caf50;
-  --status-warn: #e3b23c;
-  --status-crit: #c0392b;
-  --status-off: #2b2b2b;
-  --font-display: 'Space Grotesk', sans-serif;
-  --font-body: 'Inter', sans-serif;
-  --font-mono: 'IBM Plex Mono', monospace;
-  --container-max: 1180px;
-  --radius-lg: 24px;
-  --radius-md: 16px;
-  --radius-sm: 10px;
-  --shadow-soft: 0 14px 32px rgba(28, 33, 23, 0.12);
-  --shadow-card: 0 18px 44px rgba(28, 33, 23, 0.16);
-  --transition: 220ms ease;
-}
 
 /* Resets */
 * {

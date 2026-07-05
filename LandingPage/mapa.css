@@ -1,206 +1,35 @@
-:root {
-    --ink: #1c2117;
-    --ink-soft: #4b5446;
-    --moss: #3f5a33;
-    --moss-dark: #2c4022;
-    --leaf: #8bbd3f;
-    --paper: #f6f5ef;
-    --paper-dim: #ece9df;
-    --white: #ffffff;
-    --status-ok: #4caf50;
-    --status-warn: #e3b23c;
-    --status-crit: #c0392b;
-    --status-off: #2b2b2b;
-    --font-display: 'Space Grotesk', sans-serif;
-    --font-body: 'Inter', sans-serif;
-    --font-mono: 'IBM Plex Mono', monospace;
-    --container-max: 1180px;
-    --radius-lg: 24px;
-    --radius-md: 16px;
-    --radius-sm: 10px;
-    --shadow-soft: 0 14px 32px rgba(28, 33, 23, 0.12);
-    --shadow-card: 0 18px 44px rgba(28, 33, 23, 0.16);
-    --transition: 220ms ease;
-}
+/* mapa.css — estilos exclusivos de la página de mapa.
+   Las bases (variables, resets, botones, footer) ya las
+   carga styles_LandingPage.css antes que este archivo.
+   Aquí solo van las diferencias y los estilos del mapa. */
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-html {
-    scroll-behavior: smooth;
-}
-
-body {
-    font-family: var(--font-body);
-    color: var(--ink);
-    background: #f7f6f1;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-}
-
-.btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 14px 28px;
-    border-radius: 999px;
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 15px;
-}
-
-.btn-primary {
-    background: var(--moss);
-    color: var(--white);
-    box-shadow: var(--shadow-soft);
-}
-
-.btn-primary:hover {
-    background: var(--moss-dark);
-    transform: translateY(-2px);
-}
-
-.btn-outline {
-    background: rgba(255, 255, 255, 0.55);
-    color: var(--ink);
-    border: 2px solid var(--ink);
-}
-
-.btn-outline:hover {
-    background: var(--ink);
-    color: var(--white);
-    transform: translateY(-2px);
-}
-
-.btn-outline-light:hover {
-    background: var(--white);
-    color: var(--ink);
-    transform: translateY(-2px);
-}
-
-.btn-block {
-    width: 100%;
-}
-
-.btn-sm {
-    padding: 10px 22px;
-    font-size: 14px;
-}
-
+/* Header: en el mapa el fondo es siempre blanco, sin cambio al scrollear */
 .site-header {
-    background: #fff;
+    background: var(--white);
     border-bottom: 1px solid rgba(28, 33, 23, 0.08);
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 100;
-    padding: 18px 0;
-}
-
-.header-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
 }
 
 .logo {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    font-family: var(--font-display);
-    font-size: 18px;
-    font-weight: 700;
     color: var(--ink);
-    flex: 0 0 auto;
-}
-
-.logo-image {
-    width: 36px;
-    height: 36px;
-    object-fit: contain;
 }
 
 .logo-image {
     display: block;
 }
 
-.main-nav {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-}
-
-.main-nav ul {
-    display: flex;
-    align-items: center;
-    gap: 24px;
+.logo-imageBlanco {
+    display: none;
 }
 
 .main-nav a {
-    font-weight: 500;
     color: var(--ink);
-    padding-bottom: 2px;
-    border-bottom: 2px solid transparent;
-    transition: border-color 150ms ease;
-}
-
-.main-nav a:hover,
-.main-nav a:focus-visible {
-    border-color: var(--leaf);
-}
-
-.header-actions {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    flex: 0 0 auto;
 }
 
 .hamburger {
-    display: none;
-    font-size: 24px;
-    line-height: 1;
     color: var(--ink);
 }
 
-@media (max-width: 1023px) {
-    .hamburger {
-        display: block;
-    }
-
-    .main-nav {
-        position: fixed;
-        inset: 0;
-        background: var(--moss-dark);
-        padding: 96px 20px 20px;
-        transform: translateX(100%);
-        transition: transform 320ms ease;
-        z-index: 90;
-        overflow-y: auto;
-    }
-
-    .main-nav.is-open {
-        transform: translateX(0);
-    }
-
-    .main-nav ul {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 30px;
-    }
-
-    .main-nav a {
-        color: var(--white);
-        font-size: 20px;
-    }
-}
-
+/* Layout de la página */
 .map-page {
     padding-top: 8rem;
 }
@@ -219,18 +48,18 @@ body {
 .map-hero h1 {
     margin: 0.4rem 0 0.8rem;
     font-size: clamp(1.8rem, 3vw, 2.6rem);
-    color: var(--text-dark);
 }
 
 .map-hero p {
-    color: var(--text-muted);
+    color: var(--ink-soft);
     max-width: 640px;
 }
 
+/* Tarjetas de la página de mapa */
 .map-summary-card,
 .panel-card,
 .map-card-shell {
-    background: #fff;
+    background: var(--white);
     border: 1px solid rgba(15, 23, 42, 0.08);
     border-radius: 24px;
     box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
@@ -242,7 +71,7 @@ body {
 
 .summary-label {
     margin: 0 0 0.25rem;
-    color: var(--text-muted);
+    color: var(--ink-soft);
     font-size: 0.9rem;
 }
 
@@ -250,15 +79,16 @@ body {
     margin: 0;
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--text-dark);
+    color: var(--ink);
 }
 
 .summary-note {
     margin-top: 0.4rem;
     font-size: 0.95rem;
-    color: var(--text-muted);
+    color: var(--ink-soft);
 }
 
+/* Layout mapa + sidebar */
 .map-layout {
     display: grid;
     grid-template-columns: 300px 1fr;
@@ -281,6 +111,7 @@ body {
     font-size: 1.05rem;
 }
 
+/* Lista de indicadores */
 .info-list {
     list-style: none;
     padding: 0;
@@ -293,49 +124,36 @@ body {
     display: flex;
     justify-content: space-between;
     gap: 0.7rem;
-    color: var(--text-muted);
+    color: var(--ink-soft);
 }
 
 .info-list strong {
-    color: var(--text-dark);
+    color: var(--ink);
 }
 
-.legend-item {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    color: var(--text-muted);
+/* Leyenda del mapa — colores distintos al hero (fondo claro, no oscuro) */
+.panel-card .legend-item {
+    color: var(--ink-soft);
     margin-bottom: 0.5rem;
 }
 
-.dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    display: inline-block;
+.panel-card .legend-item::before {
+    background: var(--status-ok);
 }
 
-
-.legend-item::before {
-  content: '';
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--status-ok);
+.panel-card .legend-warn::before {
+    background: var(--status-warn);
 }
 
-.legend-warn::before {
-  background: var(--status-warn);
+.panel-card .legend-crit::before {
+    background: var(--status-crit);
 }
 
-.legend-crit::before {
-  background: var(--status-crit);
+.panel-card .legend-off::before {
+    background: var(--status-off);
 }
 
-.legend-off::before {
-  background: var(--status-off);
-}
-
+/* Contenedor del mapa Leaflet */
 .map-card-shell {
     padding: 0.8rem;
 }
@@ -344,9 +162,9 @@ body {
     position: relative;
     z-index: 1;
     height: 640px;
+    min-height: 520px;
     border-radius: 20px;
     overflow: hidden;
-    min-height: 520px;
     background: #e9ecef;
 }
 
@@ -359,6 +177,7 @@ body {
     display: none;
 }
 
+/* Responsive */
 @media (max-width: 960px) {
 
     .map-hero-inner,
@@ -380,4 +199,3 @@ body {
         height: 480px;
     }
 }
-
