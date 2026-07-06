@@ -3,54 +3,11 @@
 require_once __DIR__ . '/conexion.php';
 
 class prediccionLlenadoModel {
-    protected $conn;
+    private $conn;
 
     public function __construct() {
     $this->conn = new conexion();
 }
-
-    // ==========================================
-    // GETTERS
-    // ==========================================
-
-    public function getId() {
-        return $this->id;
-    }
-
-    public function getIdContenedor() {
-        return $this->idContenedor;
-    }
-
-    public function getNivelProyectado() {
-        return $this->nivelProyectado;
-    }
-
-    public function getFechaCalculo() {
-        return $this->fechaCalculo;
-    }
-
-    // ==========================================
-    // SETTERS
-    // ==========================================
-    public function setId($id) {
-    $this->id = $id;
-}
-
-    public function setIdContenedor($idContenedor) {
-        $this->idContenedor = $idContenedor;
-    }
-
-    public function setNivelProyectado($nivelProyectado) {
-        $this->nivelProyectado = $nivelProyectado;
-    }
-
-    public function setFechaCalculo($fechaCalculo) {
-        $this->fechaCalculo = $fechaCalculo;
-    }
-
-    // ==========================================
-    // CRUD PRINCIPAL
-    // ==========================================
 
     public function insertPrediccion($idContenedor, $nivelProyectado) {
         $fechaCalculo = date("Y-m-d H:i:s");
