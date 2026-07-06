@@ -6,8 +6,8 @@ class prediccionLlenadoController {
     private $contenedorModel;
 
    public function __construct() {
-    require_once __DIR__ . '/../Modelo/PrediccionLlenadoModel.php';
-    require_once __DIR__ . '/../Modelo/ContenedorModel.php';
+    require_once __DIR__ . '/../Modelo/prediccionLlenadoModel.php';
+    require_once __DIR__ . '/../Modelo/contenedorModel.php';
     require_once __DIR__ . '/../Modelo/conexion.php';
     $this->prediccionModel = new class extends PrediccionLlenadoModel {
         public function __construct() {

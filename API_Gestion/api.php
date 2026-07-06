@@ -10,7 +10,7 @@ $config = [
         'contenedores' => [
             'singular'    => 'Contenedor',
             'controller'  => 'ContenedorController',
-            'file'        => 'Controlador/ContenedorController.php',
+            'file'        => 'Controlador/contenedorController.php',
             'getAllMethod' => 'getAllContenedores',
             'getMethod'   => 'getContenedor',
             'insertMethod' => 'insertContenedor',
@@ -37,7 +37,7 @@ $config = [
         'tipos-residuo' => [
             'singular'    => 'TipoResiduo',
             'controller'  => 'TipoResiduoController',
-            'file'        => 'Controlador/TipoResiduoController.php',
+            'file'        => 'Controlador/tipoResiduoController.php',
             'getAllMethod' => 'getAllTiposResiduo',
             'getMethod'   => 'getTipoResiduo',
             'insertMethod' => 'insertTipoResiduo',
@@ -54,7 +54,7 @@ $config = [
         'predicciones' => [
             'singular'    => 'Prediccion',
             'controller'  => 'PrediccionLlenadoController',
-            'file'        => 'Controlador/PrediccionLlenadoController.php',
+            'file'        => 'Controlador/prediccionLlenadoController.php',
             'getAllMethod' => 'getAllPredicciones',
             'getMethod'   => 'getPrediccion',
             'insertMethod' => 'calcularPrediccion',
@@ -152,12 +152,17 @@ if (strpos($uri, $basePath) === 0) {
     switch ($method) {
         case 'GET':
             if ($id) {
-                $result = $controller->{$resourceConfig['getMethod']}($id);
-                if ($result) {
-                    echo json_encode(['status' => 'success', 'data' => $result]);
-                } else {
-                    http_response_code(404);
-                    echo json_encode(['status' => 'error', 'message' => $resourceConfig['singular'] . ' no encontrado']);
+                try {
+                    $result = $controller->{$resourceConfig['getMethod']}($id);
+                    if ($result) {
+                        echo json_encode(['status' => 'success', 'data' => $result]);
+                    } else {
+                        http_response_code(404);
+                        echo json_encode(['status' => 'error', 'message' => $resourceConfig['singular'] . ' no encontrado']);
+                    }
+                } catch (Exception $e) {
+                    http_response_code(400);
+                    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
                 }
             } else {
                 $query   = $_GET;

@@ -5,7 +5,7 @@ class tipoResiduoController {
     private $tipoResiduoModel;
  
     public function __construct() {
-    require_once __DIR__ . '/../Modelo/TipoResiduoModel.php';
+    require_once __DIR__ . '/../Modelo/tipoResiduoModel.php';
     require_once __DIR__ . '/../Modelo/conexion.php';
     $this->tipoResiduoModel = new class extends TipoResiduoModel {
         public function __construct() {

@@ -297,6 +297,7 @@
         let contenedorIdParaEliminar = null;
         let toastTimeout;
         let reglas = {};
+        let contenedoresActuales = [];
         const MUNICIPIOS = [
             { id: 1, nombre: 'Municipio A' },
             { id: 2, nombre: 'Municipio B' },
@@ -331,11 +332,15 @@
             }
         }
 
+        function fuenteTipos() {
+            return tiposResiduo.length ? tiposResiduo : TIPOS_RESIDUO;
+        }
+
         function poblarSelectTipoResiduo() {
             const select = document.getElementById('idTipo');
             select.innerHTML = '<option value="">— Seleccionar —</option>' +
-                TIPOS_RESIDUO.map(t =>
-                    `<option value="${t.id}">${t.descripcion} (${t.color})</option>`
+                fuenteTipos().map(t =>
+                    `<option value="${t.id_tipo ?? t.id}">${t.descripcion} (${t.color})</option>`
                 ).join('');
         }
 
@@ -343,6 +348,14 @@
             await cargarReglas();
             await cargarTiposResiduo();
             poblarSelectTipoResiduo();
+            document.getElementById('contenedoresBody').addEventListener('click', (e) => {
+                const btn = e.target.closest('button[data-action]');
+                if (!btn) return;
+                const c = contenedoresActuales.find(x => x.id_contenedor == btn.dataset.id);
+                if (!c) return;
+                if (btn.dataset.action === 'editar') abrirModalEditar(c);
+                if (btn.dataset.action === 'baja') confirmarBorrar(c.id_contenedor, `${c.calle} ${c.num_calle}`);
+            });
             listarContenedores();
         });
 
@@ -436,8 +449,8 @@
                 select.style.display = '';
             } else if (tipo === 'tipoResiduo') {
                 select.innerHTML = '<option value="">— Seleccionar —</option>' +
-                    TIPOS_RESIDUO.map(t =>
-                        `<option value="${t.id}">${t.descripcion} (${t.color})</option>`
+                    fuenteTipos().map(t =>
+                        `<option value="${t.id_tipo ?? t.id}">${t.descripcion} (${t.color})</option>`
                     ).join('');
                 select.style.display = '';
             } else if (tipo === 'estado') {
@@ -615,6 +628,32 @@
             const valor = (select.style.display !== 'none' ? select : input).value.trim();
             if (!valor) { mostrarToast('Ingresá el nuevo valor', 'warning'); return; }
 
+            // El estado no se modifica con el PUT genérico (el backend no lo actualiza).
+            // Se usa la acción cambiarEstado, que sí registra el nuevo estado (RF19/RF20).
+            if (campo === 'estado') {
+                setLoading(true);
+                try {
+                    const res = await fetch(`${API_BASE}/contenedores/cambiarEstado/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ nuevoEstado: valor })
+                    });
+                    const json = await res.json();
+                    if (json.status === 'success') {
+                        mostrarToast('Estado actualizado', 'success');
+                        ocultarControles();
+                        listarContenedores();
+                    } else {
+                        mostrarToast(json.message, 'error');
+                    }
+                } catch {
+                    mostrarToast('Error al modificar', 'error');
+                } finally {
+                    setLoading(false);
+                }
+                return;
+            }
+
             setLoading(true);
             try {
                 const res = await fetch(`${API_BASE}/contenedores/${id}`);
@@ -708,37 +747,44 @@
         }
 
         // ── RENDERIZAR TABLA ──────────────────────────────────────────────────
+        function escapeHtml(str) {
+            return String(str ?? '').replace(/[&<>"']/g, s => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[s]));
+        }
+
         function renderTabla(contenedores) {
             const tbody = document.getElementById('contenedoresBody');
             const noRes = document.getElementById('noResultados');
             const count = document.getElementById('tableCount');
 
+            contenedoresActuales = contenedores || [];
             tbody.innerHTML = '';
 
-            if (!contenedores || contenedores.length === 0) {
+            if (contenedoresActuales.length === 0) {
                 noRes.style.display = 'flex';
                 count.textContent = '';
                 return;
             }
 
             noRes.style.display = 'none';
-            count.textContent = `${contenedores.length} resultado${contenedores.length !== 1 ? 's' : ''}`;
+            count.textContent = `${contenedoresActuales.length} resultado${contenedoresActuales.length !== 1 ? 's' : ''}`;
 
-            contenedores.forEach(c => {
-                const tipo = TIPOS_RESIDUO.find(t => t.id === parseInt(c.id_tipo));
+            contenedoresActuales.forEach(c => {
+                const tipo = fuenteTipos().find(t => (t.id_tipo ?? t.id) === parseInt(c.id_tipo));
                 const tipoNombre = tipo ? `${tipo.descripcion} (${tipo.color})` : c.id_tipo;
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-    <td class="td-id" data-label="ID">${c.id_contenedor}</td>
-    <td data-label="Calle"><strong>${c.calle}</strong></td>
-    <td data-label="Nº Puerta">${c.num_calle}</td>
+    <td class="td-id" data-label="ID">${escapeHtml(c.id_contenedor)}</td>
+    <td data-label="Calle"><strong>${escapeHtml(c.calle)}</strong></td>
+    <td data-label="Nº Puerta">${escapeHtml(c.num_calle)}</td>
     <td data-label="Capacidad (L)">${Number(c.capacidad).toLocaleString()} L</td>
-    <td data-label="Tipo Residuo">${tipoNombre}</td>
-    <td data-label="Circuito">${c.id_circuito}</td>
-    <td data-label="Estado"><span class="badge badge-${badgeClass(c.estado)}">${c.estado}</span></td>
+    <td data-label="Tipo Residuo">${escapeHtml(tipoNombre)}</td>
+    <td data-label="Circuito">${escapeHtml(c.id_circuito)}</td>
+    <td data-label="Estado"><span class="badge badge-${badgeClass(c.estado)}">${escapeHtml(c.estado)}</span></td>
     <td class="td-actions" data-label="Acciones">
-        <button class="btn-action" onclick='abrirModalEditar(${JSON.stringify(c)})' title="Editar">✏️</button>
-        <button class="btn-action" onclick="confirmarBorrar(${c.id_contenedor},'${c.calle} ${c.num_calle}')" title="Dar de baja">🗑️</button>
+        <button class="btn-action" data-action="editar" data-id="${escapeHtml(c.id_contenedor)}" title="Editar">✏️</button>
+        <button class="btn-action" data-action="baja" data-id="${escapeHtml(c.id_contenedor)}" title="Dar de baja">🗑️</button>
     </td>
 `;
                 tbody.appendChild(tr);
