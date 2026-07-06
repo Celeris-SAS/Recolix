@@ -3,19 +3,11 @@
 require_once 'conexion.php';
 
 class tipoResiduoModel {
-
-    protected $id;
-    protected $color;
-    protected $descripcion;
-    protected $reciclable;
     protected $conn;
 
-    public function __construct($color,$descripcion,$reciclable) {
-        $this->color       = $color;
-        $this->descripcion = $descripcion;
-        $this->reciclable  = $reciclable;
-        $this->conn        = new conexion();
-    }
+    public function __construct() {
+    $this->conn = new conexion();
+}
 
     // ==========================================
     // GETTERS
