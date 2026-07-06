@@ -501,30 +501,27 @@
 
         // ── AGREGAR ───────────────────────────────────────────────────────────
         function abrirModalAgregar() {
-            document.getElementById('modalTitle').textContent = 'Agregar Contenedor';
-            document.getElementById('contenedorId').value = '';
-            document.getElementById('contenedorForm').reset();
-            poblarSelectTipoResiduo();
-            document.getElementById('modalForm').style.display = 'flex';
-        }
+        document.getElementById('modalTitle').textContent = 'Agregar Contenedor';
+        document.getElementById('contenedorId').value = '';
+        document.getElementById('contenedorForm').reset();
+        poblarSelectTipoResiduo();
+        document.getElementById('estadoGroup').style.display = '';
+        document.getElementById('modalForm').style.display = 'flex';
+         }
         // ── MODAL EDITAR ──────────────────────────────────────────────────────
         function abrirModalEditar(contenedor) {
-            document.getElementById('modalTitle').textContent = 'Editar Contenedor';
-            document.getElementById('contenedorId').value = contenedor.id_contenedor;
-            document.getElementById('calle').value = contenedor.calle;
-            document.getElementById('numCalle').value = contenedor.num_calle;
-            document.getElementById('latitud').value = contenedor.latitud;
-            document.getElementById('longitud').value = contenedor.longitud;
-            document.getElementById('capacidad').value = contenedor.capacidad;
-            document.getElementById('idTipo').value = contenedor.id_tipo;
-            document.getElementById('idCircuito').value = contenedor.id_circuito;
-
-            const estadoEl = document.getElementById('estado');
-            estadoEl.value = contenedor.estado;
-            if (!estadoEl.value) estadoEl.selectedIndex = 0;
-
-            document.getElementById('modalForm').style.display = 'flex';
-        }
+        document.getElementById('modalTitle').textContent = 'Editar Contenedor';
+        document.getElementById('contenedorId').value = contenedor.id_contenedor;
+        document.getElementById('calle').value = contenedor.calle;
+        document.getElementById('numCalle').value = contenedor.num_calle;
+        document.getElementById('latitud').value = contenedor.latitud;
+        document.getElementById('longitud').value = contenedor.longitud;
+        document.getElementById('capacidad').value = contenedor.capacidad;
+        document.getElementById('idTipo').value = contenedor.id_tipo;
+        document.getElementById('idCircuito').value = contenedor.id_circuito;
+        document.getElementById('estadoGroup').style.display = 'none';
+        document.getElementById('modalForm').style.display = 'flex';
+}
 
         // ── GUARDAR (POST / PUT) ──────────────────────────────────────────────
         async function guardarContenedor(e) {
@@ -532,15 +529,17 @@
             const id = document.getElementById('contenedorId').value;
 
             const body = {
-                idCircuito: parseInt(document.getElementById('idCircuito').value),
-                idTipo: parseInt(document.getElementById('idTipo').value),
-                calle: document.getElementById('calle').value.trim(),
-                numCalle: document.getElementById('numCalle').value.trim(),
-                latitud: parseFloat(document.getElementById('latitud').value),
-                longitud: parseFloat(document.getElementById('longitud').value),
-                capacidad: parseFloat(document.getElementById('capacidad').value),
-                estado: document.getElementById('estado').value
+            idCircuito: parseInt(document.getElementById('idCircuito').value),
+            idTipo: parseInt(document.getElementById('idTipo').value),
+            calle: document.getElementById('calle').value.trim(),
+            numCalle: document.getElementById('numCalle').value.trim(),
+            latitud: parseFloat(document.getElementById('latitud').value),
+            longitud: parseFloat(document.getElementById('longitud').value),
+            capacidad: parseFloat(document.getElementById('capacidad').value)
             };
+            if (!id) {
+                body.estado = document.getElementById('estado').value;
+            }
 
             // Validaciones frontend usando reglas del controlador
             for (const [campo, valor] of Object.entries(body)) {
