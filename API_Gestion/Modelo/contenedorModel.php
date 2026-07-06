@@ -2,7 +2,7 @@
 require_once __DIR__ . '/conexion.php';
 
 class ContenedorModel {
-    protected $conn;
+    private $conn;
 
     public function __construct() {
         $this->conn            = new conexion();
