@@ -3,54 +3,11 @@
 require_once __DIR__ . '/conexion.php';
 
 class tipoResiduoModel {
-    protected $conn;
+    private $conn;
 
     public function __construct() {
     $this->conn = new conexion();
 }
-
-    // ==========================================
-    // GETTERS
-    // ==========================================
-
-    public function getId() {
-        return $this->id;
-    }
-
-    public function getColor() {
-        return $this->color;
-    }
-
-    public function getDescripcion() {
-        return $this->descripcion;
-    }
-
-    public function getReciclable() {
-        return $this->reciclable;
-    }
-
-    // ==========================================
-    // SETTERS
-    // ==========================================
-    public function setId($id) {
-    $this->id = $id;
-     }
-
-    public function setColor($color) {
-        $this->color = $color;
-    }
-
-    public function setDescripcion($descripcion) {
-        $this->descripcion = $descripcion;
-    }
-
-    public function setReciclable($reciclable) {
-        $this->reciclable = $reciclable;
-    }
-
-    // ==========================================
-    // CRUD PRINCIPAL
-    // ==========================================
 
     public function insertTipoResiduo($color, $descripcion, $reciclable) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "INSERT INTO TIPO_RESIDUO (color, descripcion, reciclable) VALUES (?, ?, ?)");
