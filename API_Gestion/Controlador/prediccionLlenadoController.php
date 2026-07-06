@@ -5,21 +5,12 @@ class prediccionLlenadoController {
     private $prediccionModel;
     private $contenedorModel;
 
-   public function __construct() {
-    require_once __DIR__ . '/../Modelo/prediccionLlenadoModel.php';
-    require_once __DIR__ . '/../Modelo/contenedorModel.php';
-    require_once __DIR__ . '/../Modelo/conexion.php';
-    $this->prediccionModel = new class extends PrediccionLlenadoModel {
-        public function __construct() {
-            $this->conn = new conexion();
-        }
-    };
-    $this->contenedorModel = new class extends ContenedorModel {
-        public function __construct() {
-            $this->conn = new conexion();
-        }
-    };
-}
+    public function __construct() {
+        require_once __DIR__ . '/../Modelo/prediccionLlenadoModel.php';
+        require_once __DIR__ . '/../Modelo/contenedorModel.php';
+        $this->prediccionModel = new prediccionLlenadoModel();
+        $this->contenedorModel = new contenedorModel();
+    }
  
     // ==========================================
     // VALIDACIONES

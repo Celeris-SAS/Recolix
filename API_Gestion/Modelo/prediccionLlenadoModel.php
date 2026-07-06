@@ -3,19 +3,11 @@
 require_once 'conexion.php';
 
 class prediccionLlenadoModel {
-
-    protected $id;
-    protected $idContenedor;
-    protected $nivelProyectado;
-    protected $fechaCalculo;
     protected $conn;
 
-    public function __construct($idContenedor,$nivelProyectado,$fechaCalculo) {
-        $this->idContenedor    = $idContenedor;
-        $this->nivelProyectado = $nivelProyectado;
-        $this->fechaCalculo    = $fechaCalculo;
-        $this->conn            = new conexion();
-    }
+    public function __construct() {
+    $this->conn = new conexion();
+}
 
     // ==========================================
     // GETTERS

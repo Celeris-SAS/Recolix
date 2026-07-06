@@ -7,12 +7,7 @@ class contenedorController {
 
     public function __construct() {
         require_once __DIR__ . '/../Modelo/contenedorModel.php';
-        require_once __DIR__ . '/../Modelo/conexion.php';
-        $this->contenedorModel = new class extends ContenedorModel {
-            public function __construct() {
-                $this->conn = new conexion();
-            }
-        };
+        $this->contenedorModel = new contenedorModel();
     }
  
     // ==========================================
