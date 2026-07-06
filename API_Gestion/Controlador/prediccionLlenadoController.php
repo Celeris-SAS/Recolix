@@ -3,14 +3,10 @@
 class prediccionLlenadoController {
 
     private $prediccionModel;
-    private $contenedorModel;
 
    public function __construct() {
-            require_once __DIR__ . '/../Modelo/contenedorModel.php';
             require_once __DIR__ . '/../Modelo/prediccionLlenadoModel.php';
-            $this->contenedorModel = new contenedorModel();
             $this->prediccionModel = new prediccionModel();
-       
         }
  
     // ==========================================
