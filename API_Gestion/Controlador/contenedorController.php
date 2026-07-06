@@ -1,14 +1,13 @@
 <?php
  
 class contenedorController {
- 
+
     private $contenedorModel;
     private $estadosValidos = ['funcional', 'roto', 'desbordado', 'inactivo', 'en_deposito'];
- 
+
     public function __construct() {
-        require_once __DIR__ . '/../Modelo/ContenedorModel.php';
-        require_once __DIR__ . '/../Modelo/conexion.php';
-        $this->contenedorModel = new ContenedorModel();
+        require_once __DIR__ . '/../Modelo/contenedorModel.php';
+        $this->contenedorModel = new contenedorModel();
     }
  
     // ==========================================
@@ -123,7 +122,12 @@ class contenedorController {
         $latitud    = $this->validarCoordenada($latitud, 'Latitud');
         $longitud   = $this->validarCoordenada($longitud, 'Longitud');
         $capacidad  = $this->validarDecimal($capacidad, 'Capacidad');
- 
+
+        $contenedor = $this->contenedorModel->getContenedor($id);
+        if (!$contenedor) {
+            throw new InvalidArgumentException("No existe un contenedor con el ID $id.");
+        }
+
         return $this->contenedorModel->updateContenedor($id, $idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad);
     }
  
@@ -213,7 +217,7 @@ class contenedorController {
     // El controlador calcula el porcentaje a partir de los datos crudos del modelo.
     public function getNivelLlenado($id) {
         $id   = $this->validarId($id);
-        $dato = $this->contenedorModel->getNivelLlenado($id);
+        $dato = $this->contenedorModel->consultarNivelLlenado($id);
  
         if (!$dato) {
             return null;

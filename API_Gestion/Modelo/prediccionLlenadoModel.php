@@ -1,67 +1,18 @@
 <?php
 
-require_once 'conexion.php';
+require_once __DIR__ . '/conexion.php';
 
 class prediccionLlenadoModel {
+    private $conn;
 
-    protected $id;
-    protected $idContenedor;
-    protected $nivelProyectado;
-    protected $fechaCalculo;
-    protected $conn;
-
-    public function __construct($id,$idContenedor,$nivelProyectado,$fechaCalculo) {
-        $this->id              = $id;
-        $this->idContenedor    = $idContenedor;
-        $this->nivelProyectado = $nivelProyectado;
-        $this->fechaCalculo    = $fechaCalculo;
-        $this->conn            = new conexion();
-    }
-
-    // ==========================================
-    // GETTERS
-    // ==========================================
-
-    public function getId() {
-        return $this->id;
-    }
-
-    public function getIdContenedor() {
-        return $this->idContenedor;
-    }
-
-    public function getNivelProyectado() {
-        return $this->nivelProyectado;
-    }
-
-    public function getFechaCalculo() {
-        return $this->fechaCalculo;
-    }
-
-    // ==========================================
-    // SETTERS
-    // ==========================================
-
-    public function setIdContenedor($idContenedor) {
-        $this->idContenedor = $idContenedor;
-    }
-
-    public function setNivelProyectado($nivelProyectado) {
-        $this->nivelProyectado = $nivelProyectado;
-    }
-
-    public function setFechaCalculo($fechaCalculo) {
-        $this->fechaCalculo = $fechaCalculo;
-    }
-
-    // ==========================================
-    // CRUD PRINCIPAL
-    // ==========================================
+    public function __construct() {
+    $this->conn = new conexion();
+}
 
     public function insertPrediccion($idContenedor, $nivelProyectado) {
         $fechaCalculo = date("Y-m-d H:i:s");
         $stmt = mysqli_prepare($this->conn->getConexion(), "INSERT INTO PREDICCION_LLENADO (id_contenedor, nivel_proyectado, fecha_calculo) VALUES (?, ?, ?)");
-        mysqli_stmt_bind_param($stmt, "ids", $idContenedor, $nivelProyectado, $fechaCalculo);
+        mysqli_stmt_bind_param($stmt, "iis", $idContenedor, $nivelProyectado, $fechaCalculo);
         mysqli_stmt_execute($stmt);
         $id = mysqli_insert_id($this->conn->getConexion());
         mysqli_stmt_close($stmt);

@@ -1,123 +1,12 @@
-
 <?php
+require_once __DIR__ . '/conexion.php';
 
-require_once 'conexion.php';
+class ContenedorModel {
+    private $conn;
 
-class contenedorModel {
-
-    protected $id;
-    protected $idCircuito;
-    protected $idTipo;
-    protected $calle;
-    protected $numCalle;
-    protected $latitud;
-    protected $longitud;
-    protected $capacidad;
-    protected $estado;
-    protected $fechaReparacion;
-    protected $conn;
-
-    public function __construct($idCircuito, $idTipoResiduo, $calle, $numCalle, $latitud, $longitud, $capacidad, $nivelLlenado, $estado, $fechaReparacion) {
-    $this->conn = new conexion();
-    $this->idCircuito = $idCircuito;
-    $this->idTipo = $idTipoResiduo;
-    $this->calle = $calle;
-    $this->numCalle = $numCalle;
-    $this->latitud = $latitud;
-    $this->longitud = $longitud;
-    $this->capacidad = $capacidad;
-    $this->estado = $estado;
-    $this->fechaReparacion = $fechaReparacion;
-    $this->id = $this->insertContenedor($idCircuito, $idTipoResiduo, $calle, $numCalle, $latitud, $longitud, $capacidad, $estado);
+    public function __construct() {
+        $this->conn            = new conexion();
     }
-
-    // ==========================================
-    // GETTERS
-    // ==========================================
-
-    public function getId() {
-        return $this->id;
-    }
-
-    public function getIdCircuito() {
-        return $this->idCircuito;
-    }
-
-    public function getIdTipo() {
-        return $this->idTipo;
-    }
-
-    public function getCalle() {
-        return $this->calle;
-    }
-
-    public function getNumCalle() {
-        return $this->numCalle;
-    }
-
-    public function getLatitud() {
-        return $this->latitud;
-    }
-
-    public function getLongitud() {
-        return $this->longitud;
-    }
-
-    public function getCapacidad() {
-        return $this->capacidad;
-    }
-
-    public function getEstado() {
-        return $this->estado;
-    }
-
-    public function getFechaReparacion() {
-        return $this->fechaReparacion;
-    }
-
-    // ==========================================
-    // SETTERS
-    // ==========================================
-
-    public function setIdCircuito($idCircuito) {
-        $this->idCircuito = $idCircuito;
-    }
-
-    public function setIdTipo($idTipo) {
-        $this->idTipo = $idTipo;
-    }
-
-    public function setCalle($calle) {
-        $this->calle = $calle;
-    }
-
-    public function setNumCalle($numCalle) {
-        $this->numCalle = $numCalle;
-    }
-
-    public function setLatitud($latitud) {
-        $this->latitud = $latitud;
-    }
-
-    public function setLongitud($longitud) {
-        $this->longitud = $longitud;
-    }
-
-    public function setCapacidad($capacidad) {
-        $this->capacidad = $capacidad;
-    }
-
-    public function setEstado($estado) {
-        $this->estado = $estado;
-    }
-
-    public function setFechaReparacion($fechaReparacion) {
-        $this->fechaReparacion = $fechaReparacion;
-    }
-
-    // ==========================================
-    // CRUD PRINCIPAL
-    // ==========================================
 
     public function insertContenedor($idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad, $estado) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "INSERT INTO CONTENEDOR (id_circuito, id_tipo, calle, num_calle, latitud, longitud, capacidad, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
@@ -203,7 +92,7 @@ class contenedorModel {
         return true;
     }
 
-    public function getNivelLlenado($id) {
+    public function consultarNivelLlenado($id) {
     $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT cl.peso, c.capacidad FROM CONTENEDOR_LEVANTE cl JOIN LEVANTE l ON cl.id_levante = l.id_levante JOIN CONTENEDOR c ON cl.id_contenedor = c.id_contenedor WHERE cl.id_contenedor = ? ORDER BY l.hora_levante DESC LIMIT 1");
     mysqli_stmt_bind_param($stmt, "i", $id);
     mysqli_stmt_execute($stmt);

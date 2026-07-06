@@ -1,16 +1,15 @@
 <?php
- 
+
 class prediccionLlenadoController {
- 
+
     private $prediccionModel;
     private $contenedorModel;
- 
+
     public function __construct() {
-        require_once __DIR__ . '/../Modelo/PrediccionLlenadoModel.php';
-        require_once __DIR__ . '/../Modelo/ContenedorModel.php';
-        require_once __DIR__ . '/../Modelo/conexion.php';
-        $this->prediccionModel  = new PrediccionLlenadoModel();
-        $this->contenedorModel  = new ContenedorModel();
+        require_once __DIR__ . '/../Modelo/prediccionLlenadoModel.php';
+        require_once __DIR__ . '/../Modelo/contenedorModel.php';
+        $this->prediccionModel = new prediccionLlenadoModel();
+        $this->contenedorModel = new contenedorModel();
     }
  
     // ==========================================
