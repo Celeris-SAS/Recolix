@@ -53,32 +53,35 @@ $uri    = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); // El sistema analiz
 
 $basePath = rtrim($config['base_path'], '/'); // Si la ruta termina en / se la borra
 
-if (strpos($uri, $basePath) === 0) {
+if (strpos($uri, $basePath) === 0) { // Si la ruta del usuario empieza en la posición 0
+    // 1. Extraer segmentos de la URL (ej: /recolix/API_Gestion/contenedores/1 -> ['contenedores', '1'])
     $relativePath = substr($uri, strlen($basePath));
     $uriSegments  = explode('/', trim($relativePath, '/'));
 
     $resource = isset($uriSegments[0]) ? $uriSegments[0] : null;
     $id       = null;
 
+    // Validar que el recurso exista en la configuración (seguridad básica)
     if (!$resource || !isset($config['resources'][$resource])) {
         http_response_code(404);
         echo json_encode(['status' => 'error', 'message' => 'Recurso no encontrado']);
         exit;
     }
 
+    // 2. Cargar el archivo controlador correspondiente y crear una instancia de la clase
     $resourceConfig = $config['resources'][$resource];
     require_once __DIR__ . '/' . $resourceConfig['file'];
 
     $controllerClass = $resourceConfig['controller'];
     try {
-        $controller = new $controllerClass();
+        $controller = new $controllerClass(); // Instanciación dinámica
     } catch (Exception $e) {
-        http_response_code(500);
+        http_response_code(500); // Error de servidor si no se puede cargar la clase
         echo json_encode(['status' => 'error', 'message' => 'Error al inicializar controller: ' . $e->getMessage()]);
         exit;
     }
 
-    // Determinar acción e id
+    // 3. Determinar qué acción específica se solicita y si hay un ID involucrado
     $action = null;
     $action = isset($uriSegments[1]) && !is_numeric($uriSegments[1]) ? $uriSegments[1] : null;
     if ($action) {
@@ -92,14 +95,17 @@ if (strpos($uri, $basePath) === 0) {
         }
     }
 
+    // Permitir pasar la acción como parámetro GET (?action=...)
     if (isset($_GET['action']) && $_GET['action']) {
         $action = $_GET['action'];
     }
 
-    // Ejecutar acción si existe
+    // 4. Ejecutar acción personalizada si existe en el controlador
     if ($action && isset($resourceConfig['actions']) && in_array($action, $resourceConfig['actions']) && method_exists($controller, $action)) {
         $callParams = [];
         if ($id) $callParams[] = $id;
+        
+        // Preparar parámetros dependiendo de si es GET o POST/PUT
         if ($method === 'GET') {
             $query = $_GET;
             unset($query['action']);
@@ -116,6 +122,7 @@ if (strpos($uri, $basePath) === 0) {
         }
 
         try {
+            // Ejecutar el método dinámicamente con los parámetros recolectados
             $result = call_user_func_array([$controller, $action], $callParams);
             echo json_encode(['status' => 'success', 'data' => $result]);
         } catch (Exception $e) {
@@ -125,10 +132,11 @@ if (strpos($uri, $basePath) === 0) {
         exit;
     }
 
-    // Procesar según método HTTP
+    // 5. Procesar operaciones estándar según el método HTTP (GET, POST, PUT)
     switch ($method) {
         case 'GET':
             if ($id) {
+                // Obtener un único elemento por ID
                 if (!$resourceConfig['getMethod']) {
                     http_response_code(405);
                     echo json_encode(['status' => 'error', 'message' => 'Este recurso no admite consulta por ID']);
@@ -142,6 +150,7 @@ if (strpos($uri, $basePath) === 0) {
                     echo json_encode(['status' => 'error', 'message' => $resourceConfig['singular'] . ' no encontrado']);
                 }
             } else {
+                // Listar todos los elementos
                 if (!$resourceConfig['getAllMethod']) {
                     http_response_code(405);
                     echo json_encode(['status' => 'error', 'message' => 'Este recurso no admite listado general']);
@@ -153,6 +162,7 @@ if (strpos($uri, $basePath) === 0) {
             break;
 
         case 'POST':
+            // Crear un nuevo registro
             if (!$resourceConfig['insertMethod']) {
                 http_response_code(405);
                 echo json_encode(['status' => 'error', 'message' => 'Este recurso no admite creación directa']);
@@ -178,6 +188,7 @@ if (strpos($uri, $basePath) === 0) {
             break;
 
         case 'PUT':
+            // Actualizar un registro existente
             if (!$id) {
                 http_response_code(400);
                 echo json_encode(['status' => 'error', 'message' => 'ID requerido']);
@@ -203,13 +214,13 @@ if (strpos($uri, $basePath) === 0) {
             break;
 
         default:
-            http_response_code(405);
+            http_response_code(405); // Método HTTP no soportado
             echo json_encode(['status' => 'error', 'message' => 'Método no permitido']);
             break;
     }
 
 } else {
+    // Si la URI no coincide con la base_path configurada
     http_response_code(400);
     echo json_encode(['status' => 'error', 'message' => 'Ruta base inválida. Use: ' . $config['base_path']]);
 }
-?>
