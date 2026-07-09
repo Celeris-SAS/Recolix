@@ -17,10 +17,10 @@
                 <span class="brand-name">Recolix</span>
             </div>
             <nav class="nav-links">
-                <a href="#">Inicio</a>
+                <a href="../../Backoffice/indexBackoffice.html">Inicio</a>
                 <a href="#" class="nav-active">Camiones</a>
                 <a href="#">Cuadrillas</a>
-                <a href="#">Contenedores</a>
+                <a href="../../API_Gestion/Vista/contenedores.html">Contenedores</a>
                 <a href="#">Vertederos</a>
                 <a href="#">Centros de Acopio</a>
                 <a href="#">Mapa</a>
@@ -38,10 +38,10 @@
         </div>
     </div>
     <nav class="nav-mobile" id="navMobile">
-        <a href="#">Inicio</a>
+        <a href="../../Backoffice/indexBackoffice.html">Inicio</a>
         <a href="#" class="nav-active">Camiones</a>
         <a href="#">Cuadrillas</a>
-        <a href="#">Contenedores</a>
+        <a href="../../API_Gestion/Vista/contenedores.html">Contenedores</a>
         <a href="#">Vertederos</a>
         <a href="#">Centros de Acopio</a>
         <a href="#">Mapa</a>
@@ -383,7 +383,7 @@ function actualizarFiltroValor() {
     if (sinValor.includes(tipo) || !tipo) return;
 
     const listas = {
-        estado:    ['disponible', 'en_ruta', 'en_mantenimiento', 'baja'],
+        estado:    ['disponible', 'en_ruta', 'en_mantenimiento', 'de_baja'],
         tipoCarga: ['carga_lateral', 'carga_trasera', 'puerta_a_puerta']
     };
 
@@ -451,18 +451,18 @@ function abrirModalAgregar() {
 // ── MODAL EDITAR ──────────────────────────────────────────────────────
 function abrirModalEditar(camion) {
     document.getElementById('modalTitle').textContent = 'Editar Camión';
-    document.getElementById('camionId').value  = camion.Id;
-    document.getElementById('matricula').value = camion.Matricula;
-    document.getElementById('capacidad').value = camion.Capacidad;
-    document.getElementById('anio').value      = camion.Anio;
-    document.getElementById('modelo').value    = camion.Modelo;
+    document.getElementById('camionId').value  = camion.id_camion;
+    document.getElementById('matricula').value = camion.matricula;
+    document.getElementById('capacidad').value = camion.capacidad;
+    document.getElementById('anio').value      = camion.anio;
+    document.getElementById('modelo').value    = camion.modelo;
 
     const tipoCargaEl = document.getElementById('tipoCarga');
-    tipoCargaEl.value = camion.TipoCarga;
+    tipoCargaEl.value = camion.tipo_carga;
     if (!tipoCargaEl.value) tipoCargaEl.selectedIndex = 0;
 
     const estadoEl = document.getElementById('estado');
-    estadoEl.value = camion.Estado;
+    estadoEl.value = camion.estado;
     if (!estadoEl.value) estadoEl.selectedIndex = 0;
 
     document.getElementById('modalForm').style.display = 'flex';
@@ -703,12 +703,12 @@ async function modificarCamion() {
         const camion = json.data;
 
         const campoMap = {
-            matricula: 'Matricula',
-            tipoCarga: 'TipoCarga',
-            capacidad: 'Capacidad',
-            anio:      'Anio',
-            modelo:    'Modelo',
-            estado:    'Estado'
+            matricula: 'matricula',
+            tipoCarga: 'tipo_carga',
+            capacidad: 'capacidad',
+            anio:      'anio',
+            modelo:    'modelo',
+            estado:    'estado'
         };
 
         camion[campoMap[campo]] = campo === 'matricula' ? valor.toUpperCase() : valor;
@@ -717,12 +717,12 @@ async function modificarCamion() {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                matricula: camion.Matricula,
-                tipoCarga: camion.TipoCarga,
-                capacidad: parseInt(camion.Capacidad),
-                anio:      parseInt(camion.Anio),
-                modelo:    camion.Modelo,
-                estado:    camion.Estado
+                matricula: camion.matricula,
+                tipoCarga: camion.tipo_carga,
+                capacidad: parseInt(camion.capacidad),
+                anio:      parseInt(camion.anio),
+                modelo:    camion.modelo,
+                estado:    camion.estado
             })
         });
         const putJson = await putRes.json();
@@ -749,7 +749,7 @@ async function darDeBajaCamion() {
         const res  = await fetch(`${API_BASE}/camiones/${id}`);
         const json = await res.json();
         if (json.status === 'success' && json.data) {
-            confirmarBorrar(json.data.Id, json.data.Matricula);
+            confirmarBorrar(json.data.id_camion, json.data.matricula);
             ocultarControles();
         } else {
             mostrarToast(json.message || 'Camión no encontrado', 'error');
@@ -781,17 +781,17 @@ function renderTabla(camiones) {
     camiones.forEach(c => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td class="td-id" data-label="ID">${c.Id}</td>
-            <td data-label="Matrícula"><strong>${c.Matricula}</strong></td>
-            <td data-label="Tipo de Carga">${c.TipoCarga}</td>
-            <td data-label="Capacidad (kg)">${Number(c.Capacidad).toLocaleString()}</td>
-            <td data-label="Año">${c.Anio}</td>
-            <td data-label="Modelo">${c.Modelo}</td>
-            <td data-label="Estado"><span class="badge badge-${badgeClass(c.Estado)}">${c.Estado}</span></td>
+            <td class="td-id" data-label="ID">${c.id_camion}</td>
+            <td data-label="Matrícula"><strong>${c.matricula}</strong></td>
+            <td data-label="Tipo de Carga">${c.tipo_carga}</td>
+            <td data-label="Capacidad (kg)">${Number(c.capacidad).toLocaleString()}</td>
+            <td data-label="Año">${c.anio}</td>
+            <td data-label="Modelo">${c.modelo}</td>
+            <td data-label="Estado"><span class="badge badge-${badgeClass(c.estado)}">${c.estado}</span></td>
             <td class="td-actions" data-label="Acciones">
                 <button class="btn-action" onclick='abrirModalEditar(${JSON.stringify(c)})' title="Editar">✏️</button>
-                <button class="btn-action" onclick="verificarDisponibilidad(${c.Id},'${c.Matricula}')" title="Verificar disponibilidad">✅</button>
-                <button class="btn-action" onclick="confirmarBorrar(${c.Id},'${c.Matricula}')" title="Eliminar">🗑️</button>
+                <button class="btn-action" onclick="verificarDisponibilidad(${c.id_camion},'${c.matricula}')" title="Verificar disponibilidad">✅</button>
+                <button class="btn-action" onclick="confirmarBorrar(${c.id_camion},'${c.matricula}')" title="Eliminar">🗑️</button>
             </td>
         `;
         tbody.appendChild(tr);
@@ -799,7 +799,7 @@ function renderTabla(camiones) {
 }
 
 function badgeClass(estado) {
-    const map = { 'disponible': 'success', 'en_ruta': 'info', 'en_mantenimiento': 'warning', 'baja': 'danger' };
+    const map = { 'disponible': 'success', 'en_ruta': 'info', 'en_mantenimiento': 'warning', 'de_baja': 'danger' };
     return map[estado] ?? 'neutral';
 }
 
