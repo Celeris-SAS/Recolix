@@ -268,9 +268,10 @@ a { text-decoration: none; color: inherit; }
     cursor: pointer;
     transition: transform 0.2s;
     flex-shrink: 0;
+    border: 1px solid var(--border);
 }
 
-.card-operar:hover { transform: translateY(-4px); }
+.card-operar:hover { transform: translateY(-4px); border-color: transparent; }
 
 .card-operar::before {
     content: '';
@@ -279,7 +280,11 @@ a { text-decoration: none; color: inherit; }
     width: 150%;
     background: conic-gradient(transparent, transparent, transparent, var(--leaf));
     animation: rotate3 3s linear infinite;
+    opacity: 0;
+    transition: opacity 0.35s;
 }
+
+.card-operar:hover::before { opacity: 1; }
 
 .card-operar::after {
     content: '';
