@@ -1,10 +1,10 @@
 <?php
 // Archivo de conexión simple (ajustar credenciales según entorno)
 class conexion {
-    private $host = '127.0.0.1';
+    private $host = 'localhost';
     private $user = 'root';
     private $pass = '';
-    private $db = 'recolix_provisoria';
+    private $db = 'recolix';
     private $conn = null;
 
     public function __construct() {

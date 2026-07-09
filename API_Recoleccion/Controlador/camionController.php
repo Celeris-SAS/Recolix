@@ -3,7 +3,7 @@
 
         private $camionModel;
         private $tiposCargaValidos = ['carga_lateral', 'carga_trasera', 'puerta_a_puerta'];
-        private $estadosValidos = ['disponible', 'en_ruta', 'en_mantenimiento', 'baja'];
+        private $estadosValidos = ['disponible', 'en_ruta', 'en_mantenimiento', 'de_baja'];
 
         public function __construct() {
             require_once __DIR__ . '/../Modelo/CamionModel.php';
