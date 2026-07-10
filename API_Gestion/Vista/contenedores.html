@@ -202,69 +202,72 @@
     </section>
 
     <!-- ── MODAL AGREGAR / MODIFICAR ────────────────────────────────────── -->
-   <div class="modal-overlay" id="modalForm" style="display:none" onclick="onOverlayClick(event,'modalForm')">
-    <div class="modal">
-        <div class="modal-header">
-            <h3 id="modalTitle">Agregar Contenedor</h3>
-            <button class="modal-close" onclick="cerrarModal()">✕</button>
+    <div class="modal-overlay" id="modalForm" style="display:none" onclick="onOverlayClick(event,'modalForm')">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">Agregar Contenedor</h3>
+                <button class="modal-close" onclick="cerrarModal()">✕</button>
+            </div>
+            <form id="contenedorForm" onsubmit="guardarContenedor(event)">
+                <input type="hidden" id="contenedorId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="calle">Calle</label>
+                        <input type="text" id="calle" class="form-input" placeholder="Av. 18 de Julio" maxlength="100"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label for="numCalle">Número de puerta</label>
+                        <input type="text" id="numCalle" class="form-input" placeholder="1234" maxlength="20" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="latitud">Latitud</label>
+                        <input type="number" id="latitud" class="form-input" placeholder="-34.9011" step="any" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="longitud">Longitud</label>
+                        <input type="number" id="longitud" class="form-input" placeholder="-56.1645" step="any"
+                            required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="capacidad">Capacidad (litros)</label>
+                        <input type="number" id="capacidad" class="form-input" placeholder="1100" min="1" step="any"
+                            required>
+                    </div>
+                    <div class="form-group" id="estadoGroup">
+                        <label for="estado">Estado</label>
+                        <select id="estado" class="form-input">
+                            <option value="funcional">Funcional</option>
+                            <option value="roto">Roto</option>
+                            <option value="desbordado">Desbordado</option>
+                            <option value="inactivo">Inactivo</option>
+                            <option value="en_deposito">En depósito</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="idTipo">Tipo de Residuo</label>
+                        <select id="idTipo" class="form-input" required>
+                            <option value="">— Seleccionar —</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="idCircuito">ID Circuito</label>
+                        <input type="number" id="idCircuito" class="form-input" placeholder="1" min="1" required>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar</button>
+                </div>
+            </form>
         </div>
-        <form id="contenedorForm" onsubmit="guardarContenedor(event)">
-            <input type="hidden" id="contenedorId">
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="calle">Calle</label>
-                    <input type="text" id="calle" class="form-input" placeholder="Av. 18 de Julio" maxlength="100" required>
-                </div>
-                <div class="form-group">
-                    <label for="numCalle">Número de puerta</label>
-                    <input type="text" id="numCalle" class="form-input" placeholder="1234" maxlength="20" required>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="latitud">Latitud</label>
-                    <input type="number" id="latitud" class="form-input" placeholder="-34.9011" step="any" required>
-                </div>
-                <div class="form-group">
-                    <label for="longitud">Longitud</label>
-                    <input type="number" id="longitud" class="form-input" placeholder="-56.1645" step="any" required>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="capacidad">Capacidad (litros)</label>
-                    <input type="number" id="capacidad" class="form-input" placeholder="1100" min="1" step="any" required>
-                </div>
-                <div class="form-group" id="estadoGroup">
-                    <label for="estado">Estado</label>
-                    <select id="estado" class="form-input">
-                        <option value="funcional">Funcional</option>
-                        <option value="roto">Roto</option>
-                        <option value="desbordado">Desbordado</option>
-                        <option value="inactivo">Inactivo</option>
-                        <option value="en_deposito">En depósito</option>
-                </select>
-            </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="idTipo">Tipo de Residuo</label>
-                    <select id="idTipo" class="form-input" required>
-                        <option value="">— Seleccionar —</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="idCircuito">ID Circuito</label>
-                    <input type="number" id="idCircuito" class="form-input" placeholder="1" min="1" required>
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button type="button" class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
-                <button type="submit" class="btn-primary">Guardar</button>
-            </div>
-        </form>
     </div>
-</div>
 
     <!-- ── MODAL CONFIRMAR BAJA ─────────────────────────────────────────── -->
     <div class="modal-overlay" id="modalDelete" style="display:none" onclick="onOverlayClick(event,'modalDelete')">
@@ -456,7 +459,7 @@
             } else if (tipo === 'estado') {
                 select.innerHTML = '<option value="">— Seleccionar —</option>' +
                     ['funcional', 'roto', 'desbordado', 'inactivo', 'en_deposito']
-                        .map(v => `<option value="${v}">${v}</option>`).join('');
+                        .map(v => `<option value="${v}">${formatearEstado(v)}</option>`).join('');
                 select.style.display = '';
             }
         }
@@ -501,27 +504,27 @@
 
         // ── AGREGAR ───────────────────────────────────────────────────────────
         function abrirModalAgregar() {
-        document.getElementById('modalTitle').textContent = 'Agregar Contenedor';
-        document.getElementById('contenedorId').value = '';
-        document.getElementById('contenedorForm').reset();
-        poblarSelectTipoResiduo();
-        document.getElementById('estadoGroup').style.display = '';
-        document.getElementById('modalForm').style.display = 'flex';
-         }
+            document.getElementById('modalTitle').textContent = 'Agregar Contenedor';
+            document.getElementById('contenedorId').value = '';
+            document.getElementById('contenedorForm').reset();
+            poblarSelectTipoResiduo();
+            document.getElementById('estadoGroup').style.display = '';
+            document.getElementById('modalForm').style.display = 'flex';
+        }
         // ── MODAL EDITAR ──────────────────────────────────────────────────────
         function abrirModalEditar(contenedor) {
-        document.getElementById('modalTitle').textContent = 'Editar Contenedor';
-        document.getElementById('contenedorId').value = contenedor.id_contenedor;
-        document.getElementById('calle').value = contenedor.calle;
-        document.getElementById('numCalle').value = contenedor.num_calle;
-        document.getElementById('latitud').value = contenedor.latitud;
-        document.getElementById('longitud').value = contenedor.longitud;
-        document.getElementById('capacidad').value = contenedor.capacidad;
-        document.getElementById('idTipo').value = contenedor.id_tipo;
-        document.getElementById('idCircuito').value = contenedor.id_circuito;
-        document.getElementById('estadoGroup').style.display = 'none';
-        document.getElementById('modalForm').style.display = 'flex';
-}
+            document.getElementById('modalTitle').textContent = 'Editar Contenedor';
+            document.getElementById('contenedorId').value = contenedor.id_contenedor;
+            document.getElementById('calle').value = contenedor.calle;
+            document.getElementById('numCalle').value = contenedor.num_calle;
+            document.getElementById('latitud').value = contenedor.latitud;
+            document.getElementById('longitud').value = contenedor.longitud;
+            document.getElementById('capacidad').value = contenedor.capacidad;
+            document.getElementById('idTipo').value = contenedor.id_tipo;
+            document.getElementById('idCircuito').value = contenedor.id_circuito;
+            document.getElementById('estadoGroup').style.display = 'none';
+            document.getElementById('modalForm').style.display = 'flex';
+        }
 
         // ── GUARDAR (POST / PUT) ──────────────────────────────────────────────
         async function guardarContenedor(e) {
@@ -529,13 +532,13 @@
             const id = document.getElementById('contenedorId').value;
 
             const body = {
-            idCircuito: parseInt(document.getElementById('idCircuito').value),
-            idTipo: parseInt(document.getElementById('idTipo').value),
-            calle: document.getElementById('calle').value.trim(),
-            numCalle: document.getElementById('numCalle').value.trim(),
-            latitud: parseFloat(document.getElementById('latitud').value),
-            longitud: parseFloat(document.getElementById('longitud').value),
-            capacidad: parseFloat(document.getElementById('capacidad').value)
+                idCircuito: parseInt(document.getElementById('idCircuito').value),
+                idTipo: parseInt(document.getElementById('idTipo').value),
+                calle: document.getElementById('calle').value.trim(),
+                numCalle: document.getElementById('numCalle').value.trim(),
+                latitud: parseFloat(document.getElementById('latitud').value),
+                longitud: parseFloat(document.getElementById('longitud').value),
+                capacidad: parseFloat(document.getElementById('capacidad').value)
             };
             if (!id) {
                 body.estado = document.getElementById('estado').value;
@@ -600,7 +603,7 @@
 
             if (campo === 'estado') {
                 select.innerHTML = ['funcional', 'roto', 'desbordado', 'inactivo', 'en_deposito']
-                    .map((v, i) => `<option value="${v}"${i === 0 ? ' selected' : ''}>${v}</option>`)
+                    .map((v, i) => `<option value="${v}"${i === 0 ? ' selected' : ''}>${formatearEstado(v)}</option>`)
                     .join('');
                 select.style.display = '';
             } else {
@@ -780,7 +783,7 @@
     <td data-label="Capacidad (L)">${Number(c.capacidad).toLocaleString()} L</td>
     <td data-label="Tipo Residuo">${escapeHtml(tipoNombre)}</td>
     <td data-label="Circuito">${escapeHtml(c.id_circuito)}</td>
-    <td data-label="Estado"><span class="badge badge-${badgeClass(c.estado)}">${escapeHtml(c.estado)}</span></td>
+    <td data-label="Estado"><span class="badge badge-${badgeClass(c.estado)}">${escapeHtml(formatearEstado(c.estado))}</span></td>
     <td class="td-actions" data-label="Acciones">
         <button class="btn-action" data-action="editar" data-id="${escapeHtml(c.id_contenedor)}" title="Editar">✏️</button>
         <button class="btn-action" data-action="baja" data-id="${escapeHtml(c.id_contenedor)}" title="Dar de baja">🗑️</button>
@@ -789,6 +792,10 @@
                 tbody.appendChild(tr);
             });
         }
+        function formatearEstado(estado) {
+    const texto = estado.replace(/_/g, ' ');
+    return texto.charAt(0).toUpperCase() + texto.slice(1);
+}
 
         function badgeClass(estado) {
             const map = {
