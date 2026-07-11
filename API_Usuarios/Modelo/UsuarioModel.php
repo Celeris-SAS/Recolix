@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/../../conexion.php';
 
-class Usuario {
+class UsuarioModel {
 
     private $conn;
 
