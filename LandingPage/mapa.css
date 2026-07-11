@@ -1,0 +1,201 @@
+/* mapa.css — estilos exclusivos de la página de mapa.
+   Las bases (variables, resets, botones, footer) ya las
+   carga styles_LandingPage.css antes que este archivo.
+   Aquí solo van las diferencias y los estilos del mapa. */
+
+/* Header: en el mapa el fondo es siempre blanco, sin cambio al scrollear */
+.site-header {
+    background: var(--white);
+    border-bottom: 1px solid rgba(28, 33, 23, 0.08);
+}
+
+.logo {
+    color: var(--ink);
+}
+
+.logo-image {
+    display: block;
+}
+
+.logo-imageBlanco {
+    display: none;
+}
+
+.main-nav a {
+    color: var(--ink);
+}
+
+.hamburger {
+    color: var(--ink);
+}
+
+/* Layout de la página */
+.map-page {
+    padding-top: 8rem;
+}
+
+.map-hero {
+    padding: 2rem 0 1.5rem;
+}
+
+.map-hero-inner {
+    display: grid;
+    grid-template-columns: 1.4fr 0.8fr;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.map-hero h1 {
+    margin: 0.4rem 0 0.8rem;
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+}
+
+.map-hero p {
+    color: var(--ink-soft);
+    max-width: 640px;
+}
+
+/* Tarjetas de la página de mapa */
+.map-summary-card,
+.panel-card,
+.map-card-shell {
+    background: var(--white);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 24px;
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+}
+
+.map-summary-card {
+    padding: 1.25rem 1.35rem;
+}
+
+.summary-label {
+    margin: 0 0 0.25rem;
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+}
+
+.summary-value {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.summary-note {
+    margin-top: 0.4rem;
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+}
+
+/* Layout mapa + sidebar */
+.map-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 1.25rem;
+    padding: 0 0 3rem;
+}
+
+.map-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.panel-card {
+    padding: 1.1rem 1.15rem;
+}
+
+.panel-card h2 {
+    margin: 0 0 0.85rem;
+    font-size: 1.05rem;
+}
+
+/* Lista de indicadores */
+.info-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.7rem;
+}
+
+.info-list li {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.7rem;
+    color: var(--ink-soft);
+}
+
+.info-list strong {
+    color: var(--ink);
+}
+
+/* Leyenda del mapa — colores distintos al hero (fondo claro, no oscuro) */
+.panel-card .legend-item {
+    color: var(--ink-soft);
+    margin-bottom: 0.5rem;
+}
+
+.panel-card .legend-item::before {
+    background: var(--status-ok);
+}
+
+.panel-card .legend-warn::before {
+    background: var(--status-warn);
+}
+
+.panel-card .legend-crit::before {
+    background: var(--status-crit);
+}
+
+.panel-card .legend-off::before {
+    background: var(--status-off);
+}
+
+/* Contenedor del mapa Leaflet */
+.map-card-shell {
+    padding: 0.8rem;
+}
+
+.mapa-principal {
+    position: relative;
+    z-index: 1;
+    height: 640px;
+    min-height: 520px;
+    border-radius: 20px;
+    overflow: hidden;
+    background: #e9ecef;
+}
+
+.mapa-principal .leaflet-container {
+    width: 100%;
+    height: 100%;
+}
+
+.mapa-principal .leaflet-control-attribution {
+    display: none;
+}
+
+/* Responsive */
+@media (max-width: 960px) {
+
+    .map-hero-inner,
+    .map-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .map-sidebar {
+        order: 2;
+    }
+}
+
+@media (max-width: 640px) {
+    .map-page {
+        padding-top: 6.4rem;
+    }
+
+    .mapa-principal {
+        height: 480px;
+    }
+}

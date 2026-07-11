@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa Recolix</title>
+    <meta name="description" content="Mapa interactivo de contenedores y zonas de recolección de Recolix.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles_LandingPage.css">
+    <link rel="stylesheet" href="mapa.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+
+<body>
+    <header class="site-header" id="siteHeader">
+        <div class="container header-inner">
+            <a href="mapa.html" class="logo">
+                <img src="Logo.png" alt="Logo Recolix" class="logo-image" />
+                <div class="logo-text">Recolix</div>
+            </a>
+
+            <nav class="main-nav" id="mainNav">
+                <ul>
+                    <li><a href="index_LandingPage.html">Inicio</a></li>
+                    <li><a href="mapa.html">Mapa</a></li>
+                </ul>
+            </nav>
+
+            <div class="header-actions">
+                <a href="login.html" class="btn btn-outline btn-sm">Iniciar Sesión</a>
+                <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú" aria-expanded="false">☰</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="map-page">
+        <section class="map-hero">
+            <div class="container map-hero-inner">
+                <div>
+                    <p class="section-eyebrow">Mapa operativo</p>
+                    <h1>Visualizá el estado de los contenedores en Montevideo</h1>
+                    <p>Seguimiento geográfico de contenedores, incidencias y zonas críticas para la operación municipal.
+                    </p>
+                </div>
+                <div class="map-summary-card">
+                    <p class="summary-label">Última actualización</p>
+                    <p class="summary-value" id="mapSummaryValue">--</p>
+                    <p class="summary-note">Datos en tiempo real y simulados según el estado del sistema.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="container map-layout">
+            <aside class="map-sidebar">
+                <div class="panel-card">
+                    <h2>Indicadores</h2>
+                    <ul class="info-list">
+                        <li><span>Contenedores activos</span><strong id="countActivos">0</strong></li>
+                        <li><span>Inactivos</span><strong id="countInactivos">0</strong></li>
+                        <li><span>Desbordados</span><strong id="countDesbordados">0</strong></li>
+                    </ul>
+                </div>
+
+                <div class="panel-card">
+                    <h2>Referencia visual</h2>
+                    <p class="map-legend-title">Estado de los contenedores</p>
+                    <p class="legend-item legend-ok">Funcional</p>
+                    <p class="legend-item legend-warn">Inactivo</p>
+                    <p class="legend-item legend-crit">Desbordado</p>
+                    <p class="legend-item legend-off">Roto / En depósito</p>
+                </div>
+            </aside>
+
+            <div class="map-card-shell">
+                <div id="mapa-principal" class="mapa-principal"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index_LandingPage.html" class="logo">
+                        <img src="LogoBlanco.png" alt="Logo Recolix" class="logo-imageBlanco" />
+                        <div class="logo-text">Recolix</div>
+                    </a>
+                    <p>Plataforma de gestión de residuos urbanos para Montevideo.</p>
+                </div>
+
+                <div class="footer-col">
+                    <h3>Navegación</h3>
+                    <ul>
+                        <li><a href="index_LandingPage.html">Inicio</a></li>
+                        <li><a href="mapa.html">Mapa</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h3>Canales de la Intendencia</h3>
+                    <ul>
+                        <li>Línea 1950 300</li>
+                        <li>Whatsapp: 092 250 260</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.8.0/proj4js.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="mapaContenedores.js"></script>
+</body>
+
+</html>

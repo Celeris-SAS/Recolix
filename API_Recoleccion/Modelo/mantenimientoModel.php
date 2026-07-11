@@ -1,80 +1,13 @@
 <?php
 
-require_once __DIR__ . '/conexion.php';
+require_once __DIR__ . '/../../conexion.php';
 
 class MantenimientoModel {
 
-    protected $Id = "";
-    protected $CamionId = "";
-    protected $Tipo = "";        // preventivo o correctivo
-    protected $Descripcion = "";
-    protected $FechaInicio = "";
-    protected $FechaFin = "";
-    protected $Costo = 0;
-    protected $conn;
+    private $conn;
 
-    public function __construct($CamionId, $Tipo, $Descripcion, $FechaInicio, $FechaFin, $Costo) {
-        $this->CamionId = $CamionId;
-        $this->Tipo = $Tipo;
-        $this->Descripcion = $Descripcion;
-        $this->FechaInicio = $FechaInicio;
-        $this->FechaFin = $FechaFin;
-        $this->Costo = $Costo;
+    public function __construct() {
         $this->conn = new conexion();
-        $this->Id = $this->registrar($CamionId, $Tipo, $Descripcion, $FechaInicio, $FechaFin, $Costo);
-    }
-
-    public function getId() {
-        return $this->Id;
-    }
-
-    public function getCamionId() {
-        return $this->CamionId;
-    }
-
-    public function getTipo() {
-        return $this->Tipo;
-    }
-
-    public function getDescripcion() {
-        return $this->Descripcion;
-    }
-
-    public function getFechaInicio() {
-        return $this->FechaInicio;
-    }
-
-    public function getFechaFin() {
-        return $this->FechaFin;
-    }
-
-    public function getCosto() {
-        return $this->Costo;
-    }
-
-    public function setTipo($Tipo) {
-        $tiposValidos = ["preventivo", "correctivo"];
-        if (in_array($Tipo, $tiposValidos)) {
-            $this->Tipo = $Tipo;
-        } else {
-            throw new Exception("Tipo no válido. Los tipos válidos son: " . implode(", ", $tiposValidos));
-        }
-    }
-
-    public function setDescripcion($Descripcion) {
-        $this->Descripcion = $Descripcion;
-    }
-
-    public function setFechaInicio($FechaInicio) {
-        $this->FechaInicio = $FechaInicio;
-    }
-
-    public function setFechaFin($FechaFin) {
-        $this->FechaFin = $FechaFin;
-    }
-
-    public function setCosto($Costo) {
-        $this->Costo = $Costo;
     }
 
     public function registrar($camionId, $tipo, $descripcion, $fechaInicio, $fechaFin, $costo) {

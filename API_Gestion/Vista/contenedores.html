@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contenedores — Recolix</title>
+    <link rel="stylesheet" href="styleContenedores.css">
+</head>
+
+<body>
+
+    <!-- ── BARRA DE NAVEGACIÓN ─────────────────────────────────────────── -->
+    <header class="navbar">
+        <div class="nav-inner">
+            <div class="nav-left">
+                <div class="brand">
+                    <img src="logoRecolix.png" alt="Recolix" class="brand-logo">
+                    <span class="brand-name">Recolix</span>
+                </div>
+                <nav class="nav-links">
+                    <a href="../../Backoffice/indexBackoffice.html">Inicio</a>
+                    <a href="../../API_Recoleccion/Vista/camiones.html">Camiones</a>
+                    <a href="#">Cuadrillas</a>
+                    <a href="#" class="nav-active">Contenedores</a>
+                    <a href="#">Vertederos</a>
+                    <a href="#">Centros de Acopio</a>
+                    <a href="#">Mapa</a>
+                    <a href="#">Reportes</a>
+                    <a href="#">Incidencias</a>
+                </nav>
+            </div>
+            <div class="nav-right">
+                <a href="/recolix/API_Usuarios/Vista/perfil.html" class="btn-user" title="Perfil de usuario">
+                    <img src="user.svg" alt="Usuario" class="nav-user-icon">
+                </a>
+                <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menú">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+        <nav class="nav-mobile" id="navMobile">
+            <a href="../../Backoffice/indexBackoffice.html">Inicio</a>
+            <a href="../../API_Recoleccion/Vista/camiones.html">Camiones</a>
+            <a href="#">Cuadrillas</a>
+            <a href="#" class="nav-active">Contenedores</a>
+            <a href="#">Vertederos</a>
+            <a href="#">Centros de Acopio</a>
+            <a href="#">Mapa</a>
+            <a href="#">Reportes</a>
+            <a href="#">Incidencias</a>
+        </nav>
+        <div class="nav-hr"></div>
+    </header>
+
+    <!-- ── HERO ───────────────────────────────────────────────────────── -->
+    <section class="hero">
+        <h1 class="hero-title">Contenedores</h1>
+        <p class="hero-sub">Gestioná el inventario de contenedores de residuos urbanos.</p>
+    </section>
+
+    <!-- ── TARJETAS ─────────────────────────────────────────────────────── -->
+    <section class="cards-section">
+        <div class="cards-grid">
+
+            <div class="card-operar" onclick="abrirModalAgregar()">
+                <div class="card-content">
+                    <div class="card-icon"><img src="plus.svg" alt="" class="card-svg-icon"></div>
+                    <h3>Agregar Contenedor</h3>
+                    <p>Registrar un nuevo contenedor</p>
+                    <button class="card-btn">Agregar</button>
+                </div>
+            </div>
+
+            <div class="card-operar" onclick="toggleFiltros()">
+                <div class="card-content">
+                    <div class="card-icon"><img src="loupe.svg" alt="" class="card-svg-icon"></div>
+                    <h3>Filtrar</h3>
+                    <p>Buscar por municipio, tipo o estado...</p>
+                    <button class="card-btn">Filtrar</button>
+                </div>
+            </div>
+
+            <div class="card-operar" onclick="toggleBusquedaId()">
+                <div class="card-content">
+                    <div class="card-icon"><img src="question.svg" alt="" class="card-svg-icon"></div>
+                    <h3>Buscar por ID</h3>
+                    <p>Obtener un contenedor específico</p>
+                    <button class="card-btn">Buscar</button>
+                </div>
+            </div>
+
+            <div class="card-operar" onclick="toggleModificar()">
+                <div class="card-content">
+                    <div class="card-icon"><img src="refresh.svg" alt="" class="card-svg-icon"></div>
+                    <h3>Modificar Contenedor</h3>
+                    <p>Editar datos de un contenedor existente</p>
+                    <button class="card-btn">Modificar</button>
+                </div>
+            </div>
+
+            <div class="card-operar" onclick="toggleDarDeBaja()">
+                <div class="card-content">
+                    <div class="card-icon"><img src="minus.svg" alt="" class="card-svg-icon"></div>
+                    <h3>Dar de Baja</h3>
+                    <p>Desactivar un contenedor del registro</p>
+                    <button class="card-btn">Dar de Baja</button>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ── BARRA DE FILTROS ─────────────────────────────────────────────── -->
+    <section class="control-bar" id="filterBar" style="display:none">
+        <div class="control-inner">
+            <select id="filtroTipo" class="ctrl-select" onchange="actualizarFiltroValor()">
+                <option value="">— Filtrar por —</option>
+                <option value="municipio">Municipio</option>
+                <option value="tipoResiduo">Tipo de Residuo</option>
+                <option value="estado">Estado</option>
+            </select>
+            <input type="text" id="filtroValor" class="ctrl-input" placeholder="Valor del filtro..."
+                style="display:none">
+            <select id="filtroValorSelect" class="ctrl-select" style="display:none"></select>
+            <button class="btn-primary" onclick="aplicarFiltro()">Aplicar</button>
+            <button class="btn-secondary" onclick="listarContenedores()">Limpiar</button>
+        </div>
+    </section>
+
+    <!-- ── BARRA DE BÚSQUEDA POR ID ─────────────────────────────────────── -->
+    <section class="control-bar" id="searchBar" style="display:none">
+        <div class="control-inner">
+            <input type="number" id="buscarId" class="ctrl-input" placeholder="ID del contenedor..." min="1"
+                style="max-width:200px">
+            <button class="btn-primary" onclick="buscarPorId()">Buscar</button>
+            <button class="btn-secondary" onclick="listarContenedores()">Ver Todos</button>
+        </div>
+    </section>
+
+    <!-- ── BARRA DE MODIFICACIÓN ──────────────────────────────────────── -->
+    <section class="control-bar" id="modificarBar" style="display:none">
+        <div class="control-inner">
+            <input type="number" id="modificarId" class="ctrl-input" placeholder="ID del contenedor..." min="1"
+                style="max-width:140px">
+            <select id="modificarCampo" class="ctrl-select" onchange="actualizarPlaceholderModificar()">
+                <option value="">— Campo —</option>
+                <option value="calle">Calle</option>
+                <option value="numCalle">Número de puerta</option>
+                <option value="capacidad">Capacidad (L)</option>
+                <option value="estado">Estado</option>
+                <option value="idTipo">Tipo de Residuo (ID)</option>
+                <option value="idCircuito">Circuito (ID)</option>
+            </select>
+            <input type="text" id="modificarValor" class="ctrl-input" style="display:none"
+                placeholder="Seleccioná un campo...">
+            <select id="modificarValorSelect" class="ctrl-select" style="display:none"></select>
+            <button class="btn-primary" onclick="modificarContenedor()">Modificar</button>
+            <button class="btn-secondary" onclick="ocultarControles()">Cancelar</button>
+        </div>
+    </section>
+
+    <!-- ── BARRA DE ELIMINACIÓN ───────────────────────────────────────── -->
+    <section class="control-bar" id="deleteBar" style="display:none">
+        <div class="control-inner">
+            <input type="number" id="deleteId" class="ctrl-input" placeholder="ID del contenedor a dar de baja..."
+                min="1" style="max-width:280px">
+            <button class="btn-danger" onclick="darDeBajaContenedor()">Dar de Baja</button>
+            <button class="btn-secondary" onclick="ocultarControles()">Cancelar</button>
+        </div>
+    </section>
+
+    <!-- ── TABLA ────────────────────────────────────────────────────────── -->
+    <section class="table-section">
+        <div class="table-header">
+            <h2 class="table-title" id="tableTitle">Contenedores</h2>
+            <span class="table-count" id="tableCount"></span>
+        </div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Calle</th>
+                        <th>Nº Puerta</th>
+                        <th>Capacidad (L)</th>
+                        <th>Tipo Residuo</th>
+                        <th>Circuito</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="contenedoresBody"></tbody>
+            </table>
+            <div id="noResultados" class="empty-state" style="display:none">
+                Sin resultados para mostrar.
+            </div>
+            <div id="loadingState" class="loading-state">
+                Cargando...
+            </div>
+        </div>
+    </section>
+
+    <!-- ── MODAL AGREGAR / MODIFICAR ────────────────────────────────────── -->
+    <div class="modal-overlay" id="modalForm" style="display:none" onclick="onOverlayClick(event,'modalForm')">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">Agregar Contenedor</h3>
+                <button class="modal-close" onclick="cerrarModal()">✕</button>
+            </div>
+            <form id="contenedorForm" onsubmit="guardarContenedor(event)">
+                <input type="hidden" id="contenedorId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="calle">Calle</label>
+                        <input type="text" id="calle" class="form-input" placeholder="Av. 18 de Julio" maxlength="100"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label for="numCalle">Número de puerta</label>
+                        <input type="text" id="numCalle" class="form-input" placeholder="1234" maxlength="20" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="latitud">Latitud</label>
+                        <input type="number" id="latitud" class="form-input" placeholder="-34.9011" step="any" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="longitud">Longitud</label>
+                        <input type="number" id="longitud" class="form-input" placeholder="-56.1645" step="any"
+                            required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="capacidad">Capacidad (litros)</label>
+                        <input type="number" id="capacidad" class="form-input" placeholder="1100" min="1" step="any"
+                            required>
+                    </div>
+                    <div class="form-group" id="estadoGroup">
+                        <label for="estado">Estado</label>
+                        <select id="estado" class="form-input">
+                            <option value="funcional">Funcional</option>
+                            <option value="roto">Roto</option>
+                            <option value="desbordado">Desbordado</option>
+                            <option value="inactivo">Inactivo</option>
+                            <option value="en_deposito">En depósito</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="idTipo">Tipo de Residuo</label>
+                        <select id="idTipo" class="form-input" required>
+                            <option value="">— Seleccionar —</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="idCircuito">ID Circuito</label>
+                        <input type="number" id="idCircuito" class="form-input" placeholder="1" min="1" required>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ── MODAL CONFIRMAR BAJA ─────────────────────────────────────────── -->
+    <div class="modal-overlay" id="modalDelete" style="display:none" onclick="onOverlayClick(event,'modalDelete')">
+        <div class="modal modal-sm">
+            <div class="modal-header">
+                <h3>Dar de baja</h3>
+                <button class="modal-close" onclick="cerrarModalDelete()">✕</button>
+            </div>
+            <p class="delete-msg">
+                ¿Confirmás dar de baja el contenedor <strong id="deleteNombre"></strong>?
+            </p>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="cerrarModalDelete()">Cancelar</button>
+                <button class="btn-danger" onclick="confirmarDelete()">Dar de Baja</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── NOTIFICACIÓN (TOAST) ─────────────────────────────────────────── -->
+    <div id="toast" class="toast"></div>
+
+    <!-- ── PIE DE PÁGINA ────────────────────────────────────────────────── -->
+    <footer class="footer">
+        <div class="footer-hr"></div>
+        <p>&copy; 2026 Celeris SAS. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+        const API_BASE = '/recolix/API_Gestion';
+        let contenedorIdParaEliminar = null;
+        let toastTimeout;
+        let reglas = {};
+        let contenedoresActuales = [];
+        const MUNICIPIOS = [
+            { id: 1, nombre: 'Municipio A' },
+            { id: 2, nombre: 'Municipio B' },
+            { id: 3, nombre: 'Municipio C' },
+            { id: 4, nombre: 'Municipio CH' },
+            { id: 5, nombre: 'Municipio D' },
+            { id: 6, nombre: 'Municipio E' },
+            { id: 7, nombre: 'Municipio F' },
+            { id: 8, nombre: 'Municipio G' }
+        ];
+        const TIPOS_RESIDUO = [
+            { id: 1, descripcion: 'Residuos mezclados', color: 'Gris' },
+            { id: 2, descripcion: 'Materiales reciclables', color: 'Verde' },
+            { id: 3, descripcion: 'Residuos compostables', color: 'Marrón' },
+            { id: 4, descripcion: 'Plástico', color: 'Amarillo' },
+            { id: 5, descripcion: 'Papel y cartón', color: 'Azul' },
+            { id: 6, descripcion: 'Metales', color: 'Negro' },
+            { id: 7, descripcion: 'Vidrio', color: 'Blanco' }
+        ];
+
+        let tiposResiduo = [];
+
+        async function cargarTiposResiduo() {
+            try {
+                const res = await fetch(`${API_BASE}/tipos-residuo`);
+                const json = await res.json();
+                if (json.status === 'success') {
+                    tiposResiduo = json.data;
+                }
+            } catch {
+                tiposResiduo = [];
+            }
+        }
+
+        function fuenteTipos() {
+            return tiposResiduo.length ? tiposResiduo : TIPOS_RESIDUO;
+        }
+
+        function poblarSelectTipoResiduo() {
+            const select = document.getElementById('idTipo');
+            select.innerHTML = '<option value="">— Seleccionar —</option>' +
+                fuenteTipos().map(t =>
+                    `<option value="${t.id_tipo ?? t.id}">${t.descripcion} (${t.color})</option>`
+                ).join('');
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await cargarReglas();
+            await cargarTiposResiduo();
+            poblarSelectTipoResiduo();
+            document.getElementById('contenedoresBody').addEventListener('click', (e) => {
+                const btn = e.target.closest('button[data-action]');
+                if (!btn) return;
+                const c = contenedoresActuales.find(x => x.id_contenedor == btn.dataset.id);
+                if (!c) return;
+                if (btn.dataset.action === 'editar') abrirModalEditar(c);
+                if (btn.dataset.action === 'baja') confirmarBorrar(c.id_contenedor, `${c.calle} ${c.num_calle}`);
+            });
+            listarContenedores();
+        });
+
+        function reglasFallback() {
+            return {
+                calle: { tipo: 'string', max: 100, label: 'Calle' },
+                numCalle: { tipo: 'string', max: 20, label: 'Número de puerta' },
+                latitud: { tipo: 'decimal', label: 'Latitud' },
+                longitud: { tipo: 'decimal', label: 'Longitud' },
+                capacidad: { tipo: 'decimal', min: 1, label: 'Capacidad' },
+                estado: { valores: ['funcional', 'roto', 'desbordado', 'inactivo', 'en_deposito'], label: 'Estado' },
+                idTipo: { tipo: 'entero', min: 1, label: 'Tipo de Residuo' },
+                idCircuito: { tipo: 'entero', min: 1, label: 'Circuito' }
+            };
+        }
+
+        async function cargarReglas() {
+            try {
+                const res = await fetch(`${API_BASE}/contenedores/reglasValidacion`);
+                const json = await res.json();
+                if (json.status === 'success') {
+                    reglas = json.data;
+                } else {
+                    reglas = reglasFallback();
+                }
+            } catch {
+                reglas = reglasFallback();
+            }
+        }
+
+        // ── LISTAR TODOS ──────────────────────────────────────────────────────
+        async function listarContenedores() {
+            ocultarControles();
+            setLoading(true);
+            try {
+                const res = await fetch(`${API_BASE}/contenedores`);
+                const json = await res.json();
+                if (json.status === 'success') {
+                    renderTabla(json.data);
+                    setTableTitle('Todos los Contenedores');
+                } else {
+                    mostrarToast(json.message, 'error');
+                }
+            } catch {
+                mostrarToast('Error al conectar con la API', 'error');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        // ── BUSCAR POR ID ─────────────────────────────────────────────────────
+        async function buscarPorId() {
+            const id = document.getElementById('buscarId').value.trim();
+            if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
+            setLoading(true);
+            try {
+                const res = await fetch(`${API_BASE}/contenedores/${id}`);
+                const json = await res.json();
+                if (json.status === 'success' && json.data) {
+                    renderTabla([json.data]);
+                    setTableTitle(`Contenedor #${id}`);
+                } else {
+                    renderTabla([]);
+                    mostrarToast(json.message || 'Contenedor no encontrado', 'error');
+                }
+            } catch {
+                mostrarToast('Error al conectar con la API', 'error');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        // ── FILTRAR ───────────────────────────────────────────────────────────
+        function actualizarFiltroValor() {
+            const tipo = document.getElementById('filtroTipo').value;
+            const input = document.getElementById('filtroValor');
+            const select = document.getElementById('filtroValorSelect');
+
+            input.value = '';
+            select.value = '';
+            input.style.display = 'none';
+            select.style.display = 'none';
+
+            if (!tipo) return;
+
+            if (tipo === 'municipio') {
+                select.innerHTML = '<option value="">— Seleccionar —</option>' +
+                    MUNICIPIOS.map(m =>
+                        `<option value="${m.id}">${m.nombre}</option>`
+                    ).join('');
+                select.style.display = '';
+            } else if (tipo === 'tipoResiduo') {
+                select.innerHTML = '<option value="">— Seleccionar —</option>' +
+                    fuenteTipos().map(t =>
+                        `<option value="${t.id_tipo ?? t.id}">${t.descripcion} (${t.color})</option>`
+                    ).join('');
+                select.style.display = '';
+            } else if (tipo === 'estado') {
+                select.innerHTML = '<option value="">— Seleccionar —</option>' +
+                    ['funcional', 'roto', 'desbordado', 'inactivo', 'en_deposito']
+                        .map(v => `<option value="${v}">${formatearEstado(v)}</option>`).join('');
+                select.style.display = '';
+            }
+        }
+
+        async function aplicarFiltro() {
+            const tipo = document.getElementById('filtroTipo').value;
+            const input = document.getElementById('filtroValor');
+            const select = document.getElementById('filtroValorSelect');
+            if (!tipo) { mostrarToast('Seleccioná un filtro', 'warning'); return; }
+
+            const valor = (select.style.display !== 'none' ? select.value : input.value).trim();
+            if (!valor) { mostrarToast('Seleccioná un valor para el filtro', 'warning'); return; }
+
+            const endpointMap = {
+                municipio: 'filtrarMunicipio',
+                tipoResiduo: 'filtrarTipoResiduo',
+                estado: 'filtrarEstado'
+            };
+
+            const endpoint = endpointMap[tipo];
+            setLoading(true);
+            try {
+                const res = await fetch(`${API_BASE}/contenedores?${tipo}=${encodeURIComponent(valor)}`);
+                const json = await res.json();
+                if (json.status === 'success') {
+                    renderTabla(json.data);
+                    const labels = {
+                        municipio: `Municipio: ${valor}`,
+                        tipoResiduo: `Tipo de Residuo: ${valor}`,
+                        estado: `Estado: ${valor}`
+                    };
+                    setTableTitle(`Filtro — ${labels[tipo] || tipo}`);
+                } else {
+                    mostrarToast(json.message, 'error');
+                }
+            } catch {
+                mostrarToast('Error al conectar con la API', 'error');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        // ── AGREGAR ───────────────────────────────────────────────────────────
+        function abrirModalAgregar() {
+            document.getElementById('modalTitle').textContent = 'Agregar Contenedor';
+            document.getElementById('contenedorId').value = '';
+            document.getElementById('contenedorForm').reset();
+            poblarSelectTipoResiduo();
+            document.getElementById('estadoGroup').style.display = '';
+            document.getElementById('modalForm').style.display = 'flex';
+        }
+        // ── MODAL EDITAR ──────────────────────────────────────────────────────
+        function abrirModalEditar(contenedor) {
+            document.getElementById('modalTitle').textContent = 'Editar Contenedor';
+            document.getElementById('contenedorId').value = contenedor.id_contenedor;
+            document.getElementById('calle').value = contenedor.calle;
+            document.getElementById('numCalle').value = contenedor.num_calle;
+            document.getElementById('latitud').value = contenedor.latitud;
+            document.getElementById('longitud').value = contenedor.longitud;
+            document.getElementById('capacidad').value = contenedor.capacidad;
+            document.getElementById('idTipo').value = contenedor.id_tipo;
+            document.getElementById('idCircuito').value = contenedor.id_circuito;
+            document.getElementById('estadoGroup').style.display = 'none';
+            document.getElementById('modalForm').style.display = 'flex';
+        }
+
+        // ── GUARDAR (POST / PUT) ──────────────────────────────────────────────
+        async function guardarContenedor(e) {
+            e.preventDefault();
+            const id = document.getElementById('contenedorId').value;
+
+            const body = {
+                idCircuito: parseInt(document.getElementById('idCircuito').value),
+                idTipo: parseInt(document.getElementById('idTipo').value),
+                calle: document.getElementById('calle').value.trim(),
+                numCalle: document.getElementById('numCalle').value.trim(),
+                latitud: parseFloat(document.getElementById('latitud').value),
+                longitud: parseFloat(document.getElementById('longitud').value),
+                capacidad: parseFloat(document.getElementById('capacidad').value)
+            };
+            if (!id) {
+                body.estado = document.getElementById('estado').value;
+            }
+
+            // Validaciones frontend usando reglas del controlador
+            for (const [campo, valor] of Object.entries(body)) {
+                const regla = reglas[campo];
+                if (!regla) continue;
+                if (regla.valores && !regla.valores.includes(valor)) {
+                    mostrarToast(`${regla.label} no válido`, 'warning');
+                    return;
+                }
+                if (regla.tipo === 'entero' || regla.tipo === 'decimal') {
+                    if (isNaN(valor)) {
+                        mostrarToast(`${regla.label} debe ser un número`, 'warning');
+                        return;
+                    }
+                    if (regla.min !== undefined && valor < regla.min) {
+                        mostrarToast(`${regla.label} no puede ser menor que ${regla.min}`, 'warning');
+                        return;
+                    }
+                }
+                if (regla.tipo === 'string' && (!valor || valor === '')) {
+                    mostrarToast(`${regla.label} es requerido`, 'warning');
+                    return;
+                }
+            }
+
+            try {
+                const res = await fetch(
+                    id ? `${API_BASE}/contenedores/${id}` : `${API_BASE}/contenedores`,
+                    {
+                        method: id ? 'PUT' : 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(body)
+                    }
+                );
+                const json = await res.json();
+                if (json.status === 'success') {
+                    mostrarToast(json.message, 'success');
+                    cerrarModal();
+                    listarContenedores();
+                } else {
+                    mostrarToast(json.message, 'error');
+                }
+            } catch {
+                mostrarToast('Error al guardar', 'error');
+            }
+        }
+
+        // ── MODIFICAR CAMPO INDIVIDUAL ────────────────────────────────────────
+        function actualizarPlaceholderModificar() {
+            const campo = document.getElementById('modificarCampo').value;
+            const input = document.getElementById('modificarValor');
+            const select = document.getElementById('modificarValorSelect');
+
+            input.value = '';
+            select.value = '';
+            input.style.display = 'none';
+            select.style.display = 'none';
+
+            if (campo === 'estado') {
+                select.innerHTML = ['funcional', 'roto', 'desbordado', 'inactivo', 'en_deposito']
+                    .map((v, i) => `<option value="${v}"${i === 0 ? ' selected' : ''}>${formatearEstado(v)}</option>`)
+                    .join('');
+                select.style.display = '';
+            } else {
+                const placeholders = {
+                    calle: 'ej: Av. 18 de Julio',
+                    numCalle: 'ej: 1234',
+                    capacidad: 'ej: 1100',
+                    idTipo: 'ID del tipo de residuo',
+                    idCircuito: 'ID del circuito'
+                };
+                input.placeholder = placeholders[campo] || 'Nuevo valor...';
+                input.style.display = '';
+            }
+        }
+
+        async function modificarContenedor() {
+            const id = document.getElementById('modificarId').value.trim();
+            if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
+            const campo = document.getElementById('modificarCampo').value;
+            if (!campo) { mostrarToast('Seleccioná un campo a modificar', 'warning'); return; }
+
+            const input = document.getElementById('modificarValor');
+            const select = document.getElementById('modificarValorSelect');
+            const valor = (select.style.display !== 'none' ? select : input).value.trim();
+            if (!valor) { mostrarToast('Ingresá el nuevo valor', 'warning'); return; }
+
+            // El estado no se modifica con el PUT genérico (el backend no lo actualiza).
+            // Se usa la acción cambiarEstado, que sí registra el nuevo estado (RF19/RF20).
+            if (campo === 'estado') {
+                setLoading(true);
+                try {
+                    const res = await fetch(`${API_BASE}/contenedores/cambiarEstado/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ nuevoEstado: valor })
+                    });
+                    const json = await res.json();
+                    if (json.status === 'success') {
+                        mostrarToast('Estado actualizado', 'success');
+                        ocultarControles();
+                        listarContenedores();
+                    } else {
+                        mostrarToast(json.message, 'error');
+                    }
+                } catch {
+                    mostrarToast('Error al modificar', 'error');
+                } finally {
+                    setLoading(false);
+                }
+                return;
+            }
+
+            setLoading(true);
+            try {
+                const res = await fetch(`${API_BASE}/contenedores/${id}`);
+                const json = await res.json();
+                if (json.status !== 'success' || !json.data) {
+                    mostrarToast(json.message || 'Contenedor no encontrado', 'error');
+                    return;
+                }
+                const c = json.data;
+
+                // Actualizar solo el campo modificado
+                const campoMap = {
+                    calle: 'calle',
+                    numCalle: 'num_calle',
+                    capacidad: 'capacidad',
+                    estado: 'estado',
+                    idTipo: 'id_tipo',
+                    idCircuito: 'id_circuito'
+                };
+                c[campoMap[campo]] = valor;
+
+                const putRes = await fetch(`${API_BASE}/contenedores/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        idCircuito: parseInt(c.id_circuito),
+                        idTipo: parseInt(c.id_tipo),
+                        calle: c.calle,
+                        numCalle: c.num_calle,
+                        latitud: parseFloat(c.latitud),
+                        longitud: parseFloat(c.longitud),
+                        capacidad: parseFloat(c.capacidad)
+                    })
+                });
+                const putJson = await putRes.json();
+                if (putJson.status === 'success') {
+                    mostrarToast(putJson.message, 'success');
+                    ocultarControles();
+                    listarContenedores();
+                } else {
+                    mostrarToast(putJson.message, 'error');
+                }
+            } catch {
+                mostrarToast('Error al modificar', 'error');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        // ── DAR DE BAJA ───────────────────────────────────────────────────────
+        async function darDeBajaContenedor() {
+            const id = document.getElementById('deleteId').value.trim();
+            if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
+            setLoading(true);
+            try {
+                const res = await fetch(`${API_BASE}/contenedores/${id}`);
+                const json = await res.json();
+                if (json.status === 'success' && json.data) {
+                    confirmarBorrar(json.data.id_contenedor, `${json.data.calle} ${json.data.num_calle}`);
+                    ocultarControles();
+                } else {
+                    mostrarToast(json.message || 'Contenedor no encontrado', 'error');
+                }
+            } catch {
+                mostrarToast('Error al conectar con la API', 'error');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function confirmarBorrar(id, nombre) {
+            contenedorIdParaEliminar = id;
+            document.getElementById('deleteNombre').textContent = nombre;
+            document.getElementById('modalDelete').style.display = 'flex';
+        }
+
+        async function confirmarDelete() {
+            try {
+                const res = await fetch(`${API_BASE}/contenedores/${contenedorIdParaEliminar}`, { method: 'DELETE' });
+                const json = await res.json();
+                if (json.status === 'success') {
+                    mostrarToast('Contenedor dado de baja correctamente', 'success');
+                    cerrarModalDelete();
+                    listarContenedores();
+                } else {
+                    mostrarToast(json.message, 'error');
+                }
+            } catch {
+                mostrarToast('Error al dar de baja', 'error');
+            }
+        }
+
+        // ── RENDERIZAR TABLA ──────────────────────────────────────────────────
+        function escapeHtml(str) {
+            return String(str ?? '').replace(/[&<>"']/g, s => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[s]));
+        }
+
+        function renderTabla(contenedores) {
+            const tbody = document.getElementById('contenedoresBody');
+            const noRes = document.getElementById('noResultados');
+            const count = document.getElementById('tableCount');
+
+            contenedoresActuales = contenedores || [];
+            tbody.innerHTML = '';
+
+            if (contenedoresActuales.length === 0) {
+                noRes.style.display = 'flex';
+                count.textContent = '';
+                return;
+            }
+
+            noRes.style.display = 'none';
+            count.textContent = `${contenedoresActuales.length} resultado${contenedoresActuales.length !== 1 ? 's' : ''}`;
+
+            contenedoresActuales.forEach(c => {
+                const tipo = fuenteTipos().find(t => (t.id_tipo ?? t.id) === parseInt(c.id_tipo));
+                const tipoNombre = tipo ? `${tipo.descripcion} (${tipo.color})` : c.id_tipo;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+    <td class="td-id" data-label="ID">${escapeHtml(c.id_contenedor)}</td>
+    <td data-label="Calle"><strong>${escapeHtml(c.calle)}</strong></td>
+    <td data-label="Nº Puerta">${escapeHtml(c.num_calle)}</td>
+    <td data-label="Capacidad (L)">${Number(c.capacidad).toLocaleString()} L</td>
+    <td data-label="Tipo Residuo">${escapeHtml(tipoNombre)}</td>
+    <td data-label="Circuito">${escapeHtml(c.id_circuito)}</td>
+    <td data-label="Estado"><span class="badge badge-${badgeClass(c.estado)}">${escapeHtml(formatearEstado(c.estado))}</span></td>
+    <td class="td-actions" data-label="Acciones">
+        <button class="btn-action" data-action="editar" data-id="${escapeHtml(c.id_contenedor)}" title="Editar">✏️</button>
+        <button class="btn-action" data-action="baja" data-id="${escapeHtml(c.id_contenedor)}" title="Dar de baja">🗑️</button>
+    </td>
+`;
+                tbody.appendChild(tr);
+            });
+        }
+        function formatearEstado(estado) {
+    const texto = estado.replace(/_/g, ' ');
+    return texto.charAt(0).toUpperCase() + texto.slice(1);
+}
+
+        function badgeClass(estado) {
+            const map = {
+                'funcional': 'success',
+                'roto': 'danger',
+                'desbordado': 'warning',
+                'inactivo': 'neutral',
+                'en_deposito': 'info'
+            };
+            return map[estado] ?? 'neutral';
+        }
+
+        // ── UTILIDADES ────────────────────────────────────────────────────────
+        function toggleFiltros() {
+            const fb = document.getElementById('filterBar');
+            const sb = document.getElementById('searchBar');
+            const mb = document.getElementById('modificarBar');
+            const db = document.getElementById('deleteBar');
+            sb.style.display = 'none';
+            mb.style.display = 'none';
+            db.style.display = 'none';
+            fb.style.display = fb.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function toggleBusquedaId() {
+            const sb = document.getElementById('searchBar');
+            const fb = document.getElementById('filterBar');
+            const mb = document.getElementById('modificarBar');
+            const db = document.getElementById('deleteBar');
+            fb.style.display = 'none';
+            mb.style.display = 'none';
+            db.style.display = 'none';
+            sb.style.display = sb.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function toggleModificar() {
+            const mb = document.getElementById('modificarBar');
+            const fb = document.getElementById('filterBar');
+            const sb = document.getElementById('searchBar');
+            const db = document.getElementById('deleteBar');
+            fb.style.display = 'none';
+            sb.style.display = 'none';
+            db.style.display = 'none';
+            mb.style.display = mb.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function toggleDarDeBaja() {
+            const db = document.getElementById('deleteBar');
+            const fb = document.getElementById('filterBar');
+            const sb = document.getElementById('searchBar');
+            const mb = document.getElementById('modificarBar');
+            fb.style.display = 'none';
+            sb.style.display = 'none';
+            mb.style.display = 'none';
+            db.style.display = db.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function ocultarControles() {
+            document.getElementById('filterBar').style.display = 'none';
+            document.getElementById('searchBar').style.display = 'none';
+            document.getElementById('modificarBar').style.display = 'none';
+            document.getElementById('deleteBar').style.display = 'none';
+        }
+
+        function cerrarModal() {
+            document.getElementById('modalForm').style.display = 'none';
+        }
+
+        function cerrarModalDelete() {
+            document.getElementById('modalDelete').style.display = 'none';
+            contenedorIdParaEliminar = null;
+        }
+
+        function onOverlayClick(e, modalId) {
+            if (e.target.id === modalId) {
+                modalId === 'modalForm' ? cerrarModal() : cerrarModalDelete();
+            }
+        }
+
+        function setTableTitle(title) {
+            document.getElementById('tableTitle').textContent = title;
+        }
+
+        function setLoading(show) {
+            document.getElementById('loadingState').style.display = show ? 'flex' : 'none';
+            document.getElementById('contenedoresBody').style.opacity = show ? '0.3' : '1';
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('navMobile').classList.toggle('nav-mobile-open');
+        }
+
+        function mostrarToast(msg, tipo = 'info') {
+            const toast = document.getElementById('toast');
+            clearTimeout(toastTimeout);
+            toast.textContent = msg;
+            toast.className = `toast toast-${tipo} toast-show`;
+            toastTimeout = setTimeout(() => toast.classList.remove('toast-show'), 3500);
+        }
+    </script>
+
+</body>
+
+</html>
+

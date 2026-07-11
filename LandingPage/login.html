@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recolix - Iniciar sesión</title>
+  <meta name="description"
+    content="Inicia sesión en Recolix para gestionar incidencias y seguir el estado de tus reportes.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles_LandingPage.css">
+  <link rel="stylesheet" href="styles_Login.css">
+
+</head>
+
+<body>
+  <header class="site-header" id="siteHeader">
+    <div class="container header-inner">
+      <a href="login.html" class="logo">
+        <img src="Logo.png" alt="Logo Recolix" class="logo-image" />
+        <div class="logo-text">Recolix</div>
+      </a>
+
+      <nav class="main-nav" id="mainNav">
+        <ul>
+          <li><a href="index_LandingPage.html">Inicio</a></li>
+          <li><a href="mapa.html">Mapa</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <a href="login.html" class="btn btn-outline btn-sm">Iniciar Sesión</a>
+        <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú" aria-expanded="false">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="login-section">
+      <div class="container login-container">
+        <div class="login-card">
+          <p class="section-eyebrow">Bienvenido de nuevo</p>
+          <h1>Iniciar sesión</h1>
+          <p class="login-desc">Accedé con tu cédula y contraseña.</p>
+
+          <form id="loginForm" novalidate>
+            <div class="form-row">
+              <label for="ci">Cédula de identidad</label>
+              <input type="text" id="ci" name="ci" placeholder="41235468" required>
+              <p class="error-msg" id="ciError"></p>
+            </div>
+
+            <div class="form-row">
+              <label for="password">Contraseña</label>
+              <input type="password" id="password" name="password" placeholder="Tu contraseña" required>
+              <p class="error-msg" id="passwordError"></p>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" id="loginSubmitBtn">Iniciar sesión</button>
+            <p class="form-feedback" id="formFeedback" role="alert"></p>
+          </form>
+
+          <div class="register-banner">
+            <p>¿Todavía no tenés cuenta?</p>
+            <a href="index_LandingPage.html#registro" class="link-register">Crear cuenta →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="login.html" class="logo">
+            <img src="LogoBlanco.png" alt="Logo Recolix" class="logo-imageBlanco" />
+            <div class="logo-text">Recolix</div>
+          </a>
+          <p>Plataforma de gestión de residuos urbanos para Montevideo.</p>
+        </div>
+
+        <div class="footer-col">
+          <h3>Navegación</h3>
+          <ul>
+            <li><a href="index_LandingPage.html">Inicio</a></li>
+            <li><a href="mapa.html">Mapa</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h3>Canales de la Intendencia</h3>
+          <ul>
+            <li>Línea 1950 300</li>
+            <li>Whatsapp: 092 250 260</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+
+        // Abre y cierra el menú móvil del header.
+        const btn = document.getElementById('hamburgerBtn');
+        const nav = document.getElementById('mainNav');
+        btn.addEventListener('click', () => {
+          const abierto = nav.classList.toggle('is-open');
+          btn.classList.toggle('is-open', abierto);
+          btn.textContent = abierto ? '✕' : '☰';
+        });
+
+        // Maneja el envío del formulario de inicio de sesión.
+        const form = document.getElementById('loginForm');
+
+        form.addEventListener('submit', (e) => {
+          // Evita que la página se recargue automáticamente al enviar el formulario.
+          e.preventDefault();
+
+          const ci = form.elements.ci.value.trim();
+          const password = form.elements.password.value.trim();
+          const ciError = document.getElementById('ciError');
+          const passwordError = document.getElementById('passwordError');
+          const feedback = document.getElementById('formFeedback');
+
+          let esValido = true;
+
+          // Valida la cédula: solo números, entre 6 y 8 dígitos.
+          if (!/^\d{6,8}$/.test(ci)) {
+            ciError.textContent = 'Ingresá tu cédula sin puntos ni guiones (6 a 8 números).';
+            esValido = false;
+          } else {
+            ciError.textContent = '';
+          }
+
+          // Valida la contraseña: mínimo 4 caracteres.
+          if (password.length < 4) {
+            passwordError.textContent = 'La contraseña debe tener al menos 4 caracteres.';
+            esValido = false;
+          } else {
+            passwordError.textContent = '';
+          }
+
+          if (!esValido) {
+            feedback.style.display = 'block';
+            feedback.className = 'form-feedback is-error';
+            feedback.textContent = 'Revisá los datos ingresados.';
+            return;
+          }
+
+          // TODO: reemplazar por fetch('/api/auth/login', { method: 'POST', ... })
+          // cuando el backend esté disponible.
+          feedback.style.display = 'block';
+          feedback.className = 'form-feedback is-success';
+          feedback.textContent = 'Inicio de sesión correcto. Redirigiendo...';
+          form.reset();
+        });
+
+      });
+    </script>
+</body>
+
+</html>
