@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // TODO: reemplazar por fetch real cuando el JWT esté implementado.
         } finally {
             sessionStorage.removeItem('vecinoSesion');
-            window.location.href = '../Landing_Page/login.html';
+            window.location.href = '../../LandingPage/login.html';
         }
     });
 
