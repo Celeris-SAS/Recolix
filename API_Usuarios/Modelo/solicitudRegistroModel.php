@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/Conexion.php';
 
-class SolicitudRegistro {
+class SolicitudRegistroModel {
 
     private $conn;
 
