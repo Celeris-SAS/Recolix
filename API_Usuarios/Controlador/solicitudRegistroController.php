@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/conexion.php';
+require_once __DIR__ . '/../Modelo/conexion.php';
 
 class SolicitudRegistroController {
     private $db;

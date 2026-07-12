@@ -5,8 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Recolix - Iniciar sesión</title>
-  <meta name="description"
-    content="Inicia sesión en Recolix para gestionar incidencias y seguir el estado de tus reportes.">
+  <meta name="description" content="Inicia sesión en Recolix para gestionar incidencias y seguir el estado de tus reportes.">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,7 +14,6 @@
     rel="stylesheet">
   <link rel="stylesheet" href="styles_LandingPage.css">
   <link rel="stylesheet" href="styles_Login.css">
-
 </head>
 
 <body>
@@ -25,14 +23,12 @@
         <img src="Logo.png" alt="Logo Recolix" class="logo-image" />
         <div class="logo-text">Recolix</div>
       </a>
-
       <nav class="main-nav" id="mainNav">
         <ul>
           <li><a href="index_LandingPage.html">Inicio</a></li>
           <li><a href="mapa.html">Mapa</a></li>
         </ul>
       </nav>
-
       <div class="header-actions">
         <a href="login.html" class="btn btn-outline btn-sm">Iniciar Sesión</a>
         <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú" aria-expanded="false">☰</button>
@@ -48,7 +44,7 @@
           <h1>Iniciar sesión</h1>
           <p class="login-desc">Accedé con tu cédula y contraseña.</p>
 
-          <form id="loginForm" novalidate>
+          <form id="loginForm" method="post" action="#" novalidate>
             <div class="form-row">
               <label for="ci">Cédula de identidad</label>
               <input type="text" id="ci" name="ci" placeholder="41235468" required>
@@ -84,7 +80,6 @@
           </a>
           <p>Plataforma de gestión de residuos urbanos para Montevideo.</p>
         </div>
-
         <div class="footer-col">
           <h3>Navegación</h3>
           <ul>
@@ -92,7 +87,6 @@
             <li><a href="mapa.html">Mapa</a></li>
           </ul>
         </div>
-
         <div class="footer-col">
           <h3>Canales de la Intendencia</h3>
           <ul>
@@ -102,67 +96,88 @@
         </div>
       </div>
     </div>
+  </footer>
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function () {
+  <!-- 🔑 JavaScript -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Menú móvil
+      const btn = document.getElementById('hamburgerBtn');
+      const nav = document.getElementById('mainNav');
+      btn.addEventListener('click', () => {
+        const abierto = nav.classList.toggle('is-open');
+        btn.classList.toggle('is-open', abierto);
+        btn.textContent = abierto ? '✕' : '☰';
+      });
 
-        // Abre y cierra el menú móvil del header.
-        const btn = document.getElementById('hamburgerBtn');
-        const nav = document.getElementById('mainNav');
-        btn.addEventListener('click', () => {
-          const abierto = nav.classList.toggle('is-open');
-          btn.classList.toggle('is-open', abierto);
-          btn.textContent = abierto ? '✕' : '☰';
-        });
+      // Login
+      const form = document.getElementById('loginForm');
+      const ciError = document.getElementById('ciError');
+      const passwordError = document.getElementById('passwordError');
+      const feedback = document.getElementById('formFeedback');
 
-        // Maneja el envío del formulario de inicio de sesión.
-        const form = document.getElementById('loginForm');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault(); // 🔑 evita que se muestre en la URL
 
-        form.addEventListener('submit', (e) => {
-          // Evita que la página se recargue automáticamente al enviar el formulario.
-          e.preventDefault();
+        const ci = form.elements.ci.value.trim();
+        const password = form.elements.password.value.trim();
+        let esValido = true;
 
-          const ci = form.elements.ci.value.trim();
-          const password = form.elements.password.value.trim();
-          const ciError = document.getElementById('ciError');
-          const passwordError = document.getElementById('passwordError');
-          const feedback = document.getElementById('formFeedback');
+        // Validaciones
+        if (!/^\d{6,8}$/.test(ci)) {
+          ciError.textContent = 'Ingresá tu cédula sin puntos ni guiones (6 a 8 números).';
+          esValido = false;
+        } else {
+          ciError.textContent = '';
+        }
 
-          let esValido = true;
+        if (password.length < 4) {
+          passwordError.textContent = 'La contraseña debe tener al menos 4 caracteres.';
+          esValido = false;
+        } else {
+          passwordError.textContent = '';
+        }
 
-          // Valida la cédula: solo números, entre 6 y 8 dígitos.
-          if (!/^\d{6,8}$/.test(ci)) {
-            ciError.textContent = 'Ingresá tu cédula sin puntos ni guiones (6 a 8 números).';
-            esValido = false;
+        if (!esValido) {
+          feedback.style.display = 'block';
+          feedback.className = 'form-feedback is-error';
+          feedback.textContent = 'Revisá los datos ingresados.';
+          return;
+        }
+
+        // Llamada al backend
+        try {
+          const response = await fetch('/recolix/API_Usuarios/login.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ci, contrasenia: password })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            feedback.style.display = 'block';
+            feedback.className = 'form-feedback is-success';
+            feedback.textContent = 'Inicio de sesión correcto. Redirigiendo...';
+
+            if (data.rol === 'vecino') {
+              window.location.href = '/recolix/API_Usuarios/Vista/vecino.php';
+            } else if (data.rol === 'admin' || data.rol === 'operario') {
+              window.location.href = '/recolix/API_Usuarios/Vista/perfil.php';
+            }
           } else {
-            ciError.textContent = '';
-          }
-
-          // Valida la contraseña: mínimo 4 caracteres.
-          if (password.length < 4) {
-            passwordError.textContent = 'La contraseña debe tener al menos 4 caracteres.';
-            esValido = false;
-          } else {
-            passwordError.textContent = '';
-          }
-
-          if (!esValido) {
             feedback.style.display = 'block';
             feedback.className = 'form-feedback is-error';
-            feedback.textContent = 'Revisá los datos ingresados.';
-            return;
+            feedback.textContent = 'Credenciales inválidas.';
           }
-
-          // TODO: reemplazar por fetch('/api/auth/login', { method: 'POST', ... })
-          // cuando el backend esté disponible.
+        } catch (err) {
+          console.error(err);
           feedback.style.display = 'block';
-          feedback.className = 'form-feedback is-success';
-          feedback.textContent = 'Inicio de sesión correcto. Redirigiendo...';
-          form.reset();
-        });
-
+          feedback.className = 'form-feedback is-error';
+          feedback.textContent = 'Error al conectar con el servidor.';
+        }
       });
-    </script>
+    });
+  </script>
 </body>
-
 </html>
