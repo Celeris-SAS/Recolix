@@ -376,7 +376,7 @@
         telefono: [/^\d{9}$/, 'Ingresá un teléfono de 9 números, sin espacios.']
       };
 
-      form.addEventListener('submit', (e) => {
+      form.addEventListener('submit', async (e) => {
         e.preventDefault();
         let esValido = true;
 
@@ -398,9 +398,34 @@
           return;
         }
 
-        feedback.className = 'form-feedback is-success';
-        feedback.textContent = 'Solicitud enviada exitosamente.';
-        form.reset();
+        try {
+          const resp = await fetch('/recolix/API_Usuarios/api.php/solicitudes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              ci: form.elements.ci.value.trim(),
+              primerNombre: form.elements.nombre.value.trim(),
+              pApellido: form.elements.apellido.value.trim(),
+              email: form.elements.email.value.trim(),
+              tel: form.elements.telefono.value.trim()
+            })
+          });
+          const json = await resp.json();
+
+          if (json.status !== 'success') {
+            feedback.className = 'form-feedback is-error';
+            feedback.textContent = json.message || 'No se pudo enviar la solicitud.';
+            return;
+          }
+
+          feedback.className = 'form-feedback is-success';
+          feedback.textContent = 'Solicitud enviada exitosamente. Te avisaremos cuando esté aprobada.';
+          form.reset();
+
+        } catch (e) {
+          feedback.className = 'form-feedback is-error';
+          feedback.textContent = 'No se pudo conectar con el servidor. Intentá de nuevo.';
+        }
       });
     });
   </script>

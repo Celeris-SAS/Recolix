@@ -102,101 +102,118 @@
         </div>
       </div>
     </div>
+  </footer>
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function () {
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const form = document.getElementById('loginForm');
+
+
+      // Maneja el envío del formulario de inicio de sesión.
+      const form = document.getElementById('loginForm');
+
+      form.addEventListener('submit', async (e) => {
         const form = document.getElementById('loginForm');
+        e.preventDefault();
 
+        const ci = form.elements.ci.value.trim();
+        const password = form.elements.password.value.trim();
+        const ciError = document.getElementById('ciError');
+        const passwordError = document.getElementById('passwordError');
+        const feedback = document.getElementById('formFeedback');
+        const API = '/recolix/API_Usuarios';
 
-        // Abre y cierra el menú móvil del header.
-        const btn = document.getElementById('hamburgerBtn');
-        const nav = document.getElementById('mainNav');
-        btn.addEventListener('click', () => {
-          const abierto = nav.classList.toggle('is-open');
-          btn.classList.toggle('is-open', abierto);
-          btn.textContent = abierto ? '✕' : '☰';
-        });
+        // Valida la cédula: solo números, entre 6 y 8 dígitos.
+        if (!/^\d{6,8}$/.test(ci)) {
+          ciError.textContent = 'Ingresá tu cédula sin puntos ni guiones (6 a 8 números).';
+          esValido = false;
+        } else {
+          ciError.textContent = '';
+        }
 
-        form.addEventListener('submit', async (e) => {
-          const form = document.getElementById('loginForm');
-          e.preventDefault();
+        // Validaciones básicas
+        if (!/^\d{6,8}$/.test(ci)) {
+          ciError.textContent = 'Ingresá tu cédula sin puntos ni guiones (6 a 8 números).';
+          esValido = false;
+        } else ciError.textContent = '';
 
-          const ci = form.elements.ci.value.trim();
-          const password = form.elements.password.value.trim();
-          const ciError = document.getElementById('ciError');
-          const passwordError = document.getElementById('passwordError');
-          const feedback = document.getElementById('formFeedback');
-          const API = '/recolix/API_Usuarios';
+        if (password.length < 4) {
+          passwordError.textContent = 'La contraseña debe tener al menos 4 caracteres.';
+          esValido = false;
+        } else passwordError.textContent = '';
 
-          let esValido = true;
+        if (!esValido) {
+          feedback.className = 'form-feedback is-error';
+          feedback.textContent = json.message || 'Cédula o contraseña incorrectos.';
+          return;
+        }
 
-          // Validaciones básicas
-          if (!/^\d{6,8}$/.test(ci)) {
-            ciError.textContent = 'Ingresá tu cédula sin puntos ni guiones (6 a 8 números).';
-            esValido = false;
-          } else ciError.textContent = '';
+        // Caso especial: admin fijo
+        if (ci === '57343499' && password === '1234') {
+          sessionStorage.setItem('sesion', JSON.stringify({
+            ci_usuario: ci,
+            primer_nombre: 'Admin',
+            p_apellido: '',
+            rol: 'admin'
+          }));
+          window.location.href = '/recolix/API_Usuarios/Vista/perfil.html';
 
-          if (password.length < 4) {
-            passwordError.textContent = 'La contraseña debe tener al menos 4 caracteres.';
-            esValido = false;
-          } else passwordError.textContent = '';
+          return;
+        }
 
-          if (!esValido) {
+        // Caso general: validar contra la API
+        try {
+          const resp = await fetch(`${API}/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ci, contrasenia: password })
+          });
+          const json = await resp.json();
+
+          if (json.status !== 'success') {
             feedback.className = 'form-feedback is-error';
-            feedback.textContent = 'Revisá los datos ingresados.';
+            feedback.textContent = json.message || 'Credenciales inválidas.';
             return;
           }
 
-          // Caso especial: admin fijo
-          if (ci === '57343499' && password === '1234') {
-            sessionStorage.setItem('sesion', JSON.stringify({
-              ci_usuario: ci,
-              primer_nombre: 'Admin',
-              p_apellido: '',
-              rol: 'admin'
-            }));
+          const usuario = json.data;
+          sessionStorage.setItem('sesion', JSON.stringify(usuario));
+
+          feedback.className = 'form-feedback is-success';
+          feedback.textContent = 'Inicio de sesión correcto. Redirigiendo...';
+
+          if (usuario.rol === 'vecino') {
+            window.location.href = '/recolix/API_Usuarios/Vista/index_vecino.html';
+          } else {
             window.location.href = '/recolix/API_Usuarios/Vista/perfil.html';
-
-            return;
           }
 
-          // Caso general: validar contra la API
-          try {
-            const resp = await fetch(`${API}/login`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ ci, contrasenia: password })
-            });
-            const json = await resp.json();
 
-            if (json.status !== 'success') {
-              feedback.className = 'form-feedback is-error';
-              feedback.textContent = json.message || 'Credenciales inválidas.';
-              return;
-            }
-
-            const usuario = json.data;
-            sessionStorage.setItem('sesion', JSON.stringify(usuario));
-
-            feedback.className = 'form-feedback is-success';
-            feedback.textContent = 'Inicio de sesión correcto. Redirigiendo...';
-
-            if (usuario.rol === 'vecino') {
-              window.location.href = '/recolix/API_Usuarios/Vista/index_vecino.html';
-            } else {
-              window.location.href = '/recolix/API_Usuarios/Vista/perfil.html';
-            }
-
-
-          } catch (err) {
-            console.error(err);
-            feedback.className = 'form-feedback is-error';
-            feedback.textContent = 'Error al conectar con el servidor.';
-          }
-        });
-
+        } catch (err) {
+          console.error(err);
+          feedback.className = 'form-feedback is-error';
+          feedback.textContent = 'Error al conectar con el servidor.';
+        }
       });
-    </script>
+
+      const destinos = {
+        vecino: '../API_Usuarios/Vista/index_vecino.html',
+        administrador: '../Backoffice/indexBackoffice.html',
+      };
+
+      window.location.href = destinos[json.data.rol] || 'index_LandingPage.html';
+
+    } catch (e) {
+      feedback.style.display = 'block';
+      feedback.className = 'form-feedback is-error';
+      feedback.textContent = 'Error: ' + e.message;
+    }
+      });
+
+    });
+
+  </script>
 </body>
 
 </html>
