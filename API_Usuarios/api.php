@@ -19,7 +19,7 @@ $config = [
             'insertMethod' => 'crearSolicitud',
             'updateMethod' => null,
             'deleteMethod' => null,
-            'actions' => ['reglasValidacion'],
+            'actions' => ['reglasValidacion', 'getSolicitudesPendientes', 'aprobar', 'rechazar'],],
             'filters' => []
         ],
 

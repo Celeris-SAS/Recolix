@@ -82,5 +82,21 @@ class SolicitudRegistroController {
 
         return $this->solicitudModel->crearSolicitud($ci, $primerNombre, $pApellido, $email, $tel);
     }
+    // RF84 — Aprobar solicitud de registro.
+public function aprobar($ci) {
+    $ci = $this->validarCI($ci);
+    return $this->solicitudModel->aprobar($ci);
+}
+
+// RF85 — Rechazar solicitud de registro.
+public function rechazar($ci) {
+    $ci = $this->validarCI($ci);
+    return $this->solicitudModel->rechazar($ci);
+}
+
+// RF84, RF85 — Listar solicitudes pendientes para el administrador.
+public function getSolicitudesPendientes() {
+    return $this->solicitudModel->getSolicitudesPendientes();
+}
 }
 ?>
