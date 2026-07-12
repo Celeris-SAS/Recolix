@@ -1,3 +1,105 @@
+<?php
+session_start();
+
+// Sin sesión → login de vecinos
+if (!isset($_SESSION['usuario'])) {
+    header('Location: /recolix/LandingPage/login.html');
+    exit;
+}
+
+$rol = $_SESSION['usuario']['rol'] ?? '';
+
+// Rol vecino o cualquier caso inesperado → acceso denegado
+if ($rol === 'vecino' || empty($rol)) {
+    http_response_code(403);
+    ?><!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso no autorizado — Recolix</title>
+    <link rel="stylesheet" href="styleBackoffice.css">
+    <style>
+        .denegado-wrap {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+            gap: 1.25rem;
+        }
+        .denegado-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+        }
+        .denegado-logo img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .denegado-logo span {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--moss);
+        }
+        .denegado-icono {
+            font-size: 3rem;
+            line-height: 1;
+        }
+        .denegado-titulo {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--red);
+        }
+        .denegado-desc {
+            color: var(--muted);
+            font-size: 0.95rem;
+            max-width: 380px;
+            line-height: 1.55;
+        }
+        .btn-volver {
+            display: inline-block;
+            padding: 0.7rem 1.5rem;
+            background: var(--moss);
+            color: #fff;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: background 0.2s;
+            margin-top: 0.25rem;
+        }
+        .btn-volver:hover { background: var(--moss-dark); }
+    </style>
+</head>
+<body>
+<div class="denegado-wrap">
+    <div class="denegado-logo">
+        <img src="../API_Recoleccion/Vista/logoRecolix.png" alt="Recolix">
+        <span>Recolix</span>
+    </div>
+    <div class="denegado-icono">⛔</div>
+    <h1 class="denegado-titulo">Acceso no autorizado</h1>
+    <p class="denegado-desc">
+        Tu cuenta no tiene permisos para acceder al panel de administración de Recolix.
+    </p>
+    <a href="/recolix/LandingPage/index_LandingPage.html" class="btn-volver">Volver a la página principal</a>
+</div>
+</body>
+</html><?php
+    exit;
+}
+
+$usuario        = $_SESSION['usuario'];
+$primerNombre   = htmlspecialchars($usuario['primer_nombre'] ?? '');
+$apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -18,18 +120,18 @@
             </div>
             <nav class="nav-links">
                 <a href="#" class="nav-active">Inicio</a>
-                <a href="../API_Recoleccion/Vista/camiones.html">Camiones</a>
+                <a href="../API_Recoleccion/Vista/camiones.php">Camiones</a>
                 <a href="#">Cuadrillas</a>
                 <a href="../API_Gestion/Vista/contenedores.html">Contenedores</a>
                 <a href="#">Vertederos</a>
                 <a href="#">Centros de Acopio</a>
-                <a href="mapa.html">Mapa</a>
+                <a href="mapa.php">Mapa</a>
                 <a href="#">Reportes</a>
                 <a href="#">Incidencias</a>
             </nav>
         </div>
         <div class="nav-right">
-            <a href="/recolix/API_Usuarios/Vista/perfil.html" class="btn-user" title="Perfil de usuario">
+            <a href="../API_Usuarios/Vista/perfil.html" class="btn-user" title="Perfil de usuario">
                 <img src="../API_Recoleccion/Vista/img/user.svg" alt="Usuario" class="nav-user-icon">
             </a>
             <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menú">
@@ -39,12 +141,12 @@
     </div>
     <nav class="nav-mobile" id="navMobile">
         <a href="#" class="nav-active">Inicio</a>
-        <a href="../API_Recoleccion/Vista/camiones.html">Camiones</a>
+        <a href="../API_Recoleccion/Vista/camiones.php">Camiones</a>
         <a href="#">Cuadrillas</a>
         <a href="../API_Gestion/Vista/contenedores.html">Contenedores</a>
         <a href="#">Vertederos</a>
         <a href="#">Centros de Acopio</a>
-        <a href="mapa.html">Mapa</a>
+        <a href="mapa.php">Mapa</a>
         <a href="#">Reportes</a>
         <a href="#">Incidencias</a>
     </nav>
@@ -53,7 +155,7 @@
 
 <!-- ── HERO ────────────────────────────────────────────────────────── -->
 <section class="hero">
-    <h1 class="hero-title">Bienvenido, [Nombre del usuario]</h1>
+    <h1 class="hero-title">Bienvenido, <?= $primerNombre ?></h1>
     <p class="hero-sub">Panel de administración</p>
 </section>
 
@@ -101,7 +203,7 @@
 <section class="cards-section">
     <div class="cards-grid">
 
-        <a href="../API_Recoleccion/Vista/camiones.html" class="card-operar">
+        <a href="../API_Recoleccion/Vista/camiones.php" class="card-operar">
             <div class="card-content">
                 <div class="card-icon"><img src="../API_Recoleccion/Vista/img/truck-svgrepo-com.svg" alt="" class="card-svg-icon"></div>
                 <h3>Gestión de Camiones</h3>
@@ -141,7 +243,7 @@
             </div>
         </a>
 
-        <a href="mapa.html" class="card-operar">
+        <a href="mapa.php" class="card-operar">
             <div class="card-content">
                 <div class="card-icon"><img src="img/mapa.png" alt="" class="card-svg-icon"></div>
                 <h3>Mapa</h3>
@@ -191,8 +293,8 @@
 </footer>
 
 <script>
-const API_GESTION  = '/recolix/API_Gestion';
-const API_RECOLECCION = '/recolix/API_Recoleccion';
+const API_GESTION      = '/recolix/API_Gestion';
+const API_RECOLECCION  = '/recolix/API_Recoleccion';
 
 async function cargarNovedades() {
     const badges = {
@@ -203,9 +305,8 @@ async function cargarNovedades() {
     const countEl = document.getElementById('novedadesCount');
     let total = 0;
 
-    // ── Incidencias nuevas (endpoint aún no implementado) ──────────
     try {
-        const res = await fetch(`${API_GESTION}/incidencias?estado=Abierta`);
+        const res  = await fetch(`${API_GESTION}/incidencias?estado=Abierta`);
         const json = await res.json();
         if (json.status === 'success' && Array.isArray(json.data)) {
             badges.incidencias.textContent = json.data.length;
@@ -215,9 +316,8 @@ async function cargarNovedades() {
         badges.incidencias.textContent = '0';
     }
 
-    // ── Usuarios nuevos pendientes de aprobación ──────────────────
     try {
-        const res = await fetch(`/recolix/API_Usuarios/usuarios?acceso=pendiente`);
+        const res  = await fetch(`/recolix/API_Usuarios/usuarios?acceso=pendiente`);
         const json = await res.json();
         if (json.status === 'success' && Array.isArray(json.data)) {
             badges.usuarios.textContent = json.data.length;
@@ -227,21 +327,16 @@ async function cargarNovedades() {
         badges.usuarios.textContent = '0';
     }
 
-    // ── Contenedores críticos (desbordados + rotos) ────────────────
     let criticos = 0;
     try {
-        const resDesbordados = await fetch(`${API_GESTION}/contenedores?estado=desbordado`);
-        const jsonDes = await resDesbordados.json();
-        if (jsonDes.status === 'success' && Array.isArray(jsonDes.data)) {
-            criticos += jsonDes.data.length;
-        }
+        const res  = await fetch(`${API_GESTION}/contenedores?estado=desbordado`);
+        const json = await res.json();
+        if (json.status === 'success' && Array.isArray(json.data)) criticos += json.data.length;
     } catch {}
     try {
-        const resRotos = await fetch(`${API_GESTION}/contenedores?estado=roto`);
-        const jsonRot = await resRotos.json();
-        if (jsonRot.status === 'success' && Array.isArray(jsonRot.data)) {
-            criticos += jsonRot.data.length;
-        }
+        const res  = await fetch(`${API_GESTION}/contenedores?estado=roto`);
+        const json = await res.json();
+        if (json.status === 'success' && Array.isArray(json.data)) criticos += json.data.length;
     } catch {}
     badges.contenedores.textContent = criticos;
     total += criticos;

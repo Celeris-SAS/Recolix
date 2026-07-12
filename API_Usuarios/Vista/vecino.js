@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const sesion = JSON.parse(sessionStorage.getItem('sesion'));
 if (!sesion || sesion.rol !== 'vecino') {
-    window.location.href = '../../Landing_Page/login.html';
+    window.location.href = '../../LandingPage/login.html';
     return;
 }
 
