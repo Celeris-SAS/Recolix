@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   // Verificar sesión
   const sesion = JSON.parse(sessionStorage.getItem('sesion'));
   if (!sesion || sesion.rol !== 'vecino') {
-    window.location.href = '../../Landing_Page/login.html';
+    window.location.href = '../../LandingPage/login.html';
     return;
   }
 
