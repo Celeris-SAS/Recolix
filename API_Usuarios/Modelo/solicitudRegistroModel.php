@@ -64,5 +64,39 @@ class SolicitudRegistroModel {
         mysqli_stmt_close($stmt);
         return $existe;
     }
+    public function getSolicitudesPendientes() {
+    $stmt = mysqli_prepare($this->conn,
+        "SELECT ci_usuario, primer_nombre, p_apellido, email, tel
+         FROM USUARIO WHERE acceso = 'pendiente'"
+    );
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $rows = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $rows[] = $row;
+    }
+    mysqli_stmt_close($stmt);
+    return $rows;
+}
+
+public function aprobar($ci) {
+    $stmt = mysqli_prepare($this->conn,
+        "UPDATE USUARIO SET acceso = 'aprobado' WHERE ci_usuario = ?"
+    );
+    mysqli_stmt_bind_param($stmt, 'i', $ci);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+    return true;
+}
+
+public function rechazar($ci) {
+    $stmt = mysqli_prepare($this->conn,
+        "UPDATE USUARIO SET acceso = 'rechazado' WHERE ci_usuario = ?"
+    );
+    mysqli_stmt_bind_param($stmt, 'i', $ci);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+    return true;
+}
 }
 ?>

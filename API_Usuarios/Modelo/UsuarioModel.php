@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../../conexion.php';
+require_once __DIR__ . '/Conexion.php';
 
 class UsuarioModel {
 
@@ -20,7 +20,7 @@ class UsuarioModel {
     public function login($ci, $contrasenia) {
         $stmt = mysqli_prepare(
             $this->conn,
-            "SELECT ci_usuario, primer_nombre, p_apellido, rol, acceso, estado, contrasenia
+            "SELECT ci_usuario, primer_nombre, p_apellido, email, tel, rol, acceso, fecha_registro, contrasenia
              FROM USUARIO WHERE ci_usuario = ?"
         );
         mysqli_stmt_bind_param($stmt, 'i', $ci);
