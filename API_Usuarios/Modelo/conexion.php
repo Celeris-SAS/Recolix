@@ -1,6 +1,6 @@
 <?php
 
-class Conexion {
+class conexion {
 
     private $host = 'localhost';
     private $db   = 'recolix';

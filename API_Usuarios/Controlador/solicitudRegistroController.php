@@ -1,14 +1,15 @@
 <?php
 
-class SolicitudRegistroController {
+require_once __DIR__ . '/conexion.php';
 
-    private $solicitudModel;
+class SolicitudRegistroController {
+    private $db;
 
     public function __construct() {
-        require_once __DIR__ . '/../Modelo/SolicitudRegistro.php';
-        $this->solicitudModel = new SolicitudRegistro();
+        // Instanciamos la conexión
+        $conexion = new conexion();
+        $this->db = $conexion->getConexion();
     }
-
     // ==========================================
     // VALIDACIONES
     // ==========================================
@@ -81,5 +82,21 @@ class SolicitudRegistroController {
 
         return $this->solicitudModel->crearSolicitud($ci, $primerNombre, $pApellido, $email, $tel);
     }
+    // RF84 — Aprobar solicitud de registro.
+public function aprobar($ci) {
+    $ci = $this->validarCI($ci);
+    return $this->solicitudModel->aprobar($ci);
+}
+
+// RF85 — Rechazar solicitud de registro.
+public function rechazar($ci) {
+    $ci = $this->validarCI($ci);
+    return $this->solicitudModel->rechazar($ci);
+}
+
+// RF84, RF85 — Listar solicitudes pendientes para el administrador.
+public function getSolicitudesPendientes() {
+    return $this->solicitudModel->getSolicitudesPendientes();
+}
 }
 ?>

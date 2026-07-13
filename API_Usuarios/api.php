@@ -5,7 +5,7 @@ header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('Access-Control-Allow-Headers: Content-Type');
 
 $config = [
-    'base_path' => '/recolix/App_Vecino/',
+    'base_path' => '/recolix/API_Usuarios/',
     'resources' => [
 
         // RF02 — Solicitud de registro de vecino (formulario de la Landing Page).
@@ -19,7 +19,7 @@ $config = [
             'insertMethod' => 'crearSolicitud',
             'updateMethod' => null,
             'deleteMethod' => null,
-            'actions' => ['reglasValidacion'],
+            'actions' => ['reglasValidacion', 'getSolicitudesPendientes', 'aprobar', 'rechazar'],
             'filters' => []
         ],
 

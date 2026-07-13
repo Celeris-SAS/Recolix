@@ -307,7 +307,7 @@ h3 {
   align-items: center;
   padding-top: 96px;
   color: var(--white);
-  background: url("imagenfondo.jpeg") center/cover no-repeat;
+  background: url("img/imagenfondo.jpeg") center/cover no-repeat;
 }
 
 .hero-inner {

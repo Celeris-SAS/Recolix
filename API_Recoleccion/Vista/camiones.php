@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php'; ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -17,13 +18,13 @@
                 <span class="brand-name">Recolix</span>
             </div>
             <nav class="nav-links">
-                <a href="../../Backoffice/indexBackoffice.html">Inicio</a>
+                <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
                 <a href="#" class="nav-active">Camiones</a>
                 <a href="#">Cuadrillas</a>
                 <a href="../../API_Gestion/Vista/contenedores.html">Contenedores</a>
                 <a href="#">Vertederos</a>
                 <a href="#">Centros de Acopio</a>
-                <a href="#">Mapa</a>
+                <a href="../../Backoffice/mapa.php">Mapa</a>
                 <a href="#">Reportes</a>
                 <a href="#">Incidencias</a>
             </nav>
@@ -38,13 +39,13 @@
         </div>
     </div>
     <nav class="nav-mobile" id="navMobile">
-        <a href="../../Backoffice/indexBackoffice.html">Inicio</a>
+        <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
         <a href="#" class="nav-active">Camiones</a>
         <a href="#">Cuadrillas</a>
         <a href="../../API_Gestion/Vista/contenedores.html">Contenedores</a>
         <a href="#">Vertederos</a>
         <a href="#">Centros de Acopio</a>
-        <a href="#">Mapa</a>
+        <a href="../../Backoffice/mapa.php">Mapa</a>
         <a href="#">Reportes</a>
         <a href="#">Incidencias</a>
     </nav>
@@ -286,8 +287,24 @@
 
 <!-- ── PIE DE PÁGINA ────────────────────────────────────────────────── -->
 <footer class="footer">
+    <div class="footer-grid">
+        <div class="footer-brand">
+            <div class="footer-logo">
+                <img src="logoRecolix.png" alt="Recolix" class="footer-logo-img">
+                <span class="footer-logo-name">Recolix</span>
+            </div>
+            <p>Plataforma de gestión de residuos urbanos para Montevideo.</p>
+        </div>
+        <div class="footer-col">
+            <h3>Navegación</h3>
+            <ul>
+                <li><a href="../../LandingPage/index_LandingPage.html">Página principal</a></li>
+                <li><a href="../../LandingPage/mapa.html">Mapa público</a></li>
+            </ul>
+        </div>
+    </div>
     <div class="footer-hr"></div>
-    <p>&copy; 2026 Celeris SAS. Todos los derechos reservados.</p>
+    <p class="footer-copy">&copy; 2026 Recolix. Todos los derechos reservados.</p>
 </footer>
 
 <script>
@@ -536,8 +553,6 @@ async function guardarCamion(e) {
         }
     }
 
-    // El orden de las claves debe coincidir con los parámetros del controller:
-    // insertCamion($matricula, $tipoCarga, $capacidad, $anio, $modelo, $estado)
     const body = {
         matricula: matricula.toUpperCase(),
         tipoCarga: document.getElementById('tipoCarga').value,
