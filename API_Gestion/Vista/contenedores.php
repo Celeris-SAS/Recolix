@@ -918,8 +918,4 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
 
 </body>
 
-<<<<<<< Updated upstream
 </html>
-=======
-</html>
->>>>>>> Stashed changes
