@@ -20,17 +20,47 @@ if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['rol'] !== 'administrad
 
 <body>
 
-  <header class="dash-header">
-    <div class="container dash-header-inner">
-      <a href="indexBackoffice.html" class="logo">
-        <img src="../LandingPage/Logo.png" alt="Logo Recolix" class="logo-image" />
-        <span class="logo-text">Recolix</span>
-      </a>
-      <div class="header-actions">
-        <a href="logout.php" class="btn btn-outline btn-sm">Cerrar sesión</a>
-      </div>
+ <header class="navbar">
+    <div class="nav-inner">
+        <div class="nav-left">
+            <div class="brand">
+                <img src="img/Logo.png" alt="Recolix" class="brand-logo">
+                <span class="brand-name">Recolix</span>
+            </div>
+            <nav class="nav-links">
+                <a href="../Backoffice/indexBackoffice.php">Inicio</a>
+                <a href="#" class="nav-active">Camiones</a>
+                <a href="#">Cuadrillas</a>
+                <a href="../../API_Gestion/Vista/contenedores.html">Contenedores</a>
+                <a href="#">Vertederos</a>
+                <a href="#">Centros de Acopio</a>
+                <a href="../../Backoffice/mapa.php">Mapa</a>
+                <a href="#">Reportes</a>
+                <a href="#">Incidencias</a>
+            </nav>
+        </div>
+        <div class="nav-right">
+            <a href="/recolix/API_Usuarios/Vista/perfil.html" class="btn-user" title="Perfil de usuario">
+                <img src="img/user.svg" alt="Usuario" class="nav-user-icon">
+            </a>
+            <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menú">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
     </div>
-  </header>
+    <nav class="nav-mobile" id="navMobile">
+        <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
+        <a href="#" class="nav-active">Camiones</a>
+        <a href="#">Cuadrillas</a>
+        <a href="../../API_Gestion/Vista/contenedores.html">Contenedores</a>
+        <a href="#">Vertederos</a>
+        <a href="#">Centros de Acopio</a>
+        <a href="../../Backoffice/mapa.php">Mapa</a>
+        <a href="#">Reportes</a>
+        <a href="#">Incidencias</a>
+    </nav>
+    <div class="nav-hr"></div>
+</header>
 
   <main class="container dash-main">
 
@@ -40,7 +70,7 @@ if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['rol'] !== 'administrad
         <h1>Solicitudes de registro</h1>
         <p class="page-desc">Revisá las solicitudes pendientes y aprobá o rechazá cada una.</p>
       </div>
-      <a href="indexBackoffice.html" class="btn btn-outline btn-sm">← Volver</a>
+      <a href="indexBackoffice.php" class="btn btn-outline btn-sm">← Volver</a>
     </div>
 
     <!-- Feedback global -->
