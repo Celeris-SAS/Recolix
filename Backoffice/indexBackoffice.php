@@ -211,7 +211,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
             </div>
         </a>
 
-        <a href="../API_Gestion/Vista/contenedores.html" class="card-operar">
+        <a href="../API_Gestion/Vista/contenedores.php" class="card-operar">
             <div class="card-content">
                 <div class="card-icon"><img src="img/contenedor.png" alt="" class="card-svg-icon"></div>
                 <h3>Gestión de Contenedores</h3>
