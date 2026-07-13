@@ -73,7 +73,7 @@ class SolicitudRegistroController {
     $pApellido    = $this->validarNombre($pApellido, 'Apellido');
     $email        = $this->validarEmail($email);
     $tel          = $this->validarTel($tel);
-
+   
     // Verificar duplicado antes de intentar insertar.
     $check = mysqli_prepare($this->db, "SELECT ci_usuario FROM USUARIO WHERE ci_usuario = ?");
     mysqli_stmt_bind_param($check, 'i', $ci);
@@ -83,6 +83,8 @@ class SolicitudRegistroController {
         mysqli_stmt_close($check);
         throw new InvalidArgumentException("Ya existe una solicitud registrada con la cédula $ci.");
     }
+    return true;
+   }
    public function getSolicitudesPendientes() {
     $stmt = mysqli_prepare($this->db,
         "SELECT ci_usuario, primer_nombre, p_apellido, email, tel
