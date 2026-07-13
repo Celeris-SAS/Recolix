@@ -1,46 +1,14 @@
 <?php
 
-require_once __DIR__ . '/conexion.php';
-
+require_once __DIR__ . '/../../conexion.php';
 class TrasladoModel {
 
-    protected $Id = "";
-    protected $CamionId = "";
-    protected $CentroId = "";
-    protected $Peso = 0;
-    protected $FechaIngreso = "";
-    protected $conn;
+    private $conn;
 
-    public function __construct($CamionId, $CentroId, $Peso, $FechaIngreso) {
-        $this->CamionId = $CamionId;
-        $this->CentroId = $CentroId;
-        $this->Peso = $Peso;
-        $this->FechaIngreso = $FechaIngreso;
+    public function __construct() {
         $this->conn = new conexion();
-        $this->Id = $this->insertTrasladoResiduo($CamionId, $CentroId, $Peso, $FechaIngreso);
     }
 
-    public function getId() {
-        return $this->Id;
-    }
-
-    public function getCamionId() {
-        return $this->CamionId;
-    }
-
-    public function getCentroId() {
-        return $this->CentroId;
-    }
-
-    public function getPeso() {
-        return $this->Peso;
-    }
-
-    public function getFechaIngreso() {
-        return $this->FechaIngreso;
-    }
-
-    // Inserta un traslado de residuos
     public function insertTrasladoResiduo($camionId, $centroId, $peso, $fechaIngreso) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "INSERT INTO traslado_residuo (CamionId, CentroId, Peso, FechaIngreso) VALUES (?, ?, ?, ?)");
         mysqli_stmt_bind_param($stmt, "iids", $camionId, $centroId, $peso, $fechaIngreso);

@@ -1,74 +1,13 @@
 <?php
 
-require_once __DIR__ . '/conexion.php';
+require_once __DIR__ . '/../../conexion.php';
 
 class CircuitoModel {
 
-    protected $Id = "";
-    protected $MunicipioId = "";
-    protected $Nombre = "";
-    protected $Actividad = "";
-    protected $Turno = "";
-    protected $Frecuencia = "";
-    protected $conn;
+    private $conn;
 
-    public function __construct($MunicipioId, $Nombre, $Actividad, $Turno, $Frecuencia) {
-        $this->MunicipioId = $MunicipioId;
-        $this->Nombre = $Nombre;
-        $this->Actividad = $Actividad;
-        $this->Turno = $Turno;
-        $this->Frecuencia = $Frecuencia;
+    public function __construct() {
         $this->conn = new conexion();
-        $this->Id = $this->altaCircuito($MunicipioId, $Nombre, $Actividad, $Turno, $Frecuencia);
-    }
-
-    public function getId() {
-        return $this->Id;
-    }
-
-    public function getMunicipioId() {
-        return $this->MunicipioId;
-    }
-
-    public function getNombre() {
-        return $this->Nombre;
-    }
-
-    public function getActividad() {
-        return $this->Actividad;
-    }
-
-    public function getTurno() {
-        return $this->Turno;
-    }
-
-    public function getFrecuencia() {
-        return $this->Frecuencia;
-    }
-
-    public function setNombre($Nombre) {
-        $this->Nombre = $Nombre;
-    }
-
-    public function setActividad($Actividad) {
-        $this->Actividad = $Actividad;
-    }
-
-    public function setTurno($Turno) {
-        $turnosValidos = ["mañana", "tarde", "noche"];
-        if (in_array($Turno, $turnosValidos)) {
-            $this->Turno = $Turno;
-        } else {
-            throw new Exception("Turno no válido. Los turnos válidos son: " . implode(", ", $turnosValidos));
-        }
-    }
-
-    public function setFrecuencia($Frecuencia) {
-        $this->Frecuencia = $Frecuencia;
-    }
-
-    public function __toString() {
-        return "Circuito [Id: " . $this->Id . ", MunicipioId: " . $this->MunicipioId . ", Nombre: " . $this->Nombre . ", Actividad: " . $this->Actividad . ", Turno: " . $this->Turno . ", Frecuencia: " . $this->Frecuencia . "]";
     }
 
     public function altaCircuito($municipioId, $nombre, $actividad, $turno, $frecuencia) {

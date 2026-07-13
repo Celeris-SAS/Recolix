@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php'; ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -17,13 +18,13 @@
                 <span class="brand-name">Recolix</span>
             </div>
             <nav class="nav-links">
-                <a href="#">Inicio</a>
+                <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
                 <a href="#" class="nav-active">Camiones</a>
                 <a href="#">Cuadrillas</a>
-                <a href="#">Contenedores</a>
+                <a href="../../API_Gestion/Vista/contenedores.html">Contenedores</a>
                 <a href="#">Vertederos</a>
                 <a href="#">Centros de Acopio</a>
-                <a href="#">Mapa</a>
+                <a href="../../Backoffice/mapa.php">Mapa</a>
                 <a href="#">Reportes</a>
                 <a href="#">Incidencias</a>
             </nav>
@@ -38,13 +39,13 @@
         </div>
     </div>
     <nav class="nav-mobile" id="navMobile">
-        <a href="#">Inicio</a>
+        <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
         <a href="#" class="nav-active">Camiones</a>
         <a href="#">Cuadrillas</a>
-        <a href="#">Contenedores</a>
+        <a href="../../API_Gestion/Vista/contenedores.html">Contenedores</a>
         <a href="#">Vertederos</a>
         <a href="#">Centros de Acopio</a>
-        <a href="#">Mapa</a>
+        <a href="../../Backoffice/mapa.php">Mapa</a>
         <a href="#">Reportes</a>
         <a href="#">Incidencias</a>
     </nav>
@@ -249,9 +250,9 @@
                     <label for="estado">Estado</label>
                     <select id="estado" class="form-input">
                         <option value="disponible">Disponible</option>
-                        <option value="en ruta">En ruta</option>
-                        <option value="en mantenimiento">En mantenimiento</option>
-                        <option value="de baja">De baja</option>
+                        <option value="en_ruta">En ruta</option>
+                        <option value="en_mantenimiento">En mantenimiento</option>
+                        <option value="de_baja">De baja</option>
                     </select>
                 </div>
             </div>
@@ -286,8 +287,24 @@
 
 <!-- ── PIE DE PÁGINA ────────────────────────────────────────────────── -->
 <footer class="footer">
+    <div class="footer-grid">
+        <div class="footer-brand">
+            <div class="footer-logo">
+                <img src="logoRecolix.png" alt="Recolix" class="footer-logo-img">
+                <span class="footer-logo-name">Recolix</span>
+            </div>
+            <p>Plataforma de gestión de residuos urbanos para Montevideo.</p>
+        </div>
+        <div class="footer-col">
+            <h3>Navegación</h3>
+            <ul>
+                <li><a href="../../LandingPage/index_LandingPage.html">Página principal</a></li>
+                <li><a href="../../LandingPage/mapa.html">Mapa público</a></li>
+            </ul>
+        </div>
+    </div>
     <div class="footer-hr"></div>
-    <p>&copy; 2024 Celeris SAS. Todos los derechos reservados.</p>
+    <p class="footer-copy">&copy; 2026 Recolix. Todos los derechos reservados.</p>
 </footer>
 
 <script>
@@ -308,7 +325,7 @@ function reglasFallback() {
         capacidad: { tipo: 'entero', min: 1, max: 100000, label: 'Capacidad' },
         anio: { tipo: 'entero', min: 1990, max: 2030, label: 'Año' },
         modelo: { max: 100, label: 'Modelo' },
-        estado: { valores: ['disponible', 'en ruta', 'en mantenimiento', 'de baja'], max: 50, label: 'Estado' }
+        estado: { valores: ['disponible', 'en_ruta', 'en_mantenimiento', 'de_baja'], max: 50, label: 'Estado' }
     };
 }
 
@@ -383,13 +400,13 @@ function actualizarFiltroValor() {
     if (sinValor.includes(tipo) || !tipo) return;
 
     const listas = {
-        estado:    ['disponible', 'en ruta', 'en mantenimiento', 'de baja'],
+        estado:    ['disponible', 'en_ruta', 'en_mantenimiento', 'de_baja'],
         tipoCarga: ['carga_lateral', 'carga_trasera', 'puerta_a_puerta']
     };
 
     if (listas[tipo]) {
         select.innerHTML = '<option value="">— Seleccionar —</option>' +
-            listas[tipo].map(v => `<option value="${v}">${v}</option>`).join('');
+            listas[tipo].map(v => `<option value="${v}">${formatearValor(v)}</option>`).join('');
         select.style.display = '';
     } else {
         const placeholders = { anio: 'ej: 2020', modelo: 'ej: Ford F-550', capacidad: 'kg (ej: 5000)' };
@@ -413,15 +430,18 @@ async function aplicarFiltro() {
         return;
     }
 
-    const qv = sinValor.includes(tipo) ? '1' : encodeURIComponent(valor);
+    const accionMap = { disponibilidad: 'filtrarDisponibilidad', mantenimiento: 'filtrarMantenimiento' };
+    const url = sinValor.includes(tipo)
+        ? `${API_BASE}/camiones/${accionMap[tipo]}`
+        : `${API_BASE}/camiones?${tipo}=${encodeURIComponent(valor)}`;
     setLoading(true);
     try {
-        const res  = await fetch(`${API_BASE}/camiones?${tipo}=${qv}`);
+        const res  = await fetch(url);
         const json = await res.json();
         if (json.status === 'success') {
             renderTabla(json.data);
             const labels = {
-                estado: `Estado: ${valor}`, tipoCarga: `Tipo: ${valor}`,
+                estado: `Estado: ${formatearValor(valor)}`, tipoCarga: `Tipo: ${formatearValor(valor)}`,
                 disponibilidad: 'Disponibles', mantenimiento: 'En Mantenimiento',
                 anio: `Año: ${valor}`, modelo: `Modelo: ${valor}`,
                 capacidad: `Capacidad ≥ ${valor} kg`
@@ -448,18 +468,18 @@ function abrirModalAgregar() {
 // ── MODAL EDITAR ──────────────────────────────────────────────────────
 function abrirModalEditar(camion) {
     document.getElementById('modalTitle').textContent = 'Editar Camión';
-    document.getElementById('camionId').value  = camion.Id;
-    document.getElementById('matricula').value = camion.Matricula;
-    document.getElementById('capacidad').value = camion.Capacidad;
-    document.getElementById('anio').value      = camion.Anio;
-    document.getElementById('modelo').value    = camion.Modelo;
+    document.getElementById('camionId').value  = camion.id_camion;
+    document.getElementById('matricula').value = camion.matricula;
+    document.getElementById('capacidad').value = camion.capacidad;
+    document.getElementById('anio').value      = camion.anio;
+    document.getElementById('modelo').value    = camion.modelo;
 
     const tipoCargaEl = document.getElementById('tipoCarga');
-    tipoCargaEl.value = camion.TipoCarga;
+    tipoCargaEl.value = camion.tipo_carga;
     if (!tipoCargaEl.value) tipoCargaEl.selectedIndex = 0;
 
     const estadoEl = document.getElementById('estado');
-    estadoEl.value = camion.Estado;
+    estadoEl.value = camion.estado;
     if (!estadoEl.value) estadoEl.selectedIndex = 0;
 
     document.getElementById('modalForm').style.display = 'flex';
@@ -533,8 +553,6 @@ async function guardarCamion(e) {
         }
     }
 
-    // El orden de las claves debe coincidir con los parámetros del controller:
-    // insertCamion($matricula, $tipoCarga, $capacidad, $anio, $modelo, $estado)
     const body = {
         matricula: matricula.toUpperCase(),
         tipoCarga: document.getElementById('tipoCarga').value,
@@ -619,12 +637,12 @@ function actualizarPlaceholderModificar() {
 
     const listas = {
         tipoCarga: ['carga_lateral', 'carga_trasera', 'puerta_a_puerta'],
-        estado:    ['disponible', 'en ruta', 'en mantenimiento', 'de baja']
+        estado:    ['disponible', 'en_ruta', 'en_mantenimiento', 'de_baja']
     };
 
     if (listas[campo]) {
         select.innerHTML = listas[campo].map((v, i) =>
-            `<option value="${v}"${i === 0 ? ' selected' : ''}>${v}</option>`
+            `<option value="${v}"${i === 0 ? ' selected' : ''}>${formatearValor(v)}</option>`
         ).join('');
         select.style.display = '';
     } else {
@@ -635,7 +653,7 @@ function actualizarPlaceholderModificar() {
             modelo:    'ej: Ford F-550'
         };
         const maxlengths = {
-            matricula: 6,
+            matricula: 7,
             capacidad: 6,
             anio:      4,
             modelo:    100
@@ -700,12 +718,12 @@ async function modificarCamion() {
         const camion = json.data;
 
         const campoMap = {
-            matricula: 'Matricula',
-            tipoCarga: 'TipoCarga',
-            capacidad: 'Capacidad',
-            anio:      'Anio',
-            modelo:    'Modelo',
-            estado:    'Estado'
+            matricula: 'matricula',
+            tipoCarga: 'tipo_carga',
+            capacidad: 'capacidad',
+            anio:      'anio',
+            modelo:    'modelo',
+            estado:    'estado'
         };
 
         camion[campoMap[campo]] = campo === 'matricula' ? valor.toUpperCase() : valor;
@@ -714,12 +732,12 @@ async function modificarCamion() {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                matricula: camion.Matricula,
-                tipoCarga: camion.TipoCarga,
-                capacidad: parseInt(camion.Capacidad),
-                anio:      parseInt(camion.Anio),
-                modelo:    camion.Modelo,
-                estado:    camion.Estado
+                matricula: camion.matricula,
+                tipoCarga: camion.tipo_carga,
+                capacidad: parseInt(camion.capacidad),
+                anio:      parseInt(camion.anio),
+                modelo:    camion.modelo,
+                estado:    camion.estado
             })
         });
         const putJson = await putRes.json();
@@ -746,7 +764,7 @@ async function darDeBajaCamion() {
         const res  = await fetch(`${API_BASE}/camiones/${id}`);
         const json = await res.json();
         if (json.status === 'success' && json.data) {
-            confirmarBorrar(json.data.Id, json.data.Matricula);
+            confirmarBorrar(json.data.id_camion, json.data.matricula);
             ocultarControles();
         } else {
             mostrarToast(json.message || 'Camión no encontrado', 'error');
@@ -778,25 +796,29 @@ function renderTabla(camiones) {
     camiones.forEach(c => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td class="td-id" data-label="ID">${c.Id}</td>
-            <td data-label="Matrícula"><strong>${c.Matricula}</strong></td>
-            <td data-label="Tipo de Carga">${c.TipoCarga}</td>
-            <td data-label="Capacidad (kg)">${Number(c.Capacidad).toLocaleString()}</td>
-            <td data-label="Año">${c.Anio}</td>
-            <td data-label="Modelo">${c.Modelo}</td>
-            <td data-label="Estado"><span class="badge badge-${badgeClass(c.Estado)}">${c.Estado}</span></td>
+            <td class="td-id" data-label="ID">${c.id_camion}</td>
+            <td data-label="Matrícula"><strong>${c.matricula}</strong></td>
+            <td data-label="Tipo de Carga">${formatearValor(c.tipo_carga)}</td>
+            <td data-label="Capacidad (kg)">${Number(c.capacidad).toLocaleString()}</td>
+            <td data-label="Año">${c.anio}</td>
+            <td data-label="Modelo">${c.modelo}</td>
+            <td data-label="Estado"><span class="badge badge-${badgeClass(c.estado)}">${formatearValor(c.estado)}</span></td>
             <td class="td-actions" data-label="Acciones">
                 <button class="btn-action" onclick='abrirModalEditar(${JSON.stringify(c)})' title="Editar">✏️</button>
-                <button class="btn-action" onclick="verificarDisponibilidad(${c.Id},'${c.Matricula}')" title="Verificar disponibilidad">✅</button>
-                <button class="btn-action" onclick="confirmarBorrar(${c.Id},'${c.Matricula}')" title="Eliminar">🗑️</button>
+                <button class="btn-action" onclick="verificarDisponibilidad(${c.id_camion},'${c.matricula}')" title="Verificar disponibilidad">✅</button>
+                <button class="btn-action" onclick="confirmarBorrar(${c.id_camion},'${c.matricula}')" title="Eliminar">🗑️</button>
             </td>
         `;
         tbody.appendChild(tr);
     });
 }
 
+function formatearValor(v) {
+    return v.replace(/_/g, ' ');
+}
+
 function badgeClass(estado) {
-    const map = { 'disponible': 'success', 'en ruta': 'info', 'en mantenimiento': 'warning', 'de baja': 'danger' };
+    const map = { 'disponible': 'success', 'en_ruta': 'info', 'en_mantenimiento': 'warning', 'de_baja': 'danger' };
     return map[estado] ?? 'neutral';
 }
 
