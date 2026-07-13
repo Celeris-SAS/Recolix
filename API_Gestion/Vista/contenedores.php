@@ -1,4 +1,8 @@
+<<<<<<< Updated upstream
 <?php 
+=======
+<?php
+>>>>>>> Stashed changes
 require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
 ?>
 <!DOCTYPE html>
@@ -43,6 +47,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             </div>
         </div>
         <nav class="nav-mobile" id="navMobile">
+<<<<<<< Updated upstream
     <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
     <a href="../../API_Recoleccion/Vista/camiones.php">Camiones</a>
     <a href="#">Cuadrillas</a>
@@ -53,6 +58,18 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
     <a href="#">Reportes</a>
     <a href="#">Incidencias</a>
 </nav>
+=======
+            <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
+            <a href="../../API_Recoleccion/Vista/camiones.php">Camiones</a>
+            <a href="#">Cuadrillas</a>
+            <a href="#" class="nav-active">Contenedores</a>
+            <a href="#">Vertederos</a>
+            <a href="#">Centros de Acopio</a>
+            <a href="../../Backoffice/mapa.php">Mapa</a>
+            <a href="#">Reportes</a>
+            <a href="#">Incidencias</a>
+        </nav>
+>>>>>>> Stashed changes
         <div class="nav-hr"></div>
     </header>
 
@@ -68,7 +85,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
 
             <div class="card-operar" onclick="abrirModalAgregar()">
                 <div class="card-content">
-                    <div class="card-icon"><img src="plus.svg" alt="" class="card-svg-icon"></div>
+                    <div class="card-icon"><img src="img/plus.svg" alt="" class="card-svg-icon"></div>
                     <h3>Agregar Contenedor</h3>
                     <p>Registrar un nuevo contenedor</p>
                     <button class="card-btn">Agregar</button>
@@ -77,7 +94,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
 
             <div class="card-operar" onclick="toggleFiltros()">
                 <div class="card-content">
-                    <div class="card-icon"><img src="loupe.svg" alt="" class="card-svg-icon"></div>
+                    <div class="card-icon"><img src="img/loupe.svg" alt="" class="card-svg-icon"></div>
                     <h3>Filtrar</h3>
                     <p>Buscar por municipio, tipo o estado...</p>
                     <button class="card-btn">Filtrar</button>
@@ -86,7 +103,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
 
             <div class="card-operar" onclick="toggleBusquedaId()">
                 <div class="card-content">
-                    <div class="card-icon"><img src="question.svg" alt="" class="card-svg-icon"></div>
+                    <div class="card-icon"><img src="img/question.svg" alt="" class="card-svg-icon"></div>
                     <h3>Buscar por ID</h3>
                     <p>Obtener un contenedor específico</p>
                     <button class="card-btn">Buscar</button>
@@ -95,7 +112,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
 
             <div class="card-operar" onclick="toggleModificar()">
                 <div class="card-content">
-                    <div class="card-icon"><img src="refresh.svg" alt="" class="card-svg-icon"></div>
+                    <div class="card-icon"><img src="img/refresh.svg" alt="" class="card-svg-icon"></div>
                     <h3>Modificar Contenedor</h3>
                     <p>Editar datos de un contenedor existente</p>
                     <button class="card-btn">Modificar</button>
@@ -104,7 +121,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
 
             <div class="card-operar" onclick="toggleDarDeBaja()">
                 <div class="card-content">
-                    <div class="card-icon"><img src="minus.svg" alt="" class="card-svg-icon"></div>
+                    <div class="card-icon"><img src="img/minus.svg" alt="" class="card-svg-icon"></div>
                     <h3>Dar de Baja</h3>
                     <p>Desactivar un contenedor del registro</p>
                     <button class="card-btn">Dar de Baja</button>
@@ -812,9 +829,9 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             });
         }
         function formatearEstado(estado) {
-    const texto = estado.replace(/_/g, ' ');
-    return texto.charAt(0).toUpperCase() + texto.slice(1);
-}
+            const texto = estado.replace(/_/g, ' ');
+            return texto.charAt(0).toUpperCase() + texto.slice(1);
+        }
 
         function badgeClass(estado) {
             const map = {
@@ -918,4 +935,8 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
 
 </body>
 
+<<<<<<< Updated upstream
 </html>
+=======
+</html>
+>>>>>>> Stashed changes
