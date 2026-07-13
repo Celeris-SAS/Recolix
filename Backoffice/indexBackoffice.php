@@ -266,6 +266,13 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
                 <p>Administrar centros de acopio</p>
             </div>
         </a>
+        <a href="#" class="card-operar">
+            <div class="card-content">
+                <div class="card-icon"><img src="../API_Usuarios/Vista/img/user.svg" alt="" class="card-svg-icon"></div>
+                <h3>Usuarios</h3>
+                <p>Administrar usuarios del sistema</p>
+            </div>
+        </a>
 
     </div>
 </section>

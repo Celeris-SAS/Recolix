@@ -22,7 +22,7 @@
                 <a href="indexBackoffice.php">Inicio</a>
                 <a href="../API_Recoleccion/Vista/camiones.php">Camiones</a>
                 <a href="#">Cuadrillas</a>
-                <a href="../API_Gestion/Vista/contenedores.html">Contenedores</a>
+                <a href="../API_Gestion/Vista/contenedores.php">Contenedores</a>
                 <a href="#">Vertederos</a>
                 <a href="#">Centros de Acopio</a>
                 <a href="mapa.php" class="nav-active">Mapa</a>
@@ -43,7 +43,7 @@
         <a href="indexBackoffice.php">Inicio</a>
         <a href="../API_Recoleccion/Vista/camiones.php">Camiones</a>
         <a href="#">Cuadrillas</a>
-        <a href="../API_Gestion/Vista/contenedores.html">Contenedores</a>
+        <a href="../API_Gestion/Vista/contenedores.php">Contenedores</a>
         <a href="#">Vertederos</a>
         <a href="#">Centros de Acopio</a>
         <a href="mapa.php" class="nav-active">Mapa</a>
@@ -116,7 +116,6 @@
     <p class="footer-copy">&copy; 2026 Recolix. Todos los derechos reservados.</p>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.8.0/proj4js.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="../LandingPage/mapaContenedores.js"></script>
 <script>
