@@ -43,18 +43,6 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             </div>
         </div>
         <nav class="nav-mobile" id="navMobile">
-<<<<<<< Updated upstream
-    <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
-    <a href="../../API_Recoleccion/Vista/camiones.php">Camiones</a>
-    <a href="#">Cuadrillas</a>
-    <a href="#" class="nav-active">Contenedores</a>
-    <a href="#">Vertederos</a>
-    <a href="#">Centros de Acopio</a>
-    <a href="../../Backoffice/mapa.php">Mapa</a>
-    <a href="#">Reportes</a>
-    <a href="#">Incidencias</a>
-</nav>
-=======
             <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
             <a href="../../API_Recoleccion/Vista/camiones.php">Camiones</a>
             <a href="#">Cuadrillas</a>
@@ -65,7 +53,6 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             <a href="#">Reportes</a>
             <a href="#">Incidencias</a>
         </nav>
->>>>>>> Stashed changes
         <div class="nav-hr"></div>
     </header>
 
