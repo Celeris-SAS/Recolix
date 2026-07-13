@@ -82,21 +82,41 @@ class SolicitudRegistroController {
 
         return $this->solicitudModel->crearSolicitud($ci, $primerNombre, $pApellido, $email, $tel);
     }
-    // RF84 — Aprobar solicitud de registro.
+   public function getSolicitudesPendientes() {
+    $stmt = mysqli_prepare($this->db,
+        "SELECT ci_usuario, primer_nombre, p_apellido, email, tel
+         FROM USUARIO WHERE acceso = 'pendiente'"
+    );
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $rows = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $rows[] = $row;
+    }
+    mysqli_stmt_close($stmt);
+    return $rows;
+}
+
 public function aprobar($ci) {
-    $ci = $this->validarCI($ci);
-    return $this->solicitudModel->aprobar($ci);
+    $ci = intval($ci);
+    $stmt = mysqli_prepare($this->db,
+        "UPDATE USUARIO SET acceso = 'aprobado' WHERE ci_usuario = ?"
+    );
+    mysqli_stmt_bind_param($stmt, 'i', $ci);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+    return true;
 }
 
-// RF85 — Rechazar solicitud de registro.
 public function rechazar($ci) {
-    $ci = $this->validarCI($ci);
-    return $this->solicitudModel->rechazar($ci);
-}
-
-// RF84, RF85 — Listar solicitudes pendientes para el administrador.
-public function getSolicitudesPendientes() {
-    return $this->solicitudModel->getSolicitudesPendientes();
+    $ci = intval($ci);
+    $stmt = mysqli_prepare($this->db,
+        "UPDATE USUARIO SET acceso = 'rechazado' WHERE ci_usuario = ?"
+    );
+    mysqli_stmt_bind_param($stmt, 'i', $ci);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+    return true;
 }
 }
 ?>
