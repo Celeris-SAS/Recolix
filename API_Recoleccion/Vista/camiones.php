@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php'; ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -17,13 +18,13 @@
                 <span class="brand-name">Recolix</span>
             </div>
             <nav class="nav-links">
-                <a href="../../Backoffice/indexBackoffice.html">Inicio</a>
+                <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
                 <a href="#" class="nav-active">Camiones</a>
                 <a href="#">Cuadrillas</a>
                 <a href="../../API_Gestion/Vista/contenedores.html">Contenedores</a>
                 <a href="#">Vertederos</a>
                 <a href="#">Centros de Acopio</a>
-                <a href="#">Mapa</a>
+                <a href="../../Backoffice/mapa.php">Mapa</a>
                 <a href="#">Reportes</a>
                 <a href="#">Incidencias</a>
             </nav>
@@ -38,13 +39,13 @@
         </div>
     </div>
     <nav class="nav-mobile" id="navMobile">
-        <a href="../../Backoffice/indexBackoffice.html">Inicio</a>
+        <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
         <a href="#" class="nav-active">Camiones</a>
         <a href="#">Cuadrillas</a>
         <a href="../../API_Gestion/Vista/contenedores.html">Contenedores</a>
         <a href="#">Vertederos</a>
         <a href="#">Centros de Acopio</a>
-        <a href="#">Mapa</a>
+        <a href="../../Backoffice/mapa.php">Mapa</a>
         <a href="#">Reportes</a>
         <a href="#">Incidencias</a>
     </nav>
@@ -552,8 +553,6 @@ async function guardarCamion(e) {
         }
     }
 
-    // El orden de las claves debe coincidir con los parámetros del controller:
-    // insertCamion($matricula, $tipoCarga, $capacidad, $anio, $modelo, $estado)
     const body = {
         matricula: matricula.toUpperCase(),
         tipoCarga: document.getElementById('tipoCarga').value,

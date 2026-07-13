@@ -1,3 +1,6 @@
+<?php
+require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -19,13 +22,13 @@
                     <span class="brand-name">Recolix</span>
                 </div>
                 <nav class="nav-links">
-                    <a href="../../Backoffice/indexBackoffice.html">Inicio</a>
-                    <a href="../../API_Recoleccion/Vista/camiones.html">Camiones</a>
-                    <a href="#">Cuadrillas</a>
+                <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
+                <a href="../../API_Recoleccion/Vista/camiones.php">Camiones</a>
+                <a href="#">Cuadrillas</a>
                     <a href="#" class="nav-active">Contenedores</a>
                     <a href="#">Vertederos</a>
                     <a href="#">Centros de Acopio</a>
-                    <a href="#">Mapa</a>
+                    <a href="../../Backoffice/mapa.php">Mapa</a>
                     <a href="#">Reportes</a>
                     <a href="#">Incidencias</a>
                 </nav>
@@ -40,13 +43,13 @@
             </div>
         </div>
         <nav class="nav-mobile" id="navMobile">
-            <a href="../../Backoffice/indexBackoffice.html">Inicio</a>
-            <a href="../../API_Recoleccion/Vista/camiones.html">Camiones</a>
+            <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
+            <a href="../../API_Recoleccion/Vista/camiones.php">Camiones</a>
             <a href="#">Cuadrillas</a>
             <a href="#" class="nav-active">Contenedores</a>
             <a href="#">Vertederos</a>
             <a href="#">Centros de Acopio</a>
-            <a href="#">Mapa</a>
+            <a href="../../Backoffice/mapa.php">Mapa</a>
             <a href="#">Reportes</a>
             <a href="#">Incidencias</a>
         </nav>
@@ -65,7 +68,7 @@
 
             <div class="card-operar" onclick="abrirModalAgregar()">
                 <div class="card-content">
-                    <div class="card-icon"><img src="plus.svg" alt="" class="card-svg-icon"></div>
+                    <div class="card-icon"><img src="img/plus.svg" alt="" class="card-svg-icon"></div>
                     <h3>Agregar Contenedor</h3>
                     <p>Registrar un nuevo contenedor</p>
                     <button class="card-btn">Agregar</button>
@@ -74,7 +77,7 @@
 
             <div class="card-operar" onclick="toggleFiltros()">
                 <div class="card-content">
-                    <div class="card-icon"><img src="loupe.svg" alt="" class="card-svg-icon"></div>
+                    <div class="card-icon"><img src="img/loupe.svg" alt="" class="card-svg-icon"></div>
                     <h3>Filtrar</h3>
                     <p>Buscar por municipio, tipo o estado...</p>
                     <button class="card-btn">Filtrar</button>
@@ -83,7 +86,7 @@
 
             <div class="card-operar" onclick="toggleBusquedaId()">
                 <div class="card-content">
-                    <div class="card-icon"><img src="question.svg" alt="" class="card-svg-icon"></div>
+                    <div class="card-icon"><img src="img/question.svg" alt="" class="card-svg-icon"></div>
                     <h3>Buscar por ID</h3>
                     <p>Obtener un contenedor específico</p>
                     <button class="card-btn">Buscar</button>
@@ -92,7 +95,7 @@
 
             <div class="card-operar" onclick="toggleModificar()">
                 <div class="card-content">
-                    <div class="card-icon"><img src="refresh.svg" alt="" class="card-svg-icon"></div>
+                    <div class="card-icon"><img src="img/refresh.svg" alt="" class="card-svg-icon"></div>
                     <h3>Modificar Contenedor</h3>
                     <p>Editar datos de un contenedor existente</p>
                     <button class="card-btn">Modificar</button>
@@ -101,7 +104,7 @@
 
             <div class="card-operar" onclick="toggleDarDeBaja()">
                 <div class="card-content">
-                    <div class="card-icon"><img src="minus.svg" alt="" class="card-svg-icon"></div>
+                    <div class="card-icon"><img src="img/minus.svg" alt="" class="card-svg-icon"></div>
                     <h3>Dar de Baja</h3>
                     <p>Desactivar un contenedor del registro</p>
                     <button class="card-btn">Dar de Baja</button>
@@ -291,9 +294,25 @@
 
     <!-- ── PIE DE PÁGINA ────────────────────────────────────────────────── -->
     <footer class="footer">
-        <div class="footer-hr"></div>
-        <p>&copy; 2026 Celeris SAS. Todos los derechos reservados.</p>
-    </footer>
+    <div class="footer-grid">
+        <div class="footer-brand">
+            <div class="footer-logo">
+                <img src="logoRecolix.png" alt="Recolix" class="footer-logo-img">
+                <span class="footer-logo-name">Recolix</span>
+            </div>
+            <p>Plataforma de gestión de residuos urbanos para Montevideo.</p>
+        </div>
+        <div class="footer-col">
+            <h3>Navegación</h3>
+            <ul>
+                <li><a href="../../LandingPage/index_LandingPage.html">Página principal</a></li>
+                <li><a href="../../LandingPage/mapa.html">Mapa público</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-hr"></div>
+    <p class="footer-copy">&copy; 2026 Recolix. Todos los derechos reservados.</p>
+</footer>
 
     <script>
         const API_BASE = '/recolix/API_Gestion';
@@ -793,9 +812,9 @@
             });
         }
         function formatearEstado(estado) {
-    const texto = estado.replace(/_/g, ' ');
-    return texto.charAt(0).toUpperCase() + texto.slice(1);
-}
+            const texto = estado.replace(/_/g, ' ');
+            return texto.charAt(0).toUpperCase() + texto.slice(1);
+        }
 
         function badgeClass(estado) {
             const map = {
@@ -900,4 +919,3 @@
 </body>
 
 </html>
-

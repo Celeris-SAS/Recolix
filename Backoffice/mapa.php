@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/verificacion_sesion.php'; ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -18,13 +19,13 @@
                 <span class="brand-name">Recolix</span>
             </div>
             <nav class="nav-links">
-                <a href="indexBackoffice.html">Inicio</a>
-                <a href="../API_Recoleccion/Vista/camiones.html">Camiones</a>
+                <a href="indexBackoffice.php">Inicio</a>
+                <a href="../API_Recoleccion/Vista/camiones.php">Camiones</a>
                 <a href="#">Cuadrillas</a>
                 <a href="../API_Gestion/Vista/contenedores.html">Contenedores</a>
                 <a href="#">Vertederos</a>
                 <a href="#">Centros de Acopio</a>
-                <a href="mapa.html" class="nav-active">Mapa</a>
+                <a href="mapa.php" class="nav-active">Mapa</a>
                 <a href="#">Reportes</a>
                 <a href="#">Incidencias</a>
             </nav>
@@ -39,13 +40,13 @@
         </div>
     </div>
     <nav class="nav-mobile" id="navMobile">
-        <a href="indexBackoffice.html">Inicio</a>
-        <a href="../API_Recoleccion/Vista/camiones.html">Camiones</a>
+        <a href="indexBackoffice.php">Inicio</a>
+        <a href="../API_Recoleccion/Vista/camiones.php">Camiones</a>
         <a href="#">Cuadrillas</a>
         <a href="../API_Gestion/Vista/contenedores.html">Contenedores</a>
         <a href="#">Vertederos</a>
         <a href="#">Centros de Acopio</a>
-        <a href="mapa.html" class="nav-active">Mapa</a>
+        <a href="mapa.php" class="nav-active">Mapa</a>
         <a href="#">Reportes</a>
         <a href="#">Incidencias</a>
     </nav>
