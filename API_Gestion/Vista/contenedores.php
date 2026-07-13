@@ -1,8 +1,4 @@
-<<<<<<< Updated upstream
-<?php 
-=======
 <?php
->>>>>>> Stashed changes
 require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
 ?>
 <!DOCTYPE html>
