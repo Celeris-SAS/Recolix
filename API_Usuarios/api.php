@@ -6,7 +6,6 @@ header('Access-Control-Allow-Headers: Content-Type');
 
 $config = [
 'base_path' => '/recolix/API_Usuarios/api.php',
-
     'resources' => [
 
         // RF02 — Solicitud de registro de vecino (formulario de la Landing Page).

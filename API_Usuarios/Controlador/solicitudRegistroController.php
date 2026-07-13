@@ -1,7 +1,6 @@
 <?php
 
 require_once __DIR__ . '/../Modelo/conexion.php';
-
 class SolicitudRegistroController {
     private $db;
 
@@ -68,19 +67,21 @@ class SolicitudRegistroController {
     // Recibe los datos del formulario de la Landing Page y crea la solicitud.
     // La solicitud queda en estado 'pendiente' hasta que el administrador la apruebe (RF84).
     // Esta validación se repite aquí además de en el frontend (RNF12).
-    public function crearSolicitud($ci, $primerNombre, $pApellido, $email, $tel) {
-        $ci           = $this->validarCI($ci);
-        $primerNombre = $this->validarNombre($primerNombre, 'Nombre');
-        $pApellido    = $this->validarNombre($pApellido, 'Apellido');
-        $email        = $this->validarEmail($email);
-        $tel          = $this->validarTel($tel);
+   public function crearSolicitud($ci, $primerNombre, $pApellido, $email, $tel) {
+    $ci           = $this->validarCI($ci);
+    $primerNombre = $this->validarNombre($primerNombre, 'Nombre');
+    $pApellido    = $this->validarNombre($pApellido, 'Apellido');
+    $email        = $this->validarEmail($email);
+    $tel          = $this->validarTel($tel);
 
-        // Verificar duplicado antes de intentar insertar.
-        if ($this->solicitudModel->existePorCI($ci)) {
-            throw new InvalidArgumentException("Ya existe una solicitud registrada con la cédula $ci.");
-        }
-
-        return $this->solicitudModel->crearSolicitud($ci, $primerNombre, $pApellido, $email, $tel);
+    // Verificar duplicado antes de intentar insertar.
+    $check = mysqli_prepare($this->db, "SELECT ci_usuario FROM USUARIO WHERE ci_usuario = ?");
+    mysqli_stmt_bind_param($check, 'i', $ci);
+    mysqli_stmt_execute($check);
+    mysqli_stmt_store_result($check);
+    if (mysqli_stmt_num_rows($check) > 0) {
+        mysqli_stmt_close($check);
+        throw new InvalidArgumentException("Ya existe una solicitud registrada con la cédula $ci.");
     }
    public function getSolicitudesPendientes() {
     $stmt = mysqli_prepare($this->db,
