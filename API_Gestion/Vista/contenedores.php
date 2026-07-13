@@ -24,7 +24,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 <nav class="nav-links">
                 <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
                 <a href="../../API_Recoleccion/Vista/camiones.php">Camiones</a>
-    <           <a href="#">Cuadrillas</a>
+                <a href="#">Cuadrillas</a>
                     <a href="#" class="nav-active">Contenedores</a>
                     <a href="#">Vertederos</a>
                     <a href="#">Centros de Acopio</a>
