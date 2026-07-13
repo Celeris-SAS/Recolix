@@ -22,9 +22,9 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                     <span class="brand-name">Recolix</span>
                 </div>
                 <nav class="nav-links">
-                    <a href="#">Inicio</a>
-                    <a href="#">Camiones</a>
-                    <a href="#">Cuadrillas</a>
+                <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
+                <a href="../../API_Recoleccion/Vista/camiones.php">Camiones</a>
+    <           <a href="#">Cuadrillas</a>
                     <a href="#" class="nav-active">Contenedores</a>
                     <a href="#">Vertederos</a>
                     <a href="#">Centros de Acopio</a>
