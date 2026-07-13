@@ -1,3 +1,6 @@
+<?php 
+require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -25,7 +28,7 @@
                     <a href="#" class="nav-active">Contenedores</a>
                     <a href="#">Vertederos</a>
                     <a href="#">Centros de Acopio</a>
-                    <a href="#">Mapa</a>
+                    <a href="../../Backoffice/mapa.php">Mapa</a>
                     <a href="#">Reportes</a>
                     <a href="#">Incidencias</a>
                 </nav>
@@ -40,16 +43,16 @@
             </div>
         </div>
         <nav class="nav-mobile" id="navMobile">
-            <a href="#">Inicio</a>
-            <a href="#">Camiones</a>
-            <a href="#">Cuadrillas</a>
-            <a href="#" class="nav-active">Contenedores</a>
-            <a href="#">Vertederos</a>
-            <a href="#">Centros de Acopio</a>
-            <a href="#">Mapa</a>
-            <a href="#">Reportes</a>
-            <a href="#">Incidencias</a>
-        </nav>
+    <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
+    <a href="../../API_Recoleccion/Vista/camiones.php">Camiones</a>
+    <a href="#">Cuadrillas</a>
+    <a href="#" class="nav-active">Contenedores</a>
+    <a href="#">Vertederos</a>
+    <a href="#">Centros de Acopio</a>
+    <a href="../../Backoffice/mapa.php">Mapa</a>
+    <a href="#">Reportes</a>
+    <a href="#">Incidencias</a>
+</nav>
         <div class="nav-hr"></div>
     </header>
 
@@ -291,9 +294,25 @@
 
     <!-- ── PIE DE PÁGINA ────────────────────────────────────────────────── -->
     <footer class="footer">
-        <div class="footer-hr"></div>
-        <p>&copy; 2026 Celeris SAS. Todos los derechos reservados.</p>
-    </footer>
+    <div class="footer-grid">
+        <div class="footer-brand">
+            <div class="footer-logo">
+                <img src="logoRecolix.png" alt="Recolix" class="footer-logo-img">
+                <span class="footer-logo-name">Recolix</span>
+            </div>
+            <p>Plataforma de gestión de residuos urbanos para Montevideo.</p>
+        </div>
+        <div class="footer-col">
+            <h3>Navegación</h3>
+            <ul>
+                <li><a href="../../LandingPage/index_LandingPage.html">Página principal</a></li>
+                <li><a href="../../LandingPage/mapa.html">Mapa público</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-hr"></div>
+    <p class="footer-copy">&copy; 2026 Recolix. Todos los derechos reservados.</p>
+</footer>
 
     <script>
         const API_BASE = '/recolix/API_Gestion';
