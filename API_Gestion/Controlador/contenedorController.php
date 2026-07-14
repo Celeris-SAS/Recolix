@@ -180,16 +180,19 @@ class contenedorController {
  
     // RF21 — Clasificación por tipo de residuo.
     public function clasificarPorTipoResiduo($id, $idTipo) {
-        $id     = $this->validarId($id);
-        $idTipo = $this->validarId($idTipo);
- 
-        $contenedor = $this->contenedorModel->getContenedor($id);
-        if (!$contenedor) {
-            throw new InvalidArgumentException("No existe un contenedor con el ID $id.");
-        }
- 
-        return $this->contenedorModel->clasificarPorTipoResiduo($id, $idTipo);
+    $id     = $this->validarId($id);
+    $idTipo = $this->validarId($idTipo);
+
+    $contenedor = $this->contenedorModel->getContenedor($id);
+    if (!$contenedor) {
+        throw new InvalidArgumentException("No existe un contenedor con el ID $id.");
     }
+    if (!$this->contenedorModel->tipoResiduoExiste($idTipo)) {
+        throw new InvalidArgumentException("No existe un tipo de residuo con el ID $idTipo.");
+    }
+
+    return $this->contenedorModel->clasificarPorTipoResiduo($id, $idTipo);
+}
  
     // RF22 — Asignación a circuito.
     public function asignarACircuito($id, $idCircuito) {
