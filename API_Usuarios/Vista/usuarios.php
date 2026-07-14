@@ -66,9 +66,18 @@
     <section class="cards-section">
         <div class="cards-grid">
 
-            <a href="../../Backoffice/indexSolicitudRegistro.php" class="card-operar">
+            <div class="card-operar" onclick="abrirModalAgregar()">
                 <div class="card-content">
                     <div class="card-icon"><img src="img/plus.svg" alt="" class="card-svg-icon"></div>
+                    <h3>Agregar Usuario</h3>
+                    <p>Crear una cuenta nueva directamente</p>
+                    <button class="card-btn">Agregar</button>
+                </div>
+            </div>
+
+            <a href="../../Backoffice/indexSolicitudRegistro.php" class="card-operar">
+                <div class="card-content">
+                    <div class="card-icon"><img src="img/user.svg" alt="" class="card-svg-icon"></div>
                     <h3>Solicitudes Pendientes</h3>
                     <p>Aprobar o rechazar registros de vecinos</p>
                 </div>
@@ -78,7 +87,7 @@
                 <div class="card-content">
                     <div class="card-icon"><img src="img/loupe.svg" alt="" class="card-svg-icon"></div>
                     <h3>Filtrar</h3>
-                    <p>Buscar por rol, acceso o estado...</p>
+                    <p>Buscar por rol o acceso...</p>
                     <button class="card-btn">Filtrar</button>
                 </div>
             </div>
@@ -120,7 +129,6 @@
                 <option value="">— Filtrar por —</option>
                 <option value="rol">Rol</option>
                 <option value="acceso">Acceso</option>
-                <option value="estado">Estado</option>
             </select>
             <select id="filtroValorSelect" class="ctrl-select" style="display:none"></select>
             <button class="btn-primary" onclick="aplicarFiltro()">Aplicar</button>
@@ -184,7 +192,6 @@
                         <th>Teléfono</th>
                         <th>Rol</th>
                         <th>Acceso</th>
-                        <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -203,11 +210,33 @@
     <div class="modal-overlay" id="modalForm" style="display:none" onclick="onOverlayClick(event,'modalForm')">
         <div class="modal">
             <div class="modal-header">
-                <h3>Editar Usuario</h3>
+                <h3 id="modalTitle">Agregar Usuario</h3>
                 <button class="modal-close" onclick="cerrarModal()">✕</button>
             </div>
             <form id="usuarioForm" onsubmit="guardarUsuario(event)">
-                <input type="hidden" id="usuarioCi">
+                <div class="form-row" id="identidadRow">
+                    <div class="form-group">
+                        <label for="usuarioCi">Cédula</label>
+                        <input type="number" id="usuarioCi" class="form-input" placeholder="12345678" min="1000000"
+                            required>
+                    </div>
+                    <div class="form-group" id="municipioGroup">
+                        <label for="idMunicipio">Municipio</label>
+                        <select id="idMunicipio" class="form-input">
+                            <option value="">— Seleccionar —</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row" id="nombreRow">
+                    <div class="form-group">
+                        <label for="primerNombre">Nombre</label>
+                        <input type="text" id="primerNombre" class="form-input" placeholder="Juan" maxlength="50">
+                    </div>
+                    <div class="form-group">
+                        <label for="pApellido">Apellido</label>
+                        <input type="text" id="pApellido" class="form-input" placeholder="Pérez" maxlength="50">
+                    </div>
+                </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label for="email">Correo electrónico</label>
@@ -226,8 +255,14 @@
                         <select id="rol" class="form-input" required>
                             <option value="vecino">Vecino</option>
                             <option value="cuadrilla">Cuadrilla</option>
+                            <option value="operario">Operario</option>
                             <option value="administrador">Administrador</option>
                         </select>
+                    </div>
+                    <div class="form-group" id="contraseniaGroup">
+                        <label for="contrasenia">Contraseña</label>
+                        <input type="password" id="contrasenia" class="form-input" placeholder="Mínimo 8 caracteres"
+                            minlength="8">
                     </div>
                 </div>
                 <div class="modal-actions">
@@ -285,14 +320,30 @@
         let toastTimeout;
         let reglas = {};
         let usuariosActuales = [];
+        let modoEdicion = false;
+        const MUNICIPIOS = [
+            { id: 1, nombre: 'Municipio A' },
+            { id: 2, nombre: 'Municipio B' },
+            { id: 3, nombre: 'Municipio C' },
+            { id: 4, nombre: 'Municipio CH' },
+            { id: 5, nombre: 'Municipio D' },
+            { id: 6, nombre: 'Municipio E' },
+            { id: 7, nombre: 'Municipio F' },
+            { id: 8, nombre: 'Municipio G' }
+        ];
+
+        function poblarSelectMunicipio() {
+            const select = document.getElementById('idMunicipio');
+            select.innerHTML = '<option value="">— Seleccionar —</option>' +
+                MUNICIPIOS.map(m => `<option value="${m.id}">${m.nombre}</option>`).join('');
+        }
 
         function reglasFallback() {
             return {
                 email: { tipo: 'email', max: 120, label: 'Correo electrónico' },
                 tel: { tipo: 'string', min: 9, max: 9, label: 'Teléfono' },
-                rol: { valores: ['administrador', 'cuadrilla', 'vecino'], label: 'Rol' },
-                estado: { valores: ['habilitado', 'deshabilitado'], label: 'Estado' },
-                acceso: { valores: ['pendiente', 'aprobado', 'rechazado'], label: 'Acceso' }
+                rol: { valores: ['administrador', 'cuadrilla', 'operario', 'vecino'], label: 'Rol' },
+                acceso: { valores: ['pendiente', 'habilitado', 'deshabilitado'], label: 'Acceso' }
             };
         }
 
@@ -315,7 +366,7 @@
                 if (!u) return;
                 if (btn.dataset.action === 'editar') abrirModalEditar(u);
                 if (btn.dataset.action === 'estado') {
-                    const destino = u.estado === 'habilitado' ? 'deshabilitado' : 'habilitado';
+                    const destino = u.acceso === 'habilitado' ? 'deshabilitado' : 'habilitado';
                     confirmarCambioEstado(u.ci_usuario, `${u.primer_nombre} ${u.p_apellido}`, destino);
                 }
             });
@@ -386,8 +437,7 @@
 
             const endpointMap = {
                 rol: 'filtrarRol',
-                acceso: 'filtrarAcceso',
-                estado: 'filtrarEstadoUsuario'
+                acceso: 'filtrarAcceso'
             };
 
             setLoading(true);
@@ -407,51 +457,125 @@
             }
         }
 
-        // ── MODAL EDITAR ──────────────────────────────────────────────────────
-        function abrirModalEditar(usuario) {
-            document.getElementById('usuarioCi').value = usuario.ci_usuario;
-            document.getElementById('email').value = usuario.email;
-            document.getElementById('tel').value = usuario.tel;
-            document.getElementById('rol').value = usuario.rol;
+        // ── MODAL AGREGAR ──────────────────────────────────────────────────────
+        function abrirModalAgregar() {
+            modoEdicion = false;
+            document.getElementById('modalTitle').textContent = 'Agregar Usuario';
+            document.getElementById('usuarioForm').reset();
+            document.getElementById('usuarioCi').disabled = false;
+            poblarSelectMunicipio();
+
+            document.getElementById('identidadRow').style.display = '';
+            document.getElementById('nombreRow').style.display = '';
+            document.getElementById('contraseniaGroup').style.display = '';
+            document.getElementById('idMunicipio').required = true;
+            document.getElementById('primerNombre').required = true;
+            document.getElementById('pApellido').required = true;
+            document.getElementById('contrasenia').required = true;
+
             document.getElementById('modalForm').style.display = 'flex';
         }
 
-        // ── GUARDAR (PUT) ──────────────────────────────────────────────────────
+        // ── MODAL EDITAR ──────────────────────────────────────────────────────
+        function abrirModalEditar(usuario) {
+            modoEdicion = true;
+            document.getElementById('modalTitle').textContent = 'Editar Usuario';
+            document.getElementById('usuarioForm').reset();
+            document.getElementById('usuarioCi').value = usuario.ci_usuario;
+            document.getElementById('usuarioCi').disabled = true;
+            document.getElementById('email').value = usuario.email;
+            document.getElementById('tel').value = usuario.tel;
+            document.getElementById('rol').value = usuario.rol;
+
+            document.getElementById('identidadRow').style.display = 'none';
+            document.getElementById('nombreRow').style.display = 'none';
+            document.getElementById('contraseniaGroup').style.display = 'none';
+            document.getElementById('idMunicipio').required = false;
+            document.getElementById('primerNombre').required = false;
+            document.getElementById('pApellido').required = false;
+            document.getElementById('contrasenia').required = false;
+
+            document.getElementById('modalForm').style.display = 'flex';
+        }
+
+        // ── GUARDAR (POST / PUT) ───────────────────────────────────────────────
         async function guardarUsuario(e) {
             e.preventDefault();
-            const ci    = document.getElementById('usuarioCi').value;
             const email = document.getElementById('email').value.trim();
             const tel   = document.getElementById('tel').value.trim();
             const rol   = document.getElementById('rol').value;
 
             if (!validarCampo('email', email) || !validarCampo('tel', tel)) return;
 
+            if (modoEdicion) {
+                const ci = document.getElementById('usuarioCi').value;
+                try {
+                    const res = await fetch(`${API_BASE}/usuarios/${ci}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, tel })
+                    });
+                    const json = await res.json();
+                    if (json.status !== 'success') {
+                        mostrarToast(json.message, 'error');
+                        return;
+                    }
+
+                    const resRol = await fetch(`${API_BASE}/usuarios/cambiarRol/${ci}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ nuevoRol: rol })
+                    });
+                    const jsonRol = await resRol.json();
+                    if (jsonRol.status !== 'success') {
+                        mostrarToast(jsonRol.message, 'error');
+                        return;
+                    }
+
+                    mostrarToast('Usuario actualizado', 'success');
+                    cerrarModal();
+                    listarUsuarios();
+                } catch {
+                    mostrarToast('Error al guardar', 'error');
+                }
+                return;
+            }
+
+            // Modo creación
+            const ci            = document.getElementById('usuarioCi').value.trim();
+            const idMunicipio    = document.getElementById('idMunicipio').value;
+            const primerNombre   = document.getElementById('primerNombre').value.trim();
+            const pApellido      = document.getElementById('pApellido').value.trim();
+            const contrasenia    = document.getElementById('contrasenia').value;
+
+            if (!ci) { mostrarToast('Ingresá la cédula', 'warning'); return; }
+            if (!idMunicipio) { mostrarToast('Seleccioná un municipio', 'warning'); return; }
+            if (!primerNombre || !pApellido) { mostrarToast('Ingresá nombre y apellido', 'warning'); return; }
+            if (contrasenia.length < 8) { mostrarToast('La contraseña debe tener al menos 8 caracteres', 'warning'); return; }
+
             try {
-                const res = await fetch(`${API_BASE}/usuarios/${ci}`, {
-                    method: 'PUT',
+                const res = await fetch(`${API_BASE}/usuarios`, {
+                    method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, tel })
+                    body: JSON.stringify({
+                        ci: parseInt(ci),
+                        primerNombre,
+                        pApellido,
+                        email,
+                        tel,
+                        contrasenia,
+                        rol,
+                        idMunicipio: parseInt(idMunicipio)
+                    })
                 });
                 const json = await res.json();
-                if (json.status !== 'success') {
+                if (json.status === 'success') {
+                    mostrarToast('Usuario creado', 'success');
+                    cerrarModal();
+                    listarUsuarios();
+                } else {
                     mostrarToast(json.message, 'error');
-                    return;
                 }
-
-                const resRol = await fetch(`${API_BASE}/usuarios/cambiarRol/${ci}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nuevoRol: rol })
-                });
-                const jsonRol = await resRol.json();
-                if (jsonRol.status !== 'success') {
-                    mostrarToast(jsonRol.message, 'error');
-                    return;
-                }
-
-                mostrarToast('Usuario actualizado', 'success');
-                cerrarModal();
-                listarUsuarios();
             } catch {
                 mostrarToast('Error al guardar', 'error');
             }
@@ -570,7 +694,7 @@
                 const res = await fetch(`${API_BASE}/usuarios/${ci}`);
                 const json = await res.json();
                 if (json.status === 'success' && json.data) {
-                    const destino = json.data.estado === 'habilitado' ? 'deshabilitado' : 'habilitado';
+                    const destino = json.data.acceso === 'habilitado' ? 'deshabilitado' : 'habilitado';
                     confirmarCambioEstado(json.data.ci_usuario, `${json.data.primer_nombre} ${json.data.p_apellido}`, destino);
                     ocultarControles();
                 } else {
@@ -594,10 +718,10 @@
 
         async function confirmarDelete() {
             try {
-                const res = await fetch(`${API_BASE}/usuarios/cambiarEstadoUsuario/${usuarioCiParaEstado}`, {
+                const res = await fetch(`${API_BASE}/usuarios/cambiarAcceso/${usuarioCiParaEstado}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nuevoEstado: estadoDestino })
+                    body: JSON.stringify({ nuevoAcceso: estadoDestino })
                 });
                 const json = await res.json();
                 if (json.status === 'success') {
@@ -638,7 +762,7 @@
 
             usuariosActuales.forEach(u => {
                 const tr = document.createElement('tr');
-                const esHabilitado = u.estado === 'habilitado';
+                const esHabilitado = u.acceso === 'habilitado';
                 tr.innerHTML = `
     <td class="td-id" data-label="Cédula">${escapeHtml(u.ci_usuario)}</td>
     <td data-label="Nombre"><strong>${escapeHtml(u.primer_nombre)}</strong></td>
@@ -647,7 +771,6 @@
     <td data-label="Teléfono">${escapeHtml(u.tel)}</td>
     <td data-label="Rol"><span class="badge badge-neutral">${formatearValor(u.rol)}</span></td>
     <td data-label="Acceso"><span class="badge badge-${badgeClaseAcceso(u.acceso)}">${formatearValor(u.acceso)}</span></td>
-    <td data-label="Estado"><span class="badge badge-${esHabilitado ? 'success' : 'danger'}">${formatearValor(u.estado)}</span></td>
     <td class="td-actions" data-label="Acciones">
         <button class="btn-action" data-action="editar" data-id="${escapeHtml(u.ci_usuario)}" title="Editar">✏️</button>
         <button class="btn-action" data-action="estado" data-id="${escapeHtml(u.ci_usuario)}" title="${esHabilitado ? 'Deshabilitar' : 'Habilitar'}">${esHabilitado ? '🔒' : '🔓'}</button>
@@ -663,7 +786,7 @@
         }
 
         function badgeClaseAcceso(acceso) {
-            const map = { aprobado: 'success', pendiente: 'warning', rechazado: 'danger' };
+            const map = { habilitado: 'success', pendiente: 'warning', deshabilitado: 'danger' };
             return map[acceso] ?? 'neutral';
         }
 

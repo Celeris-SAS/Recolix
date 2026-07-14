@@ -30,7 +30,7 @@ $config = [
             'file'        => 'Controlador/UsuarioController.php',
             'getAllMethod' => 'listarUsuarios',
             'getMethod'   => 'getPerfil',
-            'insertMethod' => null,
+            'insertMethod' => 'crearUsuario',
             'updateMethod' => 'updatePerfil',
             'deleteMethod' => null,
             'actions' => [
@@ -42,10 +42,9 @@ $config = [
                 'getNotificaciones',
                 'marcarNotificacionLeida',
                 'filtrarRol',
-                'filtrarEstadoUsuario',
                 'filtrarAcceso',
                 'cambiarRol',
-                'cambiarEstadoUsuario'
+                'cambiarAcceso'
             ],
             'filters' => []
         ]

@@ -43,11 +43,11 @@ class UsuarioModel {
     // ==========================================
 
     // Devuelve los datos del usuario. Nunca devuelve la contraseña (RF90).
-    // Incluye acceso/estado/fecha_registro para su uso también en el panel de administración.
+    // Incluye acceso/fecha_registro para su uso también en el panel de administración.
     public function getPerfil($ci) {
         $stmt = mysqli_prepare(
             $this->conn,
-            "SELECT ci_usuario, primer_nombre, p_apellido, email, tel, rol, acceso, estado, fecha_registro
+            "SELECT ci_usuario, primer_nombre, p_apellido, email, tel, rol, acceso, fecha_registro
              FROM USUARIO WHERE ci_usuario = ?"
         );
         mysqli_stmt_bind_param($stmt, 'i', $ci);
@@ -171,7 +171,7 @@ class UsuarioModel {
     public function listarUsuarios() {
         $stmt = mysqli_prepare(
             $this->conn,
-            "SELECT ci_usuario, primer_nombre, p_apellido, email, tel, rol, acceso, estado, fecha_registro
+            "SELECT ci_usuario, primer_nombre, p_apellido, email, tel, rol, acceso, fecha_registro
              FROM USUARIO ORDER BY fecha_registro DESC"
         );
         mysqli_stmt_execute($stmt);
@@ -187,7 +187,7 @@ class UsuarioModel {
     public function filtrarRol($rol) {
         $stmt = mysqli_prepare(
             $this->conn,
-            "SELECT ci_usuario, primer_nombre, p_apellido, email, tel, rol, acceso, estado, fecha_registro
+            "SELECT ci_usuario, primer_nombre, p_apellido, email, tel, rol, acceso, fecha_registro
              FROM USUARIO WHERE rol = ? ORDER BY fecha_registro DESC"
         );
         mysqli_stmt_bind_param($stmt, 's', $rol);
@@ -201,27 +201,10 @@ class UsuarioModel {
         return $rows;
     }
 
-    public function filtrarEstadoUsuario($estado) {
-        $stmt = mysqli_prepare(
-            $this->conn,
-            "SELECT ci_usuario, primer_nombre, p_apellido, email, tel, rol, acceso, estado, fecha_registro
-             FROM USUARIO WHERE estado = ? ORDER BY fecha_registro DESC"
-        );
-        mysqli_stmt_bind_param($stmt, 's', $estado);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
-        $rows   = [];
-        while ($row = mysqli_fetch_assoc($result)) {
-            $rows[] = $row;
-        }
-        mysqli_stmt_close($stmt);
-        return $rows;
-    }
-
     public function filtrarAcceso($acceso) {
         $stmt = mysqli_prepare(
             $this->conn,
-            "SELECT ci_usuario, primer_nombre, p_apellido, email, tel, rol, acceso, estado, fecha_registro
+            "SELECT ci_usuario, primer_nombre, p_apellido, email, tel, rol, acceso, fecha_registro
              FROM USUARIO WHERE acceso = ? ORDER BY fecha_registro DESC"
         );
         mysqli_stmt_bind_param($stmt, 's', $acceso);
@@ -243,12 +226,44 @@ class UsuarioModel {
         return true;
     }
 
-    public function cambiarEstadoUsuario($ci, $nuevoEstado) {
-        $stmt = mysqli_prepare($this->conn, "UPDATE USUARIO SET estado = ? WHERE ci_usuario = ?");
-        mysqli_stmt_bind_param($stmt, 'si', $nuevoEstado, $ci);
+    // Habilita/deshabilita o revierte a pendiente el acceso de un usuario.
+    public function cambiarAcceso($ci, $nuevoAcceso) {
+        $stmt = mysqli_prepare($this->conn, "UPDATE USUARIO SET acceso = ? WHERE ci_usuario = ?");
+        mysqli_stmt_bind_param($stmt, 'si', $nuevoAcceso, $ci);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
         return true;
+    }
+
+    // Verifica si ya existe un usuario con esa cédula.
+    public function existeCi($ci) {
+        $stmt = mysqli_prepare($this->conn, "SELECT ci_usuario FROM USUARIO WHERE ci_usuario = ?");
+        mysqli_stmt_bind_param($stmt, 'i', $ci);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_store_result($stmt);
+        $existe = mysqli_stmt_num_rows($stmt) > 0;
+        mysqli_stmt_close($stmt);
+        return $existe;
+    }
+
+    // Alta directa de un usuario por parte de un administrador (sin pasar por el flujo de solicitud).
+    // Queda con acceso 'habilitado' de inmediato, ya que el admin la está dando de alta él mismo.
+    public function crearUsuario($ci, $primerNombre, $pApellido, $email, $tel, $contrasenia, $rol, $idMunicipio) {
+        $hash   = password_hash($contrasenia, PASSWORD_DEFAULT);
+        $acceso = 'habilitado';
+        $stmt = mysqli_prepare(
+            $this->conn,
+            "INSERT INTO USUARIO (ci_usuario, id_municipio, primer_nombre, p_apellido, email, tel, contrasenia, rol, acceso, fecha_registro)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())"
+        );
+        mysqli_stmt_bind_param(
+            $stmt,
+            'iisssssss',
+            $ci, $idMunicipio, $primerNombre, $pApellido, $email, $tel, $hash, $rol, $acceso
+        );
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        return $ci;
     }
 }
 ?>
