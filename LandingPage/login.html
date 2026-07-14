@@ -30,7 +30,7 @@
         </ul>
       </nav>
       <div class="header-actions">
-        <a href="login.html" class="btn btn-outline btn-sm">Iniciar Sesión</a>
+        <a href="login.html" id="loginNavLink" class="btn btn-outline btn-sm">Iniciar Sesión</a>
         <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú" aria-expanded="false">☰</button>
       </div>
     </div>
@@ -145,70 +145,31 @@
           return;
         }
 
-        // Llamada al backend
+        // Llamada al backend: login.php inicia la sesión PHP que exigen vecino.php/perfil.php
         try {
           const response = await fetch('/recolix/API_Usuarios/login.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ci, contrasenia: password })
           });
-
-<<<<<<< HEAD
-          if (!esValido) {
-            feedback.className = 'form-feedback is-error';
-            feedback.textContent = 'Revisá los datos ingresados.';
-            return;
-          }
-
-          // Caso especial: admin fijo
-          if (ci === '57343499' && password === '1234') {
-            sessionStorage.setItem('sesion', JSON.stringify({
-              ci_usuario: ci,
-              primer_nombre: 'Admin',
-              p_apellido: '',
-              rol: 'admin'
-            }));
-            window.location.href = '/recolix/API_Usuarios/Vista/perfil.html';
-
-            return;
-          }
-
-          // Caso general: validar contra la API
-          try {
-            const resp = await fetch(`${API}/usuarios/login`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ ci, contrasenia: password })
-            });
-            const json = await resp.json();
-
-            if (json.status !== 'success') {
-              feedback.className = 'form-feedback is-error';
-              feedback.textContent = json.message || 'Credenciales inválidas.';
-              return;
-            }
-
-            const usuario = json.data;
-            sessionStorage.setItem('sesion', JSON.stringify(usuario));
-=======
           const data = await response.json();
->>>>>>> 700e4401a108fb10ccdafe6f0a7cabf3107ef237
 
-          if (data.success) {
-            feedback.style.display = 'block';
-            feedback.className = 'form-feedback is-success';
-            feedback.textContent = 'Inicio de sesión correcto. Redirigiendo...';
-
-            if (data.rol === 'vecino') {
-              window.location.href = '/recolix/API_Usuarios/Vista/vecino.php';
-            } else if (data.rol === 'admin' || data.rol === 'operario') {
-              window.location.href = '/recolix/API_Usuarios/Vista/perfil.php';
-            }
-          } else {
+          if (!data.success) {
             feedback.style.display = 'block';
             feedback.className = 'form-feedback is-error';
-            feedback.textContent = 'Credenciales inválidas.';
+            feedback.textContent = data.error || 'Credenciales inválidas.';
+            return;
           }
+
+          feedback.style.display = 'block';
+          feedback.className = 'form-feedback is-success';
+          feedback.textContent = 'Inicio de sesión correcto. Redirigiendo...';
+
+          // La Landing Page es el portal del vecino: cualquier cuenta que entre
+          // por acá (sea cual sea su rol real) ve su propio panel de vecino.
+          // El acceso de administrador/cuadrilla/operario al panel de staff
+          // se hace desde el Portal de Empleados (Backoffice/login_backoffice.php).
+          window.location.href = '/recolix/API_Usuarios/vecino.php';
         } catch (err) {
           console.error(err);
           feedback.style.display = 'block';
@@ -218,5 +179,6 @@
       });
     });
   </script>
+  <script src="sesionNav.js"></script>
 </body>
 </html>

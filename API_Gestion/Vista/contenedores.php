@@ -35,7 +35,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 </nav>
             </div>
             <div class="nav-right">
-                <a href="/recolix/API_Usuarios/Vista/perfil.html" class="btn-user" title="Perfil de usuario">
+                <a href="/recolix/API_Usuarios/perfil.php" class="btn-user" title="Perfil de usuario">
                     <img src="user.svg" alt="Usuario" class="nav-user-icon">
                 </a>
                 <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menú">

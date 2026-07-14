@@ -1,12 +1,10 @@
 <?php
 session_start();
 
+// Cualquier cuenta que inicie sesión desde la Landing Page (login.php) ve su
+// panel acá, sin importar su rol real: el acceso de staff se hace aparte,
+// desde el Portal de Empleados.
 if (!isset($_SESSION['ci_usuario'])) {
-    header("Location: /LandingPage/login.html");
-    exit();
-}
-
-if ($_SESSION['rol'] !== 'vecino') {
     header("Location: /LandingPage/login.html");
     exit();
 }
@@ -14,24 +12,32 @@ if ($_SESSION['rol'] !== 'vecino') {
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <!-- head igual que tu HTML -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recolix — Mi panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="Vista/styles_vecino.css">
 </head>
 <body>
     <header class="site-header" id="siteHeader">
         <div class="container header-inner">
             <a href="vecino.php" class="logo">
-                <img src="Logo.png" alt="Logo Recolix" class="logo-image" />
+                <img src="Vista/Logo.png" alt="Logo Recolix" class="logo-image" />
                 <div class="logo-text">Recolix</div>
             </a>
             <nav class="main-nav" id="mainNav">
                 <ul>
-                    <li><a href="../../LandingPage/index_LandingPage.html">Inicio</a></li>
-                    <li><a href="mapa.html">Mapa</a></li>
+                    <li><a href="../LandingPage/index_LandingPage.html">Inicio</a></li>
+                    <li><a href="../LandingPage/mapa.html">Mapa</a></li>
                 </ul>
             </nav>
             <div class="nav-right">
-                <a href="/recolix/API_Usuarios/Vista/perfil.php" class="btn-user" title="Perfil de usuario">
-                    <img src="img/user.svg" alt="Usuario" class="nav-user-icon">
+                <a href="vecino.php" class="btn-user" title="Perfil de usuario">
+                    <img src="Vista/img/user.svg" alt="Usuario" class="nav-user-icon">
                 </a>
                 <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menú">
                     <span></span><span></span><span></span>
@@ -159,9 +165,8 @@ if ($_SESSION['rol'] !== 'vecino') {
 
     </main>
 
-    <script src="vecino.js"></script>
+    <script>const CI = <?= json_encode($_SESSION['ci_usuario']) ?>;</script>
+    <script src="Vista/vecino.js"></script>
 </body>
 
-</html>
-</body>
 </html>

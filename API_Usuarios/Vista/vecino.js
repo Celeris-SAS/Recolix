@@ -7,28 +7,15 @@ const API = '/recolix/API_Usuarios';
 
 document.addEventListener('DOMContentLoaded', function () {
 
-    const sesion = JSON.parse(sessionStorage.getItem('sesion'));
-if (!sesion || sesion.rol !== 'vecino') {
-    window.location.href = '../../LandingPage/login.html';
-    return;
-}
-
-const CI = sesion.ci_usuario;
-document.getElementById('nombreUsuario').textContent =
-    sesion.primer_nombre + ' ' + sesion.p_apellido;
+let perfilActual = {};
 
 cargarPerfil();
 cargarIncidencias();
 cargarNotificaciones();
 
     // ===================== LOGOUT =====================
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
-        try {
-            // TODO: reemplazar por fetch real cuando el JWT esté implementado.
-        } finally {
-            sessionStorage.removeItem('vecinoSesion');
-            window.location.href = '../../LandingPage/login.html';
-        }
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        window.location.href = `${API}/logout.php`;
     });
 
     // ===================== PERFIL =====================
@@ -36,6 +23,7 @@ cargarNotificaciones();
     const resp  = await fetch(`${API}/usuarios/${CI}`);
     const json  = await resp.json();
     const perfil = json.data;
+    perfilActual = perfil;
     document.getElementById('perfilNombre').textContent = perfil.primer_nombre + ' ' + perfil.p_apellido;
     document.getElementById('perfilCI').textContent = perfil.ci_usuario;
     document.getElementById('perfilEmail').textContent = perfil.email || '—';
@@ -47,8 +35,8 @@ cargarNotificaciones();
         document.getElementById('perfilVista').hidden = true;
         document.getElementById('perfilForm').hidden = false;
         document.getElementById('contraseniaForm').hidden = true;
-        document.getElementById('editEmail').value = sesion.email || '';
-        document.getElementById('editTel').value = sesion.tel || '';
+        document.getElementById('editEmail').value = perfilActual.email || '';
+        document.getElementById('editTel').value = perfilActual.tel || '';
     });
 
     document.getElementById('cancelarPerfilBtn').addEventListener('click', () => {
@@ -89,9 +77,6 @@ if (json.status !== 'success') {
     return;
 }
 
-    sesion.email = email;
-    sesion.tel = tel;
-    sessionStorage.setItem('sesion', JSON.stringify(sesion));
     await cargarPerfil();
     document.getElementById('perfilVista').hidden = false;
     document.getElementById('perfilForm').hidden = true;

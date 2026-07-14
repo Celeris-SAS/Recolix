@@ -1,15 +1,22 @@
 <?php
 session_start();
 
-// Si no hay sesión activa, redirige al login
-if (!isset($_SESSION['ci_usuario'])) {
-    header("Location: /LandingPage/login.html");
+// Esta página es exclusiva del staff que entra por el Portal de Empleados
+// (Backoffice/login_backoffice.php, guarda $_SESSION['usuario'] como array
+// anidado). La Landing Page no debe poder llegar acá: esa sesión (login.php,
+// $_SESSION['ci_usuario']/$_SESSION['rol'] planos) siempre va a vecino.php.
+$ci  = $_SESSION['usuario']['ci_usuario'] ?? null;
+$rol = $_SESSION['usuario']['rol'] ?? null;
+
+if (!$ci) {
+    header("Location: /recolix/Backoffice/login_backoffice.php");
     exit();
 }
 
-// Solo admin u operario pueden entrar
-if ($_SESSION['rol'] !== 'admin' && $_SESSION['rol'] !== 'operario') {
-    header("Location: /LandingPage/login.html");
+// Solo administrador, cuadrilla u operario pueden entrar
+$rolesPermitidos = ['administrador', 'cuadrilla', 'operario'];
+if (!in_array($rol, $rolesPermitidos)) {
+    header("Location: /recolix/Backoffice/login_backoffice.php");
     exit();
 }
 ?>
@@ -25,32 +32,28 @@ if ($_SESSION['rol'] !== 'admin' && $_SESSION['rol'] !== 'operario') {
     <link
         href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="styles_vecino.css">
+    <link rel="stylesheet" href="Vista/styles_vecino.css">
 </head>
 
 <body>
 
     <header class="site-header" id="siteHeader">
         <div class="container header-inner">
-            <a href="vecino.php" class="logo">
-                <img src="Logo.png" alt="Logo Recolix" class="logo-image" />
+            <a href="perfil.php" class="logo">
+                <img src="Vista/Logo.png" alt="Logo Recolix" class="logo-image" />
                 <div class="logo-text">Recolix</div>
             </a>
 
             <nav class="main-nav" id="mainNav">
                 <ul>
-                    <li><a href="../../LandingPage/index_LandingPage.html">Inicio</a></li>
-                    <li><a href="mapa.html">Mapa</a></li>
+                    <li><a href="../LandingPage/index_LandingPage.html">Inicio</a></li>
+                    <li><a href="../LandingPage/mapa.html">Mapa</a></li>
                 </ul>
             </nav>
 
             <div class="nav-right">
-                <a href="/recolix/API_Usuarios/Vista/perfil.php" class="btn-user" title="Perfil de usuario">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                        <circle cx="12" cy="7" r="4" />
-                    </svg>
+                <a href="/recolix/API_Usuarios/perfil.php" class="btn-user" title="Perfil de usuario">
+                    <img src="Vista/img/user.svg" alt="Usuario" class="nav-user-icon">
                 </a>
                 <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menú">
                     <span></span><span></span><span></span>
@@ -131,9 +134,14 @@ if ($_SESSION['rol'] !== 'admin' && $_SESSION['rol'] !== 'operario') {
                 </div>
                 <p class="form-feedback" id="contraFeedback"></p>
             </div>
+
+            <div class="logout">
+                <button class="btn btn-outline btn-sm" id="logoutBtn">Cerrar sesión</button>
+            </div>
         </section>
     </main>
 
+    <script>const CI = <?= json_encode($ci) ?>;</script>
     <script src="perfil.js"></script>
 </body>
 </html>
