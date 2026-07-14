@@ -162,7 +162,7 @@
 
           // Caso general: validar contra la API
           try {
-            const resp = await fetch(`${API}/login`, {
+            const resp = await fetch(`${API}/usuarios/login`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ ci, contrasenia: password })
