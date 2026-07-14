@@ -1,7 +1,7 @@
 <?php
 session_start();
 
- Si ya está logueado con un rol válido, redirigir al panel.
+ //Si ya está logueado con un rol válido, redirigir al panel.
 if (isset($_SESSION['usuario']) && !empty($_SESSION['usuario']['rol']) && $_SESSION['usuario']['rol'] !== 'vecino') {
     header('Location: indexBackoffice.php');
     exit;
