@@ -2,10 +2,10 @@
 session_start();
 
  //Si ya está logueado con un rol válido, redirigir al panel.
-if (isset($_SESSION['usuario']) && !empty($_SESSION['usuario']['rol']) && $_SESSION['usuario']['rol'] !== 'vecino') {
+    if (isset($_SESSION['usuario']) && !empty($_SESSION['usuario']['rol']) && $_SESSION['usuario']['rol'] !== 'vecino') {
     header('Location: indexBackoffice.php');
     exit;
-//}
+}
 
 // Leer y limpiar el error flash de sesión (patrón PRG)
 $error = $_SESSION['login_error'] ?? '';
