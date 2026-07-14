@@ -30,7 +30,19 @@ if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['rol'] !== 'administrad
         <a href="logout_backoffice.php" class="btn btn-outline btn-sm">Cerrar sesión</a>
       </div>
     </div>
-  </header>
+    <nav class="nav-mobile" id="navMobile">
+        <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
+        <a href="#" class="nav-active">Camiones</a>
+        <a href="#">Cuadrillas</a>
+        <a href="../../API_Gestion/Vista/contenedores.html">Contenedores</a>
+        <a href="#">Vertederos</a>
+        <a href="#">Centros de Acopio</a>
+        <a href="../../Backoffice/mapa.php">Mapa</a>
+        <a href="#">Reportes</a>
+        <a href="#">Incidencias</a>
+    </nav>
+    <div class="nav-hr"></div>
+</header>
 
   <main class="container dash-main">
 
