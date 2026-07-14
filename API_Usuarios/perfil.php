@@ -7,8 +7,9 @@ if (!isset($_SESSION['ci_usuario'])) {
     exit();
 }
 
-// Solo admin u operario pueden entrar
-if ($_SESSION['rol'] !== 'admin' && $_SESSION['rol'] !== 'operario') {
+// Solo administrador, cuadrilla u operario pueden entrar
+$rolesPermitidos = ['administrador', 'cuadrilla', 'operario'];
+if (!in_array($_SESSION['rol'], $rolesPermitidos)) {
     header("Location: /LandingPage/login.html");
     exit();
 }
