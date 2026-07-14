@@ -65,7 +65,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
                 <a href="#" class="nav-active">Inicio</a>
                 <a href="../API_Recoleccion/Vista/camiones.php">Camiones</a>
                 <a href="#">Cuadrillas</a>
-                <a href="../API_Gestion/Vista/contenedores.php">Contenedores</a>
+                <a href="../API_Gestion/Vista/contenedores.html">Contenedores</a>
                 <a href="#">Vertederos</a>
                 <a href="#">Centros de Acopio</a>
                 <a href="mapa.php">Mapa</a>
@@ -87,7 +87,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
         <a href="#" class="nav-active">Inicio</a>
         <a href="../API_Recoleccion/Vista/camiones.php">Camiones</a>
         <a href="#">Cuadrillas</a>
-        <a href="../API_Gestion/Vista/contenedores.php">Contenedores</a>
+        <a href="../API_Gestion/Vista/contenedores.html">Contenedores</a>
         <a href="#">Vertederos</a>
         <a href="#">Centros de Acopio</a>
         <a href="mapa.php">Mapa</a>
