@@ -9,13 +9,9 @@ class ContenedorModel {
     }
 
     public function insertContenedor($idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad, $estado) {
-        $stmt = mysqli_prepare($this->conn->getConexion(), "INSERT INTO CONTENEDOR (id_circuito, id_tipo, calle, num_calle, latitud, longitud, capacidad, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        mysqli_stmt_bind_param($stmt, "iissddds", $idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad, $estado);
-        mysqli_stmt_execute($stmt);
-        $id = mysqli_insert_id($this->conn->getConexion());
-        mysqli_stmt_close($stmt);
-        return $id;
-    }
+    $stmt = mysqli_prepare($this->conn->getConexion(),
+                           "INSERT INTO CONTENEDOR (id_circuito, id_tipo, calle, num_calle, latitud, longitud, capacidad, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    mysqli_stmt_bind_param($stmt, "iisiddis", $idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad, $estado);
 
     public function updateContenedor($id, $idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE CONTENEDOR SET id_circuito = ?, id_tipo = ?, calle = ?, num_calle = ?, latitud = ?, longitud = ?, capacidad = ? WHERE id_contenedor = ?");
