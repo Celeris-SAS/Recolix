@@ -213,6 +213,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             </div>
             <form id="contenedorForm" onsubmit="guardarContenedor(event)">
                 <input type="hidden" id="contenedorId">
+                <input type="hidden" id="contenedorEstadoForm" value="funcional">
                 <div class="form-row">
                     <div class="form-group">
                         <label for="calle">Calle</label>
@@ -243,7 +244,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                     </div>
                     <div class="form-group" id="estadoGroup">
                         <label for="estado">Estado</label>
-                        <select id="estado" class="form-input">
+                        <select id="estado" class="form-input" onchange="onEstadoFormChange()">
                             <option value="funcional">Funcional</option>
                             <option value="roto">Roto</option>
                             <option value="desbordado">Desbordado</option>
@@ -521,6 +522,19 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             }
         }
 
+        // ── REQUERIDOS DE DIRECCIÓN (no aplica a contenedores en_deposito) ─────
+        function aplicarRequeridoDireccion(esDeposito) {
+            ['calle', 'numCalle', 'latitud', 'longitud'].forEach(campo => {
+                document.getElementById(campo).required = !esDeposito;
+            });
+        }
+
+        function onEstadoFormChange() {
+            const estado = document.getElementById('estado').value;
+            document.getElementById('contenedorEstadoForm').value = estado;
+            aplicarRequeridoDireccion(estado === 'en_deposito');
+        }
+
         // ── AGREGAR ───────────────────────────────────────────────────────────
         function abrirModalAgregar() {
             document.getElementById('modalTitle').textContent = 'Agregar Contenedor';
@@ -528,6 +542,8 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             document.getElementById('contenedorForm').reset();
             poblarSelectTipoResiduo();
             document.getElementById('estadoGroup').style.display = '';
+            document.getElementById('contenedorEstadoForm').value = document.getElementById('estado').value;
+            aplicarRequeridoDireccion(document.getElementById('estado').value === 'en_deposito');
             document.getElementById('modalForm').style.display = 'flex';
         }
         // ── MODAL EDITAR ──────────────────────────────────────────────────────
@@ -542,6 +558,8 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             document.getElementById('idTipo').value = contenedor.id_tipo;
             document.getElementById('idCircuito').value = contenedor.id_circuito;
             document.getElementById('estadoGroup').style.display = 'none';
+            document.getElementById('contenedorEstadoForm').value = contenedor.estado;
+            aplicarRequeridoDireccion(contenedor.estado === 'en_deposito');
             document.getElementById('modalForm').style.display = 'flex';
         }
 
@@ -549,22 +567,35 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
         async function guardarContenedor(e) {
             e.preventDefault();
             const id = document.getElementById('contenedorId').value;
+            const esDeposito = document.getElementById('contenedorEstadoForm').value === 'en_deposito';
 
-            const body = {
-                idCircuito: parseInt(document.getElementById('idCircuito').value),
-                idTipo: parseInt(document.getElementById('idTipo').value),
-                calle: document.getElementById('calle').value.trim(),
-                numCalle: parseInt(document.getElementById('numCalle').value),
-                latitud: parseFloat(document.getElementById('latitud').value),
-                longitud: parseFloat(document.getElementById('longitud').value),
-                capacidad: parseInt(document.getElementById('capacidad').value)
-            };
+            const body = esDeposito
+                ? {
+                    idCircuito: parseInt(document.getElementById('idCircuito').value),
+                    idTipo: parseInt(document.getElementById('idTipo').value),
+                    calle: null,
+                    numCalle: null,
+                    latitud: null,
+                    longitud: null,
+                    capacidad: parseInt(document.getElementById('capacidad').value)
+                }
+                : {
+                    idCircuito: parseInt(document.getElementById('idCircuito').value),
+                    idTipo: parseInt(document.getElementById('idTipo').value),
+                    calle: document.getElementById('calle').value.trim(),
+                    numCalle: parseInt(document.getElementById('numCalle').value),
+                    latitud: parseFloat(document.getElementById('latitud').value),
+                    longitud: parseFloat(document.getElementById('longitud').value),
+                    capacidad: parseInt(document.getElementById('capacidad').value)
+                };
             if (!id) {
                 body.estado = document.getElementById('estado').value;
             }
 
             // Validaciones frontend usando reglas del controlador
+            const camposDireccion = ['calle', 'numCalle', 'latitud', 'longitud'];
             for (const [campo, valor] of Object.entries(body)) {
+                if (esDeposito && camposDireccion.includes(campo)) continue;
                 const regla = reglas[campo];
                 if (!regla) continue;
                 if (regla.valores && !regla.valores.includes(valor)) {
