@@ -1,14 +1,16 @@
 <?php
 
-require_once __DIR__ . '/../Modelo/conexion.php';
-
-class UsuarioController {
+    class UsuarioController {
     private $db;
+    private $usuarioModel;
 
     public function __construct() {
+        require_once _DIR_ . '/../Modelo/UsuarioModel.php';
+
         // Instanciamos la conexión
-        $conexion = new conexion(); 
+        $conexion = new conexion();
         $this->db = $conexion->getConexion();
+        $this->usuarioModel = new UsuarioModel();
     }
 
     // ==========================================
