@@ -71,6 +71,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
                 <a href="mapa.php">Mapa</a>
                 <a href="#">Reportes</a>
                 <a href="#">Incidencias</a>
+                <a href="../API_Usuarios/Vista/usuarios.php">Usuarios</a>
             </nav>
         </div>
         <div class="nav-right">
@@ -92,6 +93,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
         <a href="mapa.php">Mapa</a>
         <a href="#">Reportes</a>
         <a href="#">Incidencias</a>
+        <a href="../API_Usuarios/Vista/usuarios.php">Usuarios</a>
     </nav>
     <div class="nav-hr"></div>
 </header>
@@ -209,7 +211,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
                 <p>Administrar centros de acopio</p>
             </div>
         </a>
-        <a href="#" class="card-operar">
+        <a href="../API_Usuarios/Vista/usuarios.php" class="card-operar">
             <div class="card-content">
                 <div class="card-icon"><img src="../API_Usuarios/Vista/img/user.svg" alt="" class="card-svg-icon"></div>
                 <h3>Usuarios</h3>
@@ -245,6 +247,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
 <script>
 const API_GESTION      = '/recolix/API_Gestion';
 const API_RECOLECCION  = '/recolix/API_Recoleccion';
+const API_USUARIOS     = '/recolix/API_Usuarios';
 
 async function cargarNovedades() {
     const badges = {
@@ -267,7 +270,7 @@ async function cargarNovedades() {
     }
 
     try {
-        const res  = await fetch(`/recolix/API_Usuarios/usuarios?acceso=pendiente`);
+        const res  = await fetch(`${API_USUARIOS}/solicitudes/getSolicitudesPendientes`);
         const json = await res.json();
         if (json.status === 'success' && Array.isArray(json.data)) {
             badges.usuarios.textContent = json.data.length;

@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['rol'] !== 'administrador') {
-    header('Location: login.php');
+    header('Location: login_backoffice.php');
     exit;
 }
 ?>
@@ -22,12 +22,12 @@ if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['rol'] !== 'administrad
 
   <header class="dash-header">
     <div class="container dash-header-inner">
-      <a href="indexBackoffice.html" class="logo">
-        <img src="../LandingPage/Logo.png" alt="Logo Recolix" class="logo-image" />
+      <a href="indexBackoffice.php" class="logo">
+        <img src="../API_Recoleccion/Vista/logoRecolix.png" alt="Logo Recolix" class="logo-image" />
         <span class="logo-text">Recolix</span>
       </a>
       <div class="header-actions">
-        <a href="logout.php" class="btn btn-outline btn-sm">Cerrar sesión</a>
+        <a href="logout_backoffice.php" class="btn btn-outline btn-sm">Cerrar sesión</a>
       </div>
     </div>
   </header>
@@ -40,7 +40,7 @@ if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['rol'] !== 'administrad
         <h1>Solicitudes de registro</h1>
         <p class="page-desc">Revisá las solicitudes pendientes y aprobá o rechazá cada una.</p>
       </div>
-      <a href="indexBackoffice.html" class="btn btn-outline btn-sm">← Volver</a>
+      <a href="indexBackoffice.php" class="btn btn-outline btn-sm">← Volver</a>
     </div>
 
     <!-- Feedback global -->

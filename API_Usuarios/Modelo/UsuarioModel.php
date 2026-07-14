@@ -1,13 +1,13 @@
 <?php
 
-require_once __DIR__ . '/Conexion.php';
+require_once __DIR__ . '/../../conexion.php';
 
 class UsuarioModel {
 
     private $conn;
 
     public function __construct() {
-        $conexion = new Conexion();
+        $conexion = new conexion();
         $this->conn = $conexion->getConexion();
     }
 
@@ -42,11 +42,12 @@ class UsuarioModel {
     // PERFIL (RF90, RF91)
     // ==========================================
 
-    // Devuelve teléfono y email del vecino. Nunca devuelve la contraseña (RF90).
+    // Devuelve los datos del usuario. Nunca devuelve la contraseña (RF90).
+    // Incluye acceso/estado/fecha_registro para su uso también en el panel de administración.
     public function getPerfil($ci) {
         $stmt = mysqli_prepare(
             $this->conn,
-            "SELECT ci_usuario, primer_nombre, p_apellido, email, tel, rol
+            "SELECT ci_usuario, primer_nombre, p_apellido, email, tel, rol, acceso, estado, fecha_registro
              FROM USUARIO WHERE ci_usuario = ?"
         );
         mysqli_stmt_bind_param($stmt, 'i', $ci);
@@ -157,6 +158,94 @@ class UsuarioModel {
             "UPDATE NOTIFICACION SET estado = 'leida', fecha_lectura = ? WHERE id_notificacion = ?"
         );
         mysqli_stmt_bind_param($stmt, 'si', $ahora, $idNotificacion);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        return true;
+    }
+
+    // ==========================================
+    // ADMINISTRACIÓN DE USUARIOS
+    // ==========================================
+
+    // Listado general de usuarios (sin contraseña) para el panel de administración.
+    public function listarUsuarios() {
+        $stmt = mysqli_prepare(
+            $this->conn,
+            "SELECT ci_usuario, primer_nombre, p_apellido, email, tel, rol, acceso, estado, fecha_registro
+             FROM USUARIO ORDER BY fecha_registro DESC"
+        );
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $rows   = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $rows[] = $row;
+        }
+        mysqli_stmt_close($stmt);
+        return $rows;
+    }
+
+    public function filtrarRol($rol) {
+        $stmt = mysqli_prepare(
+            $this->conn,
+            "SELECT ci_usuario, primer_nombre, p_apellido, email, tel, rol, acceso, estado, fecha_registro
+             FROM USUARIO WHERE rol = ? ORDER BY fecha_registro DESC"
+        );
+        mysqli_stmt_bind_param($stmt, 's', $rol);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $rows   = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $rows[] = $row;
+        }
+        mysqli_stmt_close($stmt);
+        return $rows;
+    }
+
+    public function filtrarEstadoUsuario($estado) {
+        $stmt = mysqli_prepare(
+            $this->conn,
+            "SELECT ci_usuario, primer_nombre, p_apellido, email, tel, rol, acceso, estado, fecha_registro
+             FROM USUARIO WHERE estado = ? ORDER BY fecha_registro DESC"
+        );
+        mysqli_stmt_bind_param($stmt, 's', $estado);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $rows   = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $rows[] = $row;
+        }
+        mysqli_stmt_close($stmt);
+        return $rows;
+    }
+
+    public function filtrarAcceso($acceso) {
+        $stmt = mysqli_prepare(
+            $this->conn,
+            "SELECT ci_usuario, primer_nombre, p_apellido, email, tel, rol, acceso, estado, fecha_registro
+             FROM USUARIO WHERE acceso = ? ORDER BY fecha_registro DESC"
+        );
+        mysqli_stmt_bind_param($stmt, 's', $acceso);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $rows   = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $rows[] = $row;
+        }
+        mysqli_stmt_close($stmt);
+        return $rows;
+    }
+
+    public function cambiarRol($ci, $nuevoRol) {
+        $stmt = mysqli_prepare($this->conn, "UPDATE USUARIO SET rol = ? WHERE ci_usuario = ?");
+        mysqli_stmt_bind_param($stmt, 'si', $nuevoRol, $ci);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        return true;
+    }
+
+    public function cambiarEstadoUsuario($ci, $nuevoEstado) {
+        $stmt = mysqli_prepare($this->conn, "UPDATE USUARIO SET estado = ? WHERE ci_usuario = ?");
+        mysqli_stmt_bind_param($stmt, 'si', $nuevoEstado, $ci);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
         return true;

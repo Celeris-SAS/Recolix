@@ -1,14 +1,15 @@
 <?php
 
-require_once __DIR__ . '/conexion.php';
-
 class UsuarioController {
-    private $db;
+    private $usuarioModel;
+
+    private $rolesValidos   = ['administrador', 'cuadrilla', 'vecino'];
+    private $estadosValidos = ['habilitado', 'deshabilitado'];
+    private $accesosValidos = ['pendiente', 'aprobado', 'rechazado'];
 
     public function __construct() {
-        // Instanciamos la conexión
-        $conexion = new conexion(); 
-        $this->db = $conexion->getConexion();
+        require_once __DIR__ . '/../Modelo/UsuarioModel.php';
+        $this->usuarioModel = new UsuarioModel();
     }
 
     // ==========================================
@@ -56,12 +57,36 @@ class UsuarioController {
         return intval($id);
     }
 
+    private function validarRol($rol) {
+        if (!in_array($rol, $this->rolesValidos)) {
+            throw new InvalidArgumentException('Rol no válido. Valores permitidos: ' . implode(', ', $this->rolesValidos));
+        }
+        return $rol;
+    }
+
+    private function validarEstadoUsuario($estado) {
+        if (!in_array($estado, $this->estadosValidos)) {
+            throw new InvalidArgumentException('Estado no válido. Valores permitidos: ' . implode(', ', $this->estadosValidos));
+        }
+        return $estado;
+    }
+
+    private function validarAcceso($acceso) {
+        if (!in_array($acceso, $this->accesosValidos)) {
+            throw new InvalidArgumentException('Acceso no válido. Valores permitidos: ' . implode(', ', $this->accesosValidos));
+        }
+        return $acceso;
+    }
+
     public function reglasValidacion() {
         return [
             'ci'          => ['tipo' => 'entero', 'min' => 1000000, 'max' => 99999999, 'label' => 'Cédula'],
             'email'       => ['tipo' => 'email',  'max' => 120,     'label' => 'Correo electrónico'],
             'tel'         => ['tipo' => 'string', 'min' => 9, 'max' => 9,  'label' => 'Teléfono'],
-            'contrasenia' => ['tipo' => 'string', 'min' => 8,       'label' => 'Contraseña']
+            'contrasenia' => ['tipo' => 'string', 'min' => 8,       'label' => 'Contraseña'],
+            'rol'         => ['valores' => $this->rolesValidos,   'label' => 'Rol'],
+            'estado'      => ['valores' => $this->estadosValidos, 'label' => 'Estado'],
+            'acceso'      => ['valores' => $this->accesosValidos, 'label' => 'Acceso']
         ];
     }
 
@@ -179,6 +204,59 @@ class UsuarioController {
     public function marcarNotificacionLeida($idNotificacion) {
         $idNotificacion = $this->validarId($idNotificacion);
         return $this->usuarioModel->marcarNotificacionLeida($idNotificacion);
+    }
+
+    // ==========================================
+    // ADMINISTRACIÓN DE USUARIOS
+    // ==========================================
+
+    // Listado general de usuarios para el panel de administración.
+    public function listarUsuarios() {
+        return $this->usuarioModel->listarUsuarios();
+    }
+
+    // Filtrar usuarios por rol.
+    public function filtrarRol($rol) {
+        $rol = $this->validarRol($rol);
+        return $this->usuarioModel->filtrarRol($rol);
+    }
+
+    // Filtrar usuarios por estado (habilitado/deshabilitado).
+    public function filtrarEstadoUsuario($estado) {
+        $estado = $this->validarEstadoUsuario($estado);
+        return $this->usuarioModel->filtrarEstadoUsuario($estado);
+    }
+
+    // Filtrar usuarios por acceso (pendiente/aprobado/rechazado).
+    public function filtrarAcceso($acceso) {
+        $acceso = $this->validarAcceso($acceso);
+        return $this->usuarioModel->filtrarAcceso($acceso);
+    }
+
+    // Cambia el rol de un usuario existente (RNE 01: administrador, cuadrilla, vecino).
+    public function cambiarRol($ci, $nuevoRol) {
+        $ci       = $this->validarCI($ci);
+        $nuevoRol = $this->validarRol($nuevoRol);
+
+        $usuario = $this->usuarioModel->getPerfil($ci);
+        if (!$usuario) {
+            throw new InvalidArgumentException("No existe un usuario con la cédula $ci.");
+        }
+
+        return $this->usuarioModel->cambiarRol($ci, $nuevoRol);
+    }
+
+    // Habilita o deshabilita la cuenta de un usuario (equivalente a "dar de baja").
+    public function cambiarEstadoUsuario($ci, $nuevoEstado) {
+        $ci          = $this->validarCI($ci);
+        $nuevoEstado = $this->validarEstadoUsuario($nuevoEstado);
+
+        $usuario = $this->usuarioModel->getPerfil($ci);
+        if (!$usuario) {
+            throw new InvalidArgumentException("No existe un usuario con la cédula $ci.");
+        }
+
+        return $this->usuarioModel->cambiarEstadoUsuario($ci, $nuevoEstado);
     }
 }
 ?>
