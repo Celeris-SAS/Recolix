@@ -106,34 +106,54 @@ class contenedorController {
     }
  
     // RF14 — Alta de contenedor.
+    // RF27 — Un contenedor 'en_deposito' todavía no está instalado en la vía
+    // pública, así que no tiene calle/número/coordenadas.
     public function insertContenedor($idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad, $estado) {
     $idCircuito = $this->validarId($idCircuito);
     $idTipo     = $this->validarId($idTipo);
-    $calle      = $this->validarString($calle, 'Calle', 100);
-    $numCalle   = $this->validarEntero($numCalle, 'Número de puerta');
-    $latitud    = $this->validarCoordenada($latitud, 'Latitud');
-    $longitud   = $this->validarCoordenada($longitud, 'Longitud');
-    $capacidad  = $this->validarEntero($capacidad, 'Capacidad');
     $estado     = $this->validarEstado($estado);
+
+    if ($estado === 'en_deposito') {
+        $calle    = null;
+        $numCalle = null;
+        $latitud  = null;
+        $longitud = null;
+    } else {
+        $calle    = $this->validarString($calle, 'Calle', 100);
+        $numCalle = $this->validarEntero($numCalle, 'Número de puerta');
+        $latitud  = $this->validarCoordenada($latitud, 'Latitud');
+        $longitud = $this->validarCoordenada($longitud, 'Longitud');
+    }
+    $capacidad  = $this->validarEntero($capacidad, 'Capacidad');
 
     return $this->contenedorModel->insertContenedor($idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad, $estado);
 }
  
     // RF15 — Modificación de contenedor.
+    // El estado no se recibe acá (se cambia con cambiarEstado), así que para
+    // saber si hay que exigir dirección/coordenadas se mira el estado actual.
     public function updateContenedor($id, $idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad) {
         $id         = $this->validarId($id);
         $idCircuito = $this->validarId($idCircuito);
         $idTipo     = $this->validarId($idTipo);
-        $calle      = $this->validarString($calle, 'Calle', 100);
-        $numCalle   = $this->validarEntero($numCalle, 'Número de puerta');
-        $latitud    = $this->validarCoordenada($latitud, 'Latitud');
-        $longitud   = $this->validarCoordenada($longitud, 'Longitud');
-        $capacidad  = $this->validarEntero($capacidad, 'Capacidad');
 
         $contenedor = $this->contenedorModel->getContenedor($id);
         if (!$contenedor) {
             throw new InvalidArgumentException("No existe un contenedor con el ID $id.");
         }
+
+        if ($contenedor['estado'] === 'en_deposito') {
+            $calle    = null;
+            $numCalle = null;
+            $latitud  = null;
+            $longitud = null;
+        } else {
+            $calle    = $this->validarString($calle, 'Calle', 100);
+            $numCalle = $this->validarEntero($numCalle, 'Número de puerta');
+            $latitud  = $this->validarCoordenada($latitud, 'Latitud');
+            $longitud = $this->validarCoordenada($longitud, 'Longitud');
+        }
+        $capacidad  = $this->validarEntero($capacidad, 'Capacidad');
 
         return $this->contenedorModel->updateContenedor($id, $idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad);
     }
