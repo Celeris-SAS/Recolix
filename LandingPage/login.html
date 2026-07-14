@@ -154,7 +154,46 @@
             body: JSON.stringify({ ci, contrasenia: password })
           });
 
+<<<<<<< HEAD
+          if (!esValido) {
+            feedback.className = 'form-feedback is-error';
+            feedback.textContent = 'Revisá los datos ingresados.';
+            return;
+          }
+
+          // Caso especial: admin fijo
+          if (ci === '57343499' && password === '1234') {
+            sessionStorage.setItem('sesion', JSON.stringify({
+              ci_usuario: ci,
+              primer_nombre: 'Admin',
+              p_apellido: '',
+              rol: 'admin'
+            }));
+            window.location.href = '/recolix/API_Usuarios/Vista/perfil.html';
+
+            return;
+          }
+
+          // Caso general: validar contra la API
+          try {
+            const resp = await fetch(`${API}/usuarios/login`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ci, contrasenia: password })
+            });
+            const json = await resp.json();
+
+            if (json.status !== 'success') {
+              feedback.className = 'form-feedback is-error';
+              feedback.textContent = json.message || 'Credenciales inválidas.';
+              return;
+            }
+
+            const usuario = json.data;
+            sessionStorage.setItem('sesion', JSON.stringify(usuario));
+=======
           const data = await response.json();
+>>>>>>> 700e4401a108fb10ccdafe6f0a7cabf3107ef237
 
           if (data.success) {
             feedback.style.display = 'block';
