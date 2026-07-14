@@ -32,21 +32,20 @@ class SolicitudRegistroModel {
         }
 
         $acceso = 'pendiente';
-        $estado = 'habilitado';
         $rol    = 'vecino';
         // Contraseña temporal: el administrador la reemplaza al aprobar (RF84).
         $contraseniaTemp = password_hash(bin2hex(random_bytes(8)), PASSWORD_DEFAULT);
 
         $stmt = mysqli_prepare(
             $this->conn,
-            "INSERT INTO USUARIO (ci_usuario, primer_nombre, p_apellido, email, tel, contrasenia, rol, acceso, estado, fecha_registro)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())"
+            "INSERT INTO USUARIO (ci_usuario, primer_nombre, p_apellido, email, tel, contrasenia, rol, acceso, fecha_registro)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())"
         );
         mysqli_stmt_bind_param(
             $stmt,
-            'issssssss',
+            'isssssss',
             $ci, $primerNombre, $pApellido, $email, $tel,
-            $contraseniaTemp, $rol, $acceso, $estado
+            $contraseniaTemp, $rol, $acceso
         );
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
@@ -81,7 +80,7 @@ class SolicitudRegistroModel {
 
 public function aprobar($ci) {
     $stmt = mysqli_prepare($this->conn,
-        "UPDATE USUARIO SET acceso = 'aprobado' WHERE ci_usuario = ?"
+        "UPDATE USUARIO SET acceso = 'habilitado' WHERE ci_usuario = ?"
     );
     mysqli_stmt_bind_param($stmt, 'i', $ci);
     mysqli_stmt_execute($stmt);
@@ -91,7 +90,7 @@ public function aprobar($ci) {
 
 public function rechazar($ci) {
     $stmt = mysqli_prepare($this->conn,
-        "UPDATE USUARIO SET acceso = 'rechazado' WHERE ci_usuario = ?"
+        "UPDATE USUARIO SET acceso = 'deshabilitado' WHERE ci_usuario = ?"
     );
     mysqli_stmt_bind_param($stmt, 'i', $ci);
     mysqli_stmt_execute($stmt);

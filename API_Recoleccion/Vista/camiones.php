@@ -27,6 +27,7 @@
                 <a href="../../Backoffice/mapa.php">Mapa</a>
                 <a href="#">Reportes</a>
                 <a href="#">Incidencias</a>
+                <a href="../../API_Usuarios/Vista/usuarios.php">Usuarios</a>
             </nav>
         </div>
         <div class="nav-right">
@@ -48,6 +49,7 @@
         <a href="../../Backoffice/mapa.php">Mapa</a>
         <a href="#">Reportes</a>
         <a href="#">Incidencias</a>
+        <a href="../../API_Usuarios/Vista/usuarios.php">Usuarios</a>
     </nav>
     <div class="nav-hr"></div>
 </header>
