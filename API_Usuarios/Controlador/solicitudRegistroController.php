@@ -1,7 +1,6 @@
 <?php
 
-require_once __DIR__ . '/conexion.php';
-
+require_once __DIR__ . '/../Modelo/conexion.php';
 class SolicitudRegistroController {
     private $db;
 
@@ -68,35 +67,59 @@ class SolicitudRegistroController {
     // Recibe los datos del formulario de la Landing Page y crea la solicitud.
     // La solicitud queda en estado 'pendiente' hasta que el administrador la apruebe (RF84).
     // Esta validación se repite aquí además de en el frontend (RNF12).
-    public function crearSolicitud($ci, $primerNombre, $pApellido, $email, $tel) {
-        $ci           = $this->validarCI($ci);
-        $primerNombre = $this->validarNombre($primerNombre, 'Nombre');
-        $pApellido    = $this->validarNombre($pApellido, 'Apellido');
-        $email        = $this->validarEmail($email);
-        $tel          = $this->validarTel($tel);
-
-        // Verificar duplicado antes de intentar insertar.
-        if ($this->solicitudModel->existePorCI($ci)) {
-            throw new InvalidArgumentException("Ya existe una solicitud registrada con la cédula $ci.");
-        }
-
-        return $this->solicitudModel->crearSolicitud($ci, $primerNombre, $pApellido, $email, $tel);
+   public function crearSolicitud($ci, $primerNombre, $pApellido, $email, $tel) {
+    $ci           = $this->validarCI($ci);
+    $primerNombre = $this->validarNombre($primerNombre, 'Nombre');
+    $pApellido    = $this->validarNombre($pApellido, 'Apellido');
+    $email        = $this->validarEmail($email);
+    $tel          = $this->validarTel($tel);
+   
+    // Verificar duplicado antes de intentar insertar.
+    $check = mysqli_prepare($this->db, "SELECT ci_usuario FROM USUARIO WHERE ci_usuario = ?");
+    mysqli_stmt_bind_param($check, 'i', $ci);
+    mysqli_stmt_execute($check);
+    mysqli_stmt_store_result($check);
+    if (mysqli_stmt_num_rows($check) > 0) {
+        mysqli_stmt_close($check);
+        throw new InvalidArgumentException("Ya existe una solicitud registrada con la cédula $ci.");
     }
-    // RF84 — Aprobar solicitud de registro.
+    return true;
+   }
+   public function getSolicitudesPendientes() {
+    $stmt = mysqli_prepare($this->db,
+        "SELECT ci_usuario, primer_nombre, p_apellido, email, tel
+         FROM USUARIO WHERE acceso = 'pendiente'"
+    );
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $rows = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $rows[] = $row;
+    }
+    mysqli_stmt_close($stmt);
+    return $rows;
+}
+
 public function aprobar($ci) {
-    $ci = $this->validarCI($ci);
-    return $this->solicitudModel->aprobar($ci);
+    $ci = intval($ci);
+    $stmt = mysqli_prepare($this->db,
+        "UPDATE USUARIO SET acceso = 'aprobado' WHERE ci_usuario = ?"
+    );
+    mysqli_stmt_bind_param($stmt, 'i', $ci);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+    return true;
 }
 
-// RF85 — Rechazar solicitud de registro.
 public function rechazar($ci) {
-    $ci = $this->validarCI($ci);
-    return $this->solicitudModel->rechazar($ci);
-}
-
-// RF84, RF85 — Listar solicitudes pendientes para el administrador.
-public function getSolicitudesPendientes() {
-    return $this->solicitudModel->getSolicitudesPendientes();
+    $ci = intval($ci);
+    $stmt = mysqli_prepare($this->db,
+        "UPDATE USUARIO SET acceso = 'rechazado' WHERE ci_usuario = ?"
+    );
+    mysqli_stmt_bind_param($stmt, 'i', $ci);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+    return true;
 }
 }
 ?>

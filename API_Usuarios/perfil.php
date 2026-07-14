@@ -1,0 +1,139 @@
+<?php
+session_start();
+
+// Si no hay sesión activa, redirige al login
+if (!isset($_SESSION['ci_usuario'])) {
+    header("Location: /LandingPage/login.html");
+    exit();
+}
+
+// Solo admin u operario pueden entrar
+if ($_SESSION['rol'] !== 'admin' && $_SESSION['rol'] !== 'operario') {
+    header("Location: /LandingPage/login.html");
+    exit();
+}
+?>
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recolix — Mi panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles_vecino.css">
+</head>
+
+<body>
+
+    <header class="site-header" id="siteHeader">
+        <div class="container header-inner">
+            <a href="vecino.php" class="logo">
+                <img src="Logo.png" alt="Logo Recolix" class="logo-image" />
+                <div class="logo-text">Recolix</div>
+            </a>
+
+            <nav class="main-nav" id="mainNav">
+                <ul>
+                    <li><a href="../../LandingPage/index_LandingPage.html">Inicio</a></li>
+                    <li><a href="mapa.html">Mapa</a></li>
+                </ul>
+            </nav>
+
+            <div class="nav-right">
+                <a href="/recolix/API_Usuarios/Vista/perfil.php" class="btn-user" title="Perfil de usuario">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                    </svg>
+                </a>
+                <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menú">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container dash-main">
+        <section class="dash-section" id="seccionPerfil">
+            <div class="section-header">
+                <div>
+                    <p class="section-eyebrow">Mi cuenta</p>
+                    <h2>Mis datos</h2>
+                </div>
+                <button class="btn btn-outline btn-sm" id="editarPerfilBtn">Editar datos</button>
+            </div>
+
+            <div class="panel-card" id="perfilVista">
+                <div class="perfil-grid">
+                    <div class="perfil-campo">
+                        <p class="campo-label">Nombre completo</p>
+                        <p class="campo-valor" id="perfilNombre">—</p>
+                    </div>
+                    <div class="perfil-campo">
+                        <p class="campo-label">Cédula de identidad</p>
+                        <p class="campo-valor" id="perfilCI">—</p>
+                    </div>
+                    <div class="perfil-campo">
+                        <p class="campo-label">Correo electrónico</p>
+                        <p class="campo-valor" id="perfilEmail">—</p>
+                    </div>
+                    <div class="perfil-campo">
+                        <p class="campo-label">Teléfono</p>
+                        <p class="campo-valor" id="perfilTel">—</p>
+                    </div>
+                </div>
+                <button class="btn btn-outline btn-sm" id="cambiarContraseniaBtn" style="margin-top:20px;">Cambiar
+                    contraseña</button>
+            </div>
+
+            <div class="panel-card" id="perfilForm" hidden>
+                <h3>Editar datos de contacto</h3>
+                <p class="form-nota">Solo podés modificar tu correo y teléfono. Para otros cambios contactá al
+                    administrador.</p>
+                <div class="form-row">
+                    <label for="editEmail">Correo electrónico</label>
+                    <input type="email" id="editEmail" name="email" placeholder="nombre@correo.com">
+                    <p class="error-msg" id="editEmailError"></p>
+                </div>
+                <div class="form-row">
+                    <label for="editTel">Teléfono</label>
+                    <input type="tel" id="editTel" name="tel" placeholder="Ej: 099123456">
+                    <p class="error-msg" id="editTelError"></p>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" id="guardarPerfilBtn">Guardar cambios</button>
+                    <button class="btn btn-outline btn-sm" id="cancelarPerfilBtn">Cancelar</button>
+                </div>
+                <p class="form-feedback" id="perfilFeedback"></p>
+            </div>
+
+            <div class="panel-card" id="contraseniaForm" hidden>
+                <h3>Cambiar contraseña</h3>
+                <div class="form-row">
+                    <label for="contraActual">Contraseña actual</label>
+                    <input type="password" id="contraActual" placeholder="Tu contraseña actual">
+                    <p class="error-msg" id="contraActualError"></p>
+                </div>
+                <div class="form-row">
+                    <label for="contraNueva">Nueva contraseña</label>
+                    <input type="password" id="contraNueva" placeholder="Mínimo 8 caracteres">
+                    <p class="error-msg" id="contraNuevaError"></p>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" id="guardarContraBtn">Cambiar contraseña</button>
+                    <button class="btn btn-outline btn-sm" id="cancelarContraBtn">Cancelar</button>
+                </div>
+                <p class="form-feedback" id="contraFeedback"></p>
+            </div>
+        </section>
+    </main>
+
+    <script src="perfil.js"></script>
+</body>
+</html>
