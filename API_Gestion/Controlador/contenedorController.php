@@ -97,20 +97,27 @@ class contenedorController {
     // ==========================================
     // CRUD PRINCIPAL
     // ==========================================
+
+    private function validarEntero($valor, $nombre) {
+    if (!is_numeric($valor) || floatval($valor) != intval($valor) || intval($valor) <= 0) {
+        throw new InvalidArgumentException("$nombre debe ser un número entero positivo.");
+    }
+    return intval($valor);
+    }
  
     // RF14 — Alta de contenedor.
     public function insertContenedor($idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad, $estado) {
-        $idCircuito = $this->validarId($idCircuito);
-        $idTipo     = $this->validarId($idTipo);
-        $calle      = $this->validarString($calle, 'Calle', 100);
-        $numCalle   = $this->validarString($numCalle, 'Número de puerta', 20);
-        $latitud    = $this->validarCoordenada($latitud, 'Latitud');
-        $longitud   = $this->validarCoordenada($longitud, 'Longitud');
-        $capacidad  = $this->validarDecimal($capacidad, 'Capacidad');
-        $estado     = $this->validarEstado($estado);
- 
-        return $this->contenedorModel->insertContenedor($idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad, $estado);
-    }
+    $idCircuito = $this->validarId($idCircuito);
+    $idTipo     = $this->validarId($idTipo);
+    $calle      = $this->validarString($calle, 'Calle', 100);
+    $numCalle   = $this->validarEntero($numCalle, 'Número de puerta');
+    $latitud    = $this->validarCoordenada($latitud, 'Latitud');
+    $longitud   = $this->validarCoordenada($longitud, 'Longitud');
+    $capacidad  = $this->validarEntero($capacidad, 'Capacidad');
+    $estado     = $this->validarEstado($estado);
+
+    return $this->contenedorModel->insertContenedor($idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad, $estado);
+}
  
     // RF15 — Modificación de contenedor.
     public function updateContenedor($id, $idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad) {
