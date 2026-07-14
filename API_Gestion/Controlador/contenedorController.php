@@ -70,8 +70,8 @@ class contenedorController {
                 'label'  => 'Calle'
             ],
             'numCalle' => [
-                'tipo'   => 'string',
-                'max'    => 20,
+                'tipo'   => 'entero',
+                'min'    => 1,
                 'label'  => 'Número de puerta'
             ],
             'latitud' => [
@@ -83,7 +83,7 @@ class contenedorController {
                 'label'  => 'Longitud'
             ],
             'capacidad' => [
-                'tipo'   => 'decimal',
+                'tipo'   => 'entero',
                 'min'    => 1,
                 'label'  => 'Capacidad'
             ],

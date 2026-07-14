@@ -35,6 +35,15 @@ class tipoResiduoModel {
         return $afectadas > 0;
     }
 
+    public function tieneContenedoresAsociados($id) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT 1 FROM CONTENEDOR WHERE id_tipo = ? LIMIT 1");
+        mysqli_stmt_bind_param($stmt, "i", $id);
+        mysqli_stmt_execute($stmt);
+        $existe = mysqli_stmt_get_result($stmt)->fetch_assoc() !== null;
+        mysqli_stmt_close($stmt);
+        return $existe;
+    }
+
     public function getTipoResiduo($id) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM TIPO_RESIDUO WHERE id_tipo = ?");
         mysqli_stmt_bind_param($stmt, "i", $id);

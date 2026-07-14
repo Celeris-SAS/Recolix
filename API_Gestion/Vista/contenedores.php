@@ -554,10 +554,10 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 idCircuito: parseInt(document.getElementById('idCircuito').value),
                 idTipo: parseInt(document.getElementById('idTipo').value),
                 calle: document.getElementById('calle').value.trim(),
-                numCalle: document.getElementById('numCalle').value.trim(),
+                numCalle: parseInt(document.getElementById('numCalle').value),
                 latitud: parseFloat(document.getElementById('latitud').value),
                 longitud: parseFloat(document.getElementById('longitud').value),
-                capacidad: parseFloat(document.getElementById('capacidad').value)
+                capacidad: parseInt(document.getElementById('capacidad').value)
             };
             if (!id) {
                 body.estado = document.getElementById('estado').value;
@@ -703,10 +703,10 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                         idCircuito: parseInt(c.id_circuito),
                         idTipo: parseInt(c.id_tipo),
                         calle: c.calle,
-                        numCalle: c.num_calle,
+                        numCalle: parseInt(c.num_calle),
                         latitud: parseFloat(c.latitud),
                         longitud: parseFloat(c.longitud),
-                        capacidad: parseFloat(c.capacidad)
+                        capacidad: parseInt(c.capacidad)
                     })
                 });
                 const putJson = await putRes.json();
