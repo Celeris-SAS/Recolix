@@ -201,9 +201,9 @@
             feedback.textContent = 'Inicio de sesión correcto. Redirigiendo...';
 
             if (data.rol === 'vecino') {
-              window.location.href = '/recolix/API_Usuarios/Vista/vecino.php';
-            } else if (data.rol === 'admin' || data.rol === 'operario') {
-              window.location.href = '/recolix/API_Usuarios/Vista/perfil.php';
+              window.location.href = '/recolix/API_Usuarios/vecino.php';
+            } else if (data.rol === 'administrador' || data.rol === 'cuadrilla' || data.rol === 'operario') {
+              window.location.href = '/recolix/API_Usuarios/perfil.php';
             }
           } else {
             feedback.style.display = 'block';
