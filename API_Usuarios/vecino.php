@@ -158,6 +158,34 @@ if ($_SESSION['rol'] !== 'vecino') {
         </section>
 
     </main>
+    <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="login.html" class="logo">
+            <img src="img/LogoBlanco.png" alt="Logo Recolix" class="logo-imageBlanco" />
+            <div class="logo-text">Recolix</div>
+          </a>
+          <p>Plataforma de gestión de residuos urbanos para Montevideo.</p>
+        </div>
+        <div class="footer-col">
+          <h3>Navegación</h3>
+          <ul>
+            <li><a href="index_LandingPage.html">Inicio</a></li>
+            <li><a href="mapa.html">Mapa</a></li>
+            <li><a href="../Backoffice/login_backoffice.php">Portal de empleados</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Canales de la Intendencia</h3>
+          <ul>
+            <li>Línea 1950 300</li>
+            <li>Whatsapp: 092 250 260</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
 
     <script src="vecino.js"></script>
 </body>
