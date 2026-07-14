@@ -75,7 +75,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
             </nav>
         </div>
         <div class="nav-right">
-            <a href="../API_Usuarios/Vista/perfil.html" class="btn-user" title="Perfil de usuario">
+            <a href="../API_Usuarios/perfil.php" class="btn-user" title="Perfil de usuario">
                 <img src="../API_Recoleccion/Vista/img/user.svg" alt="Usuario" class="nav-user-icon">
             </a>
             <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menú">

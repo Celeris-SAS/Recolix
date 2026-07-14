@@ -130,6 +130,10 @@ h3 {
   transform: translateY(-2px);
 }
 
+#loginNavLink {
+  background: transparent;
+}
+
 .btn-outline-light {
   border: 2px solid var(--white);
   color: var(--white);
@@ -253,6 +257,27 @@ h3 {
   display: flex;
   align-items: center;
   gap: 18px;
+}
+
+.btn-user {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.btn-user:hover {
+  background: var(--paper-dim);
+}
+
+.nav-user-icon {
+  width: 20px;
+  height: 20px;
+  display: block;
 }
 
 .hamburger {

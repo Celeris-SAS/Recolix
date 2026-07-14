@@ -33,7 +33,7 @@
                 </nav>
             </div>
             <div class="nav-right">
-                <a href="perfil.html" class="btn-user" title="Perfil de usuario">
+                <a href="../perfil.php" class="btn-user" title="Perfil de usuario">
                     <img src="img/user.svg" alt="Usuario" class="nav-user-icon">
                 </a>
                 <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menú">
