@@ -267,21 +267,14 @@
     </div>
   </footer>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.8.0/proj4js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
 
-      /* Mini-mapa interactivo en el hero */
+      /* Mini-mapa interactivo en el hero — solo BD, sin CSV ni simulación */
       (async function () {
         if (!window.L) return;
-
-        try {
-          if (window.proj4) {
-            proj4.defs('EPSG:32721', '+proj=utm +zone=21 +south +datum=WGS84 +units=m +no_defs');
-          }
-        } catch (_) { }
 
         const heroMap = L.map('hero-mapa', {
           zoomControl: true,
@@ -299,21 +292,8 @@
           en_deposito: '#4a5568'
         };
 
-        /* Pool de estados para asignar a los puntos del servidor.
-           'desbordado' sin 's' — así coincide con la clave de COLORES. */
-        const pool = [
-          ...Array(68).fill('funcional'),
-          ...Array(14).fill('inactivo'),
-          ...Array(10).fill('desbordado'),
-          ...Array(5).fill('roto'),
-          ...Array(3).fill('en_deposito')
-        ];
-
-        let s = 0x9e3779b9;
-        const rand = () => { s ^= s << 13; s ^= s >> 17; s ^= s << 5; return (s >>> 0) / 4294967296; };
-
         const addPoint = (lat, lon, estado) => {
-          if (!estado || !COLORES[estado]) return;
+          if (!estado || !COLORES[estado]) estado = 'funcional';
           L.circleMarker([lat, lon], {
             radius: 4, color: '#fff', opacity: 0.6,
             weight: 1.5, fillColor: COLORES[estado], fillOpacity: 0.85
@@ -321,20 +301,18 @@
         };
 
         try {
-          const resp = await fetch('https://localhost/APIS%proyecto/convertirDatosContenedores.php', {
+          const resp = await fetch('http://localhost/recolix/API_Gestion/contenedores', {
             signal: AbortSignal.timeout(5000)
           });
-          const puntos = await resp.json();
+          const json = await resp.json();
+          const puntos = Array.isArray(json) ? json : json && json.data;
 
           if (Array.isArray(puntos)) {
-            heroMap.eachLayer(layer => { if (layer instanceof L.CircleMarker) heroMap.removeLayer(layer); });
             for (const p of puntos) {
-              if (p.x == null || p.y == null) continue;
-              try {
-                let lat = p.y, lon = p.x;
-                if (window.proj4) [lon, lat] = proj4('EPSG:32721', 'EPSG:4326', [p.x, p.y]);
-                addPoint(lat, lon, pool[Math.floor(rand() * pool.length)]);
-              } catch (_) { }
+              const lat = parseFloat(p.latitud);
+              const lon = parseFloat(p.longitud);
+              if (Number.isNaN(lat) || Number.isNaN(lon)) continue;
+              addPoint(lat, lon, p.estado);
             }
           }
         } catch (_) { }
