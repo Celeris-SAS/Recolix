@@ -125,10 +125,10 @@ class contenedorController {
         $idCircuito = $this->validarId($idCircuito);
         $idTipo     = $this->validarId($idTipo);
         $calle      = $this->validarString($calle, 'Calle', 100);
-        $numCalle   = $this->validarString($numCalle, 'Número de puerta', 20);
+        $numCalle   = $this->validarEntero($numCalle, 'Número de puerta');
         $latitud    = $this->validarCoordenada($latitud, 'Latitud');
         $longitud   = $this->validarCoordenada($longitud, 'Longitud');
-        $capacidad  = $this->validarDecimal($capacidad, 'Capacidad');
+        $capacidad  = $this->validarEntero($capacidad, 'Capacidad');
 
         $contenedor = $this->contenedorModel->getContenedor($id);
         if (!$contenedor) {
@@ -198,12 +198,15 @@ class contenedorController {
     public function asignarACircuito($id, $idCircuito) {
         $id         = $this->validarId($id);
         $idCircuito = $this->validarId($idCircuito);
- 
+
         $contenedor = $this->contenedorModel->getContenedor($id);
         if (!$contenedor) {
             throw new InvalidArgumentException("No existe un contenedor con el ID $id.");
         }
- 
+        if (!$this->contenedorModel->circuitoExiste($idCircuito)) {
+            throw new InvalidArgumentException("No existe un circuito con el ID $idCircuito.");
+        }
+
         return $this->contenedorModel->asignarACircuito($id, $idCircuito);
     }
  
