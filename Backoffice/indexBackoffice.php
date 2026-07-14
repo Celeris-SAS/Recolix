@@ -109,7 +109,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
         <span class="novedades-count" id="novedadesCount"></span>
     </div>
     <div class="novedades-grid" id="novedadesGrid">
-        <div class="novedad-card">
+        <a href="#" class="novedad-card">
             <div class="novedad-icon novedad-icon-incidencias">
                 <img src="img/exclamacion.png" alt="" class="card-svg-icon">
             </div>
@@ -118,8 +118,8 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
                 <p class="novedad-resumen">Reportes de vecinos sin revisar</p>
                 <span class="novedad-badge" id="badgeIncidencias">0</span>
             </div>
-        </div>
-        <div class="novedad-card">
+        </a>
+        <a href="indexSolicitudRegistro.php" class="novedad-card">
             <div class="novedad-icon novedad-icon-usuarios">
                 <img src="../API_Recoleccion/Vista/img/user.svg" alt="" class="card-svg-icon">
             </div>
@@ -128,8 +128,8 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
                 <p class="novedad-resumen">Solicitudes de registro pendientes de aprobación</p>
                 <span class="novedad-badge" id="badgeUsuarios">0</span>
             </div>
-        </div>
-        <div class="novedad-card">
+        </a>
+        <a href="../API_Gestion/Vista/contenedores.php" class="novedad-card">
             <div class="novedad-icon novedad-icon-contenedores">
                 <img src="img/contenedor.png" alt="" class="card-svg-icon">
             </div>
@@ -138,7 +138,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
                 <p class="novedad-resumen">Contenedores desbordados o fuera de servicio</p>
                 <span class="novedad-badge" id="badgeContenedores">0</span>
             </div>
-        </div>
+        </a>
     </div>
 </section>
 
