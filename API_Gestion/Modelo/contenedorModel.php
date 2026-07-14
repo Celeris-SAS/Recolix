@@ -176,4 +176,21 @@ class ContenedorModel {
         return $rows;
     }
 }
+    public function tipoResiduoExiste($idTipo) {
+    $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT 1 FROM TIPO_RESIDUO WHERE id_tipo = ?");
+    mysqli_stmt_bind_param($stmt, "i", $idTipo);
+    mysqli_stmt_execute($stmt);
+    $existe = mysqli_stmt_get_result($stmt)->fetch_assoc() !== null;
+    mysqli_stmt_close($stmt);
+    return $existe;
+}
+
+public function circuitoExiste($idCircuito) {
+    $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT 1 FROM CIRCUITO WHERE id_circuito = ?");
+    mysqli_stmt_bind_param($stmt, "i", $idCircuito);
+    mysqli_stmt_execute($stmt);
+    $existe = mysqli_stmt_get_result($stmt)->fetch_assoc() !== null;
+    mysqli_stmt_close($stmt);
+    return $existe;
+}
 ?>
