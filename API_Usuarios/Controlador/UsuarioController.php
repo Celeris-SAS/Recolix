@@ -1,15 +1,13 @@
 <?php
 
-    class UsuarioController {
-    private $db;
+class UsuarioController {
     private $usuarioModel;
 
-    public function __construct() {
-        require_once _DIR_ . '/../Modelo/UsuarioModel.php';
+    private $rolesValidos   = ['administrador', 'cuadrilla', 'operario', 'vecino'];
+    private $accesosValidos = ['pendiente', 'habilitado', 'deshabilitado'];
 
-        // Instanciamos la conexión
-        $conexion = new conexion();
-        $this->db = $conexion->getConexion();
+    public function __construct() {
+        require_once __DIR__ . '/../Modelo/UsuarioModel.php';
         $this->usuarioModel = new UsuarioModel();
     }
 
@@ -26,6 +24,16 @@
             throw new InvalidArgumentException('La cédula debe tener entre 7 y 8 dígitos.');
         }
         return $ci;
+    }
+
+    private function validarNombre($valor, $nombre) {
+        if (!is_string($valor) || trim($valor) === '') {
+            throw new InvalidArgumentException("$nombre no puede estar vacío.");
+        }
+        if (!preg_match('/^[A-Za-zÁÉÍÓÚÑÜáéíóúñü\s]{2,50}$/', trim($valor))) {
+            throw new InvalidArgumentException("$nombre solo puede contener letras y no puede superar los 50 caracteres.");
+        }
+        return trim($valor);
     }
 
     private function validarEmail($email) {
@@ -58,12 +66,28 @@
         return intval($id);
     }
 
+    private function validarRol($rol) {
+        if (!in_array($rol, $this->rolesValidos)) {
+            throw new InvalidArgumentException('Rol no válido. Valores permitidos: ' . implode(', ', $this->rolesValidos));
+        }
+        return $rol;
+    }
+
+    private function validarAcceso($acceso) {
+        if (!in_array($acceso, $this->accesosValidos)) {
+            throw new InvalidArgumentException('Acceso no válido. Valores permitidos: ' . implode(', ', $this->accesosValidos));
+        }
+        return $acceso;
+    }
+
     public function reglasValidacion() {
         return [
             'ci'          => ['tipo' => 'entero', 'min' => 1000000, 'max' => 99999999, 'label' => 'Cédula'],
             'email'       => ['tipo' => 'email',  'max' => 120,     'label' => 'Correo electrónico'],
             'tel'         => ['tipo' => 'string', 'min' => 9, 'max' => 9,  'label' => 'Teléfono'],
-            'contrasenia' => ['tipo' => 'string', 'min' => 8,       'label' => 'Contraseña']
+            'contrasenia' => ['tipo' => 'string', 'min' => 8,       'label' => 'Contraseña'],
+            'rol'         => ['valores' => $this->rolesValidos,   'label' => 'Rol'],
+            'acceso'      => ['valores' => $this->accesosValidos, 'label' => 'Acceso']
         ];
     }
 
@@ -86,14 +110,11 @@
         if (!$usuario) {
             throw new InvalidArgumentException('Cédula o contraseña incorrectos.');
         }
-        if ($usuario['estado'] === 'deshabilitado') {
+        if ($usuario['acceso'] === 'deshabilitado') {
             throw new InvalidArgumentException('Tu cuenta está deshabilitada. Contactá al administrador.');
         }
         if ($usuario['acceso'] === 'pendiente') {
             throw new InvalidArgumentException('Tu solicitud está pendiente de aprobación por un administrador.');
-        }
-        if ($usuario['acceso'] === 'rechazado') {
-            throw new InvalidArgumentException('Tu solicitud fue rechazada. Contactá al administrador.');
         }
 
         // TODO: generar y devolver un JWT cuando el módulo de sesiones esté implementado.
@@ -181,6 +202,71 @@
     public function marcarNotificacionLeida($idNotificacion) {
         $idNotificacion = $this->validarId($idNotificacion);
         return $this->usuarioModel->marcarNotificacionLeida($idNotificacion);
+    }
+
+    // ==========================================
+    // ADMINISTRACIÓN DE USUARIOS
+    // ==========================================
+
+    // Listado general de usuarios para el panel de administración.
+    public function listarUsuarios() {
+        return $this->usuarioModel->listarUsuarios();
+    }
+
+    // Filtrar usuarios por rol.
+    public function filtrarRol($rol) {
+        $rol = $this->validarRol($rol);
+        return $this->usuarioModel->filtrarRol($rol);
+    }
+
+    // Filtrar usuarios por acceso (pendiente/habilitado/deshabilitado).
+    public function filtrarAcceso($acceso) {
+        $acceso = $this->validarAcceso($acceso);
+        return $this->usuarioModel->filtrarAcceso($acceso);
+    }
+
+    // Cambia el rol de un usuario existente (RNE 01: administrador, cuadrilla, operario, vecino).
+    public function cambiarRol($ci, $nuevoRol) {
+        $ci       = $this->validarCI($ci);
+        $nuevoRol = $this->validarRol($nuevoRol);
+
+        $usuario = $this->usuarioModel->getPerfil($ci);
+        if (!$usuario) {
+            throw new InvalidArgumentException("No existe un usuario con la cédula $ci.");
+        }
+
+        return $this->usuarioModel->cambiarRol($ci, $nuevoRol);
+    }
+
+    // Habilita, deshabilita o revierte a pendiente el acceso de un usuario (equivalente a "dar de baja").
+    public function cambiarAcceso($ci, $nuevoAcceso) {
+        $ci         = $this->validarCI($ci);
+        $nuevoAcceso = $this->validarAcceso($nuevoAcceso);
+
+        $usuario = $this->usuarioModel->getPerfil($ci);
+        if (!$usuario) {
+            throw new InvalidArgumentException("No existe un usuario con la cédula $ci.");
+        }
+
+        return $this->usuarioModel->cambiarAcceso($ci, $nuevoAcceso);
+    }
+
+    // Alta directa de un usuario por parte de un administrador (sin pasar por el flujo de solicitud de RF02).
+    public function crearUsuario($ci, $primerNombre, $pApellido, $email, $tel, $contrasenia, $rol, $idMunicipio) {
+        $ci           = $this->validarCI($ci);
+        $primerNombre = $this->validarNombre($primerNombre, 'Nombre');
+        $pApellido    = $this->validarNombre($pApellido, 'Apellido');
+        $email        = $this->validarEmail($email);
+        $tel          = $this->validarTel($tel);
+        $contrasenia  = $this->validarContrasenia($contrasenia);
+        $rol          = $this->validarRol($rol);
+        $idMunicipio  = $this->validarId($idMunicipio);
+
+        if ($this->usuarioModel->existeCi($ci)) {
+            throw new InvalidArgumentException("Ya existe un usuario con la cédula $ci.");
+        }
+
+        return $this->usuarioModel->crearUsuario($ci, $primerNombre, $pApellido, $email, $tel, $contrasenia, $rol, $idMunicipio);
     }
 }
 ?>

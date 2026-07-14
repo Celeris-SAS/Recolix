@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', function () {
   window.addEventListener('load', () => map.invalidateSize());
   window.addEventListener('resize', () => map.invalidateSize());
 
+  const API_URL = 'http://localhost/recolix/API_Gestion/contenedores';
+
   const COLORES = {
     funcional: '#4CAF50',
     inactivo: '#e3b23c',
@@ -22,21 +24,11 @@ document.addEventListener('DOMContentLoaded', function () {
     en_deposito: '#4a5568'
   };
 
-  const pool = [
-    ...Array(68).fill('funcional'),
-    ...Array(14).fill('inactivo'),
-    ...Array(10).fill('desbordados'),
-    ...Array(5).fill('roto'),
-    ...Array(3).fill('en_deposito')
-  ];
-
-  const fallbackPoints = [];
-
   const counts = { funcional: 0, inactivo: 0, desbordado: 0, roto: 0, en_deposito: 0 };
+  const markers = [];
 
-  const addPoint = (lat, lon, estado) => {
-    if (!estado || !COLORES[estado]) return;
-
+  const addPoint = (lat, lon, estado, info) => {
+    if (!estado || !COLORES[estado]) estado = 'funcional';
     counts[estado] = (counts[estado] || 0) + 1;
 
     const marker = L.circleMarker([lat, lon], {
@@ -48,58 +40,64 @@ document.addEventListener('DOMContentLoaded', function () {
       fillOpacity: 0.9
     }).addTo(map);
 
-    marker.bindPopup(`<strong>${estado.replace(/_/g, ' ')}</strong><br>Contenedor registrado`);
+    const filas = [];
+    if (info && info.calle) filas.push(`<b>Calle:</b> ${info.calle}${info.num_calle ? ' ' + info.num_calle : ''}`);
+    if (info && info.capacidad) filas.push(`<b>Capacidad:</b> ${info.capacidad} L`);
+    if (info && info.nivel_llenado != null) filas.push(`<b>Nivel de llenado:</b> ${info.nivel_llenado}%`);
+    filas.push(`<b>Estado:</b> ${estado.replace(/_/g, ' ')}`);
+    marker.bindPopup(filas.join('<br>'), { maxWidth: 240 });
+
+    markers.push(marker);
   };
 
-  const renderSummary = () => {
+  const resetPuntos = () => {
+    markers.forEach((m) => map.removeLayer(m));
+    markers.length = 0;
+    Object.keys(counts).forEach((k) => { counts[k] = 0; });
+  };
+
+  const renderSummary = (total) => {
     document.getElementById('countActivos').textContent = counts.funcional;
     document.getElementById('countInactivos').textContent = counts.inactivo;
     document.getElementById('countDesbordados').textContent = counts.desbordado;
-    document.getElementById('mapSummaryValue').textContent = `${Object.values(counts).reduce((a, b) => a + b, 0)} puntos`; 
+
+    const hora = new Date().toLocaleTimeString('es-UY', { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('mapSummaryValue').textContent = `${total} puntos · ${hora}`;
   };
 
-  fallbackPoints.forEach((point) => addPoint(point.lat, point.lon, point.estado));
-  renderSummary();
+  async function cargarDatosDesdeBD() {
+    const resp = await fetch(API_URL, { signal: AbortSignal.timeout(5000) });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const json = await resp.json();
+    const puntos = Array.isArray(json) ? json : json && json.data;
+    if (!Array.isArray(puntos)) throw new Error('Respuesta inesperada de la API');
+    return puntos;
+  }
 
-  const loadFromServer = async () => {
+  async function cargarDatos() {
+    resetPuntos();
+
+    let puntos = [];
     try {
-      if (window.proj4) {
-        proj4.defs('EPSG:32721', '+proj=utm +zone=21 +south +datum=WGS84 +units=m +no_defs');
-      }
+      puntos = await cargarDatosDesdeBD();
+    } catch (_) {
+      puntos = [];
+    }
 
-      const response = await fetch('https://localhost/APIS%proyecto/convertirDatosContenedores.php', {
-        signal: AbortSignal.timeout(5000)
-      });
-      const puntos = await response.json();
+    const bounds = [];
+    for (const p of puntos) {
+      const lat = parseFloat(p.latitud);
+      const lon = parseFloat(p.longitud);
+      if (Number.isNaN(lat) || Number.isNaN(lon)) continue;
+      addPoint(lat, lon, p.estado, p);
+      bounds.push([lat, lon]);
+    }
 
-      if (Array.isArray(puntos)) {
-        map.eachLayer((layer) => {
-          if (layer instanceof L.CircleMarker) {
-            map.removeLayer(layer);
-          }
-        });
+    renderSummary(bounds.length);
+    if (bounds.length) map.fitBounds(bounds, { padding: [40, 40] });
+  }
 
-        Object.keys(counts).forEach((key) => {
-          counts[key] = 0;
-        });
-
-        puntos.forEach((p) => {
-          if (p.x == null || p.y == null) return;
-          try {
-            const [lon, lat] = window.proj4
-              ? proj4('EPSG:32721', 'EPSG:4326', [p.x, p.y])
-              : [p.x, p.y];
-            const estado = pool[Math.floor(Math.random() * pool.length)];
-            addPoint(lat, lon, estado);
-          } catch (_) {}
-        });
-
-        renderSummary();
-      }
-    } catch (_) {}
-  };
-
-  loadFromServer();
+  cargarDatos();
 
   const btn = document.getElementById('hamburgerBtn');
   const nav = document.getElementById('mainNav');

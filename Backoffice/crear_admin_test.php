@@ -19,9 +19,9 @@ try {
         $check->close();
         // Ya existe: corregir rol y acceso por si fueron insertados con valores incorrectos
         $rolCorrecto = 'administrador';
-        $accesoCorrecto = 1;
+        $accesoCorrecto = 'habilitado';
         $upd = $conn->prepare("UPDATE USUARIO SET rol = ?, acceso = ? WHERE ci_usuario = ?");
-        $upd->bind_param('sii', $rolCorrecto, $accesoCorrecto, $ci);
+        $upd->bind_param('ssi', $rolCorrecto, $accesoCorrecto, $ci);
         $upd->execute();
         $upd->close();
         echo "<p style='font-family:sans-serif; padding:1rem;'>";
@@ -29,7 +29,7 @@ try {
         echo "CI: <code>$ci</code><br>";
         echo "Contraseña: <code>admin1234</code> (si fue creado antes con este script)<br>";
         echo "Rol actualizado a: <code>$rolCorrecto</code><br>";
-        echo "Acceso actualizado a: <code>1 (habilitado)</code><br><br>";
+        echo "Acceso actualizado a: <code>$accesoCorrecto</code><br><br>";
         echo "<span style='color:#c0392b'>Eliminá este archivo cuando ya no lo necesites.</span>";
         echo "</p>";
         exit;
@@ -47,8 +47,8 @@ try {
 
     $nombre   = 'Admin';
     $apellido = 'Test';
-    $rol      = 'administrador'; // RNE 01: valores válidos son administrador, cuadrilla, vecino
-    $acceso   = 1;               // BOOLEAN true (acceso habilitado)
+    $rol      = 'administrador'; // RNE 01: valores válidos son administrador, cuadrilla, operario, vecino
+    $acceso   = 'habilitado';    // enum: pendiente, habilitado, deshabilitado
     $email    = 'admin@recolix.com';
     $tel      = '099000000';
     $hash     = password_hash('admin1234', PASSWORD_DEFAULT);

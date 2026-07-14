@@ -13,7 +13,7 @@ $config = [
         'solicitudes' => [
             'singular'    => 'SolicitudRegistro',
             'controller'  => 'SolicitudRegistroController',
-            'file'        => 'Controlador/SolicitudRegistroController.php',
+            'file'        => 'Controlador/solicitudRegistroController.php',
             'getAllMethod' => null,
             'getMethod'   => null,
             'insertMethod' => 'crearSolicitud',
@@ -28,9 +28,9 @@ $config = [
             'singular'    => 'Usuario',
             'controller'  => 'UsuarioController',
             'file'        => 'Controlador/UsuarioController.php',
-            'getAllMethod' => null,
+            'getAllMethod' => 'listarUsuarios',
             'getMethod'   => 'getPerfil',
-            'insertMethod' => null,
+            'insertMethod' => 'crearUsuario',
             'updateMethod' => 'updatePerfil',
             'deleteMethod' => null,
             'actions' => [
@@ -40,7 +40,11 @@ $config = [
                 'cambiarContrasenia',
                 'getIncidencias',
                 'getNotificaciones',
-                'marcarNotificacionLeida'
+                'marcarNotificacionLeida',
+                'filtrarRol',
+                'filtrarAcceso',
+                'cambiarRol',
+                'cambiarAcceso'
             ],
             'filters' => []
         ]

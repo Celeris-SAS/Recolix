@@ -19,64 +19,7 @@ if ($rol === 'vecino' || empty($rol)) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acceso no autorizado — Recolix</title>
     <link rel="stylesheet" href="styleBackoffice.css">
-    <style>
-        .denegado-wrap {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 2rem;
-            gap: 1.25rem;
-        }
-        .denegado-logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            justify-content: center;
-            margin-bottom: 0.5rem;
-        }
-        .denegado-logo img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-        .denegado-logo span {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--moss);
-        }
-        .denegado-icono {
-            font-size: 3rem;
-            line-height: 1;
-        }
-        .denegado-titulo {
-            font-size: 1.75rem;
-            font-weight: 800;
-            color: var(--red);
-        }
-        .denegado-desc {
-            color: var(--muted);
-            font-size: 0.95rem;
-            max-width: 380px;
-            line-height: 1.55;
-        }
-        .btn-volver {
-            display: inline-block;
-            padding: 0.7rem 1.5rem;
-            background: var(--moss);
-            color: #fff;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            font-weight: 700;
-            text-decoration: none;
-            transition: background 0.2s;
-            margin-top: 0.25rem;
-        }
-        .btn-volver:hover { background: var(--moss-dark); }
-    </style>
+    <link rel="stylesheet" href="styleAccesoDenegado.css">
 </head>
 <body>
 <div class="denegado-wrap">
@@ -128,6 +71,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
                 <a href="mapa.php">Mapa</a>
                 <a href="#">Reportes</a>
                 <a href="#">Incidencias</a>
+                <a href="../API_Usuarios/Vista/usuarios.php">Usuarios</a>
             </nav>
         </div>
         <div class="nav-right">
@@ -149,6 +93,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
         <a href="mapa.php">Mapa</a>
         <a href="#">Reportes</a>
         <a href="#">Incidencias</a>
+        <a href="../API_Usuarios/Vista/usuarios.php">Usuarios</a>
     </nav>
     <div class="nav-hr"></div>
 </header>
@@ -166,7 +111,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
         <span class="novedades-count" id="novedadesCount"></span>
     </div>
     <div class="novedades-grid" id="novedadesGrid">
-        <div class="novedad-card">
+        <a href="#" class="novedad-card">
             <div class="novedad-icon novedad-icon-incidencias">
                 <img src="img/exclamacion.png" alt="" class="card-svg-icon">
             </div>
@@ -175,8 +120,8 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
                 <p class="novedad-resumen">Reportes de vecinos sin revisar</p>
                 <span class="novedad-badge" id="badgeIncidencias">0</span>
             </div>
-        </div>
-        <div class="novedad-card">
+        </a>
+        <a href="indexSolicitudRegistro.php" class="novedad-card">
             <div class="novedad-icon novedad-icon-usuarios">
                 <img src="../API_Recoleccion/Vista/img/user.svg" alt="" class="card-svg-icon">
             </div>
@@ -185,8 +130,8 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
                 <p class="novedad-resumen">Solicitudes de registro pendientes de aprobación</p>
                 <span class="novedad-badge" id="badgeUsuarios">0</span>
             </div>
-        </div>
-        <div class="novedad-card">
+        </a>
+        <a href="../API_Gestion/Vista/contenedores.php" class="novedad-card">
             <div class="novedad-icon novedad-icon-contenedores">
                 <img src="img/contenedor.png" alt="" class="card-svg-icon">
             </div>
@@ -195,7 +140,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
                 <p class="novedad-resumen">Contenedores desbordados o fuera de servicio</p>
                 <span class="novedad-badge" id="badgeContenedores">0</span>
             </div>
-        </div>
+        </a>
     </div>
 </section>
 
@@ -266,6 +211,13 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
                 <p>Administrar centros de acopio</p>
             </div>
         </a>
+        <a href="../API_Usuarios/Vista/usuarios.php" class="card-operar">
+            <div class="card-content">
+                <div class="card-icon"><img src="../API_Usuarios/Vista/img/user.svg" alt="" class="card-svg-icon"></div>
+                <h3>Usuarios</h3>
+                <p>Administrar usuarios del sistema</p>
+            </div>
+        </a>
 
     </div>
 </section>
@@ -295,6 +247,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
 <script>
 const API_GESTION      = '/recolix/API_Gestion';
 const API_RECOLECCION  = '/recolix/API_Recoleccion';
+const API_USUARIOS     = '/recolix/API_Usuarios';
 
 async function cargarNovedades() {
     const badges = {
@@ -317,7 +270,7 @@ async function cargarNovedades() {
     }
 
     try {
-        const res  = await fetch(`/recolix/API_Usuarios/usuarios?acceso=pendiente`);
+        const res  = await fetch(`${API_USUARIOS}/solicitudes/getSolicitudesPendientes`);
         const json = await res.json();
         if (json.status === 'success' && Array.isArray(json.data)) {
             badges.usuarios.textContent = json.data.length;

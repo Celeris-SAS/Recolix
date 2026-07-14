@@ -1,13 +1,11 @@
 <?php
 
-require_once __DIR__ . '/../Modelo/conexion.php';
 class SolicitudRegistroController {
-    private $db;
+    private $solicitudModel;
 
     public function __construct() {
-        // Instanciamos la conexión
-        $conexion = new conexion();
-        $this->db = $conexion->getConexion();
+        require_once __DIR__ . '/../Modelo/solicitudRegistroModel.php';
+        $this->solicitudModel = new SolicitudRegistroModel();
     }
     // ==========================================
     // VALIDACIONES
