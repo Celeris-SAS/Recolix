@@ -75,8 +75,8 @@ class contenedorController {
                 'label'  => 'Calle'
             ],
             'numCalle' => [
-                'tipo'   => 'string',
-                'max'    => 20,
+                'tipo'   => 'entero',
+                'min'    => 1,
                 'label'  => 'Número de puerta'
             ],
             'latitud' => [
@@ -88,7 +88,7 @@ class contenedorController {
                 'label'  => 'Longitud'
             ],
             'capacidad' => [
-                'tipo'   => 'decimal',
+                'tipo'   => 'entero',
                 'min'    => 1,
                 'label'  => 'Capacidad'
             ],
@@ -102,36 +102,63 @@ class contenedorController {
     // ==========================================
     // CRUD PRINCIPAL
     // ==========================================
- 
-    // RF14 — Alta de contenedor.
-    public function insertContenedor($idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad, $estado) {
-        $idCircuito = $this->validarId($idCircuito);
-        $idTipo     = $this->validarId($idTipo);
-        $calle      = $this->validarString($calle, 'Calle', 100);
-        $numCalle   = $this->validarString($numCalle, 'Número de puerta', 20);
-        $latitud    = $this->validarCoordenada($latitud, 'Latitud');
-        $longitud   = $this->validarCoordenada($longitud, 'Longitud');
-        $capacidad  = $this->validarDecimal($capacidad, 'Capacidad');
-        $estado     = $this->validarEstado($estado);
- 
-        return $this->contenedorModel->insertContenedor($idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad, $estado);
+
+    private function validarEntero($valor, $nombre) {
+    if (!is_numeric($valor) || floatval($valor) != intval($valor) || intval($valor) <= 0) {
+        throw new InvalidArgumentException("$nombre debe ser un número entero positivo.");
+    }
+    return intval($valor);
     }
  
+    // RF14 — Alta de contenedor.
+    // RF27 — Un contenedor 'en_deposito' todavía no está instalado en la vía
+    // pública, así que no tiene calle/número/coordenadas.
+    public function insertContenedor($idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad, $estado) {
+    $idCircuito = $this->validarId($idCircuito);
+    $idTipo     = $this->validarId($idTipo);
+    $estado     = $this->validarEstado($estado);
+
+    if ($estado === 'en_deposito') {
+        $calle    = null;
+        $numCalle = null;
+        $latitud  = null;
+        $longitud = null;
+    } else {
+        $calle    = $this->validarString($calle, 'Calle', 100);
+        $numCalle = $this->validarEntero($numCalle, 'Número de puerta');
+        $latitud  = $this->validarCoordenada($latitud, 'Latitud');
+        $longitud = $this->validarCoordenada($longitud, 'Longitud');
+    }
+    $capacidad  = $this->validarEntero($capacidad, 'Capacidad');
+
+    return $this->contenedorModel->insertContenedor($idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad, $estado);
+}
+ 
     // RF15 — Modificación de contenedor.
+    // El estado no se recibe acá (se cambia con cambiarEstado), así que para
+    // saber si hay que exigir dirección/coordenadas se mira el estado actual.
     public function updateContenedor($id, $idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad) {
         $id         = $this->validarId($id);
         $idCircuito = $this->validarId($idCircuito);
         $idTipo     = $this->validarId($idTipo);
-        $calle      = $this->validarString($calle, 'Calle', 100);
-        $numCalle   = $this->validarString($numCalle, 'Número de puerta', 20);
-        $latitud    = $this->validarCoordenada($latitud, 'Latitud');
-        $longitud   = $this->validarCoordenada($longitud, 'Longitud');
-        $capacidad  = $this->validarDecimal($capacidad, 'Capacidad');
 
         $contenedor = $this->contenedorModel->getContenedor($id);
         if (!$contenedor) {
             throw new InvalidArgumentException("No existe un contenedor con el ID $id.");
         }
+
+        if ($contenedor['estado'] === 'en_deposito') {
+            $calle    = null;
+            $numCalle = null;
+            $latitud  = null;
+            $longitud = null;
+        } else {
+            $calle    = $this->validarString($calle, 'Calle', 100);
+            $numCalle = $this->validarEntero($numCalle, 'Número de puerta');
+            $latitud  = $this->validarCoordenada($latitud, 'Latitud');
+            $longitud = $this->validarCoordenada($longitud, 'Longitud');
+        }
+        $capacidad  = $this->validarEntero($capacidad, 'Capacidad');
 
         return $this->contenedorModel->updateContenedor($id, $idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad);
     }
@@ -178,27 +205,33 @@ class contenedorController {
  
     // RF21 — Clasificación por tipo de residuo.
     public function clasificarPorTipoResiduo($id, $idTipo) {
-        $id     = $this->validarId($id);
-        $idTipo = $this->validarId($idTipo);
- 
-        $contenedor = $this->contenedorModel->getContenedor($id);
-        if (!$contenedor) {
-            throw new InvalidArgumentException("No existe un contenedor con el ID $id.");
-        }
- 
-        return $this->contenedorModel->clasificarPorTipoResiduo($id, $idTipo);
+    $id     = $this->validarId($id);
+    $idTipo = $this->validarId($idTipo);
+
+    $contenedor = $this->contenedorModel->getContenedor($id);
+    if (!$contenedor) {
+        throw new InvalidArgumentException("No existe un contenedor con el ID $id.");
     }
+    if (!$this->contenedorModel->tipoResiduoExiste($idTipo)) {
+        throw new InvalidArgumentException("No existe un tipo de residuo con el ID $idTipo.");
+    }
+
+    return $this->contenedorModel->clasificarPorTipoResiduo($id, $idTipo);
+}
  
     // RF22 — Asignación a circuito.
     public function asignarACircuito($id, $idCircuito) {
         $id         = $this->validarId($id);
         $idCircuito = $this->validarId($idCircuito);
- 
+
         $contenedor = $this->contenedorModel->getContenedor($id);
         if (!$contenedor) {
             throw new InvalidArgumentException("No existe un contenedor con el ID $id.");
         }
- 
+        if (!$this->contenedorModel->circuitoExiste($idCircuito)) {
+            throw new InvalidArgumentException("No existe un circuito con el ID $idCircuito.");
+        }
+
         return $this->contenedorModel->asignarACircuito($id, $idCircuito);
     }
  

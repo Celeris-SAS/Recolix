@@ -9,12 +9,13 @@ class ContenedorModel {
     }
 
     public function insertContenedor($idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad, $estado) {
-        $stmt = mysqli_prepare($this->conn->getConexion(), "INSERT INTO CONTENEDOR (id_circuito, id_tipo, calle, num_calle, latitud, longitud, capacidad, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        mysqli_stmt_bind_param($stmt, "iissddds", $idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad, $estado);
-        mysqli_stmt_execute($stmt);
-        $id = mysqli_insert_id($this->conn->getConexion());
-        mysqli_stmt_close($stmt);
-        return $id;
+    $stmt = mysqli_prepare($this->conn->getConexion(),
+                           "INSERT INTO CONTENEDOR (id_circuito, id_tipo, calle, num_calle, latitud, longitud, capacidad, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    mysqli_stmt_bind_param($stmt, "iisiddis", $idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad, $estado);
+    mysqli_stmt_execute($stmt);
+    $id = mysqli_insert_id($this->conn->getConexion());
+    mysqli_stmt_close($stmt);
+    return $id;
     }
 
     public function updateContenedor($id, $idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad) {
@@ -179,5 +180,23 @@ class ContenedorModel {
         mysqli_stmt_close($stmt);
         return $rows;
     }
+
+    public function tipoResiduoExiste($idTipo) {
+    $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT 1 FROM TIPO_RESIDUO WHERE id_tipo = ?");
+    mysqli_stmt_bind_param($stmt, "i", $idTipo);
+    mysqli_stmt_execute($stmt);
+    $existe = mysqli_stmt_get_result($stmt)->fetch_assoc() !== null;
+    mysqli_stmt_close($stmt);
+    return $existe;
+}
+
+public function circuitoExiste($idCircuito) {
+    $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT 1 FROM CIRCUITO WHERE id_circuito = ?");
+    mysqli_stmt_bind_param($stmt, "i", $idCircuito);
+    mysqli_stmt_execute($stmt);
+    $existe = mysqli_stmt_get_result($stmt)->fetch_assoc() !== null;
+    mysqli_stmt_close($stmt);
+    return $existe;
+}
 }
 ?>

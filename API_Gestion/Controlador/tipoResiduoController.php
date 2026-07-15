@@ -84,20 +84,25 @@ class tipoResiduoController {
     }
  
     // RF16 — Baja de tipo de residuo.
-    // Si tiene contenedores asociados MySQL rechaza el DELETE por integridad referencial.
+    // La FK de CONTENEDOR hacia TIPO_RESIDUO es ON DELETE SET NULL, por lo que
+    // MySQL no bloquea el DELETE por sí solo: hay que verificar explícitamente
+    // que no haya contenedores asociados antes de borrar.
     public function bajaTipoResiduo($id) {
         $id = $this->validarId($id);
- 
+
         $tipoResiduo = $this->tipoResiduoModel->getTipoResiduo($id);
         if (!$tipoResiduo) {
             throw new InvalidArgumentException("No existe un tipo de residuo con el ID $id.");
         }
- 
+        if ($this->tipoResiduoModel->tieneContenedoresAsociados($id)) {
+            throw new InvalidArgumentException("No se puede eliminar: hay contenedores asignados a este tipo de residuo.");
+        }
+
         $resultado = $this->tipoResiduoModel->bajaTipoResiduo($id);
         if (!$resultado) {
-            throw new RuntimeException("No se pudo eliminar el tipo de residuo. Puede tener contenedores asociados.");
+            throw new RuntimeException("No se pudo eliminar el tipo de residuo.");
         }
- 
+
         return $resultado;
     }
  
