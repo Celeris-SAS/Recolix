@@ -95,7 +95,7 @@ if (strpos($uri, $basePath) === 0) {
     $controllerClass = $resourceConfig['controller'];
     try {
         $controller = new $controllerClass();
-    } catch (Exception $e) {
+    } catch (Throwable $e) {
         http_response_code(500);
         echo json_encode(['status' => 'error', 'message' => 'Error al inicializar controller: ' . $e->getMessage()]);
         exit;
@@ -122,7 +122,7 @@ if (strpos($uri, $basePath) === 0) {
     // Ejecutar acción si existe
     if ($action && isset($resourceConfig['actions']) && in_array($action, $resourceConfig['actions']) && method_exists($controller, $action)) {
         $callParams = [];
-        if ($id) $callParams[] = $id;
+        if ($id !== null) $callParams[] = $id;
         if ($method === 'GET') {
             $query = $_GET;
             unset($query['action']);
@@ -141,7 +141,7 @@ if (strpos($uri, $basePath) === 0) {
         try {
             $result = call_user_func_array([$controller, $action], $callParams);
             echo json_encode(['status' => 'success', 'data' => $result]);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             http_response_code(400);
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
@@ -151,7 +151,7 @@ if (strpos($uri, $basePath) === 0) {
     // Procesar según método HTTP
     switch ($method) {
         case 'GET':
-            if ($id) {
+            if ($id !== null) {
                 try {
                     $result = $controller->{$resourceConfig['getMethod']}($id);
                     if ($result) {
@@ -160,7 +160,7 @@ if (strpos($uri, $basePath) === 0) {
                         http_response_code(404);
                         echo json_encode(['status' => 'error', 'message' => $resourceConfig['singular'] . ' no encontrado']);
                     }
-                } catch (Exception $e) {
+                } catch (Throwable $e) {
                     http_response_code(400);
                     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
                 }
@@ -181,7 +181,7 @@ if (strpos($uri, $basePath) === 0) {
                                         $result = $controller->{$filterMethod}($qv);
                                     }
                                     echo json_encode(['status' => 'success', 'data' => $result]);
-                                } catch (Exception $e) {
+                                } catch (Throwable $e) {
                                     http_response_code(400);
                                     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
                                 }
@@ -198,8 +198,13 @@ if (strpos($uri, $basePath) === 0) {
                 }
 
                 if (!$handled) {
-                    $result = $controller->{$resourceConfig['getAllMethod']}();
-                    echo json_encode(['status' => 'success', 'data' => $result]);
+                    try {
+                        $result = $controller->{$resourceConfig['getAllMethod']}();
+                        echo json_encode(['status' => 'success', 'data' => $result]);
+                    } catch (Throwable $e) {
+                        http_response_code(400);
+                        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                    }
                 }
             }
             break;
@@ -217,7 +222,7 @@ if (strpos($uri, $basePath) === 0) {
                     );
                     http_response_code(201);
                     echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' creado', 'data' => $result]);
-                } catch (Exception $e) {
+                } catch (Throwable $e) {
                     http_response_code(400);
                     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
                 }
@@ -225,7 +230,7 @@ if (strpos($uri, $basePath) === 0) {
             break;
 
         case 'PUT':
-            if (!$id) {
+            if ($id === null) {
                 http_response_code(400);
                 echo json_encode(['status' => 'error', 'message' => 'ID requerido']);
             } elseif (!$resourceConfig['updateMethod']) {
@@ -244,7 +249,7 @@ if (strpos($uri, $basePath) === 0) {
                             $params
                         );
                         echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' actualizado', 'data' => $result]);
-                    } catch (Exception $e) {
+                    } catch (Throwable $e) {
                         http_response_code(400);
                         echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
                     }
@@ -253,7 +258,7 @@ if (strpos($uri, $basePath) === 0) {
             break;
 
         case 'DELETE':
-            if (!$id) {
+            if ($id === null) {
                 http_response_code(400);
                 echo json_encode(['status' => 'error', 'message' => 'ID requerido']);
             } elseif (!$resourceConfig['deleteMethod']) {
@@ -263,7 +268,7 @@ if (strpos($uri, $basePath) === 0) {
                 try {
                     $result = $controller->{$resourceConfig['deleteMethod']}($id);
                     echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' dado de baja']);
-                } catch (Exception $e) {
+                } catch (Throwable $e) {
                     http_response_code(400);
                     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
                 }

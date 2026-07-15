@@ -80,6 +80,25 @@ class UsuarioController {
         return $acceso;
     }
 
+    // Evita que un vecino logueado acceda/modifique los datos de otro vecino (IDOR).
+    private function verificarPropioCI($ci) {
+        if (!isset($_SESSION['ci_usuario']) || (int)$_SESSION['ci_usuario'] !== (int)$ci) {
+            throw new InvalidArgumentException('No tenés permiso para acceder a los datos de otro usuario.');
+        }
+    }
+
+    // updatePerfil lo usan tanto el vecino (su propio perfil) como el staff del
+    // Backoffice (gestión de cualquier usuario desde usuarios.php) — permite ambos casos.
+    private function verificarAccesoPerfil($ci) {
+        if (isset($_SESSION['ci_usuario']) && (int)$_SESSION['ci_usuario'] === (int)$ci) {
+            return;
+        }
+        if (isset($_SESSION['usuario']['rol']) && $_SESSION['usuario']['rol'] !== 'vecino') {
+            return;
+        }
+        throw new InvalidArgumentException('No tenés permiso para acceder a los datos de otro usuario.');
+    }
+
     public function reglasValidacion() {
         return [
             'ci'          => ['tipo' => 'entero', 'min' => 1000000, 'max' => 99999999, 'label' => 'Cédula'],
@@ -149,6 +168,7 @@ class UsuarioController {
         $ci    = $this->validarCI($ci);
         $email = $this->validarEmail($email);
         $tel   = $this->validarTel($tel);
+        $this->verificarAccesoPerfil($ci);
 
         $perfil = $this->usuarioModel->getPerfil($ci);
         if (!$perfil) {
@@ -164,6 +184,7 @@ class UsuarioController {
     public function cambiarContrasenia($ci, $contraseniaActual, $nuevaContrasenia) {
         $ci               = $this->validarCI($ci);
         $nuevaContrasenia = $this->validarContrasenia($nuevaContrasenia);
+        $this->verificarPropioCI($ci);
 
         if (!is_string($contraseniaActual) || trim($contraseniaActual) === '') {
             throw new InvalidArgumentException('La contraseña actual no puede estar vacía.');
@@ -185,6 +206,7 @@ class UsuarioController {
     // Devuelve las incidencias reportadas por el vecino autenticado.
     public function getIncidencias($ci) {
         $ci = $this->validarCI($ci);
+        $this->verificarPropioCI($ci);
         return $this->usuarioModel->getIncidencias($ci);
     }
 
@@ -195,13 +217,17 @@ class UsuarioController {
     // RF95 — Consultar notificaciones del vecino, ordenadas por fecha y prioridad.
     public function getNotificaciones($ci) {
         $ci = $this->validarCI($ci);
+        $this->verificarPropioCI($ci);
         return $this->usuarioModel->getNotificaciones($ci);
     }
 
     // RF96 — Marcar una notificación como leída.
     public function marcarNotificacionLeida($idNotificacion) {
         $idNotificacion = $this->validarId($idNotificacion);
-        return $this->usuarioModel->marcarNotificacionLeida($idNotificacion);
+        if (!isset($_SESSION['ci_usuario'])) {
+            throw new InvalidArgumentException('Sesión inválida.');
+        }
+        return $this->usuarioModel->marcarNotificacionLeida($idNotificacion, $_SESSION['ci_usuario']);
     }
 
     // ==========================================

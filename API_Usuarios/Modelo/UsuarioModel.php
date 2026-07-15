@@ -151,13 +151,16 @@ class UsuarioModel {
     }
 
     // RF96 — Marca una notificación como leída, registrando la fecha de lectura.
-    public function marcarNotificacionLeida($idNotificacion) {
+    public function marcarNotificacionLeida($idNotificacion, $ci) {
         $ahora = date('Y-m-d H:i:s');
         $stmt  = mysqli_prepare(
             $this->conn,
-            "UPDATE NOTIFICACION SET estado = 'leida', fecha_lectura = ? WHERE id_notificacion = ?"
+            "UPDATE NOTIFICACION n
+             JOIN NOTIFICACION_USUARIO nu ON n.id_notificacion = nu.id_notificacion
+             SET n.estado = 'leida', n.fecha_lectura = ?
+             WHERE n.id_notificacion = ? AND nu.ci_usuario = ?"
         );
-        mysqli_stmt_bind_param($stmt, 'si', $ahora, $idNotificacion);
+        mysqli_stmt_bind_param($stmt, 'sii', $ahora, $idNotificacion, $ci);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
         return true;

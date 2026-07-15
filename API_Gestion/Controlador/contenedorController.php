@@ -42,7 +42,12 @@ class contenedorController {
         if (!is_numeric($valor)) {
             throw new InvalidArgumentException("$nombre debe ser un número decimal válido.");
         }
-        return floatval($valor);
+        $valor  = floatval($valor);
+        $limite = $nombre === 'Latitud' ? 90 : 180;
+        if ($valor < -$limite || $valor > $limite) {
+            throw new InvalidArgumentException("$nombre debe estar entre -$limite y $limite.");
+        }
+        return $valor;
     }
  
     private function validarEstado($estado) {

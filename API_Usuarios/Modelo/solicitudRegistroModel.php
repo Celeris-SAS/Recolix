@@ -15,10 +15,10 @@ class SolicitudRegistroModel {
     // RF02 — Solicitud de registro de vecino
     // ==========================================
 
-    // Inserta el vecino en USUARIO con acceso = 'pendiente' y estado = 'habilitado'.
-    // No recibe contraseña: el administrador la asigna al aprobar la solicitud (RF84).
-    // RNF05 — se almacena un placeholder hasheado; el admin la reemplaza al activar la cuenta.
-    public function crearSolicitud($ci, $primerNombre, $pApellido, $email, $tel) {
+    // Inserta el vecino en USUARIO con acceso = 'pendiente'.
+    // La contraseña la elige el propio vecino en el formulario (RNF05 — se guarda hasheada,
+    // nunca en texto plano ni se devuelve/muestra al administrador en el listado de solicitudes).
+    public function crearSolicitud($ci, $primerNombre, $pApellido, $email, $tel, $idMunicipio, $contrasenia) {
         // Verificar que no exista ya un registro con esa CI.
         $check = mysqli_prepare($this->conn, "SELECT ci_usuario FROM USUARIO WHERE ci_usuario = ?");
         mysqli_stmt_bind_param($check, 'i', $ci);
@@ -33,19 +33,18 @@ class SolicitudRegistroModel {
 
         $acceso = 'pendiente';
         $rol    = 'vecino';
-        // Contraseña temporal: el administrador la reemplaza al aprobar (RF84).
-        $contraseniaTemp = password_hash(bin2hex(random_bytes(8)), PASSWORD_DEFAULT);
+        $hash   = password_hash($contrasenia, PASSWORD_DEFAULT);
 
         $stmt = mysqli_prepare(
             $this->conn,
-            "INSERT INTO USUARIO (ci_usuario, primer_nombre, p_apellido, email, tel, contrasenia, rol, acceso, fecha_registro)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())"
+            "INSERT INTO USUARIO (ci_usuario, id_municipio, primer_nombre, p_apellido, email, tel, contrasenia, rol, acceso, fecha_registro)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())"
         );
         mysqli_stmt_bind_param(
             $stmt,
-            'isssssss',
-            $ci, $primerNombre, $pApellido, $email, $tel,
-            $contraseniaTemp, $rol, $acceso
+            'iisssssss',
+            $ci, $idMunicipio, $primerNombre, $pApellido, $email, $tel,
+            $hash, $rol, $acceso
         );
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);

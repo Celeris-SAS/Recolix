@@ -48,13 +48,29 @@ class SolicitudRegistroController {
         return $tel;
     }
 
+    private function validarIdMunicipio($idMunicipio) {
+        if (!is_numeric($idMunicipio) || intval($idMunicipio) <= 0) {
+            throw new InvalidArgumentException('Seleccioná un municipio válido.');
+        }
+        return intval($idMunicipio);
+    }
+
+    private function validarContrasenia($contrasenia) {
+        if (!is_string($contrasenia) || strlen($contrasenia) < 8) {
+            throw new InvalidArgumentException('La contraseña debe tener al menos 8 caracteres.');
+        }
+        return $contrasenia;
+    }
+
     public function reglasValidacion() {
         return [
             'ci'          => ['tipo' => 'entero', 'min' => 1000000, 'max' => 99999999, 'label' => 'Cédula de identidad'],
             'primerNombre' => ['tipo' => 'string', 'min' => 2, 'max' => 50,  'label' => 'Nombre'],
             'pApellido'   => ['tipo' => 'string', 'min' => 2, 'max' => 50,  'label' => 'Apellido'],
             'email'       => ['tipo' => 'email',  'max' => 120,             'label' => 'Correo electrónico'],
-            'tel'         => ['tipo' => 'string', 'min' => 9, 'max' => 9,  'label' => 'Teléfono']
+            'tel'         => ['tipo' => 'string', 'min' => 9, 'max' => 9,  'label' => 'Teléfono'],
+            'idMunicipio' => ['tipo' => 'entero', 'min' => 1,              'label' => 'Municipio'],
+            'contrasenia' => ['tipo' => 'string', 'min' => 8,              'label' => 'Contraseña']
         ];
     }
 
@@ -65,19 +81,21 @@ class SolicitudRegistroController {
     // Recibe los datos del formulario de la Landing Page y crea la solicitud.
     // La solicitud queda en estado 'pendiente' hasta que el administrador la apruebe (RF84).
     // Esta validación se repite aquí además de en el frontend (RNF12).
-    public function crearSolicitud($ci, $primerNombre, $pApellido, $email, $tel) {
+    public function crearSolicitud($ci, $primerNombre, $pApellido, $email, $tel, $idMunicipio, $contrasenia) {
         $ci           = $this->validarCI($ci);
         $primerNombre = $this->validarNombre($primerNombre, 'Nombre');
         $pApellido    = $this->validarNombre($pApellido, 'Apellido');
         $email        = $this->validarEmail($email);
         $tel          = $this->validarTel($tel);
+        $idMunicipio  = $this->validarIdMunicipio($idMunicipio);
+        $contrasenia  = $this->validarContrasenia($contrasenia);
 
         // Verificar duplicado antes de intentar insertar.
         if ($this->solicitudModel->existePorCI($ci)) {
             throw new InvalidArgumentException("Ya existe una solicitud registrada con la cédula $ci.");
         }
 
-        return $this->solicitudModel->crearSolicitud($ci, $primerNombre, $pApellido, $email, $tel);
+        return $this->solicitudModel->crearSolicitud($ci, $primerNombre, $pApellido, $email, $tel, $idMunicipio, $contrasenia);
     }
 
     // RF84 — Aprobar solicitud de registro.
