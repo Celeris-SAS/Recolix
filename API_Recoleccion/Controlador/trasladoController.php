@@ -4,7 +4,7 @@
         private $trasladoModel;
 
         public function __construct() {
-            require_once __DIR__ . '/../Modelo/TrasladoModel.php';
+            require_once __DIR__ . '/../Modelo/trasladoModel.php';
             $this->trasladoModel = new TrasladoModel();
         }
 

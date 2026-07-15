@@ -91,7 +91,7 @@
         <div class="footer-col">
           <h3>Canales de la Intendencia</h3>
           <ul>
-            <li>Línea 1950 300</li>
+            <li>Línea 1950 3000</li>
             <li>Whatsapp: 092 250 260</li>
           </ul>
         </div>
@@ -125,8 +125,8 @@
         let esValido = true;
 
         // Validaciones
-        if (!/^\d{6,8}$/.test(ci)) {
-          ciError.textContent = 'Ingresá tu cédula sin puntos ni guiones (6 a 8 números).';
+        if (!/^\d{7,8}$/.test(ci)) {
+          ciError.textContent = 'Ingresá tu cédula sin puntos ni guiones (7 a 8 números).';
           esValido = false;
         } else {
           ciError.textContent = '';

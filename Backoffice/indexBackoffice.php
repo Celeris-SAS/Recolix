@@ -1,43 +1,5 @@
 <?php
-session_start();
-
-// Sin sesión → login de vecinos
-if (!isset($_SESSION['usuario'])) {
-    header('Location: /recolix/LandingPage/login.html');
-    exit;
-}
-
-$rol = $_SESSION['usuario']['rol'] ?? '';
-
-// Rol vecino o cualquier caso inesperado → acceso denegado
-if ($rol === 'vecino' || empty($rol)) {
-    http_response_code(403);
-    ?><!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acceso no autorizado — Recolix</title>
-    <link rel="stylesheet" href="styleBackoffice.css">
-    <link rel="stylesheet" href="styleAccesoDenegado.css">
-</head>
-<body>
-<div class="denegado-wrap">
-    <div class="denegado-logo">
-        <img src="../API_Recoleccion/Vista/logoRecolix.png" alt="Recolix">
-        <span>Recolix</span>
-    </div>
-    <div class="denegado-icono">⛔</div>
-    <h1 class="denegado-titulo">Acceso no autorizado</h1>
-    <p class="denegado-desc">
-        Tu cuenta no tiene permisos para acceder al panel de administración de Recolix.
-    </p>
-    <a href="/recolix/LandingPage/index_LandingPage.html" class="btn-volver">Volver a la página principal</a>
-</div>
-</body>
-</html><?php
-    exit;
-}
+require_once __DIR__ . '/verificacion_sesion.php';
 
 $usuario        = $_SESSION['usuario'];
 $primerNombre   = htmlspecialchars($usuario['primer_nombre'] ?? '');
@@ -65,7 +27,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
                 <a href="#" class="nav-active">Inicio</a>
                 <a href="../API_Recoleccion/Vista/camiones.php">Camiones</a>
                 <a href="#">Cuadrillas</a>
-                <a href="../API_Gestion/Vista/contenedores.html">Contenedores</a>
+                <a href="../API_Gestion/Vista/contenedores.php">Contenedores</a>
                 <a href="#">Vertederos</a>
                 <a href="#">Centros de Acopio</a>
                 <a href="mapa.php">Mapa</a>
@@ -87,7 +49,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
         <a href="#" class="nav-active">Inicio</a>
         <a href="../API_Recoleccion/Vista/camiones.php">Camiones</a>
         <a href="#">Cuadrillas</a>
-        <a href="../API_Gestion/Vista/contenedores.html">Contenedores</a>
+        <a href="../API_Gestion/Vista/contenedores.php">Contenedores</a>
         <a href="#">Vertederos</a>
         <a href="#">Centros de Acopio</a>
         <a href="mapa.php">Mapa</a>

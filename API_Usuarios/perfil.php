@@ -32,34 +32,54 @@ if (!in_array($rol, $rolesPermitidos)) {
     <link
         href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap"
         rel="stylesheet">
+    <link rel="stylesheet" href="../Backoffice/styleBackoffice.css">
     <link rel="stylesheet" href="Vista/styles_vecino.css">
 </head>
 
 <body>
 
-    <header class="site-header" id="siteHeader">
-        <div class="container header-inner">
-            <a href="perfil.php" class="logo">
-                <img src="Vista/Logo.png" alt="Logo Recolix" class="logo-image" />
-                <div class="logo-text">Recolix</div>
-            </a>
-
-            <nav class="main-nav" id="mainNav">
-                <ul>
-                    <li><a href="../LandingPage/index_LandingPage.html">Inicio</a></li>
-                    <li><a href="../LandingPage/mapa.html">Mapa</a></li>
-                </ul>
-            </nav>
-
+    <header class="navbar">
+        <div class="nav-inner">
+            <div class="nav-left">
+                <div class="brand">
+                    <img src="../API_Recoleccion/Vista/logoRecolix.png" alt="Recolix" class="brand-logo">
+                    <span class="brand-name">Recolix</span>
+                </div>
+                <nav class="nav-links">
+                    <a href="../Backoffice/indexBackoffice.php">Inicio</a>
+                    <a href="../API_Recoleccion/Vista/camiones.php">Camiones</a>
+                    <a href="#">Cuadrillas</a>
+                    <a href="../API_Gestion/Vista/contenedores.php">Contenedores</a>
+                    <a href="#">Vertederos</a>
+                    <a href="#">Centros de Acopio</a>
+                    <a href="../Backoffice/mapa.php">Mapa</a>
+                    <a href="#">Reportes</a>
+                    <a href="#">Incidencias</a>
+                    <a href="Vista/usuarios.php">Usuarios</a>
+                </nav>
+            </div>
             <div class="nav-right">
-                <a href="/recolix/API_Usuarios/perfil.php" class="btn-user" title="Perfil de usuario">
-                    <img src="Vista/img/user.svg" alt="Usuario" class="nav-user-icon">
+                <a href="perfil.php" class="btn-user" title="Perfil de usuario">
+                    <img src="../API_Recoleccion/Vista/img/user.svg" alt="Usuario" class="nav-user-icon">
                 </a>
                 <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menú">
                     <span></span><span></span><span></span>
                 </button>
             </div>
         </div>
+        <nav class="nav-mobile" id="navMobile">
+            <a href="../Backoffice/indexBackoffice.php">Inicio</a>
+            <a href="../API_Recoleccion/Vista/camiones.php">Camiones</a>
+            <a href="#">Cuadrillas</a>
+            <a href="../API_Gestion/Vista/contenedores.php">Contenedores</a>
+            <a href="#">Vertederos</a>
+            <a href="#">Centros de Acopio</a>
+            <a href="../Backoffice/mapa.php">Mapa</a>
+            <a href="#">Reportes</a>
+            <a href="#">Incidencias</a>
+            <a href="Vista/usuarios.php">Usuarios</a>
+        </nav>
+        <div class="nav-hr"></div>
     </header>
 
     <main class="container dash-main">
@@ -143,5 +163,10 @@ if (!in_array($rol, $rolesPermitidos)) {
 
     <script>const CI = <?= json_encode($ci) ?>;</script>
     <script src="perfil.js"></script>
+    <script>
+function toggleMobileMenu() {
+    document.getElementById('navMobile').classList.toggle('nav-mobile-open');
+}
+</script>
 </body>
 </html>

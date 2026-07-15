@@ -5,7 +5,7 @@
         private $tiposValidos = ['preventivo', 'correctivo'];
 
         public function __construct() {
-            require_once __DIR__ . '/../Modelo/MantenimientoModel.php';
+            require_once __DIR__ . '/../Modelo/mantenimientoModel.php';
             $this->mantenimientoModel = new MantenimientoModel();
         }
 

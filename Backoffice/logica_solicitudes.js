@@ -4,7 +4,7 @@
    RF85 — Rechazar solicitud
 ========================================================= */
 
-const API = '/recolix/API_Usuarios/api.php';
+const API = '/recolix/API_Usuarios';
 document.addEventListener('DOMContentLoaded', function () {
   cargarSolicitudes();
 });

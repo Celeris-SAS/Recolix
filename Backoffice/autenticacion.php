@@ -13,7 +13,7 @@ function autenticarUsuarioBackoffice(mysqli $conn, string $ci, string $contrasen
     if (!$row || !password_verify($contrasenia, $row['contrasenia'])) {
         return ['usuario' => null, 'error' => 'Cédula o contraseña incorrectos.'];
     }
-    if (!$row['acceso']) {
+    if ($row['acceso'] !== 'habilitado') {
         return ['usuario' => null, 'error' => 'Tu acceso aún no está habilitado. Contactá al administrador.'];
     }
     if ($row['rol'] === 'vecino') {

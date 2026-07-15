@@ -1,4 +1,5 @@
 <?php
+session_start();
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
@@ -79,7 +80,7 @@ if (strpos($uri, $basePath) === 0) { // Si la ruta del usuario empieza en la pos
     $controllerClass = $resourceConfig['controller'];
     try {
         $controller = new $controllerClass(); // Instanciación dinámica
-    } catch (Exception $e) {
+    } catch (Throwable $e) {
         http_response_code(500); // Error de servidor si no se puede cargar la clase
         echo json_encode(['status' => 'error', 'message' => 'Error al inicializar controller: ' . $e->getMessage()]);
         exit;
@@ -107,7 +108,7 @@ if (strpos($uri, $basePath) === 0) { // Si la ruta del usuario empieza en la pos
     // 4. Ejecutar acción personalizada si existe en el controlador
     if ($action && isset($resourceConfig['actions']) && in_array($action, $resourceConfig['actions']) && method_exists($controller, $action)) {
         $callParams = [];
-        if ($id) $callParams[] = $id;
+        if ($id !== null) $callParams[] = $id;
         
         // Preparar parámetros dependiendo de si es GET o POST/PUT
         if ($method === 'GET') {
@@ -129,7 +130,7 @@ if (strpos($uri, $basePath) === 0) { // Si la ruta del usuario empieza en la pos
             // Ejecutar el método dinámicamente con los parámetros recolectados
             $result = call_user_func_array([$controller, $action], $callParams);
             echo json_encode(['status' => 'success', 'data' => $result]);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             http_response_code(400);
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
@@ -139,19 +140,24 @@ if (strpos($uri, $basePath) === 0) { // Si la ruta del usuario empieza en la pos
     // 5. Procesar operaciones estándar según el método HTTP (GET, POST, PUT)
     switch ($method) {
         case 'GET':
-            if ($id) {
+            if ($id !== null) {
                 // Obtener un único elemento por ID
                 if (!$resourceConfig['getMethod']) {
                     http_response_code(405);
                     echo json_encode(['status' => 'error', 'message' => 'Este recurso no admite consulta por ID']);
                     break;
                 }
-                $result = $controller->{$resourceConfig['getMethod']}($id);
-                if ($result) {
-                    echo json_encode(['status' => 'success', 'data' => $result]);
-                } else {
-                    http_response_code(404);
-                    echo json_encode(['status' => 'error', 'message' => $resourceConfig['singular'] . ' no encontrado']);
+                try {
+                    $result = $controller->{$resourceConfig['getMethod']}($id);
+                    if ($result) {
+                        echo json_encode(['status' => 'success', 'data' => $result]);
+                    } else {
+                        http_response_code(404);
+                        echo json_encode(['status' => 'error', 'message' => $resourceConfig['singular'] . ' no encontrado']);
+                    }
+                } catch (Throwable $e) {
+                    http_response_code(400);
+                    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
                 }
             } else {
                 // Listar todos los elementos
@@ -160,8 +166,13 @@ if (strpos($uri, $basePath) === 0) { // Si la ruta del usuario empieza en la pos
                     echo json_encode(['status' => 'error', 'message' => 'Este recurso no admite listado general']);
                     break;
                 }
-                $result = $controller->{$resourceConfig['getAllMethod']}();
-                echo json_encode(['status' => 'success', 'data' => $result]);
+                try {
+                    $result = $controller->{$resourceConfig['getAllMethod']}();
+                    echo json_encode(['status' => 'success', 'data' => $result]);
+                } catch (Throwable $e) {
+                    http_response_code(400);
+                    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                }
             }
             break;
 
@@ -184,7 +195,7 @@ if (strpos($uri, $basePath) === 0) { // Si la ruta del usuario empieza en la pos
                     );
                     http_response_code(201);
                     echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' creado', 'data' => $result]);
-                } catch (Exception $e) {
+                } catch (Throwable $e) {
                     http_response_code(400);
                     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
                 }
@@ -193,7 +204,7 @@ if (strpos($uri, $basePath) === 0) { // Si la ruta del usuario empieza en la pos
 
         case 'PUT':
             // Actualizar un registro existente
-            if (!$id) {
+            if ($id === null) {
                 http_response_code(400);
                 echo json_encode(['status' => 'error', 'message' => 'ID requerido']);
             } elseif (!$resourceConfig['updateMethod']) {
@@ -209,7 +220,7 @@ if (strpos($uri, $basePath) === 0) { // Si la ruta del usuario empieza en la pos
                         $params = array_merge([$id], array_values($data));
                         $result = call_user_func_array([$controller, $resourceConfig['updateMethod']], $params);
                         echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' actualizado', 'data' => $result]);
-                    } catch (Exception $e) {
+                    } catch (Throwable $e) {
                         http_response_code(400);
                         echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
                     }
