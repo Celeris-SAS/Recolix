@@ -78,9 +78,41 @@ if (!isset($_SESSION['ci_usuario'])) {
                         <p class="campo-label">Teléfono</p>
                         <p class="campo-valor" id="perfilTel">—</p>
                     </div>
+                    <div class="perfil-campo">
+                        <p class="campo-label">Municipio</p>
+                        <p class="campo-valor" id="perfilMunicipio">—</p>
+                    </div>
                 </div>
-                <button class="btn btn-outline btn-sm" id="cambiarContraseniaBtn" style="margin-top:20px;">Cambiar
-                    contraseña</button>
+                <div style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;">
+                    <button class="btn btn-outline btn-sm" id="cambiarContraseniaBtn">Cambiar contraseña</button>
+                    <button class="btn btn-primary btn-sm" id="asignarMunicipioBtn" hidden>Agregar municipio</button>
+                </div>
+            </div>
+
+            <!-- Formulario para asignar municipio cuando el vecino todavía no tiene uno -->
+            <div class="panel-card" id="municipioForm" hidden>
+                <h3>Agregar municipio</h3>
+                <p class="form-nota">Todavía no tenés un municipio asignado. Seleccioná el que corresponde a tu domicilio.</p>
+                <div class="form-row">
+                    <label for="municipioSelect">Municipio</label>
+                    <select id="municipioSelect">
+                        <option value="">Seleccioná tu municipio</option>
+                        <option value="Municipio A">Municipio A</option>
+                        <option value="Municipio B">Municipio B</option>
+                        <option value="Municipio C">Municipio C</option>
+                        <option value="Municipio CH">Municipio CH</option>
+                        <option value="Municipio D">Municipio D</option>
+                        <option value="Municipio E">Municipio E</option>
+                        <option value="Municipio F">Municipio F</option>
+                        <option value="Municipio G">Municipio G</option>
+                    </select>
+                    <p class="error-msg" id="municipioSelectError"></p>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" id="guardarMunicipioBtn">Guardar municipio</button>
+                    <button class="btn btn-outline btn-sm" id="cancelarMunicipioBtn">Cancelar</button>
+                </div>
+                <p class="form-feedback" id="municipioFeedback"></p>
             </div>
 
             <!-- Formulario de edición de perfil (RF91) — oculto por defecto -->

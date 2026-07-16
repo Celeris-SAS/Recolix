@@ -5,6 +5,7 @@ class UsuarioController {
 
     private $rolesValidos   = ['administrador', 'cuadrilla', 'operario', 'vecino'];
     private $accesosValidos = ['pendiente', 'habilitado', 'deshabilitado'];
+    private $municipiosValidos = ['Municipio A', 'Municipio B', 'Municipio C', 'Municipio CH', 'Municipio D', 'Municipio E', 'Municipio F', 'Municipio G'];
 
     public function __construct() {
         require_once __DIR__ . '/../Modelo/UsuarioModel.php';
@@ -79,6 +80,12 @@ class UsuarioController {
         }
         return $acceso;
     }
+    private function validarMunicipio($municipio) {
+        if (!in_array($municipio, $this->municipiosValidos)) {
+            throw new InvalidArgumentException('Municipio no válido. Valores permitidos: ' . implode(', ', $this->municipiosValidos));
+        }
+        return $municipio;
+    }
 
     // Evita que un vecino logueado acceda/modifique los datos de otro vecino (IDOR).
     private function verificarPropioCI($ci) {
@@ -124,7 +131,7 @@ class UsuarioController {
             throw new InvalidArgumentException('La contraseña no puede estar vacía.');
         }
 
-        $usuario = $this->UsuarioModel->login($ci, $contrasenia);
+        $usuario = $this->usuarioModel->login($ci, $contrasenia);
 
         if (!$usuario) {
             throw new InvalidArgumentException('Cédula o contraseña incorrectos.');
@@ -293,6 +300,14 @@ class UsuarioController {
         }
 
         return $this->usuarioModel->crearUsuario($ci, $primerNombre, $pApellido, $email, $tel, $contrasenia, $rol, $idMunicipio);
+    }
+    // Asigna el municipio de un vecino que todavía no tiene uno (completado desde su perfil).
+    public function setMunicipio($ci, $municipio) {
+        $ci        = $this->validarCI($ci);
+        $municipio = $this->validarMunicipio($municipio);
+        $this->verificarAccesoPerfil($ci);
+
+        return $this->usuarioModel->setMunicipio($ci, $municipio);
     }
 }
 ?>

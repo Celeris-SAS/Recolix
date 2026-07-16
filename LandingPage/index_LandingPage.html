@@ -233,21 +233,6 @@
             <p class="error-msg" id="telefonoError"></p>
           </div>
           <div class="form-row">
-            <label for="idMunicipio">Municipio</label>
-            <select id="idMunicipio" name="idMunicipio" required>
-              <option value="">Seleccioná tu municipio</option>
-              <option value="1">Municipio A</option>
-              <option value="2">Municipio B</option>
-              <option value="3">Municipio C</option>
-              <option value="4">Municipio CH</option>
-              <option value="5">Municipio D</option>
-              <option value="6">Municipio E</option>
-              <option value="7">Municipio F</option>
-              <option value="8">Municipio G</option>
-            </select>
-            <p class="error-msg" id="idMunicipioError"></p>
-          </div>
-          <div class="form-row">
             <label for="contrasenia">Contraseña</label>
             <input type="password" id="contrasenia" name="contrasenia" placeholder="Mínimo 8 caracteres" required>
             <p class="error-msg" id="contraseniaError"></p>
@@ -373,7 +358,6 @@
         apellido: [/^[A-Za-zÁÉÍÓÚÑÜáéíóúñü\s]{2,50}$/, 'El apellido solo puede contener letras.'],
         email: [/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/, 'Ingresá un correo válido, ej: nombre@correo.com'],
         telefono: [/^\d{9}$/, 'Ingresá un teléfono de 9 números, sin espacios.'],
-        idMunicipio: [/^\d+$/, 'Seleccioná tu municipio.'],
         contrasenia: [/^.{8,}$/, 'La contraseña debe tener al menos 8 caracteres.']
       };
 
@@ -409,7 +393,6 @@
               pApellido: form.elements.apellido.value.trim(),
               email: form.elements.email.value.trim(),
               tel: form.elements.telefono.value.trim(),
-              idMunicipio: form.elements.idMunicipio.value.trim(),
               contrasenia: form.elements.contrasenia.value
             })
           });

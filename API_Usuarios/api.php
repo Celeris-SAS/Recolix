@@ -45,7 +45,8 @@ $config = [
                 'filtrarRol',
                 'filtrarAcceso',
                 'cambiarRol',
-                'cambiarAcceso'
+                'cambiarAcceso',
+                'setMunicipio'
             ],
             'filters' => []
         ]
