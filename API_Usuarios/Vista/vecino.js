@@ -28,6 +28,8 @@ cargarNotificaciones();
     document.getElementById('perfilCI').textContent = perfil.ci_usuario;
     document.getElementById('perfilEmail').textContent = perfil.email || '—';
     document.getElementById('perfilTel').textContent = perfil.tel || '—';
+    document.getElementById('perfilMunicipio').textContent = perfil.municipio || 'Sin asignar';
+    document.getElementById('asignarMunicipioBtn').hidden = !!perfil.id_municipio;
 }
 
     // Mostrar / ocultar formulario de edición de perfil
@@ -35,6 +37,7 @@ cargarNotificaciones();
         document.getElementById('perfilVista').hidden = true;
         document.getElementById('perfilForm').hidden = false;
         document.getElementById('contraseniaForm').hidden = true;
+        document.getElementById('municipioForm').hidden = true;
         document.getElementById('editEmail').value = perfilActual.email || '';
         document.getElementById('editTel').value = perfilActual.tel || '';
     });
@@ -88,6 +91,47 @@ if (json.status !== 'success') {
         document.getElementById('perfilVista').hidden = true;
         document.getElementById('contraseniaForm').hidden = false;
         document.getElementById('perfilForm').hidden = true;
+        document.getElementById('municipioForm').hidden = true;
+    });
+
+    // ===================== MUNICIPIO =====================
+    document.getElementById('asignarMunicipioBtn').addEventListener('click', () => {
+        document.getElementById('perfilVista').hidden = true;
+        document.getElementById('municipioForm').hidden = false;
+        document.getElementById('perfilForm').hidden = true;
+        document.getElementById('contraseniaForm').hidden = true;
+        document.getElementById('municipioSelect').value = '';
+        limpiarFeedback('municipioFeedback');
+    });
+
+    document.getElementById('cancelarMunicipioBtn').addEventListener('click', () => {
+        document.getElementById('perfilVista').hidden = false;
+        document.getElementById('municipioForm').hidden = true;
+        limpiarFeedback('municipioFeedback');
+    });
+
+    document.getElementById('guardarMunicipioBtn').addEventListener('click', async () => {
+        const municipio = document.getElementById('municipioSelect').value;
+        document.getElementById('municipioSelectError').textContent =
+            municipio ? '' : 'Seleccioná un municipio.';
+        if (!municipio) return;
+
+        const resp = await fetch(`${API}/usuarios/setMunicipio/${CI}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ municipio })
+        });
+        const json = await resp.json();
+
+        if (json.status !== 'success') {
+            mostrarFeedback('municipioFeedback', json.message || 'No se pudo guardar el municipio.', false);
+            return;
+        }
+
+        await cargarPerfil();
+        document.getElementById('perfilVista').hidden = false;
+        document.getElementById('municipioForm').hidden = true;
+        mostrarFeedback('perfilFeedback', 'Municipio asignado correctamente.', true);
     });
 
     document.getElementById('cancelarContraBtn').addEventListener('click', () => {

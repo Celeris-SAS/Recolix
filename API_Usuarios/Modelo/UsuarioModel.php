@@ -47,8 +47,11 @@ class UsuarioModel {
     public function getPerfil($ci) {
         $stmt = mysqli_prepare(
             $this->conn,
-            "SELECT ci_usuario, primer_nombre, p_apellido, email, tel, rol, acceso, fecha_registro
-             FROM USUARIO WHERE ci_usuario = ?"
+            "SELECT u.ci_usuario, u.primer_nombre, u.p_apellido, u.email, u.tel, u.rol, u.acceso, u.fecha_registro,
+                    u.id_municipio, m.nombre AS municipio
+             FROM USUARIO u
+             LEFT JOIN MUNICIPIO m ON m.id_municipio = u.id_municipio
+             WHERE u.ci_usuario = ?"
         );
         mysqli_stmt_bind_param($stmt, 'i', $ci);
         mysqli_stmt_execute($stmt);
@@ -267,6 +270,29 @@ class UsuarioModel {
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
         return $ci;
+    }
+    public function setMunicipio($ci, $municipio) {
+    // Buscar el id_municipio según el nombre
+    $municipioSql = "SELECT id_municipio FROM MUNICIPIO WHERE nombre = ?";
+    $stmt = mysqli_prepare($this->conn, $municipioSql);
+    mysqli_stmt_bind_param($stmt, "s", $municipio);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_assoc($result);
+    mysqli_stmt_close($stmt);
+
+    if (!$row) {
+        return false; // no existe ese municipio
+    }
+    $id_municipio = $row['id_municipio'];
+
+    // Actualizar el municipio del usuario existente
+    $updateSql = "UPDATE USUARIO SET id_municipio = ? WHERE ci_usuario = ?";
+    $stmt2 = mysqli_prepare($this->conn, $updateSql);
+    mysqli_stmt_bind_param($stmt2, "ii", $id_municipio, $ci);
+    $ok = mysqli_stmt_execute($stmt2);
+    mysqli_stmt_close($stmt2);
+    return $ok;
     }
 }
 ?>

@@ -69,8 +69,8 @@ class SolicitudRegistroController {
             'pApellido'   => ['tipo' => 'string', 'min' => 2, 'max' => 50,  'label' => 'Apellido'],
             'email'       => ['tipo' => 'email',  'max' => 120,             'label' => 'Correo electrónico'],
             'tel'         => ['tipo' => 'string', 'min' => 9, 'max' => 9,  'label' => 'Teléfono'],
-            'idMunicipio' => ['tipo' => 'entero', 'min' => 1,              'label' => 'Municipio'],
-            'contrasenia' => ['tipo' => 'string', 'min' => 8,              'label' => 'Contraseña']
+            'contrasenia' => ['tipo' => 'string', 'min' => 8,              'label' => 'Contraseña'],
+            'idMunicipio' => ['tipo' => 'entero', 'min' => 1, 'opcional' => true, 'label' => 'Municipio']
         ];
     }
 
@@ -80,15 +80,17 @@ class SolicitudRegistroController {
 
     // Recibe los datos del formulario de la Landing Page y crea la solicitud.
     // La solicitud queda en estado 'pendiente' hasta que el administrador la apruebe (RF84).
+    // El municipio ya no se pide en el alta: el vecino lo completa después desde su perfil
+    // (setMunicipio) si todavía no lo tiene asignado.
     // Esta validación se repite aquí además de en el frontend (RNF12).
-    public function crearSolicitud($ci, $primerNombre, $pApellido, $email, $tel, $idMunicipio, $contrasenia) {
+    public function crearSolicitud($ci, $primerNombre, $pApellido, $email, $tel, $contrasenia, $idMunicipio = null) {
         $ci           = $this->validarCI($ci);
         $primerNombre = $this->validarNombre($primerNombre, 'Nombre');
         $pApellido    = $this->validarNombre($pApellido, 'Apellido');
         $email        = $this->validarEmail($email);
         $tel          = $this->validarTel($tel);
-        $idMunicipio  = $this->validarIdMunicipio($idMunicipio);
         $contrasenia  = $this->validarContrasenia($contrasenia);
+        $idMunicipio  = $idMunicipio !== null ? $this->validarIdMunicipio($idMunicipio) : null;
 
         // Verificar duplicado antes de intentar insertar.
         if ($this->solicitudModel->existePorCI($ci)) {
