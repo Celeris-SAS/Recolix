@@ -183,6 +183,18 @@ h3 {
   box-shadow: var(--shadow-soft);
   padding: 10px 0;
 }
+.site-header.is-scrolled #loginNavLink {
+  color: black !important;   
+  background: transparent;   
+  border-color: var(--ink);  
+}
+
+.site-header.is-scrolled #loginNavLink:hover {
+  color: black !important; 
+  background: transparent; 
+}
+
+
 
 .header-inner {
   display: flex;
