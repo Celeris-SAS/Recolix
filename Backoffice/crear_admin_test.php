@@ -19,7 +19,7 @@ try {
         $check->close();
         // Ya existe: corregir rol y acceso por si fueron insertados con valores incorrectos
         $rolCorrecto = 'administrador';
-        $accesoCorrecto = 'aprobado';
+        $accesoCorrecto = 'habilitado';
         $upd = $conn->prepare("UPDATE USUARIO SET rol = ?, acceso = ? WHERE ci_usuario = ?");
         $upd->bind_param('ssi', $rolCorrecto, $accesoCorrecto, $ci);
         $upd->execute();
