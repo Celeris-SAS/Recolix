@@ -634,50 +634,50 @@ input:focus {
     padding: 24px 0;
 }
 
-.footer-grid {
+.site-footer .footer-grid {
     display: grid;
     gap: 20px;
     grid-template-columns: 100%;
 }
 
 @media (min-width: 768px) {
-    .footer-grid {
+    .site-footer .footer-grid {
         grid-template-columns: 32% 32% 32%;
     }
 }
 
-.footer-brand .logo {
+.site-footer .footer-brand .logo {
     color: var(--white);
     margin-bottom: 20px;
     display: flex;
     align-items: center;
 }
 
-.footer-brand p {
+.site-footer .footer-brand p {
     font-size: 14px;
     color: rgba(255, 255, 255, 0.7);
     max-width: 280px;
 }
 
-.footer-col h3 {
+.site-footer .footer-col h3 {
     font-size: 15px;
     color: var(--leaf);
     margin-top: 10px;
     margin-bottom: 20px;
 }
 
-.footer-col ul {
+.site-footer .footer-col ul {
     display: flex;
     flex-direction: column;
     gap: 8px;
     font-size: 14px;
 }
 
-.footer-col a {
+.site-footer .footer-col a {
     color: rgba(255, 255, 255, 0.85);
 }
 
-.footer-col a:hover {
+.site-footer .footer-col a:hover {
     text-decoration: underline;
 }
 

@@ -159,7 +159,28 @@ if (!in_array($rol, $rolesPermitidos)) {
                 <button class="btn btn-outline btn-sm" id="logoutBtn">Cerrar sesión</button>
             </div>
         </section>
+        <!-- ── PIE DE PÁGINA ────────────────────────────────────────────────── -->
     </main>
+    <footer class="footer">
+    <div class="footer-grid">
+        <div class="footer-brand">
+            <div class="footer-logo">
+                <img src="../API_Recoleccion/Vista/logoRecolix.png" alt="Recolix" class="footer-logo-img">
+                <span class="footer-logo-name">Recolix</span>
+            </div>
+            <p>Plataforma de gestión de residuos urbanos para Montevideo.</p>
+        </div>
+        <div class="footer-col">
+            <h3>Navegación</h3>
+            <ul>
+                <li><a href="../LandingPage/index_LandingPage.html">Página principal</a></li>
+                <li><a href="../LandingPage/mapa.html">Mapa público</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-hr"></div>
+    <p class="footer-copy">&copy; 2026 Recolix. Todos los derechos reservados.</p>
+</footer>   
 
     <script>const CI = <?= json_encode($ci) ?>;</script>
     <script src="perfil.js"></script>

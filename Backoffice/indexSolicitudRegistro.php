@@ -87,6 +87,26 @@ if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['rol'] !== 'administrad
     </div>
 
   </main>
+  <footer class="footer">
+    <div class="footer-grid">
+        <div class="footer-brand">
+            <div class="footer-logo">
+                <img src="../API_Recoleccion/Vista/logoRecolix.png" alt="Recolix" class="footer-logo-img">
+                <span class="footer-logo-name">Recolix</span>
+            </div>
+            <p>Plataforma de gestión de residuos urbanos para Montevideo.</p>
+        </div>
+        <div class="footer-col">
+            <h3>Navegación</h3>
+            <ul>
+                <li><a href="../LandingPage/index_LandingPage.html">Página principal</a></li>
+                <li><a href="../LandingPage/mapa.html">Mapa público</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-hr"></div>
+    <p class="footer-copy">&copy; 2026 Recolix. Todos los derechos reservados.</p>
+</footer>
 
   <script src="logica_solicitudes.js"></script>
   <script>
