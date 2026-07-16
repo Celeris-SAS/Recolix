@@ -197,7 +197,7 @@ if (json.status !== 'success') {
 
 
     document.getElementById('nuevaIncidenciaBtn').addEventListener('click', () => {
-        window.location.href = '../Landing_Page/incidencias.html';
+        window.location.href = '#';
     });
 
     // ===================== NOTIFICACIONES =====================
