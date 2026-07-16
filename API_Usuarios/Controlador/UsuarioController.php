@@ -124,7 +124,7 @@ class UsuarioController {
             throw new InvalidArgumentException('La contraseña no puede estar vacía.');
         }
 
-        $usuario = $this->usuarioModel->login($ci, $contrasenia);
+        $usuario = $this->UsuarioModel->login($ci, $contrasenia);
 
         if (!$usuario) {
             throw new InvalidArgumentException('Cédula o contraseña incorrectos.');
