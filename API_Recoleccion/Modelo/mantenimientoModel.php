@@ -11,7 +11,7 @@ class MantenimientoModel {
     }
 
     public function registrar($camionId, $tipo, $descripcion, $fechaInicio, $fechaFin, $costo) {
-        $stmt = mysqli_prepare($this->conn->getConexion(), "INSERT INTO mantenimientos (CamionId, Tipo, Descripcion, FechaInicio, FechaFin, Costo) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt = mysqli_prepare($this->conn->getConexion(), "INSERT INTO mantenimiento (CamionId, Tipo, Descripcion, FechaInicio, FechaFin, Costo) VALUES (?, ?, ?, ?, ?, ?)");
         mysqli_stmt_bind_param($stmt, "issssd", $camionId, $tipo, $descripcion, $fechaInicio, $fechaFin, $costo);
         mysqli_stmt_execute($stmt);
         $id = mysqli_insert_id($this->conn->getConexion());
@@ -20,7 +20,7 @@ class MantenimientoModel {
     }
 
     public function programar($camionId, $descripcion, $fechaInicio) {
-        $stmt = mysqli_prepare($this->conn->getConexion(), "INSERT INTO mantenimientos (CamionId, Tipo, Descripcion, FechaInicio, FechaFin, Costo) VALUES (?, 'preventivo', ?, ?, NULL, 0)");
+        $stmt = mysqli_prepare($this->conn->getConexion(), "INSERT INTO mantenimiento (CamionId, Tipo, Descripcion, FechaInicio, FechaFin, Costo) VALUES (?, 'preventivo', ?, ?, NULL, 0)");
         mysqli_stmt_bind_param($stmt, "iss", $camionId, $descripcion, $fechaInicio);
         mysqli_stmt_execute($stmt);
         $id = mysqli_insert_id($this->conn->getConexion());
@@ -29,7 +29,7 @@ class MantenimientoModel {
     }
 
     public function actualizarMantenimiento($id, $tipo, $descripcion, $fechaInicio, $fechaFin, $costo) {
-        $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE mantenimientos SET Tipo = ?, Descripcion = ?, FechaInicio = ?, FechaFin = ?, Costo = ? WHERE Id = ?");
+        $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE mantenimiento SET Tipo = ?, Descripcion = ?, FechaInicio = ?, FechaFin = ?, Costo = ? WHERE Id = ?");
         mysqli_stmt_bind_param($stmt, "ssssdi", $tipo, $descripcion, $fechaInicio, $fechaFin, $costo, $id);
         mysqli_stmt_execute($stmt);
         $affected = mysqli_stmt_affected_rows($stmt);
@@ -38,7 +38,7 @@ class MantenimientoModel {
     }
 
     public function obtenerPorCamion($camionId) {
-        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM mantenimientos WHERE CamionId = ? ORDER BY FechaInicio DESC");
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM mantenimiento WHERE CamionId = ? ORDER BY FechaInicio DESC");
         mysqli_stmt_bind_param($stmt, "i", $camionId);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
@@ -50,8 +50,8 @@ class MantenimientoModel {
         return $mantenimientos;
     }
 
-    public function getAllMantenimientos() {
-        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM mantenimientos ORDER BY FechaInicio DESC");
+    public function getAllMantenimiento() {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM mantenimiento ORDER BY FechaInicio DESC");
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
         $mantenimientos = [];
@@ -63,7 +63,7 @@ class MantenimientoModel {
     }
 
     public function getMantenimiento($id) {
-        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM mantenimientos WHERE Id = ?");
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM mantenimiento WHERE Id = ?");
         mysqli_stmt_bind_param($stmt, "i", $id);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
@@ -73,7 +73,7 @@ class MantenimientoModel {
     }
 
     public function deleteMantenimiento($id) {
-        $stmt = mysqli_prepare($this->conn->getConexion(), "DELETE FROM mantenimientos WHERE Id = ?");
+        $stmt = mysqli_prepare($this->conn->getConexion(), "DELETE FROM mantenimiento WHERE Id = ?");
         mysqli_stmt_bind_param($stmt, "i", $id);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
@@ -81,7 +81,7 @@ class MantenimientoModel {
     }
 
     public function filtrarPorTipo($tipo) {
-        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM mantenimientos WHERE Tipo = ? ORDER BY FechaInicio DESC");
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM mantenimiento WHERE Tipo = ? ORDER BY FechaInicio DESC");
         mysqli_stmt_bind_param($stmt, "s", $tipo);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
@@ -94,7 +94,7 @@ class MantenimientoModel {
     }
 
     public function obtenerCostoTotal($camionId) {
-        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT SUM(Costo) as total FROM mantenimientos WHERE CamionId = ?");
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT SUM(Costo) as total FROM mantenimiento WHERE CamionId = ?");
         mysqli_stmt_bind_param($stmt, "i", $camionId);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);

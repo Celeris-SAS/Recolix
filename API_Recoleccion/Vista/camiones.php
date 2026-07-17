@@ -255,6 +255,7 @@
                         <option value="en_ruta">En ruta</option>
                         <option value="en_mantenimiento">En mantenimiento</option>
                         <option value="de_baja">De baja</option>
+                        <option value="en_deposito">En depósito</option>
                     </select>
                 </div>
             </div>
@@ -327,7 +328,7 @@ function reglasFallback() {
         capacidad: { tipo: 'entero', min: 1, max: 100000, label: 'Capacidad' },
         anio: { tipo: 'entero', min: 1990, max: 2030, label: 'Año' },
         modelo: { max: 100, label: 'Modelo' },
-        estado: { valores: ['disponible', 'en_ruta', 'en_mantenimiento', 'de_baja'], max: 50, label: 'Estado' }
+        estado: { valores: ['disponible', 'en_ruta', 'en_mantenimiento', 'de_baja', 'en_deposito'], max: 50, label: 'Estado' }
     };
 }
 
@@ -402,7 +403,7 @@ function actualizarFiltroValor() {
     if (sinValor.includes(tipo) || !tipo) return;
 
     const listas = {
-        estado:    ['disponible', 'en_ruta', 'en_mantenimiento', 'de_baja'],
+        estado:    ['disponible', 'en_ruta', 'en_mantenimiento', 'de_baja', 'en_deposito'],
         tipoCarga: ['carga_lateral', 'carga_trasera', 'puerta_a_puerta']
     };
 
@@ -639,7 +640,7 @@ function actualizarPlaceholderModificar() {
 
     const listas = {
         tipoCarga: ['carga_lateral', 'carga_trasera', 'puerta_a_puerta'],
-        estado:    ['disponible', 'en_ruta', 'en_mantenimiento', 'de_baja']
+        estado:    ['disponible', 'en_ruta', 'en_mantenimiento', 'de_baja', 'en_deposito']
     };
 
     if (listas[campo]) {
@@ -820,7 +821,7 @@ function formatearValor(v) {
 }
 
 function badgeClass(estado) {
-    const map = { 'disponible': 'success', 'en_ruta': 'info', 'en_mantenimiento': 'warning', 'de_baja': 'danger' };
+    const map = { 'disponible': 'success', 'en_ruta': 'info', 'en_mantenimiento': 'warning', 'de_baja': 'danger', 'en_deposito': 'neutral' };
     return map[estado] ?? 'neutral';
 }
 
