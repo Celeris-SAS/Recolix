@@ -93,7 +93,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
                 <span class="novedad-badge" id="badgeUsuarios">0</span>
             </div>
         </a>
-        <a href="../API_Gestion/Vista/contenedores.php" class="novedad-card">
+        <a href="../API_Gestion/Vista/contenedores.php?vista=criticos" class="novedad-card">
             <div class="novedad-icon novedad-icon-contenedores">
                 <img src="img/contenedor.png" alt="" class="card-svg-icon">
             </div>
