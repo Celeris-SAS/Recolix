@@ -22,9 +22,9 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                     <span class="brand-name">Recolix</span>
                 </div>
                 <nav class="nav-links">
-                <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
-                <a href="../../API_Recoleccion/Vista/camiones.php">Camiones</a>
-                <a href="#">Cuadrillas</a>
+                    <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
+                    <a href="../../API_Recoleccion/Vista/camiones.php">Camiones</a>
+                    <a href="#">Cuadrillas</a>
                     <a href="#" class="nav-active">Contenedores</a>
                     <a href="#">Vertederos</a>
                     <a href="#">Centros de Acopio</a>
@@ -180,6 +180,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
         <div class="table-header">
             <h2 class="table-title" id="tableTitle">Contenedores</h2>
             <span class="table-count" id="tableCount"></span>
+            <button class="btn-secondary" id="btnMostrarTodos" style="display:none" onclick="listarContenedores()">Mostrar Todos</button>
         </div>
         <div class="table-wrapper">
             <table>
@@ -297,25 +298,25 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
 
     <!-- ── PIE DE PÁGINA ────────────────────────────────────────────────── -->
     <footer class="footer">
-    <div class="footer-grid">
-        <div class="footer-brand">
-            <div class="footer-logo">
-                <img src="logoRecolix.png" alt="Recolix" class="footer-logo-img">
-                <span class="footer-logo-name">Recolix</span>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <img src="logoRecolix.png" alt="Recolix" class="footer-logo-img">
+                    <span class="footer-logo-name">Recolix</span>
+                </div>
+                <p>Plataforma de gestión de residuos urbanos para Montevideo.</p>
             </div>
-            <p>Plataforma de gestión de residuos urbanos para Montevideo.</p>
+            <div class="footer-col">
+                <h3>Navegación</h3>
+                <ul>
+                    <li><a href="../../LandingPage/index_LandingPage.html">Página principal</a></li>
+                    <li><a href="../../LandingPage/mapa.html">Mapa público</a></li>
+                </ul>
+            </div>
         </div>
-        <div class="footer-col">
-            <h3>Navegación</h3>
-            <ul>
-                <li><a href="../../LandingPage/index_LandingPage.html">Página principal</a></li>
-                <li><a href="../../LandingPage/mapa.html">Mapa público</a></li>
-            </ul>
-        </div>
-    </div>
-    <div class="footer-hr"></div>
-    <p class="footer-copy">&copy; 2026 Recolix. Todos los derechos reservados.</p>
-</footer>
+        <div class="footer-hr"></div>
+        <p class="footer-copy">&copy; 2026 Recolix. Todos los derechos reservados.</p>
+    </footer>
 
     <script>
         const API_BASE = '/recolix/API_Gestion';
@@ -323,6 +324,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
         let toastTimeout;
         let reglas = {};
         let contenedoresActuales = [];
+        let vistaActual = 'todos';
         const MUNICIPIOS = [
             { id: 1, nombre: 'Municipio A' },
             { id: 2, nombre: 'Municipio B' },
@@ -381,7 +383,12 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 if (btn.dataset.action === 'editar') abrirModalEditar(c);
                 if (btn.dataset.action === 'baja') confirmarBorrar(c.id_contenedor, `${c.calle} ${c.num_calle}`);
             });
-            listarContenedores();
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('vista') === 'criticos') {
+                listarCriticos();
+            } else {
+                listarContenedores();
+            }
         });
 
         function reglasFallback() {
@@ -413,6 +420,8 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
 
         // ── LISTAR TODOS ──────────────────────────────────────────────────────
         async function listarContenedores() {
+            vistaActual = 'todos';
+            document.getElementById('btnMostrarTodos').style.display = 'none';
             ocultarControles();
             setLoading(true);
             try {
@@ -428,6 +437,36 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 mostrarToast('Error al conectar con la API', 'error');
             } finally {
                 setLoading(false);
+            }
+        }
+        // ── LISTAR CRÍTICOS ──────────────────────────────────────────────────
+        async function listarCriticos() {
+            vistaActual = 'criticos';
+            document.getElementById('btnMostrarTodos').style.display = '';
+            ocultarControles();
+            setLoading(true);
+            try {
+                const res = await fetch(`${API_BASE}/contenedores/filtrarCriticos`);
+                const json = await res.json();
+                if (json.status === 'success') {
+                    renderTabla(json.data);
+                    setTableTitle('Contenedores Críticos');
+                } else {
+                    mostrarToast(json.message, 'error');
+                }
+            } catch {
+                mostrarToast('Error al conectar con la API', 'error');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        // ── REFRESCAR RESPETANDO LA VISTA ACTUAL ────────────────────────────
+        function refrescarListado() {
+            if (vistaActual === 'criticos') {
+                listarCriticos();
+            } else {
+                listarContenedores();
             }
         }
 
@@ -481,7 +520,8 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             } else if (tipo === 'estado') {
                 select.innerHTML = '<option value="">— Seleccionar —</option>' +
                     ['funcional', 'roto', 'desbordado', 'inactivo', 'en_deposito']
-                        .map(v => `<option value="${v}">${formatearEstado(v)}</option>`).join('');
+                        .map(v => `<option value="${v}">${formatearEstado(v)}</option>`).join('') +
+                    '<option value="critico">Crítico (roto o desbordado)</option>';
                 select.style.display = '';
             }
         }
@@ -495,23 +535,21 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             const valor = (select.style.display !== 'none' ? select.value : input.value).trim();
             if (!valor) { mostrarToast('Seleccioná un valor para el filtro', 'warning'); return; }
 
-            const endpointMap = {
-                municipio: 'filtrarMunicipio',
-                tipoResiduo: 'filtrarTipoResiduo',
-                estado: 'filtrarEstado'
-            };
-
-            const endpoint = endpointMap[tipo];
             setLoading(true);
             try {
-                const res = await fetch(`${API_BASE}/contenedores?${tipo}=${encodeURIComponent(valor)}`);
+                // El estado "crítico" no es un valor real de la columna estado:
+                // engloba roto + desbordado, así que usa el endpoint filtrarCriticos.
+                const url = (tipo === 'estado' && valor === 'critico')
+                    ? `${API_BASE}/contenedores/filtrarCriticos`
+                    : `${API_BASE}/contenedores?${tipo}=${encodeURIComponent(valor)}`;
+                const res = await fetch(url);
                 const json = await res.json();
                 if (json.status === 'success') {
                     renderTabla(json.data);
                     const labels = {
                         municipio: `Municipio: ${valor}`,
                         tipoResiduo: `Tipo de Residuo: ${valor}`,
-                        estado: `Estado: ${valor}`
+                        estado: valor === 'critico' ? 'Crítico (roto o desbordado)' : `Estado: ${valor}`
                     };
                     setTableTitle(`Filtro — ${labels[tipo] || tipo}`);
                 } else {
@@ -633,7 +671,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 if (json.status === 'success') {
                     mostrarToast(json.message, 'success');
                     cerrarModal();
-                    listarContenedores();
+                    refrescarListado();
                 } else {
                     mostrarToast(json.message, 'error');
                 }
@@ -696,7 +734,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                     if (json.status === 'success') {
                         mostrarToast('Estado actualizado', 'success');
                         ocultarControles();
-                        listarContenedores();
+                        refrescarListado();
                     } else {
                         mostrarToast(json.message, 'error');
                     }
@@ -746,7 +784,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 if (putJson.status === 'success') {
                     mostrarToast(putJson.message, 'success');
                     ocultarControles();
-                    listarContenedores();
+                    refrescarListado();
                 } else {
                     mostrarToast(putJson.message, 'error');
                 }
@@ -791,7 +829,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 if (json.status === 'success') {
                     mostrarToast('Contenedor dado de baja correctamente', 'success');
                     cerrarModalDelete();
-                    listarContenedores();
+                    refrescarListado();
                 } else {
                     mostrarToast(json.message, 'error');
                 }

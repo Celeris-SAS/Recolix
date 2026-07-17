@@ -202,6 +202,9 @@ class contenedorController {
  
         return $this->contenedorModel->cambiarEstado($id, $nuevoEstado);
     }
+    public function filtrarCriticos() {
+    return $this->contenedorModel->filtrarCriticos();
+}
  
     // RF21 — Clasificación por tipo de residuo.
     public function clasificarPorTipoResiduo($id, $idTipo) {

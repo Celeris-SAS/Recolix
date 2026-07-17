@@ -16,7 +16,7 @@ $config = [
             'insertMethod' => 'insertContenedor',
             'updateMethod' => 'updateContenedor',
             'deleteMethod' => 'bajaContenedor',
-            'actions' => [
+                'actions' => [
                 'reglasValidacion',
                 'cambiarEstado',
                 'clasificarPorTipoResiduo',
@@ -26,7 +26,8 @@ $config = [
                 'getHistorial',
                 'filtrarMunicipio',
                 'filtrarTipoResiduo',
-                'filtrarEstado'
+                'filtrarEstado',
+                'filtrarCriticos'
             ],
             'filters' => [
                 'municipio'   => 'filtrarMunicipio',
