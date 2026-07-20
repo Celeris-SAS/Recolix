@@ -22,7 +22,6 @@
                 <a href="#" class="nav-active">Camiones</a>
                 <a href="#">Cuadrillas</a>
                 <a href="../../API_Gestion/Vista/contenedores.php">Contenedores</a>
-                <a href="#">Vertederos</a>
                 <a href="#">Centros de Acopio</a>
                 <a href="../../Backoffice/mapa.php">Mapa</a>
                 <a href="#">Reportes</a>
@@ -44,7 +43,6 @@
         <a href="#" class="nav-active">Camiones</a>
         <a href="#">Cuadrillas</a>
         <a href="../../API_Gestion/Vista/contenedores.php">Contenedores</a>
-        <a href="#">Vertederos</a>
         <a href="#">Centros de Acopio</a>
         <a href="../../Backoffice/mapa.php">Mapa</a>
         <a href="#">Reportes</a>

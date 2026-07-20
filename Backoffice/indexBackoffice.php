@@ -28,7 +28,6 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
                 <a href="../API_Recoleccion/Vista/camiones.php">Camiones</a>
                 <a href="#">Cuadrillas</a>
                 <a href="../API_Gestion/Vista/contenedores.php">Contenedores</a>
-                <a href="#">Vertederos</a>
                 <a href="#">Centros de Acopio</a>
                 <a href="mapa.php">Mapa</a>
                 <a href="#">Reportes</a>
@@ -50,7 +49,6 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
         <a href="../API_Recoleccion/Vista/camiones.php">Camiones</a>
         <a href="#">Cuadrillas</a>
         <a href="../API_Gestion/Vista/contenedores.php">Contenedores</a>
-        <a href="#">Vertederos</a>
         <a href="#">Centros de Acopio</a>
         <a href="mapa.php">Mapa</a>
         <a href="#">Reportes</a>
@@ -155,14 +153,6 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
                 <div class="card-icon"><img src="img/mapa.png" alt="" class="card-svg-icon"></div>
                 <h3>Mapa</h3>
                 <p>Visualizar rutas en el mapa</p>
-            </div>
-        </a>
-
-        <a href="#" class="card-operar">
-            <div class="card-content">
-                <div class="card-icon"><img src="img/vertedero.svg" alt="" class="card-svg-icon"></div>
-                <h3>Vertederos</h3>
-                <p>Gestionar puntos de descarga</p>
             </div>
         </a>
 
