@@ -7,6 +7,7 @@ distintas que casi no comparten reglas de negocio entre sí. Nos permitió
 además repartir el trabajo en equipo por módulo sin pisarnos el código, y
 que cada API pueda evolucionar de forma independiente 
 
+Para probar el sistema en primera instancia, se debe abrir el archivo crear_admin_test.php y utilizar esas credenciales en el login del portal de empleados.
 
 Cada API tiene un archivo (api.php) que utiliza una tabla de configuración
 ($config['resources']), en vez de tener un archivo o un switch por cada
