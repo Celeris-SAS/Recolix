@@ -10,9 +10,6 @@ class contenedorController {
         $this->contenedorModel = new contenedorModel();
     }
  
-    // ==========================================
-    // VALIDACIONES
-    // ==========================================
  
     private function validarId($id) {
         if (!is_numeric($id) || intval($id) <= 0) {
@@ -103,9 +100,6 @@ class contenedorController {
         ];
     }
  
-    // ==========================================
-    // CRUD PRINCIPAL
-    // ==========================================
 
     private function validarEntero($valor, $nombre) {
     if (!is_numeric($valor) || floatval($valor) != intval($valor) || intval($valor) <= 0) {
@@ -114,9 +108,6 @@ class contenedorController {
     return intval($valor);
     }
  
-    // RF14 — Alta de contenedor.
-    // RF27 — Un contenedor 'en_deposito' todavía no está instalado en la vía
-    // pública, así que no tiene calle/número/coordenadas.
     public function insertContenedor($idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad, $estado) {
     $idCircuito = $this->validarId($idCircuito);
     $idTipo     = $this->validarId($idTipo);
@@ -138,9 +129,6 @@ class contenedorController {
     return $this->contenedorModel->insertContenedor($idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad, $estado);
 }
  
-    // RF15 — Modificación de contenedor.
-    // El estado no se recibe acá (se cambia con cambiarEstado), así que para
-    // saber si hay que exigir dirección/coordenadas se mira el estado actual.
     public function updateContenedor($id, $idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad) {
         $id         = $this->validarId($id);
         $idCircuito = $this->validarId($idCircuito);
@@ -167,7 +155,6 @@ class contenedorController {
         return $this->contenedorModel->updateContenedor($id, $idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad);
     }
  
-    // RF16 — Baja lógica de contenedor.
     public function bajaContenedor($id) {
         $id = $this->validarId($id);
  
@@ -179,22 +166,16 @@ class contenedorController {
         return $this->contenedorModel->bajaContenedor($id);
     }
  
-    // RF17 — Obtener un contenedor por id.
     public function getContenedor($id) {
         $id = $this->validarId($id);
         return $this->contenedorModel->getContenedor($id);
     }
  
-    // RF17 — Listado de todos los contenedores.
     public function getAllContenedores() {
         return $this->contenedorModel->getAllContenedores();
     }
  
-    // ==========================================
-    // OPERACIONES DE NEGOCIO
-    // ==========================================
  
-    // RF19, RF20 — Cambio de estado.
     public function cambiarEstado($id, $nuevoEstado) {
         $id         = $this->validarId($id);
         $nuevoEstado = $this->validarEstado($nuevoEstado);
@@ -210,7 +191,6 @@ class contenedorController {
     return $this->contenedorModel->filtrarCriticos();
 }
  
-    // RF21 — Clasificación por tipo de residuo.
     public function clasificarPorTipoResiduo($id, $idTipo) {
     $id     = $this->validarId($id);
     $idTipo = $this->validarId($idTipo);
@@ -226,7 +206,6 @@ class contenedorController {
     return $this->contenedorModel->clasificarPorTipoResiduo($id, $idTipo);
 }
  
-    // RF22 — Asignación a circuito.
     public function asignarACircuito($id, $idCircuito) {
         $id         = $this->validarId($id);
         $idCircuito = $this->validarId($idCircuito);
@@ -242,8 +221,6 @@ class contenedorController {
         return $this->contenedorModel->asignarACircuito($id, $idCircuito);
     }
  
-    // RF26 — Registro de reparación.
-    // Valida que el contenedor esté en estado 'roto' antes de reparar.
     public function registrarReparacion($id) {
         $id = $this->validarId($id);
  
@@ -258,8 +235,6 @@ class contenedorController {
         return $this->contenedorModel->registrarReparacion($id);
     }
  
-    // RF24, RF25 — Consulta del nivel de llenado.
-    // El controlador calcula el porcentaje a partir de los datos crudos del modelo.
     public function getNivelLlenado($id) {
         $id   = $this->validarId($id);
         $dato = $this->contenedorModel->consultarNivelLlenado($id);
@@ -274,8 +249,6 @@ class contenedorController {
         return round(($dato['peso'] / $dato['capacidad']) * 100, 2);
     }
  
-    // RF28 — Historial del contenedor.
-    // El controlador ordena los eventos por fecha descendente.
     public function getHistorial($id) {
         $id       = $this->validarId($id);
         $historial = $this->contenedorModel->getHistorial($id);
@@ -288,20 +261,16 @@ class contenedorController {
     }
 
  
-    // RF18 — Filtrar por municipio.
     public function filtrarMunicipio($idMunicipio) {
         $idMunicipio = $this->validarId($idMunicipio);
         return $this->contenedorModel->filtrarMunicipio($idMunicipio);
     }
  
-    // RF18 — Filtrar por tipo de residuo.
     public function filtrarTipoResiduo($idTipo) {
         $idTipo = $this->validarId($idTipo);
         return $this->contenedorModel->filtrarTipoResiduo($idTipo);
     }
  
-    // RF18 — Filtrar por estado.
-    // RF27 — Inventario de contenedores en depósito: filtrarEstado('en_deposito').
     public function filtrarEstado($estado) {
         $estado = $this->validarEstado($estado);
         return $this->contenedorModel->filtrarEstado($estado);

@@ -74,10 +74,10 @@ if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['rol'] !== 'administrad
       <a href="indexBackoffice.php" class="btn btn-outline btn-sm">← Volver</a>
     </div>
 
-    <!-- Feedback global -->
+    
     <p class="form-feedback" id="feedbackGlobal"></p>
 
-    <!-- Tabla de solicitudes -->
+   
     <div class="panel-card">
       <div id="solicitudesContenedor">
         <p class="estado-carga">Cargando solicitudes...</p>

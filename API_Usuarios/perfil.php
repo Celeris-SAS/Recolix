@@ -1,10 +1,6 @@
 <?php
 session_start();
 
-// Esta página es exclusiva del staff que entra por el Portal de Empleados
-// (Backoffice/login_backoffice.php, guarda $_SESSION['usuario'] como array
-// anidado). La Landing Page no debe poder llegar acá: esa sesión (login.php,
-// $_SESSION['ci_usuario']/$_SESSION['rol'] planos) siempre va a vecino.php.
 $ci  = $_SESSION['usuario']['ci_usuario'] ?? null;
 $rol = $_SESSION['usuario']['rol'] ?? null;
 
@@ -13,7 +9,6 @@ if (!$ci) {
     exit();
 }
 
-// Solo administrador, cuadrilla u operario pueden entrar
 $rolesPermitidos = ['administrador', 'cuadrilla', 'operario'];
 if (!in_array($rol, $rolesPermitidos)) {
     header("Location: /recolix/Backoffice/login_backoffice.php");
@@ -157,7 +152,6 @@ if (!in_array($rol, $rolesPermitidos)) {
                 <button class="btn btn-outline btn-sm" id="logoutBtn">Cerrar sesión</button>
             </div>
         </section>
-        <!-- ── PIE DE PÁGINA ────────────────────────────────────────────────── -->
     </main>
     <footer class="footer">
     <div class="footer-grid">

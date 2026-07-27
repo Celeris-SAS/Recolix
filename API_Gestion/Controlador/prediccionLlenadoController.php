@@ -12,9 +12,6 @@ class prediccionLlenadoController {
         $this->contenedorModel = new contenedorModel();
     }
  
-    // ==========================================
-    // VALIDACIONES
-    // ==========================================
  
     private function validarId($id) {
         if (!is_numeric($id) || intval($id) <= 0) {
@@ -23,13 +20,7 @@ class prediccionLlenadoController {
         return intval($id);
     }
  
-    // ==========================================
-    // OPERACIONES PRINCIPALES
-    // ==========================================
  
-    // RF24, RF68 — Calcular y persistir una predicción de llenado.
-    // El controlador obtiene los datos de levantes, calcula el promedio móvil
-    // de los últimos 7 días según RF68, y persiste el resultado en la tabla.
     public function calcularPrediccion($idContenedor) {
         $idContenedor = $this->validarId($idContenedor);
  
@@ -46,7 +37,6 @@ class prediccionLlenadoController {
             throw new RuntimeException("No hay levantes registrados para el contenedor $idContenedor.");
         }
  
-        // RF68 — Promedio móvil de los últimos 7 días.
         $hace7dias = strtotime('-7 days');
         $levantesRecientes = array_filter($levantes, function ($l) use ($hace7dias) {
             return strtotime($l['hora_levante']) >= $hace7dias;
@@ -64,7 +54,6 @@ class prediccionLlenadoController {
         return $this->prediccionModel->insertPrediccion($idContenedor, $nivelProyectado);
     }
  
-    // RF25 — Consultar la última predicción de un contenedor.
     public function getUltimaPrediccion($idContenedor) {
         $idContenedor = $this->validarId($idContenedor);
  
@@ -76,13 +65,11 @@ class prediccionLlenadoController {
         return $this->prediccionModel->getUltimaPrediccion($idContenedor);
     }
  
-    // RF25 — Consultar una predicción específica por id.
     public function getPrediccion($id) {
         $id = $this->validarId($id);
         return $this->prediccionModel->getPrediccion($id);
     }
  
-    // RF68 — Historial completo de predicciones de un contenedor.
     public function getAllPredicciones($idContenedor) {
         $idContenedor = $this->validarId($idContenedor);
  

@@ -93,7 +93,7 @@ h3 {
   }
 }
 
-/* Botones */
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -166,7 +166,7 @@ h3 {
   font-size: 14px;
 }
 
-/* Header */
+
 .site-header {
   position: fixed;
   top: 0;
@@ -220,7 +220,7 @@ h3 {
   object-fit: contain;
 }
 
-/* Estado inicial (hero oscuro): logo blanco visible, logo de color oculto */
+
 .logo-imageBlanco {
   display: block;
 }
@@ -229,7 +229,7 @@ h3 {
   display: none;
 }
 
-/* Al scrollear: logo de color visible, logo blanco oculto */
+
 .site-header.is-scrolled .logo-imageBlanco {
   display: none;
 }
@@ -335,7 +335,7 @@ h3 {
   }
 }
 
-/* Hero */
+
 .hero {
   position: relative;
   overflow: hidden;
@@ -401,7 +401,7 @@ h3 {
   flex-wrap: wrap;
 }
 
-/* Mini-mapa del hero (Leaflet) */
+
 #hero-mapa {
   position: absolute;
   top: 0;
@@ -487,7 +487,7 @@ h3 {
   background: var(--status-off);
 }
 
-/* Secciones generales */
+
 .stats,
 .about,
 .register {
@@ -539,7 +539,7 @@ h3 {
   }
 }
 
-/* Tarjetas de estadísticas y features — definición única */
+
 .stat-card,
 .feature-card {
   background: var(--white);
@@ -586,7 +586,7 @@ h3 {
   color: var(--ink-soft);
 }
 
-/* Registro de vecinos */
+
 .register {
   background: var(--moss);
   color: var(--white);
@@ -689,7 +689,7 @@ input:focus {
   color: #7a2418;
 }
 
-/* Estadisticas & Nosotros */
+
 .stats,
 .about,
 .register {
@@ -792,7 +792,7 @@ input:focus {
   font-family: var(--font-mono);
 }
 
-/* Registro */
+
 .register {
   background: var(--moss);
   color: var(--white);
@@ -895,7 +895,7 @@ input:focus {
   color: #7a2418;
 }
 
-/* Footer */
+
 
 .site-footer {
   background: var(--moss-dark);

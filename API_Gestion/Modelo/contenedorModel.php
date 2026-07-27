@@ -56,9 +56,6 @@ class ContenedorModel {
         return $rows;
     }
 
-    // ==========================================
-    // OPERACIONES DE NEGOCIO
-    // ==========================================
 
     public function cambiarEstado($id, $nuevoEstado) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE CONTENEDOR SET estado = ? WHERE id_contenedor = ?");

@@ -11,12 +11,7 @@ class UsuarioModel {
         $this->conn = $conexion->getConexion();
     }
 
-    // ==========================================
-    // AUTENTICACIÓN (RF81)
-    // ==========================================
 
-    // Busca al usuario por CI y devuelve sus datos si la contraseña es correcta.
-    // Nunca devuelve el hash de la contraseña al controller.
     public function login($ci, $contrasenia) {
         $stmt = mysqli_prepare(
             $this->conn,
@@ -31,19 +26,13 @@ class UsuarioModel {
 
         if (!$row) return null;
 
-        // RNF05 — verificar el hash almacenado.
         if (!password_verify($contrasenia, $row['contrasenia'])) return null;
 
         unset($row['contrasenia']);
         return $row;
     }
 
-    // ==========================================
-    // PERFIL (RF90, RF91)
-    // ==========================================
 
-    // Devuelve los datos del usuario. Nunca devuelve la contraseña (RF90).
-    // Incluye acceso/fecha_registro para su uso también en el panel de administración.
     public function getPerfil($ci) {
         $stmt = mysqli_prepare(
             $this->conn,
@@ -61,7 +50,7 @@ class UsuarioModel {
         return $row;
     }
 
-    // RF91 — Modifica email y teléfono del perfil propio.
+
     public function updatePerfil($ci, $email, $tel) {
         $stmt = mysqli_prepare(
             $this->conn,
@@ -73,7 +62,7 @@ class UsuarioModel {
         return true;
     }
 
-    // RF92 — Cambia la contraseña. Recibe la nueva contraseña ya validada por el controller.
+
     public function cambiarContrasenia($ci, $nuevaContrasenia) {
         $hash = password_hash($nuevaContrasenia, PASSWORD_DEFAULT);
         $stmt = mysqli_prepare(
@@ -86,8 +75,7 @@ class UsuarioModel {
         return true;
     }
 
-    // Devuelve el hash de contraseña para que el controller pueda verificarlo (RF92).
-    // Solo se usa para validar la contraseña actual antes de cambiarla.
+
     public function getContrasenia($ci) {
         $stmt = mysqli_prepare(
             $this->conn,
@@ -101,11 +89,8 @@ class UsuarioModel {
         return $row ? $row['contrasenia'] : null;
     }
 
-    // ==========================================
-    // INCIDENCIAS PROPIAS (RF03)
-    // ==========================================
 
-    // Devuelve las incidencias reportadas por este vecino.
+
     public function getIncidencias($ci) {
         $stmt = mysqli_prepare(
             $this->conn,
@@ -126,11 +111,7 @@ class UsuarioModel {
         return $rows;
     }
 
-    // ==========================================
-    // NOTIFICACIONES (RF95, RF96)
-    // ==========================================
 
-    // RF95 — Notificaciones del vecino, ordenadas por fecha desc y prioridad.
     public function getNotificaciones($ci) {
         $stmt = mysqli_prepare(
             $this->conn,
@@ -153,7 +134,7 @@ class UsuarioModel {
         return $rows;
     }
 
-    // RF96 — Marca una notificación como leída, registrando la fecha de lectura.
+
     public function marcarNotificacionLeida($idNotificacion, $ci) {
         $ahora = date('Y-m-d H:i:s');
         $stmt  = mysqli_prepare(
@@ -169,11 +150,7 @@ class UsuarioModel {
         return true;
     }
 
-    // ==========================================
-    // ADMINISTRACIÓN DE USUARIOS
-    // ==========================================
 
-    // Listado general de usuarios (sin contraseña) para el panel de administración.
     public function listarUsuarios() {
         $stmt = mysqli_prepare(
             $this->conn,
@@ -232,7 +209,6 @@ class UsuarioModel {
         return true;
     }
 
-    // Habilita/deshabilita o revierte a pendiente el acceso de un usuario.
     public function cambiarAcceso($ci, $nuevoAcceso) {
         $stmt = mysqli_prepare($this->conn, "UPDATE USUARIO SET acceso = ? WHERE ci_usuario = ?");
         mysqli_stmt_bind_param($stmt, 'si', $nuevoAcceso, $ci);
@@ -241,7 +217,6 @@ class UsuarioModel {
         return true;
     }
 
-    // Verifica si ya existe un usuario con esa cédula.
     public function existeCi($ci) {
         $stmt = mysqli_prepare($this->conn, "SELECT ci_usuario FROM USUARIO WHERE ci_usuario = ?");
         mysqli_stmt_bind_param($stmt, 'i', $ci);
@@ -252,8 +227,7 @@ class UsuarioModel {
         return $existe;
     }
 
-    // Alta directa de un usuario por parte de un administrador (sin pasar por el flujo de solicitud).
-    // Queda con acceso 'habilitado' de inmediato, ya que el admin la está dando de alta él mismo.
+
     public function crearUsuario($ci, $primerNombre, $pApellido, $email, $tel, $contrasenia, $rol, $idMunicipio) {
         $hash   = password_hash($contrasenia, PASSWORD_DEFAULT);
         $acceso = 'habilitado';
@@ -272,7 +246,7 @@ class UsuarioModel {
         return $ci;
     }
     public function setMunicipio($ci, $municipio) {
-    // Buscar el id_municipio según el nombre
+
     $municipioSql = "SELECT id_municipio FROM MUNICIPIO WHERE nombre = ?";
     $stmt = mysqli_prepare($this->conn, $municipioSql);
     mysqli_stmt_bind_param($stmt, "s", $municipio);
@@ -282,11 +256,11 @@ class UsuarioModel {
     mysqli_stmt_close($stmt);
 
     if (!$row) {
-        return false; // no existe ese municipio
+        return false; 
     }
     $id_municipio = $row['id_municipio'];
 
-    // Actualizar el municipio del usuario existente
+
     $updateSql = "UPDATE USUARIO SET id_municipio = ? WHERE ci_usuario = ?";
     $stmt2 = mysqli_prepare($this->conn, $updateSql);
     mysqli_stmt_bind_param($stmt2, "ii", $id_municipio, $ci);

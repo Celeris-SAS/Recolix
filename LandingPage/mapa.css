@@ -1,9 +1,4 @@
-/* mapa.css — estilos exclusivos de la página de mapa.
-   Las bases (variables, resets, botones, footer) ya las
-   carga styles_LandingPage.css antes que este archivo.
-   Aquí solo van las diferencias y los estilos del mapa. */
 
-/* Header: en el mapa el fondo es siempre blanco, sin cambio al scrollear */
 .site-header {
     background: var(--white);
     border-bottom: 1px solid rgba(28, 33, 23, 0.08);
@@ -25,7 +20,6 @@
     color: var(--ink);
 }
 
-/* Layout de la página */
 .map-page {
     padding-top: 8rem;
 }
@@ -51,7 +45,7 @@
     max-width: 640px;
 }
 
-/* Tarjetas de la página de mapa */
+
 .map-summary-card,
 .panel-card,
 .map-card-shell {
@@ -84,7 +78,7 @@
     color: var(--ink-soft);
 }
 
-/* Layout mapa + sidebar */
+
 .map-layout {
     display: grid;
     grid-template-columns: 300px 1fr;
@@ -107,7 +101,7 @@
     font-size: 1.05rem;
 }
 
-/* Lista de indicadores */
+
 .info-list {
     list-style: none;
     padding: 0;
@@ -127,7 +121,7 @@
     color: var(--ink);
 }
 
-/* Leyenda del mapa — colores distintos al hero (fondo claro, no oscuro) */
+
 .panel-card .legend-item {
     color: var(--ink-soft);
     margin-bottom: 0.5rem;
@@ -149,7 +143,7 @@
     background: var(--status-off);
 }
 
-/* Contenedor del mapa Leaflet */
+
 .map-card-shell {
     padding: 0.8rem;
 }
@@ -173,7 +167,7 @@
     display: none;
 }
 
-/* Responsive */
+
 @media (max-width: 960px) {
 
     .map-hero-inner,

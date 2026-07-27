@@ -1,15 +1,11 @@
-/* =========================================================
-   RECOLIX — Lógica de solicitudes de registro
-   RF84 — Aprobar solicitud
-   RF85 — Rechazar solicitud
-========================================================= */
+
 
 const API = '/recolix/API_Usuarios';
 document.addEventListener('DOMContentLoaded', function () {
   cargarSolicitudes();
 });
 
-// ── Cargar solicitudes pendientes ────────────────────────
+
 async function cargarSolicitudes() {
   const contenedor = document.getElementById('solicitudesContenedor');
 
@@ -69,7 +65,7 @@ async function cargarSolicitudes() {
   }
 }
 
-// ── RF84 — Aprobar solicitud ─────────────────────────────
+
 async function aprobar(ci) {
   if (!confirm('¿Confirmás que querés aprobar esta solicitud?')) return;
 
@@ -94,7 +90,7 @@ async function aprobar(ci) {
   }
 }
 
-// ── RF85 — Rechazar solicitud ────────────────────────────
+
 async function rechazar(ci) {
   if (!confirm('¿Confirmás que querés rechazar esta solicitud?')) return;
 
@@ -119,14 +115,11 @@ async function rechazar(ci) {
   }
 }
 
-// ── Utilidades ───────────────────────────────────────────
 
-// Elimina la fila de la tabla sin recargar la página.
 function eliminarFila(ci) {
   const fila = document.getElementById(`fila-${ci}`);
   if (fila) fila.remove();
 
-  // Si ya no quedan filas, mostrar estado vacío.
   const tbody = document.getElementById('tablaCuerpo');
   if (tbody && tbody.children.length === 0) {
     document.getElementById('solicitudesContenedor').innerHTML = `
@@ -141,7 +134,7 @@ function mostrarFeedback(mensaje, esExito) {
   const el = document.getElementById('feedbackGlobal');
   el.textContent = mensaje;
   el.className = 'form-feedback ' + (esExito ? 'is-success' : 'is-error');
-  // Ocultar automáticamente después de 4 segundos.
+  
   setTimeout(() => {
     el.textContent = '';
     el.className = 'form-feedback';

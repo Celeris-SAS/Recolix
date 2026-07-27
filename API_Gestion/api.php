@@ -102,7 +102,6 @@ if (strpos($uri, $basePath) === 0) {
         exit;
     }
 
-    // Determinar acción
     $action = null;
     $action = isset($uriSegments[1]) && !is_numeric($uriSegments[1]) ? $uriSegments[1] : null;
     if ($action) {
@@ -120,7 +119,6 @@ if (strpos($uri, $basePath) === 0) {
         $action = $_GET['action'];
     }
 
-    // Ejecutar acción si existe
     if ($action && isset($resourceConfig['actions']) && in_array($action, $resourceConfig['actions']) && method_exists($controller, $action)) {
         $callParams = [];
         if ($id !== null) $callParams[] = $id;
@@ -149,7 +147,6 @@ if (strpos($uri, $basePath) === 0) {
         exit;
     }
 
-    // Procesar según método HTTP
     switch ($method) {
         case 'GET':
             if ($id !== null) {

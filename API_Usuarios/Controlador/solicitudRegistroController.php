@@ -7,9 +7,7 @@ class SolicitudRegistroController {
         require_once __DIR__ . '/../Modelo/solicitudRegistroModel.php';
         $this->solicitudModel = new SolicitudRegistroModel();
     }
-    // ==========================================
-    // VALIDACIONES
-    // ==========================================
+
 
     private function validarCI($ci) {
         if (!is_numeric($ci) || intval($ci) <= 0) {
@@ -74,15 +72,7 @@ class SolicitudRegistroController {
         ];
     }
 
-    // ==========================================
-    // RF02 — Solicitud de registro de vecino
-    // ==========================================
-
-    // Recibe los datos del formulario de la Landing Page y crea la solicitud.
-    // La solicitud queda en estado 'pendiente' hasta que el administrador la apruebe (RF84).
-    // El municipio ya no se pide en el alta: el vecino lo completa después desde su perfil
-    // (setMunicipio) si todavía no lo tiene asignado.
-    // Esta validación se repite aquí además de en el frontend (RNF12).
+    
     public function crearSolicitud($ci, $primerNombre, $pApellido, $email, $tel, $contrasenia, $idMunicipio = null) {
         $ci           = $this->validarCI($ci);
         $primerNombre = $this->validarNombre($primerNombre, 'Nombre');
@@ -92,7 +82,7 @@ class SolicitudRegistroController {
         $contrasenia  = $this->validarContrasenia($contrasenia);
         $idMunicipio  = $idMunicipio !== null ? $this->validarIdMunicipio($idMunicipio) : null;
 
-        // Verificar duplicado antes de intentar insertar.
+   
         if ($this->solicitudModel->existePorCI($ci)) {
             throw new InvalidArgumentException("Ya existe una solicitud registrada con la cédula $ci.");
         }
@@ -100,19 +90,19 @@ class SolicitudRegistroController {
         return $this->solicitudModel->crearSolicitud($ci, $primerNombre, $pApellido, $email, $tel, $idMunicipio, $contrasenia);
     }
 
-    // RF84 — Aprobar solicitud de registro.
+    
     public function aprobar($ci) {
         $ci = $this->validarCI($ci);
         return $this->solicitudModel->aprobar($ci);
     }
 
-    // RF85 — Rechazar solicitud de registro.
+    
     public function rechazar($ci) {
         $ci = $this->validarCI($ci);
         return $this->solicitudModel->rechazar($ci);
     }
 
-    // RF84, RF85 — Listar solicitudes pendientes para el administrador.
+   
     public function getSolicitudesPendientes() {
         return $this->solicitudModel->getSolicitudesPendientes();
     }

@@ -14,6 +14,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       link.innerHTML = '<img src="/recolix/API_Usuarios/Vista/img/user.svg" alt="Mi perfil" class="nav-user-icon">';
     }
   } catch (e) {
-    // Sin conexión con la API: se deja el link de "Iniciar Sesión" por defecto.
+  
   }
 });

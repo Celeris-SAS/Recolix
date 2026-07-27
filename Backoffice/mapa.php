@@ -10,7 +10,7 @@
 </head>
 <body>
 
-<!-- ── BARRA DE NAVEGACIÓN ─────────────────────────────────────────── -->
+
 <header class="navbar">
     <div class="nav-inner">
         <div class="nav-left">
@@ -51,13 +51,13 @@
     <div class="nav-hr"></div>
 </header>
 
-<!-- ── HERO ────────────────────────────────────────────────────────── -->
+
 <section class="hero">
     <h1 class="hero-title">Mapa operativo</h1>
     <p class="hero-sub">Visualizá el estado de los contenedores en Montevideo.</p>
 </section>
 
-<!-- ── CONTENIDO DEL MAPA ──────────────────────────────────────────── -->
+
 <section class="mapa-layout">
 
     <aside class="mapa-sidebar">
@@ -92,7 +92,7 @@
 
 </section>
 
-<!-- ── PIE DE PÁGINA ────────────────────────────────────────────────── -->
+
 <footer class="footer">
     <div class="footer-grid">
         <div class="footer-brand">

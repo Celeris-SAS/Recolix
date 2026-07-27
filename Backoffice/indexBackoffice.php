@@ -15,7 +15,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
 </head>
 <body>
 
-<!-- ── BARRA DE NAVEGACIÓN ─────────────────────────────────────────── -->
+
 <header class="navbar">
     <div class="nav-inner">
         <div class="nav-left">
@@ -58,13 +58,13 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
     <div class="nav-hr"></div>
 </header>
 
-<!-- ── HERO ────────────────────────────────────────────────────────── -->
+
 <section class="hero">
     <h1 class="hero-title">Bienvenido, <?= $primerNombre ?></h1>
     <p class="hero-sub">Panel de administración</p>
 </section>
 
-<!-- ── NOVEDADES ───────────────────────────────────────────────────── -->
+
 <section class="novedades">
     <div class="novedades-header">
         <h2 class="novedades-title">Novedades</h2>
@@ -104,7 +104,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
     </div>
 </section>
 
-<!-- ── ACCESOS RÁPIDOS ────────────────────────────────────────────── -->
+
 <section class="cards-section">
     <div class="cards-grid">
 
@@ -174,7 +174,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
     </div>
 </section>
 
-<!-- ── PIE DE PÁGINA ────────────────────────────────────────────────── -->
+
 <footer class="footer">
     <div class="footer-grid">
         <div class="footer-brand">

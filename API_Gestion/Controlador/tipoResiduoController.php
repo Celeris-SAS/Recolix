@@ -8,9 +8,6 @@ class tipoResiduoController {
         require_once __DIR__ . '/../Modelo/tipoResiduoModel.php';
         $this->tipoResiduoModel = new tipoResiduoModel();
     }
-    // ==========================================
-    // VALIDACIONES
-    // ==========================================
  
     private function validarId($id) {
         if (!is_numeric($id) || intval($id) <= 0) {
@@ -55,11 +52,7 @@ class tipoResiduoController {
         ];
     }
  
-    // ==========================================
-    // CRUD PRINCIPAL
-    // ==========================================
  
-    // RF14, RF21 — Alta de tipo de residuo.
     public function insertTipoResiduo($color, $descripcion, $reciclable) {
         $color       = $this->validarString($color, 'Color', 30);
         $descripcion = $this->validarString($descripcion, 'Descripción', 150);
@@ -68,7 +61,6 @@ class tipoResiduoController {
         return $this->tipoResiduoModel->insertTipoResiduo($color, $descripcion, $reciclable);
     }
  
-    // RF15 — Modificación de tipo de residuo.
     public function updateTipoResiduo($id, $color, $descripcion, $reciclable) {
         $id          = $this->validarId($id);
         $color       = $this->validarString($color, 'Color', 30);
@@ -83,10 +75,6 @@ class tipoResiduoController {
         return $this->tipoResiduoModel->updateTipoResiduo($id, $color, $descripcion, $reciclable);
     }
  
-    // RF16 — Baja de tipo de residuo.
-    // La FK de CONTENEDOR hacia TIPO_RESIDUO es ON DELETE SET NULL, por lo que
-    // MySQL no bloquea el DELETE por sí solo: hay que verificar explícitamente
-    // que no haya contenedores asociados antes de borrar.
     public function bajaTipoResiduo($id) {
         $id = $this->validarId($id);
 
@@ -106,22 +94,16 @@ class tipoResiduoController {
         return $resultado;
     }
  
-    // RF21 — Obtener un tipo de residuo por id.
     public function getTipoResiduo($id) {
         $id = $this->validarId($id);
         return $this->tipoResiduoModel->getTipoResiduo($id);
     }
  
-    // RF21 — Listado de todos los tipos de residuo.
     public function getAllTiposResiduo() {
         return $this->tipoResiduoModel->getAllTiposResiduo();
     }
  
-    // ==========================================
-    // FILTROS
-    // ==========================================
  
-    // RF66, RF67 — Filtrar por condición de reciclable.
     public function filtrarReciclable($reciclable) {
         $reciclable = $this->validarBooleano($reciclable, 'Reciclable');
         return $this->tipoResiduoModel->filtrarReciclable($reciclable);

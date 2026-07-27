@@ -1,6 +1,5 @@
 <?php
-// Script de uso único para insertar el admin de prueba.
-// Eliminá este archivo una vez que ya no lo necesites.
+
 
 require_once __DIR__ . '/../conexion.php';
 
@@ -17,7 +16,6 @@ try {
 
     if ($check->num_rows > 0) {
         $check->close();
-        // Ya existe: corregir rol y acceso por si fueron insertados con valores incorrectos
         $rolCorrecto = 'administrador';
         $accesoCorrecto = 'habilitado';
         $upd = $conn->prepare("UPDATE USUARIO SET rol = ?, acceso = ? WHERE ci_usuario = ?");
@@ -36,25 +34,16 @@ try {
     }
     $check->close();
 
-    // Obtener cualquier id_municipio válido de la tabla municipio
-    /*$mun = $conn->query("SELECT id_municipio FROM MUNICIPIO LIMIT 1");
-    $munRow = $mun ? $mun->fetch_assoc() : null;
-    if (!$munRow) {
-        echo "<p style='color:red; font-family:sans-serif; padding:1rem;'>No se encontró ningún municipio en la tabla MUNICIPIO. Agregá uno antes de continuar.</p>";
-        exit;
-    }
-    $idMunicipio = $munRow['id_municipio'];*/
 
     $nombre      = 'Admin';
     $apellido    = 'Test';
-    $rol         = 'administrador'; // RNE 01: valores válidos son administrador, cuadrilla, operario, vecino
-    $acceso      = 'habilitado';    // enum: pendiente, habilitado, deshabilitado
+    $rol         = 'administrador'; 
+    $acceso      = 'habilitado';    
     $email       = 'admin@recolix.com';
     $tel         = '099000000';
     $hash        = password_hash('admin1234', PASSWORD_DEFAULT);
-    $idMunicipio = null; // el admin de prueba no tiene municipio asignado
+    $idMunicipio = null; 
 
-    // Tipos: ci→i, municipio→i (NULL), nombre→s, apellido→s, rol→s, acceso→s, email→s, tel→s, hash→s
     $stmt = $conn->prepare(
         "INSERT INTO USUARIO (ci_usuario, id_municipio, primer_nombre, p_apellido, rol, acceso, email, tel, contrasenia)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"

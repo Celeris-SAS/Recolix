@@ -9,7 +9,6 @@
 </head>
 <body>
 
-<!-- ── BARRA DE NAVEGACIÓN ─────────────────────────────────────────── -->
 <header class="navbar">
     <div class="nav-inner">
         <div class="nav-left">
@@ -52,13 +51,11 @@
     <div class="nav-hr"></div>
 </header>
 
-<!-- ── HERO (ENCABEZADO) ───────────────────────────────────────────── -->
 <section class="hero">
     <h1 class="hero-title">Camiones</h1>
     <p class="hero-sub">Gestioná la flota de vehículos de recolección de residuos.</p>
 </section>
 
-<!-- ── TARJETAS ─────────────────────────────────────────────────────── -->
 <section class="cards-section">
     <div class="cards-grid">
 
@@ -110,7 +107,6 @@
     </div>
 </section>
 
-<!-- ── BARRA DE FILTROS ─────────────────────────────────────────────── -->
 <section class="control-bar" id="filterBar" style="display:none">
     <div class="control-inner">
         <select id="filtroTipo" class="ctrl-select" onchange="actualizarFiltroValor()">
@@ -130,7 +126,6 @@
     </div>
 </section>
 
-<!-- ── BARRA DE BÚSQUEDA POR ID ─────────────────────────────────────── -->
 <section class="control-bar" id="searchBar" style="display:none">
     <div class="control-inner">
         <input type="number" id="buscarId" class="ctrl-input"
@@ -140,7 +135,6 @@
     </div>
 </section>
 
-<!-- ── BARRA DE MODIFICACIÓN ──────────────────────────────────────── -->
 <section class="control-bar" id="modificarBar" style="display:none">
     <div class="control-inner">
         <input type="number" id="modificarId" class="ctrl-input"
@@ -161,7 +155,6 @@
     </div>
 </section>
 
-<!-- ── BARRA DE ELIMINACIÓN ───────────────────────────────────────── -->
 <section class="control-bar" id="deleteBar" style="display:none">
     <div class="control-inner">
         <input type="number" id="deleteId" class="ctrl-input"
@@ -171,7 +164,6 @@
     </div>
 </section>
 
-<!-- ── TABLA ────────────────────────────────────────────────────────── -->
 <section class="table-section">
     <div class="table-header">
         <h2 class="table-title" id="tableTitle">Camiones</h2>
@@ -202,7 +194,6 @@
     </div>
 </section>
 
-<!-- ── MODAL AGREGAR / MODIFICAR ────────────────────────────────────── -->
 <div class="modal-overlay" id="modalForm" style="display:none"
      onclick="onOverlayClick(event,'modalForm')">
     <div class="modal">
@@ -265,7 +256,6 @@
     </div>
 </div>
 
-<!-- ── MODAL CONFIRMAR BAJA ─────────────────────────────────────────── -->
 <div class="modal-overlay" id="modalDelete" style="display:none"
      onclick="onOverlayClick(event,'modalDelete')">
     <div class="modal modal-sm">
@@ -283,10 +273,8 @@
     </div>
 </div>
 
-<!-- ── NOTIFICACIÓN (TOAST) ─────────────────────────────────────────── -->
 <div id="toast" class="toast"></div>
 
-<!-- ── PIE DE PÁGINA ────────────────────────────────────────────────── -->
 <footer class="footer">
     <div class="footer-grid">
         <div class="footer-brand">
@@ -344,7 +332,6 @@ async function cargarReglas() {
     }
 }
 
-// ── LISTAR TODOS ──────────────────────────────────────────────────────
 async function listarCamiones() {
     ocultarControles();
     setLoading(true);
@@ -364,7 +351,6 @@ async function listarCamiones() {
     }
 }
 
-// ── BUSCAR POR ID ─────────────────────────────────────────────────────
 async function buscarPorId() {
     const id = document.getElementById('buscarId').value.trim();
     if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
@@ -386,7 +372,6 @@ async function buscarPorId() {
     }
 }
 
-// ── FILTRAR ───────────────────────────────────────────────────────────
 function actualizarFiltroValor() {
     const tipo   = document.getElementById('filtroTipo').value;
     const input  = document.getElementById('filtroValor');
@@ -458,7 +443,6 @@ async function aplicarFiltro() {
     }
 }
 
-// ── AGREGAR ───────────────────────────────────────────────────────────
 function abrirModalAgregar() {
     document.getElementById('modalTitle').textContent = 'Agregar Camión';
     document.getElementById('camionId').value = '';
@@ -466,7 +450,6 @@ function abrirModalAgregar() {
     document.getElementById('modalForm').style.display = 'flex';
 }
 
-// ── MODAL EDITAR ──────────────────────────────────────────────────────
 function abrirModalEditar(camion) {
     document.getElementById('modalTitle').textContent = 'Editar Camión';
     document.getElementById('camionId').value  = camion.id_camion;
@@ -486,7 +469,6 @@ function abrirModalEditar(camion) {
     document.getElementById('modalForm').style.display = 'flex';
 }
 
-// ── GUARDAR (POST / PUT) ──────────────────────────────────────────────
 async function guardarCamion(e) {
     e.preventDefault();
     const id = document.getElementById('camionId').value;
@@ -585,7 +567,6 @@ async function guardarCamion(e) {
     }
 }
 
-// ── ELIMINAR ──────────────────────────────────────────────────────────
 function confirmarBorrar(id, matricula) {
     camionIdParaEliminar = id;
     document.getElementById('deleteNombre').textContent = matricula;
@@ -608,7 +589,6 @@ async function confirmarDelete() {
     }
 }
 
-// ── VERIFICAR DISPONIBILIDAD ──────────────────────────────────────────
 async function verificarDisponibilidad(id, matricula) {
     try {
         const res  = await fetch(`${API_BASE}/camiones/${id}/esDisponible`);
@@ -665,7 +645,6 @@ function actualizarPlaceholderModificar() {
     }
 }
 
-// ── MODIFICAR ─────────────────────────────────────────────────────────────
 async function modificarCamion() {
     const id = document.getElementById('modificarId').value.trim();
     if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
@@ -756,7 +735,6 @@ async function modificarCamion() {
     }
 }
 
-// ── DAR DE BAJA ───────────────────────────────────────────────────────
 async function darDeBajaCamion() {
     const id = document.getElementById('deleteId').value.trim();
     if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
@@ -777,7 +755,6 @@ async function darDeBajaCamion() {
     }
 }
 
-// ── RENDERIZAR TABLA ──────────────────────────────────────────────────
 function renderTabla(camiones) {
     const tbody = document.getElementById('camionesBody');
     const noRes = document.getElementById('noResultados');
@@ -823,7 +800,6 @@ function badgeClass(estado) {
     return map[estado] ?? 'neutral';
 }
 
-// ── UTILIDADES ────────────────────────────────────────────────────────
 function toggleFiltros() {
     const fb = document.getElementById('filterBar');
     const sb = document.getElementById('searchBar');

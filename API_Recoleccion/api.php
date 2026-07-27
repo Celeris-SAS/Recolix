@@ -4,7 +4,6 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('Access-Control-Allow-Headers: Content-Type');
 
-// Configuración parametrizable - Mapping de recursos a controllers
 $config = [
     'base_path' => '/recolix/API_Recoleccion/',
     'resources' => [
@@ -29,7 +28,6 @@ $config = [
                 'filtrarCapacidad',
                 'obtenerHistorial'
             ],
-            // filtros por query param: paramName => controllerMethod (null significa que no se pasa parámetro)
             'filters' => [
                 'estado' => 'filtrarEstado',
                 'tipoCarga' => 'filtrarTipoCarga',
@@ -88,7 +86,6 @@ $config = [
 $method = $_SERVER['REQUEST_METHOD'];
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-// Obtener la ruta relativa después de la ruta base
 $basePath = rtrim($config['base_path'], '/');
 if (strpos($uri, $basePath) === 0) {
     $relativePath = substr($uri, strlen($basePath));
@@ -103,7 +100,6 @@ if (strpos($uri, $basePath) === 0) {
         exit;
     }
 
-    // Cargar el controller correspondiente
     $resourceConfig = $config['resources'][$resource];
     require_once __DIR__ . '/' . $resourceConfig['file'];
 
@@ -116,14 +112,11 @@ if (strpos($uri, $basePath) === 0) {
         exit;
     }
 
-    // Determinar si la ruta contiene una acción: /resource/{action}/{id} o /resource/{id}/{action}
     $action = null;
-    // recalcular segments para soportar acción como segundo segmento
     $action = isset($uriSegments[1]) && !is_numeric($uriSegments[1]) ? $uriSegments[1] : null;
     if ($action) {
         $id = isset($uriSegments[2]) ? $uriSegments[2] : null;
     } else {
-        // si el segundo segmento es numérico, es el id; si el tercero existe y no es numérico, es una acción
         if (isset($uriSegments[1]) && is_numeric($uriSegments[1])) {
             $id = $uriSegments[1];
             if (isset($uriSegments[2]) && !is_numeric($uriSegments[2])) {
@@ -132,27 +125,22 @@ if (strpos($uri, $basePath) === 0) {
         }
     }
 
-    // permitir override de acción vía query parameter `action`
     if (isset($_GET['action']) && $_GET['action']) {
         $action = $_GET['action'];
     }
 
-    // Si se solicita una acción y el controller la expone, llamarla directamente
     if ($action && isset($resourceConfig['actions']) && in_array($action, $resourceConfig['actions']) && method_exists($controller, $action)) {
-        // construir parámetros: preferir ID como primer param, luego body (para POST/PUT) o query params (para GET)
         $callParams = [];
         if ($id !== null) $callParams[] = $id;
         if ($method === 'GET') {
             $query = $_GET;
             unset($query['action']);
-            // agregar valores de query
             if (!empty($query)) $callParams = array_merge($callParams, array_values($query));
         } else {
             $body = json_decode(file_get_contents('php://input'), true);
             if (is_array($body) && !empty($body)) {
                 $callParams = array_merge($callParams, array_values($body));
             } else {
-                // fallback a query params
                 $query = $_GET; unset($query['action']);
                 if (!empty($query)) $callParams = array_merge($callParams, array_values($query));
             }
@@ -168,11 +156,9 @@ if (strpos($uri, $basePath) === 0) {
         exit;
     }
 
-    // Procesar la solicitud según el método HTTP
     switch ($method) {
         case 'GET':
             if ($id !== null) {
-                // GET con ID
                 try {
                     $result = $controller->{$resourceConfig['getMethod']}($id);
                     if ($result) {
@@ -186,7 +172,6 @@ if (strpos($uri, $basePath) === 0) {
                     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
                 }
             } else {
-                // GET sin ID (listar todos) — comprobar filtros por query params
                 $query = $_GET;
                 unset($query['action']);
                 $handled = false;
@@ -198,7 +183,6 @@ if (strpos($uri, $basePath) === 0) {
                             if (method_exists($controller, $filterMethod)) {
                                 try {
                                     if (is_array($qv)) {
-                                        // múltiples valores: pasar como parámetros
                                         $params = array_values($qv);
                                         $result = call_user_func_array([$controller, $filterMethod], $params);
                                     } else {
@@ -266,7 +250,6 @@ if (strpos($uri, $basePath) === 0) {
                     echo json_encode(['status' => 'error', 'message' => 'Datos inválidos o vacíos']);
                 } else {
                     try {
-                        // Agregar el ID al principio de los parámetros
                         $params = array_merge([$id], array_values($data));
                         $result = call_user_func_array(
                             [$controller, $resourceConfig['updateMethod']], 
