@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Camiones — Recolix</title>
-    <link rel="stylesheet" href="styleCamiones.css">
+    <link rel="stylesheet" href="styleRecoleccion.css">
 </head>
 <body>
 
@@ -19,6 +19,8 @@
             <nav class="nav-links">
                 <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
                 <a href="#" class="nav-active">Camiones</a>
+                <a href="circuitos.php">Circuitos</a>
+                <a href="rutas.php">Rutas</a>
                 <a href="#">Cuadrillas</a>
                 <a href="../../API_Gestion/Vista/contenedores.php">Contenedores</a>
                 <a href="#">Centros de Acopio</a>
@@ -40,6 +42,8 @@
     <nav class="nav-mobile" id="navMobile">
         <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
         <a href="#" class="nav-active">Camiones</a>
+        <a href="circuitos.php">Circuitos</a>
+        <a href="rutas.php">Rutas</a>
         <a href="#">Cuadrillas</a>
         <a href="../../API_Gestion/Vista/contenedores.php">Contenedores</a>
         <a href="#">Centros de Acopio</a>

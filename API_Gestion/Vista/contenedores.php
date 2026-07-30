@@ -23,6 +23,8 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 <nav class="nav-links">
                     <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
                     <a href="../../API_Recoleccion/Vista/camiones.php">Camiones</a>
+                    <a href="../../API_Recoleccion/Vista/circuitos.php">Circuitos</a>
+                    <a href="../../API_Recoleccion/Vista/rutas.php">Rutas</a>
                     <a href="#">Cuadrillas</a>
                     <a href="#" class="nav-active">Contenedores</a>
                     <a href="#">Centros de Acopio</a>
@@ -44,6 +46,8 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
         <nav class="nav-mobile" id="navMobile">
             <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
             <a href="../../API_Recoleccion/Vista/camiones.php">Camiones</a>
+            <a href="../../API_Recoleccion/Vista/circuitos.php">Circuitos</a>
+            <a href="../../API_Recoleccion/Vista/rutas.php">Rutas</a>
             <a href="#">Cuadrillas</a>
             <a href="#" class="nav-active">Contenedores</a>
             <a href="#">Centros de Acopio</a>

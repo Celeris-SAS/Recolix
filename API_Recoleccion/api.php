@@ -80,6 +80,59 @@ $config = [
                 'tipo' => 'filtrarPorTipo'
             ]
         ],
+        'rutas' => [
+            'singular' => 'Ruta',
+            'controller' => 'RutaController',
+            'file' => 'Controlador/rutaController.php',
+            'getAllMethod' => 'getAllRutas',
+            'getMethod' => 'getRuta',
+            'insertMethod' => 'insertRuta',
+            'updateMethod' => 'updateRuta',
+            'deleteMethod' => 'deleteRuta',
+            'actions' => [
+                'reglasValidacion',
+                'obtenerPorCircuito',
+                'filtrarPorActividad',
+                'filtrarPorNombre',
+                'agregarContenedor',
+                'quitarContenedor',
+                'obtenerContenedores',
+                'asignarCuadrilla',
+                'quitarCuadrilla',
+                'obtenerCuadrillas',
+                'obtenerLevantes'
+            ],
+            'filters' => [
+                'circuitoId' => 'obtenerPorCircuito',
+                'actividad' => 'filtrarPorActividad',
+                'nombre' => 'filtrarPorNombre'
+            ]
+        ],
+        'circuitos' => [
+            'singular' => 'Circuito',
+            'controller' => 'CircuitoController',
+            'file' => 'Controlador/circuitoController.php',
+            'getAllMethod' => 'getAllCircuitos',
+            'getMethod' => 'getCircuito',
+            'insertMethod' => 'insertCircuito',
+            'updateMethod' => 'updateCircuito',
+            'deleteMethod' => 'deleteCircuito',
+            'actions' => [
+                'reglasValidacion',
+                'obtenerPorMunicipio',
+                'filtrarPorTurno',
+                'filtrarPorActividad',
+                'filtrarPorFrecuencia',
+                'obtenerRutas',
+                'obtenerContenedores'
+            ],
+            'filters' => [
+                'municipioId' => 'obtenerPorMunicipio',
+                'turno' => 'filtrarPorTurno',
+                'actividad' => 'filtrarPorActividad',
+                'frecuencia' => 'filtrarPorFrecuencia'
+            ]
+        ],
     ]
 ];
 

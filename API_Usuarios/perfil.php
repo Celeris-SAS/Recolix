@@ -43,6 +43,8 @@ if (!in_array($rol, $rolesPermitidos)) {
                 <nav class="nav-links">
                     <a href="../Backoffice/indexBackoffice.php">Inicio</a>
                     <a href="../API_Recoleccion/Vista/camiones.php">Camiones</a>
+                    <a href="../API_Recoleccion/Vista/circuitos.php">Circuitos</a>
+                    <a href="../API_Recoleccion/Vista/rutas.php">Rutas</a>
                     <a href="#">Cuadrillas</a>
                     <a href="../API_Gestion/Vista/contenedores.php">Contenedores</a>
                     <a href="#">Centros de Acopio</a>
@@ -64,6 +66,8 @@ if (!in_array($rol, $rolesPermitidos)) {
         <nav class="nav-mobile" id="navMobile">
             <a href="../Backoffice/indexBackoffice.php">Inicio</a>
             <a href="../API_Recoleccion/Vista/camiones.php">Camiones</a>
+            <a href="../API_Recoleccion/Vista/circuitos.php">Circuitos</a>
+            <a href="../API_Recoleccion/Vista/rutas.php">Rutas</a>
             <a href="#">Cuadrillas</a>
             <a href="../API_Gestion/Vista/contenedores.php">Contenedores</a>
             <a href="#">Centros de Acopio</a>

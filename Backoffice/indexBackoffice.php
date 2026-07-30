@@ -26,6 +26,8 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
             <nav class="nav-links">
                 <a href="#" class="nav-active">Inicio</a>
                 <a href="../API_Recoleccion/Vista/camiones.php">Camiones</a>
+                <a href="../API_Recoleccion/Vista/circuitos.php">Circuitos</a>
+                <a href="../API_Recoleccion/Vista/rutas.php">Rutas</a>
                 <a href="#">Cuadrillas</a>
                 <a href="../API_Gestion/Vista/contenedores.php">Contenedores</a>
                 <a href="#">Centros de Acopio</a>
@@ -47,6 +49,8 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
     <nav class="nav-mobile" id="navMobile">
         <a href="#" class="nav-active">Inicio</a>
         <a href="../API_Recoleccion/Vista/camiones.php">Camiones</a>
+        <a href="../API_Recoleccion/Vista/circuitos.php">Circuitos</a>
+        <a href="../API_Recoleccion/Vista/rutas.php">Rutas</a>
         <a href="#">Cuadrillas</a>
         <a href="../API_Gestion/Vista/contenedores.php">Contenedores</a>
         <a href="#">Centros de Acopio</a>
@@ -113,6 +117,22 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
                 <div class="card-icon"><img src="../API_Recoleccion/Vista/img/truck-svgrepo-com.svg" alt="" class="card-svg-icon"></div>
                 <h3>Gestión de Camiones</h3>
                 <p>Administrar flota de recolección</p>
+            </div>
+        </a>
+
+        <a href="../API_Recoleccion/Vista/circuitos.php" class="card-operar">
+            <div class="card-content">
+                <div class="card-icon"><img src="img/circuito.svg" alt="" class="card-svg-icon"></div>
+                <h3>Gestión de Circuitos</h3>
+                <p>Administrar circuitos de recolección por municipio</p>
+            </div>
+        </a>
+
+        <a href="../API_Recoleccion/Vista/rutas.php" class="card-operar">
+            <div class="card-content">
+                <div class="card-icon"><img src="img/ruta.svg" alt="" class="card-svg-icon"></div>
+                <h3>Gestión de Rutas</h3>
+                <p>Administrar rutas de recolección por circuito</p>
             </div>
         </a>
 
