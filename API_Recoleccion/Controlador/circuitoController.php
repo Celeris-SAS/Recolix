@@ -3,6 +3,7 @@
 
         private $circuitoModel;
         private $turnosValidos = ['mañana', 'tarde', 'noche'];
+        private $diasValidos = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
 
         public function __construct() {
             require_once __DIR__ . '/../Modelo/circuitoModel.php';
@@ -54,6 +55,7 @@
                 'actividad' => ['max' => 60, 'label' => 'Actividad'],
                 'turno' => ['valores' => $this->turnosValidos, 'label' => 'Turno'],
                 'frecuencia' => ['max' => 40, 'label' => 'Frecuencia'],
+                'dia' => ['valores' => $this->diasValidos, 'label' => 'Día'],
                 'poligono' => ['opcional' => true, 'minPuntos' => 3, 'label' => 'Polígono (área del circuito)']
             ];
         }
@@ -129,6 +131,52 @@
         public function filtrarPorFrecuencia($frecuencia) {
             $frecuencia = $this->validarString($frecuencia, 'Frecuencia');
             return $this->circuitoModel->filtrarPorFrecuencia($frecuencia);
+        }
+
+        private function normalizarTexto($texto) {
+            $texto = mb_strtolower($texto, 'UTF-8');
+            return strtr($texto, ['á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u']);
+        }
+
+        // La "frecuencia" del circuito es texto libre (ej: "interdiaria (lunes, miércoles y
+        // viernes)", "diaria (lunes a viernes y feriados)"). Esta función extrae qué días de
+        // la semana quedan implicados, incluyendo el caso de rangos ("lunes a viernes").
+        private function diasDesdeFrecuencia($frecuencia) {
+            $texto = $this->normalizarTexto((string) $frecuencia);
+            $encontrados = [];
+
+            foreach ($this->diasValidos as $dia) {
+                if (mb_strpos($texto, $dia) !== false) {
+                    $encontrados[$dia] = true;
+                }
+            }
+
+            $patronDias = implode('|', $this->diasValidos);
+            if (preg_match('/(' . $patronDias . ')\s+a\s+(' . $patronDias . ')/', $texto, $m)) {
+                $inicio = array_search($m[1], $this->diasValidos, true);
+                $fin = array_search($m[2], $this->diasValidos, true);
+                if ($inicio !== false && $fin !== false) {
+                    $total = count($this->diasValidos);
+                    $i = $inicio;
+                    while (true) {
+                        $encontrados[$this->diasValidos[$i]] = true;
+                        if ($i === $fin) break;
+                        $i = ($i + 1) % $total;
+                    }
+                }
+            }
+
+            return array_keys($encontrados);
+        }
+
+        public function filtrarPorDia($dia) {
+            $dia = $this->normalizarTexto($this->validarString($dia, 'Día'));
+            if (!in_array($dia, $this->diasValidos, true)) {
+                throw new InvalidArgumentException("Día no válido. Valores: " . implode(', ', $this->diasValidos));
+            }
+            return array_values(array_filter($this->circuitoModel->getAllCircuitos(), function ($c) use ($dia) {
+                return in_array($dia, $this->diasDesdeFrecuencia($c['frecuencia']), true);
+            }));
         }
 
         public function obtenerRutas($circuitoId) {

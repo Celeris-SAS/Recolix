@@ -373,7 +373,8 @@ CREATE TABLE `ruta_recoleccion` (
   `id_ruta` int(11) NOT NULL,
   `id_circuito` int(11) NOT NULL,
   `nombre` varchar(100) NOT NULL,
-  `actividad` varchar(60) DEFAULT NULL
+  `actividad` varchar(60) DEFAULT NULL,
+  `activa` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------

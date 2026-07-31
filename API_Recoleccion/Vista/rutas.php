@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rutas — Recolix</title>
     <link rel="stylesheet" href="styleRecoleccion.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <style>
         .resumen-section {
             padding: 20px 32px 8px;
@@ -49,8 +50,28 @@
         .resumen-llenado { font-weight: 700; color: var(--moss-dark); white-space: nowrap; font-size: 0.85rem; }
         .resumen-empty { color: var(--muted); font-size: 0.85rem; font-style: italic; }
 
+        .modal-lg { max-width: 860px; }
+        .levante-layout { display: grid; grid-template-columns: 1.2fr 1fr; gap: 18px; margin: 16px 0; }
+        .levante-map { border: 1px solid var(--border); border-radius: var(--radius); min-height: 340px; overflow: hidden; }
+        .levante-map #mapaLevante { height: 340px; width: 100%; }
+        .levante-form { display: flex; flex-direction: column; gap: 12px; }
+        .levante-form label { font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .levante-form label:not(:first-child) { margin-top: 4px; }
+        .levante-historial { border-top: 1px solid var(--border); padding-top: 14px; }
+        .levante-historial h4 { margin: 0 0 10px; font-size: 0.9rem; color: var(--text); }
+        .levante-historial .resumen-item { font-size: 0.82rem; }
+        .levante-resumen-lev { display: inline-flex; gap: 8px; align-items: center; font-size: 0.8rem; color: var(--muted); }
+        .mapa-orden-badge {
+            display: inline-block; min-width: 20px; height: 20px; line-height: 20px; text-align: center;
+            border-radius: 50%; background: var(--moss-dark); color: #fff; font-size: 0.7rem; font-weight: 700;
+            margin-right: 6px;
+        }
+        .mapa-popup { font-size: 0.82rem; }
+        .mapa-popup small { color: var(--muted); }
+
         @media (max-width: 1024px) { .resumen-section { padding: 16px 20px 4px; } }
-        @media (max-width: 768px)  { .resumen-section { grid-template-columns: 1fr; padding: 16px 16px 4px; gap: 14px; } }
+        @media (max-width: 768px)  { .resumen-section { grid-template-columns: 1fr; padding: 16px 16px 4px; gap: 14px; }
+                                     .levante-layout { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -203,7 +224,7 @@
                     <th>Circuito</th>
                     <th>Nombre</th>
                     <th>Actividad</th>
-                    <th>Estado</th>
+                    <th>Levante</th>
                     <th>Llenado prom.</th>
                     <th>Acciones</th>
                 </tr>
@@ -218,6 +239,36 @@
         </div>
     </div>
 </section>
+
+<div class="modal-overlay" id="modalLevante" style="display:none"
+     onclick="onOverlayClick(event,'modalLevante')">
+    <div class="modal modal-lg">
+        <div class="modal-header">
+            <h3>Planificar levante — <span id="levanteRutaTitulo"></span></h3>
+            <button class="modal-close" onclick="cerrarModalLevante()">✕</button>
+        </div>
+        <div class="levante-layout">
+            <div class="levante-map">
+                <div id="mapaLevante"></div>
+            </div>
+            <div class="levante-form">
+                <label>Camion disponible</label>
+                <select id="levanteCamion" class="ctrl-select"></select>
+                <label>Cuadrilla asignada</label>
+                <select id="levanteCuadrilla" class="ctrl-select"></select>
+                <label>Hora de salida</label>
+                <input type="datetime-local" id="levanteHoraSalida" class="ctrl-input" style="min-width:0">
+                <label>Fecha del levante</label>
+                <input type="date" id="levanteFecha" class="ctrl-input" style="min-width:0">
+                <button class="btn-primary" onclick="planificarLevante()" style="margin-top:4px">Planificar levante</button>
+            </div>
+        </div>
+        <div class="levante-historial">
+            <h4>Levantes de esta ruta</h4>
+            <ul class="resumen-list" id="levantesRuta"></ul>
+        </div>
+    </div>
+</div>
 
 <div class="modal-overlay" id="modalDelete" style="display:none"
      onclick="onOverlayClick(event,'modalDelete')">
@@ -259,11 +310,15 @@
     <p class="footer-copy">&copy; 2026 Recolix. Todos los derechos reservados.</p>
 </footer>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 const API_BASE = '/recolix/API_Recoleccion';
 let rutaIdParaEliminar = null;
 let toastTimeout;
 let reglas = {};
+let mapaLevante = null;
+let levanteRutaActual = null;
+let marcadoresLevante = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
     await cargarReglas();
@@ -418,6 +473,139 @@ async function aplicarFiltro() {
     }
 }
 
+async function abrirPlanificarLevante(rutaId) {
+    levanteRutaActual = rutaId;
+    document.getElementById('levanteRutaTitulo').textContent = `Ruta #${rutaId}`;
+    document.getElementById('modalLevante').style.display = 'flex';
+    await Promise.all([cargarSelectsLevante(), cargarContenedoresLevante(rutaId), cargarLevantesRuta(rutaId)]);
+}
+
+async function cargarSelectsLevante() {
+    const [camRes, cuaRes] = await Promise.all([
+        fetch(`${API_BASE}/camiones/filtrarDisponibilidad`),
+        fetch(`${API_BASE}/levantes/obtenerCuadrillas`)
+    ]);
+    const camiones = (await camRes.json()).data || [];
+    const cuadrillas = (await cuaRes.json()).data || [];
+
+    const selCam = document.getElementById('levanteCamion');
+    selCam.innerHTML = camiones.length
+        ? camiones.map(c => `<option value="${c.id_camion}">${c.matricula}${c.modelo ? ' · ' + c.modelo : ''}</option>`).join('')
+        : '<option value="">Sin camiones disponibles</option>';
+
+    const selCua = document.getElementById('levanteCuadrilla');
+    selCua.innerHTML = cuadrillas.length
+        ? cuadrillas.map(c => `<option value="${c.id_cuadrilla}">Cuadrilla #${c.id_cuadrilla}${c.municipio ? ' · ' + c.municipio : ''}</option>`).join('')
+        : '<option value="">Sin cuadrillas activas</option>';
+
+    const ahora = new Date();
+    document.getElementById('levanteHoraSalida').value = ahora.toISOString().slice(0, 16);
+    document.getElementById('levanteFecha').value = ahora.toISOString().slice(0, 10);
+}
+
+async function cargarContenedoresLevante(rutaId) {
+    const res = await fetch(`${API_BASE}/rutas/${rutaId}/obtenerContenedores`);
+    const json = await res.json();
+    const contenedores = (json.status === 'success' && json.data) ? json.data : [];
+
+    if (mapaLevante) {
+        mapaLevante.remove();
+        mapaLevante = null;
+    }
+    marcadoresLevante = [];
+
+    mapaLevante = L.map('mapaLevante').setView([-34.9, -56.2], 13);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(mapaLevante);
+
+    if (!contenedores.length) {
+        L.marker([-34.9, -56.2]).addTo(mapaLevante).bindPopup('La ruta no tiene contenedores asignados.');
+        return;
+    }
+
+    const puntos = [];
+    contenedores.forEach(c => {
+        if (c.latitud === null || c.longitud === null) return;
+        puntos.push([parseFloat(c.latitud), parseFloat(c.longitud)]);
+        const marker = L.marker(puntos[puntos.length - 1]).addTo(mapaLevante);
+        marker.bindPopup(`
+            <div class="mapa-popup">
+                <span class="mapa-orden-badge">${c.orden_visita}</span>
+                <strong>#${c.id_contenedor}</strong> ${c.calle ?? ''} ${c.num_calle ?? ''}<br>
+                <small>Capacidad ${c.capacidad ?? '—'} · ${c.estado ?? ''}</small>
+            </div>`);
+        marcadoresLevante.push(marker);
+    });
+
+    if (puntos.length > 1) {
+        L.polyline(puntos, { color: '#3f5a33', weight: 2, dashArray: '6 6' }).addTo(mapaLevante);
+    }
+    if (puntos.length) {
+        mapaLevante.fitBounds(L.latLngBounds(puntos).pad(0.15));
+    }
+}
+
+async function cargarLevantesRuta(rutaId) {
+    const res = await fetch(`${API_BASE}/levantes/obtenerPorRuta/${rutaId}`);
+    const json = await res.json();
+    const levantes = (json.status === 'success' && json.data) ? json.data : [];
+    const ul = document.getElementById('levantesRuta');
+
+    if (!levantes.length) {
+        ul.innerHTML = '<li class="resumen-empty">Esta ruta no tiene levantes planificados.</li>';
+        return;
+    }
+
+    const estados = { pendiente: 'warning', en_curso: 'info', completado: 'success', cancelado: 'neutral' };
+    ul.innerHTML = levantes.map(l => `
+        <li class="resumen-item">
+            <span>
+                <strong>#${l.id_levante}</strong> ${l.hora_levante ?? ''}<br>
+                <small>Camion ${l.matricula ?? '—'} · salida ${l.hora_salida ? l.hora_salida.slice(11, 16) : '—'}</small>
+            </span>
+            <span class="badge badge-${estados[l.estado] ?? 'neutral'}">${l.estado}</span>
+        </li>
+    `).join('');
+}
+
+async function planificarLevante() {
+    const camionId = document.getElementById('levanteCamion').value;
+    const cuadrillaId = document.getElementById('levanteCuadrilla').value;
+    if (!camionId || !cuadrillaId) {
+        mostrarToast('Faltan camión disponible y cuadrilla para planificar', 'warning');
+        return;
+    }
+    const horaSalida = document.getElementById('levanteHoraSalida').value.replace('T', ' ');
+    const fecha = document.getElementById('levanteFecha').value;
+    if (!fecha) { mostrarToast('Ingresá la fecha del levante', 'warning'); return; }
+
+    try {
+        const res = await fetch(`${API_BASE}/levantes/planificar`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ rutaId: levanteRutaActual, camionId: parseInt(camionId), cuadrillaId: parseInt(cuadrillaId), horaSalida, horaLevante: fecha })
+        });
+        const json = await res.json();
+        if (json.status === 'success') {
+            mostrarToast('Levante planificado correctamente', 'success');
+            cerrarModalLevante();
+            listarRutas();
+        } else {
+            mostrarToast(json.message, 'error');
+        }
+    } catch {
+        mostrarToast('Error al conectar con la API', 'error');
+    }
+}
+
+function cerrarModalLevante() {
+    document.getElementById('modalLevante').style.display = 'none';
+    if (mapaLevante) { mapaLevante.remove(); mapaLevante = null; }
+    levanteRutaActual = null;
+}
+
 function confirmarBorrar(id, nombre) {
     rutaIdParaEliminar = id;
     document.getElementById('deleteNombre').textContent = nombre;
@@ -476,21 +664,19 @@ function renderTabla(rutas) {
     noRes.style.display = 'none';
     count.textContent   = `${rutas.length} resultado${rutas.length !== 1 ? 's' : ''}`;
 
-    const badges = { activa: 'info', pendiente: 'warning', finalizada: 'neutral' };
-
     rutas.forEach(r => {
         const tr = document.createElement('tr');
-        const estadoBadge = r.estado
-            ? `<span class="badge badge-${badges[r.estado] ?? 'neutral'}">${r.estado}</span>`
-            : '—';
+        const tieneLevante = (r.levantes_count ?? 0) > 0;
+        const levanteBadge = `<span class="badge badge-${tieneLevante ? 'info' : 'neutral'}">${tieneLevante ? 'Asignado' : 'Sin asignar'}</span>`;
         tr.innerHTML = `
             <td class="td-id" data-label="ID">${r.id_ruta}</td>
             <td data-label="Circuito">${r.id_circuito}</td>
             <td data-label="Nombre"><strong>${r.nombre}</strong></td>
             <td data-label="Actividad">${r.actividad ?? ''}</td>
-            <td data-label="Estado">${estadoBadge}</td>
+            <td data-label="Levante">${levanteBadge}</td>
             <td data-label="Llenado prom.">${r.llenado_promedio !== undefined && r.llenado_promedio !== null ? r.llenado_promedio + '%' : '—'}</td>
             <td class="td-actions" data-label="Acciones">
+                <button class="btn-action" onclick="abrirPlanificarLevante(${r.id_ruta})" title="Planificar levante">🗓️</button>
                 <button class="btn-action" onclick="confirmarBorrar(${r.id_ruta},'${r.nombre}')" title="Eliminar">🗑️</button>
             </td>
         `;
@@ -538,7 +724,11 @@ function cerrarModalDelete() {
 
 function onOverlayClick(e, modalId) {
     if (e.target.id === modalId) {
-        cerrarModalDelete();
+        if (modalId === 'modalLevante') {
+            cerrarModalLevante();
+        } else {
+            cerrarModalDelete();
+        }
     }
 }
 

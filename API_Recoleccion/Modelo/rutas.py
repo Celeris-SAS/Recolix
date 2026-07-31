@@ -1,5 +1,5 @@
 """
-Calcula el orden optimo de visita a los contenedores de un circuito.
+Calcula el orden de visita a los contenedores de un circuito.
 
 Entrada (stdin, JSON):
     {
@@ -16,20 +16,15 @@ Salida (stdout, JSON):
     {"error": "mensaje"}   (exit code != 0)
 
 El circuito ya define la zona (los contenedores llegan pre-filtrados desde PHP);
-este script solo resuelve el ORDEN de visita. El peso de cada arista es la
-distancia (Haversine) dividida por el nivel de llenado de los contenedores que
-conecta -- mismo criterio "distancia / (llenado + 0.1)" del ejemplo de Dijkstra,
-extendido a un recorrido de multiples paradas (TSP con heuristica golosa) en vez
-de un unico par origen-destino.
+este script solo resuelve el ORDEN de visita. El criterio es explícito y siempre
+aplicable (no depende de tener muchos contenedores para "funcionar" como pasaba
+con un TSP por peso): se visita primero al contenedor con mayor nivel de llenado;
+a igual nivel, se prioriza el más cercano a la base del circuito.
 """
 
 import json
 import sys
-from itertools import combinations
 from math import asin, cos, radians, sin, sqrt
-
-import networkx as nx
-from networkx.algorithms.approximation import greedy_tsp
 
 RADIO_TIERRA_KM = 6371.0
 
@@ -50,36 +45,21 @@ def calcular_orden(base, contenedores):
     if len(ids) != len(set(ids)):
         raise ValueError("Hay ids de contenedor repetidos")
 
-    coords = {"Base": (float(base[0]), float(base[1]))}
-    niveles = {}
-    for c in contenedores:
-        coords[c["id"]] = (float(c["lat"]), float(c["lon"]))
-        niveles[c["id"]] = float(c.get("nivel_llenado", 0))
+    lat_base, lon_base = float(base[0]), float(base[1])
 
-    nodos = ["Base"] + ids
+    def distancia_a_base(c):
+        return haversine_km(lat_base, lon_base, float(c["lat"]), float(c["lon"]))
 
-    grafo = nx.Graph()
-    grafo.add_nodes_from(nodos)
-    for u, v in combinations(nodos, 2):
-        lat_u, lon_u = coords[u]
-        lat_v, lon_v = coords[v]
-        distancia = haversine_km(lat_u, lon_u, lat_v, lon_v)
-        niveles_extremos = [niveles[n] for n in (u, v) if n in niveles]
-        llenado_prom = sum(niveles_extremos) / len(niveles_extremos) if niveles_extremos else 0
-        peso_ia = distancia / (llenado_prom / 100 + 0.1)
-        grafo.add_edge(u, v, distancia=distancia, peso_ia=peso_ia)
+    ordenados = sorted(
+        contenedores,
+        key=lambda c: (-float(c.get("nivel_llenado", 0)), distancia_a_base(c), c["id"])
+    )
+    orden = [c["id"] for c in ordenados]
 
-    if len(nodos) == 2:
-        ciclo = ["Base", ids[0], "Base"]
-    else:
-        ciclo = greedy_tsp(grafo, weight="peso_ia", source="Base")
-
-    camino = ciclo[:-1]  # descarta el regreso a Base (no cerramos el circuito)
-    orden = camino[1:]  # descarta "Base" al inicio
-
-    distancia_total = 0.0
-    for u, v in zip(camino, camino[1:]):
-        distancia_total += grafo.edges[u, v]["distancia"]
+    puntos = [(lat_base, lon_base)] + [(float(c["lat"]), float(c["lon"])) for c in ordenados]
+    distancia_total = sum(
+        haversine_km(*puntos[i], *puntos[i + 1]) for i in range(len(puntos) - 1)
+    )
 
     return orden, distancia_total
 

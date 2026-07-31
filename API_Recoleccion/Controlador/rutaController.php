@@ -51,8 +51,7 @@
                 'rutaId' => ['tipo' => 'entero', 'min' => 1, 'label' => 'ID de la ruta'],
                 'contenedorId' => ['tipo' => 'entero', 'min' => 1, 'label' => 'ID del contenedor'],
                 'ordenVisita' => ['tipo' => 'entero', 'min' => 1, 'label' => 'Orden de visita'],
-                'cuadrillaId' => ['tipo' => 'entero', 'min' => 1, 'label' => 'ID de la cuadrilla'],
-                'umbralLlenado' => ['tipo' => 'entero', 'min' => 0, 'max' => 100, 'label' => 'Umbral de llenado (%)']
+                'cuadrillaId' => ['tipo' => 'entero', 'min' => 1, 'label' => 'ID de la cuadrilla']
             ];
         }
 
@@ -82,6 +81,10 @@
 
         public function deleteRuta($id) {
             $id = $this->validarId($id);
+            $levantes = $this->rutaModel->obtenerLevantes($id);
+            if (!empty($levantes)) {
+                throw new InvalidArgumentException("No se puede eliminar una ruta con levante asignado");
+            }
             return $this->rutaModel->deleteRuta($id);
         }
 
@@ -162,14 +165,10 @@
             }, $rutas);
         }
 
-        public function generarOptima($circuitoId, $nombre, $actividad, $umbralLlenado = 50) {
+        public function generarOptima($circuitoId, $nombre, $actividad) {
             $circuitoId = $this->validarId($circuitoId);
             $nombre = $this->validarString($nombre, 'Nombre');
             $actividad = $this->validarString($actividad, 'Actividad');
-            $umbralLlenado = $this->validarEntero($umbralLlenado, 'Umbral de llenado');
-            if ($umbralLlenado < 0 || $umbralLlenado > 100) {
-                throw new InvalidArgumentException("Umbral de llenado debe estar entre 0 y 100");
-            }
 
             require_once __DIR__ . '/../Modelo/circuitoModel.php';
             $circuitoModel = new CircuitoModel();
@@ -178,16 +177,19 @@
                 throw new InvalidArgumentException("Circuito no encontrado");
             }
 
+            // La ruta siempre debe poder generarse: no se descarta ningún contenedor por su
+            // nivel de llenado, solo por no estar físicamente disponible (roto/inactivo/en depósito)
+            // o no tener coordenadas. El orden de visita prioriza a los contenedores más llenos
+            // (ver Modelo/rutas.py, que pondera cada tramo por distancia / nivel de llenado).
             $contenedores = $circuitoModel->obtenerContenedores($circuitoId);
-            $elegibles = array_values(array_filter($contenedores, function ($c) use ($umbralLlenado) {
+            $elegibles = array_values(array_filter($contenedores, function ($c) {
                 $estadoElegible = in_array($c['estado'], ['funcional', 'desbordado'], true);
-                $llenadoSuficiente = $c['estado'] === 'desbordado' || (int) $c['nivel_llenado'] >= $umbralLlenado;
                 $tieneCoordenadas = $c['latitud'] !== null && $c['longitud'] !== null;
-                return $estadoElegible && $llenadoSuficiente && $tieneCoordenadas;
+                return $estadoElegible && $tieneCoordenadas;
             }));
 
             if (empty($elegibles)) {
-                throw new InvalidArgumentException("No hay contenedores elegibles para rutear en este circuito (revisar estado y nivel de llenado)");
+                throw new InvalidArgumentException("No hay contenedores disponibles para rutear en este circuito (revisar estado y coordenadas)");
             }
 
             $payload = [
