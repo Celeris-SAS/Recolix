@@ -67,6 +67,18 @@ $config = [
                 'getAllPredicciones'
             ],
             'filters' => []
+        ],
+        'centros-acopio' => [
+            'singular'    => 'Centro de acopio',
+            'controller'  => 'CentroAcopioController',
+            'file'        => 'Controlador/centroAcopioController.php',
+            'getAllMethod' => 'getAllCentros',
+            'getMethod'   => 'getCentro',
+            'insertMethod' => null,
+            'updateMethod' => null,
+            'deleteMethod' => null,
+            'actions' => [],
+            'filters' => []
         ]
     ]
 ];
@@ -208,6 +220,11 @@ if (strpos($uri, $basePath) === 0) {
             break;
 
         case 'POST':
+            if (!$resourceConfig['insertMethod']) {
+                http_response_code(405);
+                echo json_encode(['status' => 'error', 'message' => 'Este recurso es de solo lectura']);
+                break;
+            }
             $data = json_decode(file_get_contents('php://input'), true);
             if (!$data) {
                 http_response_code(400);

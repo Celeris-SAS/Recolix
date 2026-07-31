@@ -404,6 +404,42 @@ a { text-decoration: none; color: inherit; }
 .leyenda-desbordado::before { background: #c0392b; }
 .leyenda-roto::before       { background: #4a5568; }
 
+.leyenda-operativo::before  { background: #9b59b6; }
+.leyenda-saturado::before   { background: #8e44ad; }
+.leyenda-cerrado::before    { background: #5b2c6f; }
+
+.mapa-tabs {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 1rem 1.25rem 0;
+}
+
+.mapa-tab {
+    font: inherit;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.5rem 1.3rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    color: var(--muted);
+    cursor: pointer;
+    transition: background 200ms ease, color 200ms ease, border-color 200ms ease;
+}
+
+.mapa-tab:hover {
+    border-color: var(--green);
+    color: var(--text);
+}
+
+.mapa-tab.is-active {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+}
+
 .mapa-update-label {
     font-size: 0.78rem;
     color: var(--muted);

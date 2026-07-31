@@ -78,13 +78,13 @@ if (!isset($_SESSION['ci_usuario'])) {
                 </div>
                 <div style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;">
                     <button class="btn btn-outline btn-sm" id="cambiarContraseniaBtn">Cambiar contraseña</button>
-                    <button class="btn btn-primary btn-sm" id="asignarMunicipioBtn" hidden>Agregar municipio</button>
+                    <button class="btn btn-primary btn-sm" id="asignarMunicipioBtn">Agregar municipio</button>
                 </div>
             </div>
 
             <div class="panel-card" id="municipioForm" hidden>
-                <h3>Agregar municipio</h3>
-                <p class="form-nota">Todavía no tenés un municipio asignado. Seleccioná el que corresponde a tu domicilio.</p>
+                <h3 id="municipioFormTitle">Agregar municipio</h3>
+                <p class="form-nota" id="municipioFormNota">Todavía no tenés un municipio asignado. Seleccioná el que corresponde a tu domicilio.</p>
                 <div class="form-row">
                     <label for="municipioSelect">Municipio</label>
                     <select id="municipioSelect">

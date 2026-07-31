@@ -360,10 +360,13 @@ const API_BASE = '/recolix/API_Recoleccion';
 let camionIdParaEliminar = null;
 let toastTimeout;
 let reglas = {};
+let vistaActual = { url: '', render: 'tabla' };
+let firmaTabla = '';
 
 document.addEventListener('DOMContentLoaded', async () => {
     await cargarReglas();
     listarCamiones();
+    setInterval(refrescarVistaActual, 30000);
 });
 
 function reglasFallback() {
@@ -394,6 +397,7 @@ async function cargarReglas() {
 async function listarCamiones() {
     ocultarControles();
     setLoading(true);
+    vistaActual = { url: `${API_BASE}/camiones`, render: 'tabla' };
     try {
         const res  = await fetch(`${API_BASE}/camiones`);
         const json = await res.json();
@@ -414,6 +418,7 @@ async function buscarPorId() {
     const id = document.getElementById('buscarId').value.trim();
     if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
     setLoading(true);
+    vistaActual = { url: `${API_BASE}/camiones/${id}`, render: 'tabla' };
     try {
         const res  = await fetch(`${API_BASE}/camiones/${id}`);
         const json = await res.json();
@@ -482,6 +487,11 @@ async function aplicarFiltro() {
         : sinValor.includes(tipo)
             ? `${API_BASE}/camiones/${accionMap[tipo]}`
             : `${API_BASE}/camiones?${tipo}=${encodeURIComponent(valor)}`;
+    vistaActual = {
+        url,
+        render: tipo === 'proximosMantenimientos' ? 'proximos'
+            : tipo === 'mantenimiento' ? 'mantenimiento' : 'tabla'
+    };
     setLoading(true);
     try {
         const res  = await fetch(url);
@@ -1147,6 +1157,25 @@ function setTableTitle(title) {
 function setLoading(show) {
     document.getElementById('loadingState').style.display = show ? 'flex' : 'none';
     document.getElementById('camionesBody').style.opacity = show ? '0.3' : '1';
+}
+
+async function refrescarVistaActual() {
+    if (document.hidden || !vistaActual.url) return;
+    try {
+        const res = await fetch(vistaActual.url);
+        const json = await res.json();
+        if (json.status !== 'success') return;
+        const firma = JSON.stringify(json.data);
+        if (firma === firmaTabla) return;
+        firmaTabla = firma;
+        if (vistaActual.render === 'tabla') {
+            renderTabla(json.data);
+        } else if (vistaActual.render === 'mantenimiento') {
+            renderTablaEnMantenimiento(json.data);
+        } else if (vistaActual.render === 'proximos') {
+            renderTablaMantenimientos(json.data);
+        }
+    } catch {}
 }
 
 function toggleMobileMenu() {

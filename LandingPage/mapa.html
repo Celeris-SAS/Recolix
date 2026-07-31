@@ -40,18 +40,23 @@
     </header>
 
     <main class="map-page">
+        <div class="mapa-tabs" id="mapaTabs">
+            <button class="mapa-tab is-active" data-tipo="contenedores">Contenedores</button>
+            <button class="mapa-tab" data-tipo="centros">Centros de acopio</button>
+        </div>
+
         <section class="map-hero">
             <div class="container map-hero-inner">
                 <div>
                     <p class="section-eyebrow">Mapa operativo</p>
-                    <h1>Visualizá el estado de los contenedores en Montevideo</h1>
-                    <p>Seguimiento geográfico de contenedores, incidencias y zonas críticas para la operación municipal.
-                    </p>
+                    <h1>Visualizá contenedores y centros de acopio en Montevideo</h1>
+                    <p>Seguimiento geográfico de contenedores, incidencias y centros de la red de Recolix para la
+                        operación municipal.</p>
                 </div>
                 <div class="map-summary-card">
                     <p class="summary-label">Última actualización</p>
                     <p class="summary-value" id="mapSummaryValue">--</p>
-                    <p class="summary-note">Datos en tiempo real y simulados según el estado del sistema.</p>
+                    <p class="summary-note">El color del punto indica el estado de cada elemento.</p>
                 </div>
             </div>
         </section>
@@ -60,20 +65,33 @@
             <aside class="map-sidebar">
                 <div class="panel-card">
                     <h2>Indicadores</h2>
-                    <ul class="info-list">
+                    <ul class="info-list" id="indicadores-contenedores">
                         <li><span>Contenedores activos</span><strong id="countActivos">0</strong></li>
                         <li><span>Inactivos</span><strong id="countInactivos">0</strong></li>
                         <li><span>Desbordados</span><strong id="countDesbordados">0</strong></li>
+                    </ul>
+                    <ul class="info-list" id="indicadores-centros" style="display:none">
+                        <li><span>Operativos</span><strong id="countOperativos">0</strong></li>
+                        <li><span>Saturados</span><strong id="countSaturados">0</strong></li>
+                        <li><span>Cerrados</span><strong id="countCerrados">0</strong></li>
                     </ul>
                 </div>
 
                 <div class="panel-card">
                     <h2>Referencia visual</h2>
-                    <p class="map-legend-title">Estado de los contenedores</p>
-                    <p class="legend-item legend-ok">Funcional</p>
-                    <p class="legend-item legend-warn">Inactivo</p>
-                    <p class="legend-item legend-crit">Desbordado</p>
-                    <p class="legend-item legend-off">Roto</p>
+                    <div id="leyenda-contenedores">
+                        <p class="map-legend-title">Estado de los contenedores</p>
+                        <p class="legend-item legend-ok">Funcional</p>
+                        <p class="legend-item legend-warn">Inactivo</p>
+                        <p class="legend-item legend-crit">Desbordado</p>
+                        <p class="legend-item legend-off">Roto</p>
+                    </div>
+                    <div id="leyenda-centros" style="display:none">
+                        <p class="map-legend-title">Estado de los centros</p>
+                        <p class="legend-item legend-centro-operativo">Operativo</p>
+                        <p class="legend-item legend-centro-saturado">Saturado</p>
+                        <p class="legend-item legend-centro-cerrado">Cerrado</p>
+                    </div>
                 </div>
             </aside>
 
@@ -115,9 +133,7 @@
     </footer>
 
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-        <script src="mapaContenedores.js">
-
-        </script>
+        <script src="mapa.js"></script>
         <script src="sesionNav.js"></script>
 </body>
 
