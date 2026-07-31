@@ -51,7 +51,8 @@
                 'rutaId' => ['tipo' => 'entero', 'min' => 1, 'label' => 'ID de la ruta'],
                 'contenedorId' => ['tipo' => 'entero', 'min' => 1, 'label' => 'ID del contenedor'],
                 'ordenVisita' => ['tipo' => 'entero', 'min' => 1, 'label' => 'Orden de visita'],
-                'cuadrillaId' => ['tipo' => 'entero', 'min' => 1, 'label' => 'ID de la cuadrilla']
+                'cuadrillaId' => ['tipo' => 'entero', 'min' => 1, 'label' => 'ID de la cuadrilla'],
+                'umbralLlenado' => ['tipo' => 'entero', 'min' => 0, 'max' => 100, 'label' => 'Umbral de llenado (%)']
             ];
         }
 
@@ -137,6 +138,161 @@
         public function obtenerLevantes($rutaId) {
             $rutaId = $this->validarId($rutaId);
             return $this->rutaModel->obtenerLevantes($rutaId);
+        }
+
+        public function obtenerResumen() {
+            $rutas = $this->rutaModel->obtenerResumen();
+            return array_map(function ($r) {
+                $enCurso = (int) $r['en_curso_count'];
+                $pendientes = (int) $r['pendiente_count'];
+                $totalLevantes = (int) $r['levantes_count'];
+
+                if ($enCurso > 0) {
+                    $estado = 'activa';
+                } elseif ($pendientes > 0 || $totalLevantes === 0) {
+                    $estado = 'pendiente';
+                } else {
+                    $estado = 'finalizada';
+                }
+
+                $r['estado'] = $estado;
+                $r['llenado_promedio'] = $r['llenado_promedio'] !== null ? round((float) $r['llenado_promedio'], 1) : null;
+                $r['contenedores_count'] = (int) $r['contenedores_count'];
+                return $r;
+            }, $rutas);
+        }
+
+        public function generarOptima($circuitoId, $nombre, $actividad, $umbralLlenado = 50) {
+            $circuitoId = $this->validarId($circuitoId);
+            $nombre = $this->validarString($nombre, 'Nombre');
+            $actividad = $this->validarString($actividad, 'Actividad');
+            $umbralLlenado = $this->validarEntero($umbralLlenado, 'Umbral de llenado');
+            if ($umbralLlenado < 0 || $umbralLlenado > 100) {
+                throw new InvalidArgumentException("Umbral de llenado debe estar entre 0 y 100");
+            }
+
+            require_once __DIR__ . '/../Modelo/circuitoModel.php';
+            $circuitoModel = new CircuitoModel();
+            $circuito = $circuitoModel->getCircuito($circuitoId);
+            if (!$circuito) {
+                throw new InvalidArgumentException("Circuito no encontrado");
+            }
+
+            $contenedores = $circuitoModel->obtenerContenedores($circuitoId);
+            $elegibles = array_values(array_filter($contenedores, function ($c) use ($umbralLlenado) {
+                $estadoElegible = in_array($c['estado'], ['funcional', 'desbordado'], true);
+                $llenadoSuficiente = $c['estado'] === 'desbordado' || (int) $c['nivel_llenado'] >= $umbralLlenado;
+                $tieneCoordenadas = $c['latitud'] !== null && $c['longitud'] !== null;
+                return $estadoElegible && $llenadoSuficiente && $tieneCoordenadas;
+            }));
+
+            if (empty($elegibles)) {
+                throw new InvalidArgumentException("No hay contenedores elegibles para rutear en este circuito (revisar estado y nivel de llenado)");
+            }
+
+            $payload = [
+                'base' => $this->calcularBase($circuito, $elegibles),
+                'contenedores' => array_map(function ($c) {
+                    return [
+                        'id' => (int) $c['id_contenedor'],
+                        'lat' => (float) $c['latitud'],
+                        'lon' => (float) $c['longitud'],
+                        'nivel_llenado' => (int) $c['nivel_llenado']
+                    ];
+                }, $elegibles)
+            ];
+
+            $resultado = $this->ejecutarRutas($payload);
+
+            $idRuta = $this->rutaModel->insertRuta($circuitoId, $nombre, $actividad);
+            $ordenVisita = 1;
+            foreach ($resultado['orden'] as $idContenedor) {
+                $this->rutaModel->agregarContenedor($idRuta, (int) $idContenedor, $ordenVisita);
+                $ordenVisita++;
+            }
+
+            return [
+                'ruta' => $this->rutaModel->getRuta($idRuta),
+                'contenedores' => $this->rutaModel->obtenerContenedores($idRuta),
+                'distancia_total_km' => $resultado['distancia_total_km']
+            ];
+        }
+
+        private function calcularBase($circuito, $contenedores) {
+            if (!empty($circuito['poligono'])) {
+                $puntos = json_decode($circuito['poligono'], true);
+                if (is_array($puntos) && count($puntos) > 0) {
+                    $sumLat = 0;
+                    $sumLon = 0;
+                    foreach ($puntos as $p) {
+                        $sumLat += $p[0];
+                        $sumLon += $p[1];
+                    }
+                    return [$sumLat / count($puntos), $sumLon / count($puntos)];
+                }
+            }
+
+            $sumLat = 0;
+            $sumLon = 0;
+            foreach ($contenedores as $c) {
+                $sumLat += (float) $c['latitud'];
+                $sumLon += (float) $c['longitud'];
+            }
+            $n = count($contenedores);
+            return [$sumLat / $n, $sumLon / $n];
+        }
+
+        private function ejecutarRutas($payload) {
+            $pythonBin = getenv('RECOLIX_PYTHON');
+            if (!$pythonBin) {
+                $candidatos = ['/usr/local/bin/python3', '/usr/bin/python3', 'python3', 'python'];
+                foreach ($candidatos as $c) {
+                    if (is_executable($c) || $c === 'python3' || $c === 'python') {
+                        $pythonBin = $c;
+                        break;
+                    }
+                }
+            }
+            if (!$pythonBin) {
+                $pythonBin = 'python3';
+            }
+            $script = __DIR__ . '/../Modelo/rutas.py';
+
+            $descriptorSpec = [
+                0 => ['pipe', 'r'],
+                1 => ['pipe', 'w'],
+                2 => ['pipe', 'w']
+            ];
+
+            $process = proc_open([$pythonBin, $script], $descriptorSpec, $pipes);
+            if (!is_resource($process)) {
+                throw new RuntimeException("No se pudo iniciar el script de ruteo (python3: $pythonBin)");
+            }
+
+            fwrite($pipes[0], json_encode($payload));
+            fclose($pipes[0]);
+
+            $stdout = stream_get_contents($pipes[1]);
+            fclose($pipes[1]);
+            $stderr = stream_get_contents($pipes[2]);
+            fclose($pipes[2]);
+
+            $exitCode = proc_close($process);
+
+            $resultado = json_decode($stdout, true);
+
+            if ($exitCode !== 0 || !is_array($resultado) || isset($resultado['error'])) {
+                $mensaje = is_array($resultado) && isset($resultado['error'])
+                    ? $resultado['error']
+                    : ($stderr ?: 'Error desconocido al calcular la ruta');
+                throw new InvalidArgumentException("Error al generar la ruta óptima: " . $mensaje);
+            }
+
+            if (!isset($resultado['orden']) || !is_array($resultado['orden'])) {
+                throw new InvalidArgumentException("Respuesta inválida del script de ruteo");
+            }
+
+            return $resultado;
         }
 
     }

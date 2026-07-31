@@ -101,7 +101,9 @@ $config = [
                 'asignarCuadrilla',
                 'quitarCuadrilla',
                 'obtenerCuadrillas',
-                'obtenerLevantes'
+                'obtenerLevantes',
+                'generarOptima',
+                'obtenerResumen'
             ],
             'filters' => [
                 'circuitoId' => 'obtenerPorCircuito',

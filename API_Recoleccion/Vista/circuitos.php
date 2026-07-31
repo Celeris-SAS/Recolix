@@ -6,6 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Circuitos — Recolix</title>
     <link rel="stylesheet" href="styleRecoleccion.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css">
+    <style>
+        .mapa-box { height: 320px; border-radius: 12px; margin-top: 10px; z-index: 0; }
+        .mapa-hint { font-size: 0.85rem; color: #666; margin-top: 6px; }
+        .mapa-modal-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+        .mapa-ruta-form { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; margin-top: 14px; }
+        .mapa-ruta-form .form-group { flex: 1; min-width: 160px; margin: 0; }
+        .mapa-resultado { margin-top: 12px; font-size: 0.9rem; }
+    </style>
 </head>
 <body>
 
@@ -244,6 +254,13 @@
                            placeholder="Lunes, Miércoles, Viernes" maxlength="40" required>
                 </div>
             </div>
+            <div class="form-row">
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>Área del circuito (opcional)</label>
+                    <div id="formMapa" class="mapa-box"></div>
+                    <p class="mapa-hint">Dibujá el polígono con la herramienta de la izquierda del mapa. Podés borrarlo y volver a dibujarlo.</p>
+                </div>
+            </div>
             <div class="modal-actions">
                 <button type="button" class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
                 <button type="submit" class="btn-primary">Guardar</button>
@@ -266,6 +283,32 @@
             <button class="btn-secondary" onclick="cerrarModalDelete()">Cancelar</button>
             <button class="btn-danger" onclick="confirmarDelete()">Eliminar</button>
         </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalMapa" style="display:none"
+     onclick="onOverlayClick(event,'modalMapa')">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="mapaModalTitle">Mapa del circuito</h3>
+            <button class="modal-close" onclick="cerrarModalMapa()">✕</button>
+        </div>
+        <div id="verMapa" class="mapa-box"></div>
+        <div class="mapa-modal-actions">
+            <button type="button" class="btn-secondary" onclick="cargarContenedoresEnMapa()">Cargar contenedores</button>
+        </div>
+        <div class="mapa-ruta-form">
+            <div class="form-group">
+                <label for="rutaNombre">Nombre de la ruta</label>
+                <input type="text" id="rutaNombre" class="form-input" placeholder="Ruta óptima" maxlength="100">
+            </div>
+            <div class="form-group">
+                <label for="rutaActividad">Actividad</label>
+                <input type="text" id="rutaActividad" class="form-input" placeholder="Recolección domiciliaria" maxlength="60">
+            </div>
+            <button type="button" class="btn-primary" onclick="generarRutaOptima()">Generar ruta óptima</button>
+        </div>
+        <div id="mapaResultado" class="mapa-resultado"></div>
     </div>
 </div>
 
@@ -292,6 +335,8 @@
     <p class="footer-copy">&copy; 2026 Recolix. Todos los derechos reservados.</p>
 </footer>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
 <script>
 const API_BASE = '/recolix/API_Recoleccion';
 let circuitoIdParaEliminar = null;
@@ -460,11 +505,65 @@ async function aplicarFiltro() {
     }
 }
 
+const CENTRO_MAPA = [-34.901, -56.165];
+
+let formMap = null;
+let formDrawnItems = null;
+
+function initFormMap() {
+    if (formMap) return;
+    formMap = L.map('formMapa').setView(CENTRO_MAPA, 12);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(formMap);
+
+    formDrawnItems = new L.FeatureGroup();
+    formMap.addLayer(formDrawnItems);
+
+    const drawControl = new L.Control.Draw({
+        draw: {
+            polygon: { allowIntersection: false, showArea: false },
+            polyline: false, rectangle: false, circle: false, circlemarker: false, marker: false
+        },
+        edit: { featureGroup: formDrawnItems, remove: true }
+    });
+    formMap.addControl(drawControl);
+
+    formMap.on(L.Draw.Event.CREATED, (e) => {
+        formDrawnItems.clearLayers();
+        formDrawnItems.addLayer(e.layer);
+    });
+}
+
+function cargarPoligonoEnFormMap(poligonoJson) {
+    formDrawnItems.clearLayers();
+    if (!poligonoJson) return;
+    let puntos;
+    try { puntos = JSON.parse(poligonoJson); } catch { return; }
+    if (!Array.isArray(puntos) || puntos.length < 3) return;
+    const layer = L.polygon(puntos);
+    formDrawnItems.addLayer(layer);
+    formMap.fitBounds(layer.getBounds(), { padding: [20, 20] });
+}
+
+function obtenerPoligonoDelFormMap() {
+    const layers = formDrawnItems.getLayers();
+    if (layers.length === 0) return null;
+    return layers[0].getLatLngs()[0].map(ll => [ll.lat, ll.lng]);
+}
+
 function abrirModalAgregar() {
     document.getElementById('modalTitle').textContent = 'Agregar Circuito';
     document.getElementById('circuitoId').value = '';
     document.getElementById('circuitoForm').reset();
     document.getElementById('modalForm').style.display = 'flex';
+    setTimeout(() => {
+        initFormMap();
+        formDrawnItems.clearLayers();
+        formMap.invalidateSize();
+        formMap.setView(CENTRO_MAPA, 12);
+    }, 100);
 }
 
 function abrirModalEditar(circuito) {
@@ -481,6 +580,12 @@ function abrirModalEditar(circuito) {
     if (!turnoEl.value) turnoEl.selectedIndex = 0;
 
     document.getElementById('modalForm').style.display = 'flex';
+    setTimeout(() => {
+        initFormMap();
+        formMap.invalidateSize();
+        cargarPoligonoEnFormMap(circuito.poligono);
+        if (!circuito.poligono) formMap.setView(CENTRO_MAPA, 12);
+    }, 100);
 }
 
 async function guardarCircuito(e) {
@@ -526,7 +631,8 @@ async function guardarCircuito(e) {
         codigo:      campos.codigo,
         actividad:   campos.actividad,
         turno:       campos.turno,
-        frecuencia:  campos.frecuencia
+        frecuencia:  campos.frecuencia,
+        poligono:    obtenerPoligonoDelFormMap()
     };
 
     try {
@@ -746,6 +852,7 @@ function renderTabla(circuitos) {
             <td data-label="Frecuencia">${c.frecuencia ?? ''}</td>
             <td class="td-actions" data-label="Acciones">
                 <button class="btn-action" onclick='abrirModalEditar(${JSON.stringify(c)})' title="Editar">✏️</button>
+                <button class="btn-action" onclick='abrirModalMapa(${JSON.stringify(c)})' title="Mapa y ruta óptima">🗺️</button>
                 <button class="btn-action" onclick="confirmarBorrar(${c.id_circuito},'${c.nombre}')" title="Eliminar">🗑️</button>
             </td>
         `;
@@ -823,9 +930,10 @@ function cerrarModalDelete() {
 }
 
 function onOverlayClick(e, modalId) {
-    if (e.target.id === modalId) {
-        modalId === 'modalForm' ? cerrarModal() : cerrarModalDelete();
-    }
+    if (e.target.id !== modalId) return;
+    if (modalId === 'modalForm') cerrarModal();
+    else if (modalId === 'modalMapa') cerrarModalMapa();
+    else cerrarModalDelete();
 }
 
 function setTableTitle(title) {
@@ -839,6 +947,144 @@ function setLoading(show) {
 
 function toggleMobileMenu() {
     document.getElementById('navMobile').classList.toggle('nav-mobile-open');
+}
+
+let verMap = null;
+let verMapaCapaPoligono = null;
+let verMapaMarkers = [];
+let verMapaPolyline = null;
+let circuitoActualMapa = null;
+
+const COLORES_CONTENEDOR = {
+    funcional: '#4CAF50',
+    inactivo: '#e3b23c',
+    desbordado: '#c0392b',
+    roto: '#2b2b2b',
+    en_deposito: '#4a5568'
+};
+
+function initVerMap() {
+    if (verMap) return;
+    verMap = L.map('verMapa').setView(CENTRO_MAPA, 12);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(verMap);
+}
+
+function limpiarCapasVerMapa() {
+    if (verMapaCapaPoligono) { verMap.removeLayer(verMapaCapaPoligono); verMapaCapaPoligono = null; }
+    verMapaMarkers.forEach(m => verMap.removeLayer(m));
+    verMapaMarkers = [];
+    if (verMapaPolyline) { verMap.removeLayer(verMapaPolyline); verMapaPolyline = null; }
+}
+
+function dibujarPoligonoVerMapa(poligonoJson) {
+    if (!poligonoJson) return;
+    let puntos;
+    try { puntos = JSON.parse(poligonoJson); } catch { return; }
+    if (!Array.isArray(puntos) || puntos.length < 3) return;
+    verMapaCapaPoligono = L.polygon(puntos, { color: '#2e7d32', weight: 2, fillOpacity: 0.08 }).addTo(verMap);
+    verMap.fitBounds(verMapaCapaPoligono.getBounds(), { padding: [20, 20] });
+}
+
+function abrirModalMapa(circuito) {
+    circuitoActualMapa = circuito;
+    document.getElementById('mapaModalTitle').textContent = `Mapa — ${circuito.nombre}`;
+    document.getElementById('rutaNombre').value = `Ruta óptima ${circuito.nombre}`;
+    document.getElementById('rutaActividad').value = circuito.actividad || '';
+    document.getElementById('mapaResultado').innerHTML = '';
+    document.getElementById('modalMapa').style.display = 'flex';
+    setTimeout(() => {
+        initVerMap();
+        limpiarCapasVerMapa();
+        dibujarPoligonoVerMapa(circuito.poligono);
+        verMap.invalidateSize();
+        if (!circuito.poligono) verMap.setView(CENTRO_MAPA, 12);
+    }, 100);
+}
+
+function cerrarModalMapa() {
+    document.getElementById('modalMapa').style.display = 'none';
+    circuitoActualMapa = null;
+}
+
+async function cargarContenedoresEnMapa() {
+    if (!circuitoActualMapa) return;
+    try {
+        const res  = await fetch(`${API_BASE}/circuitos/${circuitoActualMapa.id_circuito}/obtenerContenedores`);
+        const json = await res.json();
+        if (json.status !== 'success') {
+            mostrarToast(json.message || 'No se pudieron cargar los contenedores', 'error');
+            return;
+        }
+
+        verMapaMarkers.forEach(m => verMap.removeLayer(m));
+        verMapaMarkers = [];
+
+        const bounds = [];
+        (json.data || []).forEach(c => {
+            const lat = parseFloat(c.latitud);
+            const lon = parseFloat(c.longitud);
+            if (Number.isNaN(lat) || Number.isNaN(lon)) return;
+            const color = COLORES_CONTENEDOR[c.estado] || COLORES_CONTENEDOR.funcional;
+            const marker = L.circleMarker([lat, lon], {
+                radius: 6, color: '#fff', weight: 1.4, opacity: 0.7,
+                fillColor: color, fillOpacity: 0.9
+            }).bindPopup(`<b>#${c.id_contenedor}</b> ${c.calle ?? ''} ${c.num_calle ?? ''}<br>Llenado: ${c.nivel_llenado}%<br>Estado: ${c.estado}`);
+            marker.addTo(verMap);
+            verMapaMarkers.push(marker);
+            bounds.push([lat, lon]);
+        });
+
+        if (bounds.length && !verMapaCapaPoligono) {
+            verMap.fitBounds(bounds, { padding: [30, 30] });
+        }
+        mostrarToast(`${verMapaMarkers.length} contenedores cargados`, 'success');
+    } catch {
+        mostrarToast('Error al cargar los contenedores', 'error');
+    }
+}
+
+async function generarRutaOptima() {
+    if (!circuitoActualMapa) return;
+    const nombre = document.getElementById('rutaNombre').value.trim();
+    const actividad = document.getElementById('rutaActividad').value.trim();
+    if (!nombre || !actividad) {
+        mostrarToast('Completá nombre y actividad de la ruta', 'warning');
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API_BASE}/rutas/generarOptima`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ circuitoId: circuitoActualMapa.id_circuito, nombre, actividad })
+        });
+        const json = await res.json();
+        if (json.status !== 'success') {
+            mostrarToast(json.message || 'No se pudo generar la ruta', 'error');
+            return;
+        }
+
+        const { ruta, contenedores, distancia_total_km } = json.data;
+        if (verMapaPolyline) { verMap.removeLayer(verMapaPolyline); verMapaPolyline = null; }
+
+        const puntosRuta = (contenedores || [])
+            .map(c => [parseFloat(c.latitud), parseFloat(c.longitud)])
+            .filter(([lat, lon]) => !Number.isNaN(lat) && !Number.isNaN(lon));
+
+        if (puntosRuta.length > 1) {
+            verMapaPolyline = L.polyline(puntosRuta, { color: '#c0392b', weight: 4 }).addTo(verMap);
+            verMap.fitBounds(verMapaPolyline.getBounds(), { padding: [30, 30] });
+        }
+
+        document.getElementById('mapaResultado').innerHTML =
+            `Ruta <strong>#${ruta.id_ruta}</strong> generada — ${contenedores.length} contenedores, ${distancia_total_km} km aprox.`;
+        mostrarToast('Ruta óptima generada', 'success');
+    } catch {
+        mostrarToast('Error al generar la ruta óptima', 'error');
+    }
 }
 
 function mostrarToast(msg, tipo = 'info') {

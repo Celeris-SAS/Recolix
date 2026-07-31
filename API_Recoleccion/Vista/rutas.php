@@ -6,6 +6,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rutas — Recolix</title>
     <link rel="stylesheet" href="styleRecoleccion.css">
+    <style>
+        .resumen-section {
+            padding: 20px 32px 8px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .resumen-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 22px;
+        }
+        .resumen-card-head { display: flex; align-items: center; gap: 9px; margin-bottom: 2px; }
+        .resumen-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+        .resumen-dot.activas     { background: var(--status-ok); }
+        .resumen-dot.pendientes  { background: var(--status-warn); }
+        .resumen-dot.prioritarias{ background: var(--status-crit); }
+        .resumen-card h3 {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .resumen-count { font-size: 2rem; font-weight: 800; line-height: 1; color: var(--text); margin: 6px 0 16px; }
+        .resumen-hint { font-size: 0.78rem; color: var(--muted); margin: 4px 0 16px; line-height: 1.4; }
+        .resumen-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; max-height: 230px; overflow-y: auto; }
+        .resumen-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.85rem;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--bg2);
+        }
+        .resumen-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .resumen-item strong { color: var(--text); }
+        .resumen-item small { color: var(--muted); display: block; margin-top: 2px; font-size: 0.76rem; }
+        .resumen-llenado { font-weight: 700; color: var(--moss-dark); white-space: nowrap; font-size: 0.85rem; }
+        .resumen-empty { color: var(--muted); font-size: 0.85rem; font-style: italic; }
+
+        @media (max-width: 1024px) { .resumen-section { padding: 16px 20px 4px; } }
+        @media (max-width: 768px)  { .resumen-section { grid-template-columns: 1fr; padding: 16px 16px 4px; gap: 14px; } }
+    </style>
 </head>
 <body>
 
@@ -57,20 +103,29 @@
 
 <section class="hero">
     <h1 class="hero-title">Rutas</h1>
-    <p class="hero-sub">Gestioná las rutas de recolección dentro de cada circuito.</p>
+    <p class="hero-sub">Las rutas se generan automáticamente desde cada circuito según el nivel de llenado de sus contenedores.</p>
+</section>
+
+<section class="resumen-section">
+    <div class="resumen-card">
+        <div class="resumen-card-head"><span class="resumen-dot activas"></span><h3>Rutas activas</h3></div>
+        <div class="resumen-count" id="countActivas">—</div>
+        <ul class="resumen-list" id="listaActivas"></ul>
+    </div>
+    <div class="resumen-card">
+        <div class="resumen-card-head"><span class="resumen-dot pendientes"></span><h3>Rutas pendientes</h3></div>
+        <div class="resumen-count" id="countPendientes">—</div>
+        <ul class="resumen-list" id="listaPendientes"></ul>
+    </div>
+    <div class="resumen-card">
+        <div class="resumen-card-head"><span class="resumen-dot prioritarias"></span><h3>Rutas prioritarias</h3></div>
+        <p class="resumen-hint">Ordenadas por nivel de llenado promedio de sus contenedores</p>
+        <ul class="resumen-list" id="listaPrioritarias"></ul>
+    </div>
 </section>
 
 <section class="cards-section">
     <div class="cards-grid">
-
-        <div class="card-operar" onclick="abrirModalAgregar()">
-            <div class="card-content">
-                <div class="card-icon"><img src="img/plus.svg" alt="" class="card-svg-icon"></div>
-                <h3>Agregar Ruta</h3>
-                <p>Registrar una nueva ruta</p>
-                <button class="card-btn">Agregar</button>
-            </div>
-        </div>
 
         <div class="card-operar" onclick="toggleFiltros()">
             <div class="card-content">
@@ -87,15 +142,6 @@
                 <h3>Buscar por ID</h3>
                 <p>Obtener una ruta específica</p>
                 <button class="card-btn">Buscar</button>
-            </div>
-        </div>
-
-        <div class="card-operar" onclick="toggleModificar()">
-            <div class="card-content">
-                <div class="card-icon"><img src="img/refresh.svg" alt="" class="card-svg-icon"></div>
-                <h3>Modificar Ruta</h3>
-                <p>Editar datos de una ruta existente</p>
-                <button class="card-btn">Modificar</button>
             </div>
         </div>
 
@@ -135,22 +181,6 @@
     </div>
 </section>
 
-<section class="control-bar" id="modificarBar" style="display:none">
-    <div class="control-inner">
-        <input type="number" id="modificarId" class="ctrl-input"
-               placeholder="ID de la ruta..." min="1" style="max-width:120px">
-        <select id="modificarCampo" class="ctrl-select" onchange="actualizarPlaceholderModificar()">
-            <option value="">— Campo —</option>
-            <option value="circuitoId">Circuito (ID)</option>
-            <option value="nombre">Nombre</option>
-            <option value="actividad">Actividad</option>
-        </select>
-        <input type="text" id="modificarValor" class="ctrl-input" style="display:none" placeholder="Seleccioná un campo...">
-        <button class="btn-primary" onclick="modificarRuta()">Modificar</button>
-        <button class="btn-secondary" onclick="ocultarControles()">Cancelar</button>
-    </div>
-</section>
-
 <section class="control-bar" id="deleteBar" style="display:none">
     <div class="control-inner">
         <input type="number" id="deleteId" class="ctrl-input"
@@ -173,6 +203,8 @@
                     <th>Circuito</th>
                     <th>Nombre</th>
                     <th>Actividad</th>
+                    <th>Estado</th>
+                    <th>Llenado prom.</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -186,42 +218,6 @@
         </div>
     </div>
 </section>
-
-<div class="modal-overlay" id="modalForm" style="display:none"
-     onclick="onOverlayClick(event,'modalForm')">
-    <div class="modal">
-        <div class="modal-header">
-            <h3 id="modalTitle">Agregar Ruta</h3>
-            <button class="modal-close" onclick="cerrarModal()">✕</button>
-        </div>
-        <form id="rutaForm" onsubmit="guardarRuta(event)">
-            <input type="hidden" id="rutaId">
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="circuitoId">Circuito (ID)</label>
-                    <input type="number" id="circuitoId" class="form-input"
-                           placeholder="1" min="1" required>
-                </div>
-                <div class="form-group">
-                    <label for="nombre">Nombre</label>
-                    <input type="text" id="nombre" class="form-input"
-                           placeholder="Ruta Norte" maxlength="100" required>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="actividad">Actividad</label>
-                    <input type="text" id="actividad" class="form-input"
-                           placeholder="Recolección domiciliaria" maxlength="60" required>
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button type="button" class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
-                <button type="submit" class="btn-primary">Guardar</button>
-            </div>
-        </form>
-    </div>
-</div>
 
 <div class="modal-overlay" id="modalDelete" style="display:none"
      onclick="onOverlayClick(event,'modalDelete')">
@@ -296,18 +292,52 @@ async function cargarReglas() {
     }
 }
 
+async function cargarResumen() {
+    try {
+        const res  = await fetch(`${API_BASE}/rutas/obtenerResumen`);
+        const json = await res.json();
+        if (json.status !== 'success') return [];
+
+        const rutas = json.data || [];
+        renderResumenCard('listaActivas', 'countActivas', rutas.filter(r => r.estado === 'activa'));
+
+        const pendientes = rutas.filter(r => r.estado === 'pendiente');
+        renderResumenCard('listaPendientes', 'countPendientes', pendientes);
+
+        const prioritarias = rutas
+            .filter(r => r.llenado_promedio !== null)
+            .sort((a, b) => b.llenado_promedio - a.llenado_promedio)
+            .slice(0, 5);
+        renderResumenCard('listaPrioritarias', null, prioritarias);
+
+        return rutas;
+    } catch {
+        return [];
+    }
+}
+
+function renderResumenCard(listaId, countId, rutas) {
+    if (countId) document.getElementById(countId).textContent = rutas.length;
+    const ul = document.getElementById(listaId);
+    if (!rutas.length) {
+        ul.innerHTML = '<li class="resumen-empty">Sin rutas para mostrar.</li>';
+        return;
+    }
+    ul.innerHTML = rutas.map(r => `
+        <li class="resumen-item">
+            <span><strong>#${r.id_ruta}</strong> ${r.nombre}<br><small>Circuito ${r.id_circuito} · ${r.contenedores_count} contenedor${r.contenedores_count !== 1 ? 'es' : ''}</small></span>
+            <span class="resumen-llenado">${r.llenado_promedio !== null ? r.llenado_promedio + '%' : '—'}</span>
+        </li>
+    `).join('');
+}
+
 async function listarRutas() {
     ocultarControles();
     setLoading(true);
     try {
-        const res  = await fetch(`${API_BASE}/rutas`);
-        const json = await res.json();
-        if (json.status === 'success') {
-            renderTabla(json.data);
-            setTableTitle('Todas las Rutas');
-        } else {
-            mostrarToast(json.message, 'error');
-        }
+        const rutas = await cargarResumen();
+        renderTabla(rutas || []);
+        setTableTitle('Todas las Rutas');
     } catch {
         mostrarToast('Error al conectar con la API', 'error');
     } finally {
@@ -388,80 +418,6 @@ async function aplicarFiltro() {
     }
 }
 
-function abrirModalAgregar() {
-    document.getElementById('modalTitle').textContent = 'Agregar Ruta';
-    document.getElementById('rutaId').value = '';
-    document.getElementById('rutaForm').reset();
-    document.getElementById('modalForm').style.display = 'flex';
-}
-
-function abrirModalEditar(ruta) {
-    document.getElementById('modalTitle').textContent = 'Editar Ruta';
-    document.getElementById('rutaId').value     = ruta.id_ruta;
-    document.getElementById('circuitoId').value = ruta.id_circuito;
-    document.getElementById('nombre').value     = ruta.nombre;
-    document.getElementById('actividad').value  = ruta.actividad;
-    document.getElementById('modalForm').style.display = 'flex';
-}
-
-async function guardarRuta(e) {
-    e.preventDefault();
-    const id = document.getElementById('rutaId').value;
-
-    const campos = {
-        circuitoId: document.getElementById('circuitoId').value,
-        nombre:     document.getElementById('nombre').value,
-        actividad:  document.getElementById('actividad').value
-    };
-
-    for (const [campo, valor] of Object.entries(campos)) {
-        const regla = reglas[campo];
-        if (!regla) continue;
-        if (regla.max !== undefined && String(valor).length > regla.max) {
-            mostrarToast(`${regla.label} no puede superar los ${regla.max} caracteres`, 'warning');
-            return;
-        }
-        if (regla.tipo === 'entero') {
-            const num = parseInt(valor);
-            if (isNaN(num)) {
-                mostrarToast(`${regla.label} debe ser un número entero`, 'warning');
-                return;
-            }
-            if (regla.min !== undefined && num < regla.min) {
-                mostrarToast(`${regla.label} no puede ser menor que ${regla.min}`, 'warning');
-                return;
-            }
-        }
-    }
-
-    const body = {
-        circuitoId: parseInt(campos.circuitoId),
-        nombre:     campos.nombre,
-        actividad:  campos.actividad
-    };
-
-    try {
-        const res = await fetch(
-            id ? `${API_BASE}/rutas/${id}` : `${API_BASE}/rutas`,
-            {
-                method:  id ? 'PUT' : 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body:    JSON.stringify(body)
-            }
-        );
-        const json = await res.json();
-        if (json.status === 'success') {
-            mostrarToast(json.message, 'success');
-            cerrarModal();
-            listarRutas();
-        } else {
-            mostrarToast(json.message, 'error');
-        }
-    } catch {
-        mostrarToast('Error al guardar', 'error');
-    }
-}
-
 function confirmarBorrar(id, nombre) {
     rutaIdParaEliminar = id;
     document.getElementById('deleteNombre').textContent = nombre;
@@ -481,94 +437,6 @@ async function confirmarDelete() {
         }
     } catch {
         mostrarToast('Error al eliminar', 'error');
-    }
-}
-
-function actualizarPlaceholderModificar() {
-    const campo = document.getElementById('modificarCampo').value;
-    const input = document.getElementById('modificarValor');
-
-    input.value = '';
-    input.style.display = 'none';
-
-    const placeholders = {
-        circuitoId: 'ej: 1',
-        nombre:     'Ruta Norte',
-        actividad:  'Recolección domiciliaria'
-    };
-    const maxlengths = { nombre: 100, actividad: 60 };
-    input.placeholder = placeholders[campo] || 'Seleccioná un campo...';
-    input.maxLength = maxlengths[campo] || '';
-    input.style.display = '';
-}
-
-async function modificarRuta() {
-    const id = document.getElementById('modificarId').value.trim();
-    if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
-    const campo = document.getElementById('modificarCampo').value;
-    if (!campo) { mostrarToast('Seleccioná un campo a modificar', 'warning'); return; }
-
-    const valor = document.getElementById('modificarValor').value.trim();
-    if (!valor) { mostrarToast('Ingresá el nuevo valor', 'warning'); return; }
-
-    const regla = reglas[campo];
-    if (regla) {
-        if (regla.max !== undefined && valor.length > regla.max) {
-            mostrarToast(`${regla.label} no puede superar los ${regla.max} caracteres`, 'warning');
-            return;
-        }
-        if (regla.tipo === 'entero') {
-            const num = parseInt(valor);
-            if (isNaN(num)) {
-                mostrarToast(`${regla.label} debe ser un número entero`, 'warning');
-                return;
-            }
-            if (regla.min !== undefined && num < regla.min) {
-                mostrarToast(`${regla.label} no puede ser menor que ${regla.min}`, 'warning');
-                return;
-            }
-        }
-    }
-
-    setLoading(true);
-    try {
-        const res  = await fetch(`${API_BASE}/rutas/${id}`);
-        const json = await res.json();
-        if (json.status !== 'success' || !json.data) {
-            mostrarToast(json.message || 'Ruta no encontrada', 'error');
-            return;
-        }
-        const ruta = json.data;
-
-        const campoMap = {
-            circuitoId: 'id_circuito',
-            nombre:     'nombre',
-            actividad:  'actividad'
-        };
-
-        ruta[campoMap[campo]] = valor;
-
-        const putRes = await fetch(`${API_BASE}/rutas/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                circuitoId: parseInt(ruta.id_circuito),
-                nombre:     ruta.nombre,
-                actividad:  ruta.actividad
-            })
-        });
-        const putJson = await putRes.json();
-        if (putJson.status === 'success') {
-            mostrarToast(putJson.message, 'success');
-            ocultarControles();
-            listarRutas();
-        } else {
-            mostrarToast(putJson.message, 'error');
-        }
-    } catch {
-        mostrarToast('Error al modificar', 'error');
-    } finally {
-        setLoading(false);
     }
 }
 
@@ -608,15 +476,21 @@ function renderTabla(rutas) {
     noRes.style.display = 'none';
     count.textContent   = `${rutas.length} resultado${rutas.length !== 1 ? 's' : ''}`;
 
+    const badges = { activa: 'info', pendiente: 'warning', finalizada: 'neutral' };
+
     rutas.forEach(r => {
         const tr = document.createElement('tr');
+        const estadoBadge = r.estado
+            ? `<span class="badge badge-${badges[r.estado] ?? 'neutral'}">${r.estado}</span>`
+            : '—';
         tr.innerHTML = `
             <td class="td-id" data-label="ID">${r.id_ruta}</td>
             <td data-label="Circuito">${r.id_circuito}</td>
             <td data-label="Nombre"><strong>${r.nombre}</strong></td>
             <td data-label="Actividad">${r.actividad ?? ''}</td>
+            <td data-label="Estado">${estadoBadge}</td>
+            <td data-label="Llenado prom.">${r.llenado_promedio !== undefined && r.llenado_promedio !== null ? r.llenado_promedio + '%' : '—'}</td>
             <td class="td-actions" data-label="Acciones">
-                <button class="btn-action" onclick='abrirModalEditar(${JSON.stringify(r)})' title="Editar">✏️</button>
                 <button class="btn-action" onclick="confirmarBorrar(${r.id_ruta},'${r.nombre}')" title="Eliminar">🗑️</button>
             </td>
         `;
@@ -627,10 +501,8 @@ function renderTabla(rutas) {
 function toggleFiltros() {
     const fb = document.getElementById('filterBar');
     const sb = document.getElementById('searchBar');
-    const mb = document.getElementById('modificarBar');
     const db = document.getElementById('deleteBar');
     sb.style.display = 'none';
-    mb.style.display = 'none';
     db.style.display = 'none';
     fb.style.display = fb.style.display === 'none' ? 'block' : 'none';
 }
@@ -638,10 +510,8 @@ function toggleFiltros() {
 function toggleBusquedaId() {
     const sb = document.getElementById('searchBar');
     const fb = document.getElementById('filterBar');
-    const mb = document.getElementById('modificarBar');
     const db = document.getElementById('deleteBar');
     fb.style.display = 'none';
-    mb.style.display = 'none';
     db.style.display = 'none';
     sb.style.display = sb.style.display === 'none' ? 'block' : 'none';
 }
@@ -649,34 +519,16 @@ function toggleBusquedaId() {
 function ocultarControles() {
     document.getElementById('filterBar').style.display = 'none';
     document.getElementById('searchBar').style.display = 'none';
-    document.getElementById('modificarBar').style.display = 'none';
     document.getElementById('deleteBar').style.display = 'none';
-}
-
-function toggleModificar() {
-    const mb = document.getElementById('modificarBar');
-    const fb = document.getElementById('filterBar');
-    const sb = document.getElementById('searchBar');
-    const db = document.getElementById('deleteBar');
-    fb.style.display = 'none';
-    sb.style.display = 'none';
-    db.style.display = 'none';
-    mb.style.display = mb.style.display === 'none' ? 'block' : 'none';
 }
 
 function toggleDarDeBaja() {
     const db = document.getElementById('deleteBar');
     const fb = document.getElementById('filterBar');
     const sb = document.getElementById('searchBar');
-    const mb = document.getElementById('modificarBar');
     fb.style.display = 'none';
     sb.style.display = 'none';
-    mb.style.display = 'none';
     db.style.display = db.style.display === 'none' ? 'block' : 'none';
-}
-
-function cerrarModal() {
-    document.getElementById('modalForm').style.display = 'none';
 }
 
 function cerrarModalDelete() {
@@ -686,7 +538,7 @@ function cerrarModalDelete() {
 
 function onOverlayClick(e, modalId) {
     if (e.target.id === modalId) {
-        modalId === 'modalForm' ? cerrarModal() : cerrarModalDelete();
+        cerrarModalDelete();
     }
 }
 

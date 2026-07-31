@@ -127,7 +127,8 @@ CREATE TABLE `circuito` (
   `codigo` varchar(20) DEFAULT NULL,
   `actividad` varchar(60) DEFAULT NULL,
   `turno` enum('mañana','tarde','noche') DEFAULT NULL,
-  `frecuencia` varchar(40) DEFAULT NULL
+  `frecuencia` varchar(40) DEFAULT NULL,
+  `poligono` longtext DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------

@@ -168,4 +168,24 @@ class RutaModel {
         mysqli_stmt_close($stmt);
         return $levantes;
     }
+
+    public function obtenerResumen() {
+        $sql = "SELECT r.*,
+                (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta AND l.estado = 'en_curso') AS en_curso_count,
+                (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta AND l.estado = 'pendiente') AS pendiente_count,
+                (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta) AS levantes_count,
+                (SELECT COUNT(*) FROM ruta_contenedor rc WHERE rc.id_ruta = r.id_ruta) AS contenedores_count,
+                (SELECT AVG(c.nivel_llenado) FROM ruta_contenedor rc JOIN contenedor c ON c.id_contenedor = rc.id_contenedor WHERE rc.id_ruta = r.id_ruta) AS llenado_promedio
+                FROM ruta_recoleccion r
+                ORDER BY r.id_ruta DESC";
+        $stmt = mysqli_prepare($this->conn->getConexion(), $sql);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $rutas = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $rutas[] = $row;
+        }
+        mysqli_stmt_close($stmt);
+        return $rutas;
+    }
 }
