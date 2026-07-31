@@ -90,11 +90,13 @@
         }
 
         public function getAllCamiones() {
+            $this->camionModel->finalizarMantenimientosVencidos();
             return $this->camionModel->getAllCamiones();
         }
 
         public function getCamion($id) {
             $id = $this->validarId($id);
+            $this->camionModel->finalizarMantenimientosVencidos();
             return $this->camionModel->getCamion($id);
         }
 
@@ -149,6 +151,7 @@
 
         public function esDisponible($id) {
             $id = $this->validarId($id);
+            $this->camionModel->finalizarMantenimientosVencidos();
             return $this->camionModel->esDisponible($id);
         }
 
@@ -173,6 +176,7 @@
         }
 
         public function filtrarMantenimiento() {
+            $this->camionModel->finalizarMantenimientosVencidos();
             return $this->camionModel->filtrarMantenimiento();
         }
 

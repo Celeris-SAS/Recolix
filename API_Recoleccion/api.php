@@ -73,7 +73,8 @@ $config = [
                 'programar',
                 'obtenerPorCamion',
                 'filtrarPorTipo',
-                'obtenerCostoTotal'
+                'obtenerCostoTotal',
+                'proximos'
             ],
             'filters' => [
                 'camionId' => 'obtenerPorCamion',

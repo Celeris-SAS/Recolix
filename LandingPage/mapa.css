@@ -143,6 +143,63 @@
     background: var(--status-off);
 }
 
+.panel-card .legend-centro-operativo::before {
+    background: #9b59b6;
+}
+
+.panel-card .legend-centro-saturado::before {
+    background: #8e44ad;
+}
+
+.panel-card .legend-centro-cerrado::before {
+    background: #5b2c6f;
+}
+
+.map-legend-title {
+    margin: 0.6rem 0 0.35rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--ink-soft);
+}
+
+.map-legend-title:first-child {
+    margin-top: 0;
+}
+
+.mapa-tabs {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0 1rem 1.25rem;
+}
+
+.mapa-tab {
+    font: inherit;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.55rem 1.4rem;
+    border-radius: 999px;
+    border: 1px solid rgba(28, 33, 23, 0.15);
+    background: var(--white);
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+
+.mapa-tab:hover {
+    border-color: var(--moss);
+    color: var(--ink);
+}
+
+.mapa-tab.is-active {
+    background: var(--moss);
+    border-color: var(--moss);
+    color: #fff;
+}
+
 
 .map-card-shell {
     padding: 0.8rem;

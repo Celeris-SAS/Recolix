@@ -26,7 +26,9 @@ cargarNotificaciones();
     document.getElementById('perfilEmail').textContent = perfil.email || '—';
     document.getElementById('perfilTel').textContent = perfil.tel || '—';
     document.getElementById('perfilMunicipio').textContent = perfil.municipio || 'Sin asignar';
-    document.getElementById('asignarMunicipioBtn').hidden = !!perfil.id_municipio;
+    const btnMunicipio = document.getElementById('asignarMunicipioBtn');
+    btnMunicipio.hidden = false;
+    btnMunicipio.textContent = perfil.id_municipio ? 'Cambiar municipio' : 'Agregar municipio';
 }
 
 
@@ -93,11 +95,16 @@ if (json.status !== 'success') {
 
   
     document.getElementById('asignarMunicipioBtn').addEventListener('click', () => {
+        const esCambio = !!perfilActual.id_municipio;
         document.getElementById('perfilVista').hidden = true;
         document.getElementById('municipioForm').hidden = false;
         document.getElementById('perfilForm').hidden = true;
         document.getElementById('contraseniaForm').hidden = true;
-        document.getElementById('municipioSelect').value = '';
+        document.getElementById('municipioFormTitle').textContent = esCambio ? 'Cambiar municipio' : 'Agregar municipio';
+        document.getElementById('municipioFormNota').textContent = esCambio
+            ? 'Podés modificar el municipio que corresponde a tu domicilio.'
+            : 'Todavía no tenés un municipio asignado. Seleccioná el que corresponde a tu domicilio.';
+        document.getElementById('municipioSelect').value = esCambio ? perfilActual.municipio : '';
         limpiarFeedback('municipioFeedback');
     });
 
@@ -112,6 +119,8 @@ if (json.status !== 'success') {
         document.getElementById('municipioSelectError').textContent =
             municipio ? '' : 'Seleccioná un municipio.';
         if (!municipio) return;
+
+        const esCambio = !!perfilActual.id_municipio;
 
         const resp = await fetch(`${API}/usuarios/setMunicipio/${CI}`, {
             method: 'PUT',
@@ -128,7 +137,7 @@ if (json.status !== 'success') {
         await cargarPerfil();
         document.getElementById('perfilVista').hidden = false;
         document.getElementById('municipioForm').hidden = true;
-        mostrarFeedback('perfilFeedback', 'Municipio asignado correctamente.', true);
+        mostrarFeedback('perfilFeedback', esCambio ? 'Municipio actualizado correctamente.' : 'Municipio asignado correctamente.', true);
     });
 
     document.getElementById('cancelarContraBtn').addEventListener('click', () => {
