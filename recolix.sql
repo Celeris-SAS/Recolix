@@ -245,8 +245,8 @@ CREATE TABLE `mantenimiento` (
   `tipo` enum('preventivo','correctivo') DEFAULT NULL,
   `descripcion` text DEFAULT NULL,
   `costo` decimal(10,2) DEFAULT NULL,
-  `fecha_inicio` date DEFAULT NULL,
-  `fecha_fin` date DEFAULT NULL
+  `fecha_inicio` datetime DEFAULT NULL,
+  `fecha_fin` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------

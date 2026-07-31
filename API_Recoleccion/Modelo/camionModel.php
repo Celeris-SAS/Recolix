@@ -60,6 +60,32 @@ class CamionModel
         return true;
     }
 
+    public function marcarCamionEnMantenimiento($id)
+    {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE camion SET estado = 'en_mantenimiento' WHERE id_camion = ?");
+        mysqli_stmt_bind_param($stmt, "i", $id);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        return true;
+    }
+
+    public function finalizarMantenimientosVencidos()
+    {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "
+            UPDATE camion
+            SET estado = 'disponible'
+            WHERE estado = 'en_mantenimiento'
+              AND NOT EXISTS (
+                  SELECT 1 FROM mantenimiento
+                  WHERE mantenimiento.id_camion = camion.id_camion
+                    AND mantenimiento.fecha_fin >= NOW()
+              )
+        ");
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        return true;
+    }
+
     public function getAllCamiones()
     {
         $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM camion");
@@ -138,7 +164,12 @@ class CamionModel
 
     public function filtrarMantenimiento()
     {
-        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM camion WHERE estado = 'en_mantenimiento'");
+        $stmt = mysqli_prepare($this->conn->getConexion(), "
+            SELECT c.*,
+                   (SELECT MAX(m.fecha_fin) FROM mantenimiento m WHERE m.id_camion = c.id_camion AND m.fecha_fin >= NOW()) AS fecha_fin_mantenimiento
+            FROM camion c
+            WHERE c.estado = 'en_mantenimiento'
+        ");
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
         $camiones = [];

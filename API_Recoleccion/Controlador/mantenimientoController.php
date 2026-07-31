@@ -1,12 +1,15 @@
 <?php
     class MantenimientoController {
 
-        private $mantenimientoModel;
-        private $tiposValidos = ['preventivo', 'correctivo'];
+    private $mantenimientoModel;
+    private $camionModel;
+    private $tiposValidos = ['preventivo', 'correctivo'];
 
         public function __construct() {
             require_once __DIR__ . '/../Modelo/mantenimientoModel.php';
+            require_once __DIR__ . '/../Modelo/camionModel.php';
             $this->mantenimientoModel = new MantenimientoModel();
+            $this->camionModel = new CamionModel();
         }
 
         private function validarId($valor) {
@@ -30,15 +33,23 @@
 
         private function validarFecha($valor, $nombre) {
             if (!is_string($valor) || trim($valor) === '') {
-                throw new InvalidArgumentException("$nombre debe ser una fecha válida (YYYY-MM-DD)");
+                throw new InvalidArgumentException("$nombre debe ser una fecha y hora válidas");
             }
-            $fecha = trim($valor);
-            $formato = 'Y-m-d';
-            $d = DateTime::createFromFormat($formato, $fecha);
-            if (!$d || $d->format($formato) !== $fecha) {
-                throw new InvalidArgumentException("$nombre debe tener el formato YYYY-MM-DD");
+            $valor = trim($valor);
+            $formatoSalida = 'Y-m-d H:i:s';
+            $formatosAceptados = ['Y-m-d\TH:i:s', 'Y-m-d\TH:i', 'Y-m-d H:i:s', 'Y-m-d H:i', 'Y-m-d'];
+            $d = null;
+            foreach ($formatosAceptados as $formato) {
+                $tmp = DateTime::createFromFormat($formato, $valor);
+                if ($tmp && $tmp->format($formato) === $valor) {
+                    $d = $tmp;
+                    break;
+                }
             }
-            return $fecha;
+            if (!$d) {
+                throw new InvalidArgumentException("$nombre debe tener el formato YYYY-MM-DD HH:MM");
+            }
+            return $d->format($formatoSalida);
         }
 
         private function validarDecimal($valor, $nombre) {
@@ -58,14 +69,26 @@
                 'camionId' => ['tipo' => 'entero', 'min' => 1, 'label' => 'ID del camión'],
                 'tipo' => ['valores' => $this->tiposValidos, 'max' => 20, 'label' => 'Tipo'],
                 'descripcion' => ['max' => 500, 'label' => 'Descripción'],
-                'fechaInicio' => ['tipo' => 'fecha', 'pattern' => '\\d{4}-\\d{2}-\\d{2}', 'label' => 'Fecha de inicio', 'mensaje' => 'Debe tener formato YYYY-MM-DD'],
-                'fechaFin' => ['tipo' => 'fecha', 'pattern' => '\\d{4}-\\d{2}-\\d{2}', 'label' => 'Fecha de fin', 'mensaje' => 'Debe tener formato YYYY-MM-DD'],
+                'fechaInicio' => ['tipo' => 'fecha', 'pattern' => '\\d{4}-\\d{2}-\\d{2}([T ]\\d{2}:\\d{2}(:\\d{2})?)?', 'label' => 'Fecha de inicio', 'mensaje' => 'Debe tener formato YYYY-MM-DD HH:MM'],
+                'fechaFin' => ['tipo' => 'fecha', 'pattern' => '\\d{4}-\\d{2}-\\d{2}([T ]\\d{2}:\\d{2}(:\\d{2})?)?', 'label' => 'Fecha de fin', 'mensaje' => 'Debe tener formato YYYY-MM-DD HH:MM'],
                 'costo' => ['tipo' => 'decimal', 'min' => 0, 'label' => 'Costo']
             ];
         }
 
         public function getAllMantenimientos() {
             return $this->mantenimientoModel->getAllMantenimientos();
+        }
+
+        public function proximos($tipo = null) {
+            if ($tipo !== null && trim($tipo) !== '') {
+                $tipo = $this->validarString($tipo, 'Tipo');
+                if (!in_array($tipo, $this->tiposValidos)) {
+                    throw new InvalidArgumentException("Tipo no válido. Valores: " . implode(', ', $this->tiposValidos));
+                }
+            } else {
+                $tipo = null;
+            }
+            return $this->mantenimientoModel->getProximos($tipo);
         }
 
         public function getMantenimiento($id) {
@@ -85,7 +108,9 @@
                 ? $this->validarFecha($fechaFin, 'Fecha de fin')
                 : null;
             $costo = $this->validarDecimal($costo, 'Costo');
-            return $this->mantenimientoModel->registrar($camionId, $tipo, $descripcion, $fechaInicio, $fechaFin, $costo);
+            $id = $this->mantenimientoModel->registrar($camionId, $tipo, $descripcion, $fechaInicio, $fechaFin, $costo);
+            $this->camionModel->marcarCamionEnMantenimiento($camionId);
+            return $id;
         }
 
         public function updateMantenimiento($id, $tipo, $descripcion, $fechaInicio, $fechaFin, $costo) {
@@ -108,11 +133,18 @@
             return $this->mantenimientoModel->deleteMantenimiento($id);
         }
 
-        public function programar($camionId, $descripcion, $fechaInicio) {
+        public function programar($camionId, $tipo, $descripcion, $fechaInicio, $fechaFin) {
             $camionId = $this->validarId($camionId);
+            $tipo = $this->validarString($tipo, 'Tipo');
+            if (!in_array($tipo, $this->tiposValidos)) {
+                throw new InvalidArgumentException("Tipo no válido. Valores: " . implode(', ', $this->tiposValidos));
+            }
             $descripcion = $this->validarString($descripcion, 'Descripción');
             $fechaInicio = $this->validarFecha($fechaInicio, 'Fecha de inicio');
-            return $this->mantenimientoModel->programar($camionId, $descripcion, $fechaInicio);
+            $fechaFin = $this->validarFecha($fechaFin, 'Fecha de fin');
+            $id = $this->mantenimientoModel->programar($camionId, $tipo, $descripcion, $fechaInicio, $fechaFin);
+            $this->camionModel->marcarCamionEnMantenimiento($camionId);
+            return $id;
         }
 
         public function obtenerPorCamion($camionId) {
