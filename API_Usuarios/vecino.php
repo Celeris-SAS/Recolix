@@ -2,7 +2,7 @@
 session_start();
 
 if (!isset($_SESSION['ci_usuario'])) {
-    header("Location: /recolix/LandingPage/login.html");
+    header("Location: ../LandingPage/login.html");
     exit();
 }
 ?>

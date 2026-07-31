@@ -100,6 +100,8 @@
   </footer>
 
   <script>
+    const API_USUARIOS = '/recolix/API_Usuarios';
+
     document.addEventListener('DOMContentLoaded', function () {
 
       const btn = document.getElementById('hamburgerBtn');
@@ -145,7 +147,7 @@
 
 
         try {
-          const response = await fetch('/recolix/API_Usuarios/login.php', {
+          const response = await fetch(`${API_USUARIOS}/login.php`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ci, contrasenia: password })
@@ -163,7 +165,7 @@
           feedback.className = 'form-feedback is-success';
           feedback.textContent = 'Inicio de sesión correcto. Redirigiendo...';
 
-          window.location.href = '/recolix/API_Usuarios/vecino.php';
+          window.location.href = `${API_USUARIOS}/vecino.php`;
         } catch (err) {
           console.error(err);
           feedback.style.display = 'block';

@@ -5,13 +5,13 @@ $ci  = $_SESSION['usuario']['ci_usuario'] ?? null;
 $rol = $_SESSION['usuario']['rol'] ?? null;
 
 if (!$ci) {
-    header("Location: /recolix/Backoffice/login_backoffice.php");
+    header("Location: ../Backoffice/login_backoffice.php");
     exit();
 }
 
 $rolesPermitidos = ['administrador', 'cuadrilla', 'operario'];
 if (!in_array($rol, $rolesPermitidos)) {
-    header("Location: /recolix/Backoffice/login_backoffice.php");
+    header("Location: ../Backoffice/login_backoffice.php");
     exit();
 }
 ?>

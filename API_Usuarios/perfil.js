@@ -3,7 +3,7 @@ const API = '/recolix/API_Usuarios';
 document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById('logoutBtn').addEventListener('click', () => {
-        window.location.href = '/recolix/Backoffice/logout_backoffice.php';
+        window.location.href = '../Backoffice/logout_backoffice.php';
     });
 
     async function cargarPerfil() {

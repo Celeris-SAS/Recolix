@@ -273,6 +273,9 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
+    const API_USUARIOS = '/recolix/API_Usuarios';
+    const API_GESTION = '/recolix/API_Gestion';
+
     document.addEventListener('DOMContentLoaded', function () {
 
       (async function () {
@@ -303,7 +306,7 @@
         };
 
         try {
-          const resp = await fetch('/recolix/API_Gestion/contenedores', {
+          const resp = await fetch(`${API_GESTION}/contenedores`, {
             signal: AbortSignal.timeout(5000)
           });
           const json = await resp.json();
@@ -378,7 +381,7 @@
         }
 
         try {
-          const resp = await fetch('/recolix/API_Usuarios/solicitudes', {
+          const resp = await fetch(`${API_USUARIOS}/solicitudes`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
