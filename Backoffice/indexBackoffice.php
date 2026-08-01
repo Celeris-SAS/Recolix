@@ -30,7 +30,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
                 <a href="../API_Recoleccion/Vista/rutas.php">Rutas</a>
                 <a href="#">Cuadrillas</a>
                 <a href="../API_Gestion/Vista/contenedores.php">Contenedores</a>
-                <a href="#">Centros de Acopio</a>
+                <a href="../API_Gestion/Vista/centrosAcopio.php">Centros de Acopio</a>
                 <a href="mapa.php">Mapa</a>
                 <a href="#">Reportes</a>
                 <a href="#">Incidencias</a>
@@ -53,7 +53,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
         <a href="../API_Recoleccion/Vista/rutas.php">Rutas</a>
         <a href="#">Cuadrillas</a>
         <a href="../API_Gestion/Vista/contenedores.php">Contenedores</a>
-        <a href="#">Centros de Acopio</a>
+        <a href="../API_Gestion/Vista/centrosAcopio.php">Centros de Acopio</a>
         <a href="mapa.php">Mapa</a>
         <a href="#">Reportes</a>
         <a href="#">Incidencias</a>
@@ -176,7 +176,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
             </div>
         </a>
 
-        <a href="#" class="card-operar">
+        <a href="../API_Gestion/Vista/centrosAcopio.php" class="card-operar">
             <div class="card-content">
                 <div class="card-icon"><img src="img/centroAcopio.png" alt="" class="card-svg-icon"></div>
                 <h3>Centros de Acopio</h3>

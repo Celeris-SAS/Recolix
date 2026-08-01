@@ -69,16 +69,51 @@ $config = [
             'filters' => []
         ],
         'centros-acopio' => [
-            'singular'    => 'Centro de acopio',
+            'singular'    => 'Centro',
             'controller'  => 'CentroAcopioController',
             'file'        => 'Controlador/centroAcopioController.php',
             'getAllMethod' => 'getAllCentros',
             'getMethod'   => 'getCentro',
-            'insertMethod' => null,
-            'updateMethod' => null,
-            'deleteMethod' => null,
-            'actions' => [],
-            'filters' => []
+            'insertMethod' => 'insertCentro',
+            'updateMethod' => 'updateCentro',
+            'deleteMethod' => 'bajaCentro',
+            'actions' => [
+                'reglasValidacion',
+                'getOcupacion',
+                'asignarTipoResiduo',
+                'getResiduosPorCentro',
+                'actualizarOcupacion',
+                'filtrarMunicipio',
+                'filtrarTipo',
+                'filtrarEstado'
+            ],
+            'filters' => [
+                'municipio' => 'filtrarMunicipio',
+                'tipo'      => 'filtrarTipo',
+                'estado'    => 'filtrarEstado'
+            ]
+        ],
+        'maquinaria' => [
+            'singular'    => 'Maquinaria',
+            'controller'  => 'MaquinariaController',
+            'file'        => 'Controlador/maquinariaController.php',
+            'getAllMethod' => 'getAllMaquinarias',
+            'getMethod'   => 'getMaquinaria',
+            'insertMethod' => 'insertMaquinaria',
+            'updateMethod' => 'updateMaquinaria',
+            'deleteMethod' => 'bajaMaquinaria',
+            'actions' => [
+                'reglasValidacion',
+                'cambiarEstado',
+                'obtenerPorCentro',
+                'filtrarPorTipo',
+                'filtrarPorEstado'
+            ],
+            'filters' => [
+                'centro' => 'obtenerPorCentro',
+                'tipo'   => 'filtrarPorTipo',
+                'estado' => 'filtrarPorEstado'
+            ]
         ]
     ]
 ];

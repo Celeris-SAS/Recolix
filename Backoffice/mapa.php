@@ -25,10 +25,11 @@
                 <a href="../API_Recoleccion/Vista/rutas.php">Rutas</a>
                 <a href="#">Cuadrillas</a>
                 <a href="../API_Gestion/Vista/contenedores.php">Contenedores</a>
-                <a href="#">Centros de Acopio</a>
+                <a href="../API_Gestion/Vista/centrosAcopio.php">Centros de Acopio</a>
                 <a href="mapa.php" class="nav-active">Mapa</a>
                 <a href="#">Reportes</a>
                 <a href="#">Incidencias</a>
+                <a href="../API_Usuarios/Vista/usuarios.php">Usuarios</a>
             </nav>
         </div>
         <div class="nav-right">
@@ -47,10 +48,11 @@
         <a href="../API_Recoleccion/Vista/rutas.php">Rutas</a>
         <a href="#">Cuadrillas</a>
         <a href="../API_Gestion/Vista/contenedores.php">Contenedores</a>
-        <a href="#">Centros de Acopio</a>
+        <a href="../API_Gestion/Vista/centrosAcopio.php">Centros de Acopio</a>
         <a href="mapa.php" class="nav-active">Mapa</a>
         <a href="#">Reportes</a>
         <a href="#">Incidencias</a>
+        <a href="../API_Usuarios/Vista/usuarios.php">Usuarios</a>
     </nav>
     <div class="nav-hr"></div>
 </header>
