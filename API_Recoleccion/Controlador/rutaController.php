@@ -244,20 +244,43 @@
             return [$sumLat / $n, $sumLon / $n];
         }
 
-        private function ejecutarRutas($payload) {
-            $pythonBin = getenv('RECOLIX_PYTHON');
-            if (!$pythonBin) {
-                $candidatos = ['/usr/local/bin/python3', '/usr/bin/python3', 'python3', 'python'];
-                foreach ($candidatos as $c) {
-                    if (is_executable($c) || $c === 'python3' || $c === 'python') {
-                        $pythonBin = $c;
-                        break;
-                    }
+        private function pythonFunciona($bin) {
+            $descriptorSpec = [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']];
+            $process = @proc_open([$bin, '--version'], $descriptorSpec, $pipes);
+            if (!is_resource($process)) {
+                return false;
+            }
+            fclose($pipes[0]);
+            $salida = stream_get_contents($pipes[1]) . stream_get_contents($pipes[2]);
+            fclose($pipes[1]);
+            fclose($pipes[2]);
+            $exitCode = proc_close($process);
+            return $exitCode === 0 && preg_match('/^Python \d/', trim($salida)) === 1;
+        }
+
+        private function resolverPythonBin() {
+            $envBin = getenv('RECOLIX_PYTHON');
+            if ($envBin && $this->pythonFunciona($envBin)) {
+                return $envBin;
+            }
+
+            $candidatos = ['/usr/local/bin/python3', '/usr/bin/python3', 'python3', 'python', 'py'];
+            foreach ($candidatos as $c) {
+                if ($this->pythonFunciona($c)) {
+                    return $c;
                 }
             }
-            if (!$pythonBin) {
-                $pythonBin = 'python3';
-            }
+
+            throw new RuntimeException(
+                "No se encontró un intérprete de Python funcional. En Windows, 'python'/'python3' " .
+                "pueden apuntar al alias de Microsoft Store en vez de una instalación real: instalá " .
+                "Python desde python.org o definí la variable de entorno RECOLIX_PYTHON con la ruta " .
+                "completa al ejecutable (y reiniciá Apache para que la tome)."
+            );
+        }
+
+        private function ejecutarRutas($payload) {
+            $pythonBin = $this->resolverPythonBin();
             $script = __DIR__ . '/../Modelo/rutas.py';
 
             $descriptorSpec = [
