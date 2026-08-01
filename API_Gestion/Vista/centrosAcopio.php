@@ -266,7 +266,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
 
     <!-- ── MODAL MAQUINARIA DEL CENTRO ───────────────────────────────────── -->
     <div class="modal-overlay" id="modalMaquinaria" style="display:none" onclick="onOverlayClick(event,'modalMaquinaria')">
-        <div class="modal" style="max-width:640px">
+        <div class="modal" style="max-width:820px">
             <div class="modal-header">
                 <h3>Maquinaria de <span id="maquinariaCentroNombre"></span></h3>
                 <button class="modal-close" onclick="cerrarModalMaquinaria()">✕</button>
@@ -284,6 +284,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             </div>
             <form id="maquinariaForm" onsubmit="guardarMaquinaria(event)">
                 <input type="hidden" id="maquinariaIdCentro">
+                <input type="hidden" id="maquinariaId">
                 <div class="form-row">
                     <div class="form-group">
                         <label for="maqNombre">Nombre</label>
@@ -316,7 +317,8 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                     </div>
                 </div>
                 <div class="modal-actions">
-                    <button type="submit" class="btn-primary">Agregar maquinaria</button>
+                    <button type="button" class="btn-secondary" id="maquinariaCancelarBtn" style="display:none" onclick="cancelarEdicionMaquinaria()">Cancelar edición</button>
+                    <button type="submit" class="btn-primary" id="maquinariaSubmitBtn">Agregar maquinaria</button>
                 </div>
             </form>
         </div>
@@ -663,10 +665,12 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
 
         // ── MAQUINARIA (anidada dentro del centro) ─────────────────────────
 
+        let maquinariaActual = [];
+
         async function abrirModalMaquinaria(centro) {
             document.getElementById('maquinariaCentroNombre').textContent = centro.nombre;
             document.getElementById('maquinariaIdCentro').value = centro.id_centro;
-            document.getElementById('maquinariaForm').reset();
+            cancelarEdicionMaquinaria();
             document.getElementById('modalMaquinaria').style.display = 'flex';
             await cargarMaquinariaDeCentro(centro.id_centro);
         }
@@ -681,22 +685,23 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             try {
                 const res = await fetch(`${API_BASE}/maquinaria/obtenerPorCentro/${idCentro}`);
                 const json = await res.json();
-                const items = json.status === 'success' ? json.data : [];
-                vacio.style.display = items.length ? 'none' : 'flex';
-                body.innerHTML = items.map(m => `
+                maquinariaActual = json.status === 'success' ? json.data : [];
+                vacio.style.display = maquinariaActual.length ? 'none' : 'flex';
+                body.innerHTML = maquinariaActual.map(m => `
                     <tr>
                         <td>${m.nombre}</td>
                         <td>${m.tipo}</td>
                         <td>${m.fecha_adquisicion}</td>
                         <td><span class="badge ${badgeClaseEstado(m.estado)}">${m.estado}</span></td>
-                        <td>
-                            <select class="ctrl-select" style="font-size:0.78rem;padding:4px 8px"
+                        <td class="td-actions" style="flex-wrap:wrap">
+                            <select class="ctrl-select" style="font-size:0.78rem;padding:4px 6px;max-width:130px"
                                 onchange="cambiarEstadoMaquinaria(${m.id_maquinaria}, this.value, ${idCentro})">
                                 <option value="">Cambiar estado...</option>
                                 <option value="operativa">Operativa</option>
                                 <option value="en_mantenimiento">En mantenimiento</option>
                                 <option value="fuera_servicio">Fuera de servicio</option>
                             </select>
+                            <button type="button" class="btn-action" onclick="abrirEdicionMaquinaria(${m.id_maquinaria})" title="Editar">✎</button>
                         </td>
                     </tr>
                 `).join('');
@@ -705,30 +710,55 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             }
         }
 
+        function abrirEdicionMaquinaria(idMaquinaria) {
+            const m = maquinariaActual.find(x => x.id_maquinaria == idMaquinaria);
+            if (!m) return;
+            document.getElementById('maquinariaId').value = m.id_maquinaria;
+            document.getElementById('maqNombre').value = m.nombre;
+            document.getElementById('maqTipo').value = m.tipo;
+            document.getElementById('maqFecha').value = m.fecha_adquisicion;
+            document.getElementById('maqEstado').value = m.estado;
+            document.getElementById('maquinariaSubmitBtn').textContent = 'Guardar cambios';
+            document.getElementById('maquinariaCancelarBtn').style.display = 'inline-block';
+        }
+
+        function cancelarEdicionMaquinaria() {
+            document.getElementById('maquinariaForm').reset();
+            document.getElementById('maquinariaId').value = '';
+            document.getElementById('maquinariaSubmitBtn').textContent = 'Agregar maquinaria';
+            document.getElementById('maquinariaCancelarBtn').style.display = 'none';
+        }
+
         async function guardarMaquinaria(event) {
             event.preventDefault();
             const idCentro = document.getElementById('maquinariaIdCentro').value;
-            // El orden tiene que calzar con insertMaquinaria($idCentro, $nombre, $tipo, $fechaAdquisicion, $estado).
-            const body = {
-                idCentro: parseInt(idCentro, 10),
+            const idMaquinaria = document.getElementById('maquinariaId').value;
+            // Mismo orden que los parámetros del controller: insertMaquinaria($idCentro, $nombre, $tipo, $fechaAdquisicion, $estado)
+            // y updateMaquinaria($id, $nombre, $tipo, $fechaAdquisicion, $estado) — el update no lleva idCentro.
+            const datosComunes = {
                 nombre: document.getElementById('maqNombre').value,
                 tipo: document.getElementById('maqTipo').value,
                 fechaAdquisicion: document.getElementById('maqFecha').value,
                 estado: document.getElementById('maqEstado').value
             };
+            const editando = !!idMaquinaria;
+            const body = editando ? datosComunes : { idCentro: parseInt(idCentro, 10), ...datosComunes };
             try {
-                const res = await fetch(`${API_BASE}/maquinaria`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(body)
-                });
+                const res = await fetch(
+                    editando ? `${API_BASE}/maquinaria/${idMaquinaria}` : `${API_BASE}/maquinaria`,
+                    {
+                        method: editando ? 'PUT' : 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(body)
+                    }
+                );
                 const json = await res.json();
                 if (json.status === 'success') {
-                    mostrarToast('Maquinaria agregada');
-                    document.getElementById('maquinariaForm').reset();
+                    mostrarToast(editando ? 'Maquinaria modificada' : 'Maquinaria agregada');
+                    cancelarEdicionMaquinaria();
                     cargarMaquinariaDeCentro(idCentro);
                 } else {
-                    mostrarToast(json.message || 'Error al agregar maquinaria', 'error');
+                    mostrarToast(json.message || 'Error al guardar la maquinaria', 'error');
                 }
             } catch {
                 mostrarToast('Error de conexión con la API', 'error');
