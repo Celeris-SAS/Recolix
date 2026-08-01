@@ -241,6 +241,12 @@
             <option value="viernes">viernes</option>
             <option value="sábado">sábado</option>
         </select>
+        <select id="generarRutasTurno" class="ctrl-select">
+            <option value="">— Turno —</option>
+            <option value="mañana">mañana</option>
+            <option value="tarde">tarde</option>
+            <option value="noche">noche</option>
+        </select>
         <select id="generarRutasFrecuencia" class="ctrl-select">
             <option value="">— Frecuencia —</option>
         </select>
@@ -1032,28 +1038,29 @@ let circuitosParaGenerarRutas = [];
 
 async function buscarCircuitosParaRutas() {
     const dia = document.getElementById('generarRutasDia').value;
+    const turno = document.getElementById('generarRutasTurno').value;
     const frecuencia = document.getElementById('generarRutasFrecuencia').value;
 
-    if (!dia && !frecuencia) {
-        mostrarToast('Seleccioná al menos un día o una frecuencia', 'warning');
+    if (!dia && !turno && !frecuencia) {
+        mostrarToast('Seleccioná al menos un día, turno o frecuencia', 'warning');
         return;
     }
 
+    const [param, valor] = dia ? ['dia', dia] : turno ? ['turno', turno] : ['frecuencia', frecuencia];
+
     setLoading(true);
     try {
-        const url = dia
-            ? `${API_BASE}/circuitos?dia=${encodeURIComponent(dia)}`
-            : `${API_BASE}/circuitos?frecuencia=${encodeURIComponent(frecuencia)}`;
-        const res  = await fetch(url);
+        const res  = await fetch(`${API_BASE}/circuitos?${param}=${encodeURIComponent(valor)}`);
         const json = await res.json();
         if (json.status !== 'success') {
             mostrarToast(json.message || 'Error al buscar circuitos', 'error');
             return;
         }
 
-        circuitosParaGenerarRutas = (dia && frecuencia)
-            ? json.data.filter(c => c.frecuencia === frecuencia)
-            : json.data;
+        let resultado = json.data;
+        if (turno) resultado = resultado.filter(c => c.turno === turno);
+        if (frecuencia) resultado = resultado.filter(c => c.frecuencia === frecuencia);
+        circuitosParaGenerarRutas = resultado;
 
         renderResultadoGenerarRutas();
     } catch {

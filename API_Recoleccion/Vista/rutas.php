@@ -49,6 +49,8 @@
         .resumen-item small { color: var(--muted); display: block; margin-top: 2px; font-size: 0.76rem; }
         .resumen-llenado { font-weight: 700; color: var(--moss-dark); white-space: nowrap; font-size: 0.85rem; }
         .resumen-empty { color: var(--muted); font-size: 0.85rem; font-style: italic; }
+        .resumen-item-acciones { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .btn-sm { padding: 4px 10px; font-size: 0.76rem; border-radius: 6px; }
 
         .modal-lg { max-width: 860px; }
         .levante-layout { display: grid; grid-template-columns: 1.2fr 1fr; gap: 18px; margin: 16px 0; }
@@ -185,6 +187,7 @@
             <option value="circuitoId">Circuito (ID)</option>
             <option value="actividad">Actividad</option>
             <option value="nombre">Nombre</option>
+            <option value="estadoLevante">Estado del levante</option>
         </select>
         <input type="text" id="filtroValor" class="ctrl-input" placeholder="Valor del filtro..." style="display:none">
         <select id="filtroValorSelect" class="ctrl-select" style="display:none"></select>
@@ -224,6 +227,7 @@
                     <th>Circuito</th>
                     <th>Nombre</th>
                     <th>Actividad</th>
+                    <th>Turno</th>
                     <th>Levante</th>
                     <th>Llenado prom.</th>
                     <th>Acciones</th>
@@ -251,7 +255,7 @@
             <div class="levante-map">
                 <div id="mapaLevante"></div>
             </div>
-            <div class="levante-form">
+            <div class="levante-form" id="levanteFormWrap">
                 <label>Camion disponible</label>
                 <select id="levanteCamion" class="ctrl-select"></select>
                 <label>Cuadrilla asignada</label>
@@ -262,6 +266,9 @@
                 <input type="date" id="levanteFecha" class="ctrl-input" style="min-width:0">
                 <button class="btn-primary" onclick="planificarLevante()" style="margin-top:4px">Planificar levante</button>
             </div>
+            <p class="resumen-empty" id="levanteFormBloqueado" style="display:none">
+                Esta ruta ya tiene un levante pendiente o en curso. Cancelalo o esperá a que se complete para planificar uno nuevo.
+            </p>
         </div>
         <div class="levante-historial">
             <h4>Levantes de esta ruta</h4>
@@ -386,12 +393,17 @@ function renderResumenCard(listaId, countId, rutas) {
     `).join('');
 }
 
+const ORDEN_ESTADO_LEVANTE_DEFAULT = { sin_levante: 0, pendiente: 1, en_curso: 2 };
+
 async function listarRutas() {
     ocultarControles();
     setLoading(true);
     try {
         const rutas = await cargarResumen();
-        renderTabla(rutas || []);
+        const visibles = (rutas || [])
+            .filter(r => r.estado_levante in ORDEN_ESTADO_LEVANTE_DEFAULT)
+            .sort((a, b) => ORDEN_ESTADO_LEVANTE_DEFAULT[a.estado_levante] - ORDEN_ESTADO_LEVANTE_DEFAULT[b.estado_levante]);
+        renderTabla(visibles);
         setTableTitle('Todas las Rutas');
     } catch {
         mostrarToast('Error al conectar con la API', 'error');
@@ -421,6 +433,14 @@ async function buscarPorId() {
     }
 }
 
+const ESTADOS_LEVANTE = {
+    sin_levante: 'Sin levante (pendiente de planificar)',
+    pendiente:   'Asignada (levante pendiente)',
+    en_curso:    'En curso',
+    completado:  'Completada',
+    cancelado:   'Cancelada'
+};
+
 function actualizarFiltroValor() {
     const tipo   = document.getElementById('filtroTipo').value;
     const input  = document.getElementById('filtroValor');
@@ -433,6 +453,13 @@ function actualizarFiltroValor() {
 
     if (!tipo) return;
 
+    if (tipo === 'estadoLevante') {
+        select.innerHTML = '<option value="">— Seleccionar —</option>' +
+            Object.entries(ESTADOS_LEVANTE).map(([v, label]) => `<option value="${v}">${label}</option>`).join('');
+        select.style.display = '';
+        return;
+    }
+
     const placeholders = {
         circuitoId: 'ej: 1',
         actividad:  'ej: Recolección domiciliaria',
@@ -443,11 +470,12 @@ function actualizarFiltroValor() {
 }
 
 async function aplicarFiltro() {
-    const tipo  = document.getElementById('filtroTipo').value;
-    const input = document.getElementById('filtroValor');
+    const tipo   = document.getElementById('filtroTipo').value;
+    const input  = document.getElementById('filtroValor');
+    const select = document.getElementById('filtroValorSelect');
     if (!tipo) { mostrarToast('Seleccioná un filtro', 'warning'); return; }
 
-    const valor = input.value.trim();
+    const valor = (tipo === 'estadoLevante' ? select : input).value.trim();
     if (!valor) {
         mostrarToast('Ingresá un valor para el filtro', 'warning');
         return;
@@ -455,6 +483,13 @@ async function aplicarFiltro() {
 
     setLoading(true);
     try {
+        if (tipo === 'estadoLevante') {
+            const rutas = await cargarResumen();
+            renderTabla((rutas || []).filter(r => r.estado_levante === valor));
+            setTableTitle(`Filtro — Estado del levante: ${ESTADOS_LEVANTE[valor]}`);
+            return;
+        }
+
         const res  = await fetch(`${API_BASE}/rutas?${tipo}=${encodeURIComponent(valor)}`);
         const json = await res.json();
         if (json.status === 'success') {
@@ -553,6 +588,10 @@ async function cargarLevantesRuta(rutaId) {
     const levantes = (json.status === 'success' && json.data) ? json.data : [];
     const ul = document.getElementById('levantesRuta');
 
+    const hayActivo = levantes.some(l => l.estado === 'pendiente' || l.estado === 'en_curso');
+    document.getElementById('levanteFormWrap').style.display = hayActivo ? 'none' : '';
+    document.getElementById('levanteFormBloqueado').style.display = hayActivo ? '' : 'none';
+
     if (!levantes.length) {
         ul.innerHTML = '<li class="resumen-empty">Esta ruta no tiene levantes planificados.</li>';
         return;
@@ -565,9 +604,28 @@ async function cargarLevantesRuta(rutaId) {
                 <strong>#${l.id_levante}</strong> ${l.hora_levante ?? ''}<br>
                 <small>Camion ${l.matricula ?? '—'} · salida ${l.hora_salida ? l.hora_salida.slice(11, 16) : '—'}</small>
             </span>
-            <span class="badge badge-${estados[l.estado] ?? 'neutral'}">${l.estado}</span>
+            <span class="resumen-item-acciones">
+                <span class="badge badge-${estados[l.estado] ?? 'neutral'}">${l.estado}</span>
+                ${l.estado === 'pendiente' ? `<button type="button" class="btn-danger btn-sm" onclick="cancelarLevanteItem(${l.id_levante})">Cancelar</button>` : ''}
+            </span>
         </li>
     `).join('');
+}
+
+async function cancelarLevanteItem(idLevante) {
+    try {
+        const res = await fetch(`${API_BASE}/levantes/cancelar/${idLevante}`, { method: 'POST' });
+        const json = await res.json();
+        if (json.status === 'success') {
+            mostrarToast('Levante cancelado correctamente', 'success');
+            await Promise.all([cargarLevantesRuta(levanteRutaActual), cargarSelectsLevante()]);
+            listarRutas();
+        } else {
+            mostrarToast(json.message, 'error');
+        }
+    } catch {
+        mostrarToast('Error al cancelar el levante', 'error');
+    }
 }
 
 async function planificarLevante() {
@@ -648,6 +706,26 @@ async function darDeBajaRuta() {
     }
 }
 
+function badgeClassTurno(turno) {
+    const map = { 'mañana': 'info', 'tarde': 'warning', 'noche': 'neutral' };
+    return map[turno] ?? 'neutral';
+}
+
+const BADGE_ESTADO_LEVANTE = {
+    sin_levante: { clase: 'neutral', label: 'Sin asignar' },
+    pendiente:   { clase: 'warning', label: 'Asignada' },
+    en_curso:    { clase: 'info',    label: 'En curso' },
+    completado:  { clase: 'success', label: 'Completada' },
+    cancelado:   { clase: 'danger',  label: 'Cancelada' }
+};
+
+function levanteBadgeHtml(r) {
+    const info = BADGE_ESTADO_LEVANTE[r.estado_levante];
+    if (info) return `<span class="badge badge-${info.clase}">${info.label}</span>`;
+    const tieneLevante = (r.levantes_count ?? 0) > 0;
+    return `<span class="badge badge-${tieneLevante ? 'info' : 'neutral'}">${tieneLevante ? 'Asignado' : 'Sin asignar'}</span>`;
+}
+
 function renderTabla(rutas) {
     const tbody = document.getElementById('rutasBody');
     const noRes = document.getElementById('noResultados');
@@ -666,13 +744,13 @@ function renderTabla(rutas) {
 
     rutas.forEach(r => {
         const tr = document.createElement('tr');
-        const tieneLevante = (r.levantes_count ?? 0) > 0;
-        const levanteBadge = `<span class="badge badge-${tieneLevante ? 'info' : 'neutral'}">${tieneLevante ? 'Asignado' : 'Sin asignar'}</span>`;
+        const levanteBadge = levanteBadgeHtml(r);
         tr.innerHTML = `
             <td class="td-id" data-label="ID">${r.id_ruta}</td>
             <td data-label="Circuito">${r.id_circuito}</td>
             <td data-label="Nombre"><strong>${r.nombre}</strong></td>
             <td data-label="Actividad">${r.actividad ?? ''}</td>
+            <td data-label="Turno">${r.turno ? `<span class="badge badge-${badgeClassTurno(r.turno)}">${r.turno}</span>` : '—'}</td>
             <td data-label="Levante">${levanteBadge}</td>
             <td data-label="Llenado prom.">${r.llenado_promedio !== undefined && r.llenado_promedio !== null ? r.llenado_promedio + '%' : '—'}</td>
             <td class="td-actions" data-label="Acciones">

@@ -39,7 +39,12 @@ class RutaModel {
     // Todas las lecturas de ruta incluyen levantes_count (cantidad de levantes asignados)
     // para que la UI pueda mostrar "Asignado"/"Sin asignar" sin importar por qué endpoint
     // haya llegado la fila (listado completo, por id, o filtrada).
-    private const SELECT_CON_LEVANTES = "SELECT r.*, (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta) AS levantes_count FROM ruta_recoleccion r";
+    private const SELECT_CON_LEVANTES = "
+        SELECT r.*, ci.turno,
+               (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta) AS levantes_count
+        FROM ruta_recoleccion r
+        LEFT JOIN circuito ci ON ci.id_circuito = r.id_circuito
+    ";
 
     public function getAllRutas() {
         $stmt = mysqli_prepare($this->conn->getConexion(), self::SELECT_CON_LEVANTES);
@@ -175,13 +180,15 @@ class RutaModel {
     }
 
     public function obtenerResumen() {
-        $sql = "SELECT r.*,
+        $sql = "SELECT r.*, ci.turno,
                 (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta AND l.estado = 'en_curso') AS en_curso_count,
                 (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta AND l.estado = 'pendiente') AS pendiente_count,
+                (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta AND l.estado = 'completado') AS completado_count,
                 (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta) AS levantes_count,
                 (SELECT COUNT(*) FROM ruta_contenedor rc WHERE rc.id_ruta = r.id_ruta) AS contenedores_count,
                 (SELECT AVG(c.nivel_llenado) FROM ruta_contenedor rc JOIN contenedor c ON c.id_contenedor = rc.id_contenedor WHERE rc.id_ruta = r.id_ruta) AS llenado_promedio
                 FROM ruta_recoleccion r
+                LEFT JOIN circuito ci ON ci.id_circuito = r.id_circuito
                 ORDER BY r.id_ruta DESC";
         $stmt = mysqli_prepare($this->conn->getConexion(), $sql);
         mysqli_stmt_execute($stmt);

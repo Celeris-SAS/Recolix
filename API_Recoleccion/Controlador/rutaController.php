@@ -148,6 +148,7 @@
             return array_map(function ($r) {
                 $enCurso = (int) $r['en_curso_count'];
                 $pendientes = (int) $r['pendiente_count'];
+                $completados = (int) $r['completado_count'];
                 $totalLevantes = (int) $r['levantes_count'];
 
                 if ($enCurso > 0) {
@@ -158,7 +159,23 @@
                     $estado = 'finalizada';
                 }
 
+                // estado_levante es más granular que "estado": distingue completada de
+                // cancelada, y una ruta nunca planificada ("sin_levante") de una que ya
+                // tiene un levante pendiente. Se usa para filtrar/ordenar la tabla de rutas.
+                if ($enCurso > 0) {
+                    $estadoLevante = 'en_curso';
+                } elseif ($pendientes > 0) {
+                    $estadoLevante = 'pendiente';
+                } elseif ($totalLevantes === 0) {
+                    $estadoLevante = 'sin_levante';
+                } elseif ($completados > 0) {
+                    $estadoLevante = 'completado';
+                } else {
+                    $estadoLevante = 'cancelado';
+                }
+
                 $r['estado'] = $estado;
+                $r['estado_levante'] = $estadoLevante;
                 $r['llenado_promedio'] = $r['llenado_promedio'] !== null ? round((float) $r['llenado_promedio'], 1) : null;
                 $r['contenedores_count'] = (int) $r['contenedores_count'];
                 return $r;

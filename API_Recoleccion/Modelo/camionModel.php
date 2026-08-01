@@ -151,7 +151,14 @@ class CamionModel
 
     public function filtrarDisponibilidad()
     {
-        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM camion WHERE estado = 'disponible'");
+        $stmt = mysqli_prepare($this->conn->getConexion(), "
+            SELECT c.* FROM camion c
+            WHERE c.estado = 'disponible'
+              AND NOT EXISTS (
+                  SELECT 1 FROM levante l
+                  WHERE l.id_camion = c.id_camion AND l.estado IN ('pendiente', 'en_curso')
+              )
+        ");
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
         $camiones = [];

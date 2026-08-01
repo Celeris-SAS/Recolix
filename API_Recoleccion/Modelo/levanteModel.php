@@ -111,6 +111,19 @@ class LevanteModel {
             throw new InvalidArgumentException("Solo se puede planificar un levante sobre una ruta activa");
         }
 
+        $stmt = mysqli_prepare($this->conn->getConexion(), "
+            SELECT COUNT(*) AS activos FROM levante
+            WHERE id_ruta = ? AND estado IN ('pendiente', 'en_curso')
+        ");
+        mysqli_stmt_bind_param($stmt, "i", $idRuta);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $activosRuta = mysqli_fetch_assoc($result);
+        mysqli_stmt_close($stmt);
+        if (intval($activosRuta['activos']) > 0) {
+            throw new InvalidArgumentException("Esta ruta ya tiene un levante pendiente o en curso");
+        }
+
         $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT estado FROM camion WHERE id_camion = ?");
         mysqli_stmt_bind_param($stmt, "i", $idCamion);
         mysqli_stmt_execute($stmt);
@@ -154,6 +167,11 @@ class LevanteModel {
         mysqli_stmt_bind_param($stmt, "iisss", $idCamion, $idCuadrilla, $idRuta, $horaSalida, $horaLevante);
         mysqli_stmt_execute($stmt);
         $idLevante = mysqli_insert_id($this->conn->getConexion());
+        mysqli_stmt_close($stmt);
+
+        $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE camion SET estado = 'en_deposito' WHERE id_camion = ?");
+        mysqli_stmt_bind_param($stmt, "i", $idCamion);
+        mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
 
         $this->precargarContenedores($idLevante, $idRuta);
@@ -351,12 +369,10 @@ class LevanteModel {
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
 
-        if ($levante['estado'] === 'en_curso') {
-            $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE camion SET estado = 'disponible' WHERE id_camion = ?");
-            mysqli_stmt_bind_param($stmt, "i", $levante['id_camion']);
-            mysqli_stmt_execute($stmt);
-            mysqli_stmt_close($stmt);
-        }
+        $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE camion SET estado = 'disponible' WHERE id_camion = ?");
+        mysqli_stmt_bind_param($stmt, "i", $levante['id_camion']);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
 
         return $this->getLevante($idLevante);
     }
