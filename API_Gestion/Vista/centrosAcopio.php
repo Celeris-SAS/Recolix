@@ -264,7 +264,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
         </div>
     </div>
 
-    
+    <!-- ── MODAL MAQUINARIA DEL CENTRO ───────────────────────────────────── -->
     <div class="modal-overlay" id="modalMaquinaria" style="display:none" onclick="onOverlayClick(event,'modalMaquinaria')">
         <div class="modal" style="max-width:640px">
             <div class="modal-header">
@@ -322,44 +322,6 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
         </div>
     </div>
 
-    <!-- ── MODAL RESIDUOS DEL CENTRO ─────────────────────────────────────── -->
-    <div class="modal-overlay" id="modalResiduos" style="display:none" onclick="onOverlayClick(event,'modalResiduos')">
-        <div class="modal" style="max-width:640px">
-            <div class="modal-header">
-                <h3>Residuos de <span id="residuosCentroNombre"></span></h3>
-                <button class="modal-close" onclick="cerrarModalResiduos()">✕</button>
-            </div>
-            <div class="table-wrapper" style="margin-bottom:20px">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Color</th><th>Descripción</th><th>Capacidad</th><th>Ocupación actual</th><th></th>
-                        </tr>
-                    </thead>
-                    <tbody id="residuosBody"></tbody>
-                </table>
-                <div id="residuosVacio" class="empty-state" style="display:none">Este centro todavía no tiene tipos de residuo configurados.</div>
-            </div>
-            <form id="residuoForm" onsubmit="guardarResiduo(event)">
-                <input type="hidden" id="residuoIdCentro">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="residuoIdTipo">Tipo de residuo</label>
-                        <select id="residuoIdTipo" class="form-input" required></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="residuoCapacidad">Capacidad</label>
-                        <input type="number" id="residuoCapacidad" class="form-input" placeholder="1000" min="1" required>
-                    </div>
-                </div>
-                <div class="modal-actions">
-                    <button type="submit" class="btn-primary">Agregar tipo de residuo</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    
     <div id="toast" class="toast"></div>
 
     
@@ -440,9 +402,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 if (btn.dataset.action === 'editar') abrirModalEditar(c);
                 if (btn.dataset.action === 'baja') confirmarBorrar(c.id_centro, c.nombre);
                 if (btn.dataset.action === 'maquinaria') abrirModalMaquinaria(c);
-                if (btn.dataset.action === 'residuos') abrirModalResiduos(c);
             });
-            await cargarTiposResiduo();
             listarCentros();
         });
 
@@ -515,7 +475,6 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                     <td id="ocupacion-${c.id_centro}">—</td>
                     <td><span class="badge ${badgeClaseEstado(c.estado)}">${c.estado}</span></td>
                     <td class="td-actions">
-                        <button class="btn-action" data-action="residuos" data-id="${c.id_centro}" title="Ver residuos">♻️</button>
                         <button class="btn-action" data-action="maquinaria" data-id="${c.id_centro}" title="Ver maquinaria">🔧</button>
                         <button class="btn-action" data-action="editar" data-id="${c.id_centro}" title="Editar">✎</button>
                         <button class="btn-action" data-action="baja" data-id="${c.id_centro}" title="Dar de baja">🗑</button>
@@ -702,7 +661,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             confirmarBorrar(id, c ? c.nombre : `#${id}`);
         }
 
-        
+        // ── MAQUINARIA (anidada dentro del centro) ─────────────────────────
 
         async function abrirModalMaquinaria(centro) {
             document.getElementById('maquinariaCentroNombre').textContent = centro.nombre;
@@ -749,7 +708,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
         async function guardarMaquinaria(event) {
             event.preventDefault();
             const idCentro = document.getElementById('maquinariaIdCentro').value;
-            
+            // El orden tiene que calzar con insertMaquinaria($idCentro, $nombre, $tipo, $fechaAdquisicion, $estado).
             const body = {
                 idCentro: parseInt(idCentro, 10),
                 nombre: document.getElementById('maqNombre').value,
@@ -796,117 +755,6 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             }
         }
 
-        
-
-        let tiposResiduo = [];
-
-        async function cargarTiposResiduo() {
-            try {
-                const res = await fetch(`${API_BASE}/tipos-residuo`);
-                const json = await res.json();
-                tiposResiduo = json.status === 'success' ? json.data : [];
-            } catch {
-                tiposResiduo = [];
-            }
-        }
-
-        function poblarSelectResiduo() {
-            const select = document.getElementById('residuoIdTipo');
-            select.innerHTML = tiposResiduo.map(t =>
-                `<option value="${t.id_tipo}">${t.descripcion} (${t.color})</option>`
-            ).join('');
-        }
-
-        async function abrirModalResiduos(centro) {
-            document.getElementById('residuosCentroNombre').textContent = centro.nombre;
-            document.getElementById('residuoIdCentro').value = centro.id_centro;
-            document.getElementById('residuoForm').reset();
-            poblarSelectResiduo();
-            document.getElementById('modalResiduos').style.display = 'flex';
-            await cargarResiduosDeCentro(centro.id_centro);
-        }
-
-        function cerrarModalResiduos() {
-            document.getElementById('modalResiduos').style.display = 'none';
-        }
-
-        async function cargarResiduosDeCentro(idCentro) {
-            const body = document.getElementById('residuosBody');
-            const vacio = document.getElementById('residuosVacio');
-            try {
-                const res = await fetch(`${API_BASE}/centros-acopio/getResiduosPorCentro/${idCentro}`);
-                const json = await res.json();
-                const items = json.status === 'success' ? json.data : [];
-                vacio.style.display = items.length ? 'none' : 'flex';
-                body.innerHTML = items.map(r => `
-                    <tr>
-                        <td>${r.color}</td>
-                        <td>${r.descripcion}</td>
-                        <td>${r.capacidad}</td>
-                        <td>
-                            <input type="number" class="ctrl-input" style="max-width:110px;padding:5px 8px"
-                                id="ocup-${r.id_residuo}" value="${r.ocupacion_actual}" min="0" max="${r.capacidad}">
-                        </td>
-                        <td>
-                            <button class="btn-action" onclick="actualizarOcupacionResiduo(${idCentro}, ${r.id_residuo})" title="Actualizar">↻</button>
-                        </td>
-                    </tr>
-                `).join('');
-            } catch {
-                mostrarToast('No se pudo cargar los residuos del centro', 'error');
-            }
-        }
-
-        async function guardarResiduo(event) {
-            event.preventDefault();
-            const idCentro = document.getElementById('residuoIdCentro').value;
-            // Mismo orden que asignarTipoResiduo($idCentro, $idResiduo, $capacidad).
-            const body = {
-                idResiduo: parseInt(document.getElementById('residuoIdTipo').value, 10),
-                capacidad: parseInt(document.getElementById('residuoCapacidad').value, 10)
-            };
-            try {
-                const res = await fetch(`${API_BASE}/centros-acopio/asignarTipoResiduo/${idCentro}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(body)
-                });
-                const json = await res.json();
-                if (json.status === 'success') {
-                    mostrarToast('Tipo de residuo asignado');
-                    document.getElementById('residuoCapacidad').value = '';
-                    cargarResiduosDeCentro(idCentro);
-                    cargarOcupacion(idCentro);
-                } else {
-                    mostrarToast(json.message || 'Error al asignar el residuo', 'error');
-                }
-            } catch {
-                mostrarToast('Error de conexión con la API', 'error');
-            }
-        }
-
-        async function actualizarOcupacionResiduo(idCentro, idResiduo) {
-            const input = document.getElementById(`ocup-${idResiduo}`);
-            const ocupacionActual = parseInt(input.value, 10);
-            try {
-                const res = await fetch(`${API_BASE}/centros-acopio/actualizarOcupacion/${idCentro}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ idResiduo, ocupacionActual })
-                });
-                const json = await res.json();
-                if (json.status === 'success') {
-                    mostrarToast('Ocupación actualizada');
-                    cargarOcupacion(idCentro);
-                } else {
-                    mostrarToast(json.message || 'Error al actualizar la ocupación', 'error');
-                }
-            } catch {
-                mostrarToast('Error de conexión con la API', 'error');
-            }
-        }
-
-        
 
         function ocultarControles() {
             ['filterBar', 'searchBar', 'deleteBar'].forEach(id => {
