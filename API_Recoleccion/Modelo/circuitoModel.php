@@ -10,18 +10,27 @@ class CircuitoModel {
         $this->conn = new conexion();
     }
 
-    public function insertCircuito($municipioId, $nombre, $codigo, $actividad, $turno, $frecuencia) {
-        $stmt = mysqli_prepare($this->conn->getConexion(), "INSERT INTO circuito (id_municipio, nombre, codigo, actividad, turno, frecuencia) VALUES (?, ?, ?, ?, ?, ?)");
-        mysqli_stmt_bind_param($stmt, "isssss", $municipioId, $nombre, $codigo, $actividad, $turno, $frecuencia);
+    public function insertCircuito($municipioId, $nombre, $codigo, $actividad, $turno, $frecuencia, $poligono = null) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "INSERT INTO circuito (id_municipio, nombre, codigo, actividad, turno, frecuencia, poligono) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        mysqli_stmt_bind_param($stmt, "issssss", $municipioId, $nombre, $codigo, $actividad, $turno, $frecuencia, $poligono);
         mysqli_stmt_execute($stmt);
         $id = mysqli_insert_id($this->conn->getConexion());
         mysqli_stmt_close($stmt);
         return $id;
     }
 
-    public function updateCircuito($id, $municipioId, $nombre, $codigo, $actividad, $turno, $frecuencia) {
-        $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE circuito SET id_municipio = ?, nombre = ?, codigo = ?, actividad = ?, turno = ?, frecuencia = ? WHERE id_circuito = ?");
-        mysqli_stmt_bind_param($stmt, "isssssi", $municipioId, $nombre, $codigo, $actividad, $turno, $frecuencia, $id);
+    public function updateCircuito($id, $municipioId, $nombre, $codigo, $actividad, $turno, $frecuencia, $poligono = null) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE circuito SET id_municipio = ?, nombre = ?, codigo = ?, actividad = ?, turno = ?, frecuencia = ?, poligono = ? WHERE id_circuito = ?");
+        mysqli_stmt_bind_param($stmt, "issssssi", $municipioId, $nombre, $codigo, $actividad, $turno, $frecuencia, $poligono, $id);
+        mysqli_stmt_execute($stmt);
+        $affected = mysqli_stmt_affected_rows($stmt);
+        mysqli_stmt_close($stmt);
+        return $affected > 0;
+    }
+
+    public function actualizarPoligono($id, $poligonoJson) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE circuito SET poligono = ? WHERE id_circuito = ?");
+        mysqli_stmt_bind_param($stmt, "si", $poligonoJson, $id);
         mysqli_stmt_execute($stmt);
         $affected = mysqli_stmt_affected_rows($stmt);
         mysqli_stmt_close($stmt);

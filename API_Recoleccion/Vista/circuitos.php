@@ -6,6 +6,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Circuitos — Recolix</title>
     <link rel="stylesheet" href="styleRecoleccion.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css">
+    <style>
+        .mapa-box { height: 320px; border-radius: 12px; margin-top: 10px; z-index: 0; }
+        .mapa-hint { font-size: 0.85rem; color: #666; margin-top: 6px; }
+        .mapa-modal-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+        .mapa-ruta-form { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; margin-top: 14px; }
+        .mapa-ruta-form .form-group { flex: 1; min-width: 160px; margin: 0; }
+        .mapa-resultado { margin-top: 12px; font-size: 0.9rem; }
+
+        .mapa-circuitos-section { padding: 28px 32px; }
+        .mapa-circuitos-box { width: 100%; height: 440px; border-radius: var(--radius); z-index: 0; margin-top: 10px; }
+        .mapa-panel { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-top: 16px; }
+        .mapa-panel-empty { color: var(--muted); font-size: 0.9rem; text-align: center; padding: 20px 10px; }
+        @media (max-width: 1024px) {
+            .mapa-circuitos-section { padding-left: 20px; padding-right: 20px; }
+            .mapa-circuitos-box { height: 320px; }
+        }
+
+        .generar-rutas-resultado { width: 100%; margin-top: 14px; }
+        .generar-rutas-resumen { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+        .generar-rutas-resumen span { color: var(--muted); font-size: 0.875rem; }
+        .generar-rutas-lista { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; max-height: 220px; overflow-y: auto; }
+        .generar-rutas-lista li { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 0.85rem; }
+        .generar-rutas-log { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+        .generar-rutas-log .log-ok { color: var(--green); font-size: 0.85rem; }
+        .generar-rutas-log .log-error { color: var(--red); font-size: 0.85rem; }
+    </style>
 </head>
 <body>
 
@@ -60,6 +88,32 @@
     <p class="hero-sub">Gestioná los circuitos de recolección dentro de cada municipio.</p>
 </section>
 
+<section class="mapa-circuitos-section" id="mapaCircuitosSection">
+    <div class="table-header">
+        <h2 class="table-title">Mapa de circuitos</h2>
+    </div>
+    <p class="mapa-hint">Seleccioná un circuito en el mapa o en la tabla (🗺️) para ver sus datos y generar su ruta.</p>
+    <div id="mapaCircuitos" class="mapa-circuitos-box"></div>
+    <aside class="mapa-panel" id="mapaPanel" style="display:none">
+        <h3 id="mapaPanelTitulo"></h3>
+        <div class="mapa-modal-actions">
+            <button type="button" class="btn-secondary" onclick="cargarContenedoresEnMapa()">Cargar contenedores</button>
+        </div>
+        <div class="mapa-ruta-form">
+            <div class="form-group">
+                <label for="rutaNombre">Nombre de la ruta</label>
+                <input type="text" id="rutaNombre" class="form-input" placeholder="Ruta óptima" maxlength="100">
+            </div>
+            <div class="form-group">
+                <label for="rutaActividad">Actividad</label>
+                <input type="text" id="rutaActividad" class="form-input" placeholder="Recolección domiciliaria" maxlength="60">
+            </div>
+            <button type="button" class="btn-primary" onclick="generarRutaOptima()">Generar ruta óptima</button>
+        </div>
+        <div id="mapaResultado" class="mapa-resultado"></div>
+    </aside>
+</section>
+
 <section class="cards-section">
     <div class="cards-grid">
 
@@ -108,6 +162,15 @@
             </div>
         </div>
 
+        <div class="card-operar" onclick="toggleGenerarRutas()">
+            <div class="card-content">
+                <div class="card-icon"><img src="../../Backoffice/img/ruta.svg" alt="" class="card-svg-icon"></div>
+                <h3>Generar Rutas</h3>
+                <p>Filtrar circuitos por día y frecuencia, y generar sus rutas</p>
+                <button class="card-btn">Generar</button>
+            </div>
+        </div>
+
     </div>
 </section>
 
@@ -119,6 +182,7 @@
             <option value="turno">Turno</option>
             <option value="actividad">Actividad</option>
             <option value="frecuencia">Frecuencia</option>
+            <option value="dia">Día</option>
         </select>
         <input type="text" id="filtroValor" class="ctrl-input" placeholder="Valor del filtro..." style="display:none">
         <select id="filtroValorSelect" class="ctrl-select" style="display:none"></select>
@@ -162,6 +226,40 @@
                placeholder="ID del circuito a eliminar..." min="1" style="max-width:240px">
         <button class="btn-danger" onclick="darDeBajaCircuito()">Eliminar</button>
         <button class="btn-secondary" onclick="ocultarControles()">Cancelar</button>
+    </div>
+</section>
+
+<section class="control-bar" id="generarRutasBar" style="display:none">
+    <div class="control-inner">
+        <select id="generarRutasDia" class="ctrl-select">
+            <option value="">— Día —</option>
+            <option value="domingo">domingo</option>
+            <option value="lunes">lunes</option>
+            <option value="martes">martes</option>
+            <option value="miércoles">miércoles</option>
+            <option value="jueves">jueves</option>
+            <option value="viernes">viernes</option>
+            <option value="sábado">sábado</option>
+        </select>
+        <select id="generarRutasTurno" class="ctrl-select">
+            <option value="">— Turno —</option>
+            <option value="mañana">mañana</option>
+            <option value="tarde">tarde</option>
+            <option value="noche">noche</option>
+        </select>
+        <select id="generarRutasFrecuencia" class="ctrl-select">
+            <option value="">— Frecuencia —</option>
+        </select>
+        <button class="btn-primary" onclick="buscarCircuitosParaRutas()">Buscar circuitos</button>
+        <button class="btn-secondary" onclick="ocultarControles()">Cancelar</button>
+    </div>
+    <div id="generarRutasResultado" class="generar-rutas-resultado" style="display:none">
+        <div class="generar-rutas-resumen">
+            <span id="generarRutasResumenTexto"></span>
+            <button type="button" class="btn-primary" id="btnGenerarRutasMasivo" onclick="generarRutasParaFiltrados()">Generar rutas para todos</button>
+        </div>
+        <ul id="generarRutasLista" class="generar-rutas-lista"></ul>
+        <div id="generarRutasLog" class="generar-rutas-log"></div>
     </div>
 </section>
 
@@ -244,6 +342,13 @@
                            placeholder="Lunes, Miércoles, Viernes" maxlength="40" required>
                 </div>
             </div>
+            <div class="form-row">
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>Área del circuito (opcional)</label>
+                    <div id="formMapa" class="mapa-box"></div>
+                    <p class="mapa-hint">Dibujá el polígono con la herramienta de la izquierda del mapa. Podés borrarlo y volver a dibujarlo.</p>
+                </div>
+            </div>
             <div class="modal-actions">
                 <button type="button" class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
                 <button type="submit" class="btn-primary">Guardar</button>
@@ -292,6 +397,8 @@
     <p class="footer-copy">&copy; 2026 Recolix. Todos los derechos reservados.</p>
 </footer>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
 <script>
 const API_BASE = '/recolix/API_Recoleccion';
 let circuitoIdParaEliminar = null;
@@ -322,7 +429,12 @@ function nombreMunicipio(id) {
 document.addEventListener('DOMContentLoaded', async () => {
     await cargarReglas();
     poblarSelectMunicipio();
+    initMapaCircuitos();
     listarCircuitos();
+});
+
+window.addEventListener('resize', () => {
+    if (mapaCircuitos) mapaCircuitos.invalidateSize();
 });
 
 function reglasFallback() {
@@ -410,7 +522,8 @@ function actualizarFiltroValor() {
     }
 
     const listas = {
-        turno: ['mañana', 'tarde', 'noche']
+        turno: ['mañana', 'tarde', 'noche'],
+        dia:   ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
     };
 
     if (listas[tipo]) {
@@ -447,7 +560,8 @@ async function aplicarFiltro() {
             renderTabla(json.data);
             const labels = {
                 municipioId: `Municipio: ${nombreMunicipio(valor)}`, turno: `Turno: ${formatearValor(valor)}`,
-                actividad: `Actividad: ${valor}`, frecuencia: `Frecuencia: ${valor}`
+                actividad: `Actividad: ${valor}`, frecuencia: `Frecuencia: ${valor}`,
+                dia: `Día: ${formatearValor(valor)}`
             };
             setTableTitle(`Filtro — ${labels[tipo] || tipo}`);
         } else {
@@ -460,11 +574,65 @@ async function aplicarFiltro() {
     }
 }
 
+const CENTRO_MAPA = [-34.901, -56.165];
+
+let formMap = null;
+let formDrawnItems = null;
+
+function initFormMap() {
+    if (formMap) return;
+    formMap = L.map('formMapa').setView(CENTRO_MAPA, 12);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(formMap);
+
+    formDrawnItems = new L.FeatureGroup();
+    formMap.addLayer(formDrawnItems);
+
+    const drawControl = new L.Control.Draw({
+        draw: {
+            polygon: { allowIntersection: false, showArea: false },
+            polyline: false, rectangle: false, circle: false, circlemarker: false, marker: false
+        },
+        edit: { featureGroup: formDrawnItems, remove: true }
+    });
+    formMap.addControl(drawControl);
+
+    formMap.on(L.Draw.Event.CREATED, (e) => {
+        formDrawnItems.clearLayers();
+        formDrawnItems.addLayer(e.layer);
+    });
+}
+
+function cargarPoligonoEnFormMap(poligonoJson) {
+    formDrawnItems.clearLayers();
+    if (!poligonoJson) return;
+    let puntos;
+    try { puntos = JSON.parse(poligonoJson); } catch { return; }
+    if (!Array.isArray(puntos) || puntos.length < 3) return;
+    const layer = L.polygon(puntos);
+    formDrawnItems.addLayer(layer);
+    formMap.fitBounds(layer.getBounds(), { padding: [20, 20] });
+}
+
+function obtenerPoligonoDelFormMap() {
+    const layers = formDrawnItems.getLayers();
+    if (layers.length === 0) return null;
+    return layers[0].getLatLngs()[0].map(ll => [ll.lat, ll.lng]);
+}
+
 function abrirModalAgregar() {
     document.getElementById('modalTitle').textContent = 'Agregar Circuito';
     document.getElementById('circuitoId').value = '';
     document.getElementById('circuitoForm').reset();
     document.getElementById('modalForm').style.display = 'flex';
+    setTimeout(() => {
+        initFormMap();
+        formDrawnItems.clearLayers();
+        formMap.invalidateSize();
+        formMap.setView(CENTRO_MAPA, 12);
+    }, 100);
 }
 
 function abrirModalEditar(circuito) {
@@ -481,6 +649,12 @@ function abrirModalEditar(circuito) {
     if (!turnoEl.value) turnoEl.selectedIndex = 0;
 
     document.getElementById('modalForm').style.display = 'flex';
+    setTimeout(() => {
+        initFormMap();
+        formMap.invalidateSize();
+        cargarPoligonoEnFormMap(circuito.poligono);
+        if (!circuito.poligono) formMap.setView(CENTRO_MAPA, 12);
+    }, 100);
 }
 
 async function guardarCircuito(e) {
@@ -526,7 +700,8 @@ async function guardarCircuito(e) {
         codigo:      campos.codigo,
         actividad:   campos.actividad,
         turno:       campos.turno,
-        frecuencia:  campos.frecuencia
+        frecuencia:  campos.frecuencia,
+        poligono:    obtenerPoligonoDelFormMap()
     };
 
     try {
@@ -728,6 +903,7 @@ function renderTabla(circuitos) {
     if (!circuitos || circuitos.length === 0) {
         noRes.style.display = 'flex';
         count.textContent   = '';
+        renderPoligonosCircuitos([]);
         return;
     }
 
@@ -746,11 +922,14 @@ function renderTabla(circuitos) {
             <td data-label="Frecuencia">${c.frecuencia ?? ''}</td>
             <td class="td-actions" data-label="Acciones">
                 <button class="btn-action" onclick='abrirModalEditar(${JSON.stringify(c)})' title="Editar">✏️</button>
+                <button class="btn-action" onclick='seleccionarCircuito(${JSON.stringify(c)})' title="Mapa y ruta óptima">🗺️</button>
                 <button class="btn-action" onclick="confirmarBorrar(${c.id_circuito},'${c.nombre}')" title="Eliminar">🗑️</button>
             </td>
         `;
         tbody.appendChild(tr);
     });
+
+    renderPoligonosCircuitos(circuitos);
 }
 
 function formatearValor(v) {
@@ -767,9 +946,11 @@ function toggleFiltros() {
     const sb = document.getElementById('searchBar');
     const mb = document.getElementById('modificarBar');
     const db = document.getElementById('deleteBar');
+    const gb = document.getElementById('generarRutasBar');
     sb.style.display = 'none';
     mb.style.display = 'none';
     db.style.display = 'none';
+    gb.style.display = 'none';
     fb.style.display = fb.style.display === 'none' ? 'block' : 'none';
 }
 
@@ -778,9 +959,11 @@ function toggleBusquedaId() {
     const fb = document.getElementById('filterBar');
     const mb = document.getElementById('modificarBar');
     const db = document.getElementById('deleteBar');
+    const gb = document.getElementById('generarRutasBar');
     fb.style.display = 'none';
     mb.style.display = 'none';
     db.style.display = 'none';
+    gb.style.display = 'none';
     sb.style.display = sb.style.display === 'none' ? 'block' : 'none';
 }
 
@@ -789,6 +972,7 @@ function ocultarControles() {
     document.getElementById('searchBar').style.display = 'none';
     document.getElementById('modificarBar').style.display = 'none';
     document.getElementById('deleteBar').style.display = 'none';
+    document.getElementById('generarRutasBar').style.display = 'none';
 }
 
 function toggleModificar() {
@@ -796,9 +980,11 @@ function toggleModificar() {
     const fb = document.getElementById('filterBar');
     const sb = document.getElementById('searchBar');
     const db = document.getElementById('deleteBar');
+    const gb = document.getElementById('generarRutasBar');
     fb.style.display = 'none';
     sb.style.display = 'none';
     db.style.display = 'none';
+    gb.style.display = 'none';
     mb.style.display = mb.style.display === 'none' ? 'block' : 'none';
 }
 
@@ -807,10 +993,145 @@ function toggleDarDeBaja() {
     const fb = document.getElementById('filterBar');
     const sb = document.getElementById('searchBar');
     const mb = document.getElementById('modificarBar');
+    const gb = document.getElementById('generarRutasBar');
     fb.style.display = 'none';
     sb.style.display = 'none';
     mb.style.display = 'none';
+    gb.style.display = 'none';
     db.style.display = db.style.display === 'none' ? 'block' : 'none';
+}
+
+async function toggleGenerarRutas() {
+    const gb = document.getElementById('generarRutasBar');
+    const fb = document.getElementById('filterBar');
+    const sb = document.getElementById('searchBar');
+    const mb = document.getElementById('modificarBar');
+    const db = document.getElementById('deleteBar');
+    fb.style.display = 'none';
+    sb.style.display = 'none';
+    mb.style.display = 'none';
+    db.style.display = 'none';
+
+    const abrir = gb.style.display === 'none';
+    gb.style.display = abrir ? 'block' : 'none';
+    if (abrir) {
+        document.getElementById('generarRutasResultado').style.display = 'none';
+        await poblarFrecuenciasGenerarRutas();
+    }
+}
+
+async function poblarFrecuenciasGenerarRutas() {
+    const select = document.getElementById('generarRutasFrecuencia');
+    try {
+        const res  = await fetch(`${API_BASE}/circuitos`);
+        const json = await res.json();
+        if (json.status !== 'success') return;
+        const frecuencias = [...new Set(json.data.map(c => c.frecuencia).filter(Boolean))].sort();
+        select.innerHTML = '<option value="">— Frecuencia —</option>' +
+            frecuencias.map(f => `<option value="${f}">${f}</option>`).join('');
+    } catch {
+        // si falla, se puede seguir usando solo el filtro por día
+    }
+}
+
+let circuitosParaGenerarRutas = [];
+
+async function buscarCircuitosParaRutas() {
+    const dia = document.getElementById('generarRutasDia').value;
+    const turno = document.getElementById('generarRutasTurno').value;
+    const frecuencia = document.getElementById('generarRutasFrecuencia').value;
+
+    if (!dia && !turno && !frecuencia) {
+        mostrarToast('Seleccioná al menos un día, turno o frecuencia', 'warning');
+        return;
+    }
+
+    const [param, valor] = dia ? ['dia', dia] : turno ? ['turno', turno] : ['frecuencia', frecuencia];
+
+    setLoading(true);
+    try {
+        const res  = await fetch(`${API_BASE}/circuitos?${param}=${encodeURIComponent(valor)}`);
+        const json = await res.json();
+        if (json.status !== 'success') {
+            mostrarToast(json.message || 'Error al buscar circuitos', 'error');
+            return;
+        }
+
+        let resultado = json.data;
+        if (turno) resultado = resultado.filter(c => c.turno === turno);
+        if (frecuencia) resultado = resultado.filter(c => c.frecuencia === frecuencia);
+        circuitosParaGenerarRutas = resultado;
+
+        renderResultadoGenerarRutas();
+    } catch {
+        mostrarToast('Error al conectar con la API', 'error');
+    } finally {
+        setLoading(false);
+    }
+}
+
+function renderResultadoGenerarRutas() {
+    const resultado = document.getElementById('generarRutasResultado');
+    const resumen = document.getElementById('generarRutasResumenTexto');
+    const lista = document.getElementById('generarRutasLista');
+    const boton = document.getElementById('btnGenerarRutasMasivo');
+    const log = document.getElementById('generarRutasLog');
+
+    log.innerHTML = '';
+    resultado.style.display = 'block';
+    resumen.textContent = `${circuitosParaGenerarRutas.length} circuito${circuitosParaGenerarRutas.length !== 1 ? 's' : ''} encontrado${circuitosParaGenerarRutas.length !== 1 ? 's' : ''}`;
+    boton.disabled = circuitosParaGenerarRutas.length === 0;
+
+    lista.innerHTML = circuitosParaGenerarRutas
+        .map(c => `<li>#${c.id_circuito} — ${c.nombre} (${c.frecuencia ?? 'sin frecuencia'})</li>`)
+        .join('');
+}
+
+async function generarRutasParaFiltrados() {
+    if (!circuitosParaGenerarRutas.length) return;
+
+    const boton = document.getElementById('btnGenerarRutasMasivo');
+    const log = document.getElementById('generarRutasLog');
+    boton.disabled = true;
+    log.innerHTML = '';
+
+    let exitosas = 0;
+    let fallidas = 0;
+
+    for (const circuito of circuitosParaGenerarRutas) {
+        const linea = document.createElement('div');
+        linea.textContent = `Generando ruta para #${circuito.id_circuito} — ${circuito.nombre}...`;
+        log.appendChild(linea);
+
+        try {
+            const res = await fetch(`${API_BASE}/rutas/generarOptima`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    circuitoId: circuito.id_circuito,
+                    nombre: `Ruta óptima ${circuito.nombre}`,
+                    actividad: circuito.actividad || 'recolección domiciliaria'
+                })
+            });
+            const json = await res.json();
+            if (json.status === 'success') {
+                exitosas++;
+                linea.className = 'log-ok';
+                linea.textContent = `✓ #${circuito.id_circuito} — ${circuito.nombre}: ruta #${json.data.ruta.id_ruta} generada (${json.data.distancia_total_km} km)`;
+            } else {
+                fallidas++;
+                linea.className = 'log-error';
+                linea.textContent = `✗ #${circuito.id_circuito} — ${circuito.nombre}: ${json.message || 'error desconocido'}`;
+            }
+        } catch {
+            fallidas++;
+            linea.className = 'log-error';
+            linea.textContent = `✗ #${circuito.id_circuito} — ${circuito.nombre}: error al conectar con la API`;
+        }
+    }
+
+    boton.disabled = false;
+    mostrarToast(`${exitosas} ruta${exitosas !== 1 ? 's' : ''} generada${exitosas !== 1 ? 's' : ''}${fallidas ? `, ${fallidas} con error` : ''}`, fallidas ? 'warning' : 'success');
 }
 
 function cerrarModal() {
@@ -823,9 +1144,9 @@ function cerrarModalDelete() {
 }
 
 function onOverlayClick(e, modalId) {
-    if (e.target.id === modalId) {
-        modalId === 'modalForm' ? cerrarModal() : cerrarModalDelete();
-    }
+    if (e.target.id !== modalId) return;
+    if (modalId === 'modalForm') cerrarModal();
+    else cerrarModalDelete();
 }
 
 function setTableTitle(title) {
@@ -839,6 +1160,204 @@ function setLoading(show) {
 
 function toggleMobileMenu() {
     document.getElementById('navMobile').classList.toggle('nav-mobile-open');
+}
+
+let mapaCircuitos = null;
+let mapaCircuitosMarkers = [];
+let mapaCircuitosPolyline = null;
+let circuitoActualMapa = null;
+let poligonosPorCircuito = {};
+let poligonoSeleccionadoId = null;
+
+const COLORES_CONTENEDOR = {
+    funcional: '#4CAF50',
+    inactivo: '#e3b23c',
+    desbordado: '#c0392b',
+    roto: '#2b2b2b',
+    en_deposito: '#4a5568'
+};
+
+const COLOR_POLIGONO = '#3f5a33';
+const COLOR_POLIGONO_SELECCIONADO = '#8bbd3f';
+
+function initMapaCircuitos() {
+    if (mapaCircuitos) return;
+    mapaCircuitos = L.map('mapaCircuitos').setView(CENTRO_MAPA, 12);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(mapaCircuitos);
+}
+
+function limpiarCapasMapa() {
+    mapaCircuitosMarkers.forEach(m => mapaCircuitos.removeLayer(m));
+    mapaCircuitosMarkers = [];
+    if (mapaCircuitosPolyline) { mapaCircuitos.removeLayer(mapaCircuitosPolyline); mapaCircuitosPolyline = null; }
+}
+
+function tituloPanel(circuito) {
+    return circuito.poligono
+        ? `Circuito — ${circuito.nombre}`
+        : `Circuito — ${circuito.nombre} (sin área dibujada)`;
+}
+
+function renderPoligonosCircuitos(circuitos) {
+    Object.values(poligonosPorCircuito).forEach(layer => mapaCircuitos.removeLayer(layer));
+    poligonosPorCircuito = {};
+
+    const bounds = [];
+    (circuitos || []).forEach(c => {
+        if (!c.poligono) return;
+        let puntos;
+        try { puntos = JSON.parse(c.poligono); } catch { return; }
+        if (!Array.isArray(puntos) || puntos.length < 3) return;
+
+        const layer = L.polygon(puntos, { color: COLOR_POLIGONO, weight: 2, fillOpacity: 0.08 })
+            .bindTooltip(c.nombre)
+            .addTo(mapaCircuitos);
+        layer.on('click', () => seleccionarCircuito(c));
+        layer.on('mouseover', () => layer.bringToFront());
+
+        poligonosPorCircuito[c.id_circuito] = layer;
+        bounds.push(...puntos);
+    });
+
+    if (bounds.length) {
+        mapaCircuitos.fitBounds(bounds, { padding: [30, 30] });
+    } else {
+        mapaCircuitos.setView(CENTRO_MAPA, 12);
+    }
+
+    if (poligonoSeleccionadoId !== null) {
+        const circuitoSeleccionado = (circuitos || []).find(c => c.id_circuito === poligonoSeleccionadoId);
+        if (circuitoSeleccionado) {
+            resaltarPoligono(poligonoSeleccionadoId);
+            circuitoActualMapa = circuitoSeleccionado;
+            const tituloEl = document.getElementById('mapaPanelTitulo');
+            if (tituloEl) tituloEl.textContent = tituloPanel(circuitoSeleccionado);
+        } else {
+            deseleccionarCircuito();
+        }
+    }
+}
+
+function resaltarPoligono(id) {
+    const layer = poligonosPorCircuito[id];
+    if (layer) layer.setStyle({ color: COLOR_POLIGONO_SELECCIONADO, weight: 3, fillOpacity: 0.15 });
+}
+
+function deseleccionarCircuito() {
+    if (poligonoSeleccionadoId !== null && poligonosPorCircuito[poligonoSeleccionadoId]) {
+        poligonosPorCircuito[poligonoSeleccionadoId].setStyle({ color: COLOR_POLIGONO, weight: 2, fillOpacity: 0.08 });
+    }
+    poligonoSeleccionadoId = null;
+    circuitoActualMapa = null;
+    limpiarCapasMapa();
+    document.getElementById('mapaPanel').style.display = 'none';
+}
+
+function seleccionarCircuito(circuito) {
+    if (poligonoSeleccionadoId !== null && poligonosPorCircuito[poligonoSeleccionadoId]) {
+        poligonosPorCircuito[poligonoSeleccionadoId].setStyle({ color: COLOR_POLIGONO, weight: 2, fillOpacity: 0.08 });
+    }
+
+    circuitoActualMapa = circuito;
+    poligonoSeleccionadoId = circuito.id_circuito;
+    limpiarCapasMapa();
+
+    const layer = poligonosPorCircuito[circuito.id_circuito];
+    if (layer) {
+        resaltarPoligono(circuito.id_circuito);
+        mapaCircuitos.fitBounds(layer.getBounds(), { padding: [30, 30] });
+    } else {
+        mapaCircuitos.setView(CENTRO_MAPA, 12);
+    }
+
+    document.getElementById('mapaPanelTitulo').textContent = tituloPanel(circuito);
+    document.getElementById('rutaNombre').value = `Ruta óptima ${circuito.nombre}`;
+    document.getElementById('rutaActividad').value = circuito.actividad || '';
+    document.getElementById('mapaResultado').innerHTML = '';
+    const panel = document.getElementById('mapaPanel');
+    panel.style.display = '';
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+async function cargarContenedoresEnMapa() {
+    if (!circuitoActualMapa) return;
+    try {
+        const res  = await fetch(`${API_BASE}/circuitos/${circuitoActualMapa.id_circuito}/obtenerContenedores`);
+        const json = await res.json();
+        if (json.status !== 'success') {
+            mostrarToast(json.message || 'No se pudieron cargar los contenedores', 'error');
+            return;
+        }
+
+        mapaCircuitosMarkers.forEach(m => mapaCircuitos.removeLayer(m));
+        mapaCircuitosMarkers = [];
+
+        const bounds = [];
+        (json.data || []).forEach(c => {
+            const lat = parseFloat(c.latitud);
+            const lon = parseFloat(c.longitud);
+            if (Number.isNaN(lat) || Number.isNaN(lon)) return;
+            const color = COLORES_CONTENEDOR[c.estado] || COLORES_CONTENEDOR.funcional;
+            const marker = L.circleMarker([lat, lon], {
+                radius: 6, color: '#fff', weight: 1.4, opacity: 0.7,
+                fillColor: color, fillOpacity: 0.9
+            }).bindPopup(`<b>#${c.id_contenedor}</b> ${c.calle ?? ''} ${c.num_calle ?? ''}<br>Llenado: ${c.nivel_llenado}%<br>Estado: ${c.estado}`);
+            marker.addTo(mapaCircuitos);
+            mapaCircuitosMarkers.push(marker);
+            bounds.push([lat, lon]);
+        });
+
+        if (bounds.length && !poligonosPorCircuito[circuitoActualMapa.id_circuito]) {
+            mapaCircuitos.fitBounds(bounds, { padding: [30, 30] });
+        }
+        mostrarToast(`${mapaCircuitosMarkers.length} contenedores cargados`, 'success');
+    } catch {
+        mostrarToast('Error al cargar los contenedores', 'error');
+    }
+}
+
+async function generarRutaOptima() {
+    if (!circuitoActualMapa) return;
+    const nombre = document.getElementById('rutaNombre').value.trim();
+    const actividad = document.getElementById('rutaActividad').value.trim();
+    if (!nombre || !actividad) {
+        mostrarToast('Completá nombre y actividad de la ruta', 'warning');
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API_BASE}/rutas/generarOptima`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ circuitoId: circuitoActualMapa.id_circuito, nombre, actividad })
+        });
+        const json = await res.json();
+        if (json.status !== 'success') {
+            mostrarToast(json.message || 'No se pudo generar la ruta', 'error');
+            return;
+        }
+
+        const { ruta, contenedores, distancia_total_km } = json.data;
+        if (mapaCircuitosPolyline) { mapaCircuitos.removeLayer(mapaCircuitosPolyline); mapaCircuitosPolyline = null; }
+
+        const puntosRuta = (contenedores || [])
+            .map(c => [parseFloat(c.latitud), parseFloat(c.longitud)])
+            .filter(([lat, lon]) => !Number.isNaN(lat) && !Number.isNaN(lon));
+
+        if (puntosRuta.length > 1) {
+            mapaCircuitosPolyline = L.polyline(puntosRuta, { color: '#c0392b', weight: 4 }).addTo(mapaCircuitos);
+            mapaCircuitos.fitBounds(mapaCircuitosPolyline.getBounds(), { padding: [30, 30] });
+        }
+
+        document.getElementById('mapaResultado').innerHTML =
+            `Ruta <strong>#${ruta.id_ruta}</strong> generada — ${contenedores.length} contenedores, ${distancia_total_km} km aprox.`;
+        mostrarToast('Ruta óptima generada', 'success');
+    } catch {
+        mostrarToast('Error al generar la ruta óptima', 'error');
+    }
 }
 
 function mostrarToast(msg, tipo = 'info') {

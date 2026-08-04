@@ -6,6 +6,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rutas — Recolix</title>
     <link rel="stylesheet" href="styleRecoleccion.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <style>
+        .resumen-section {
+            padding: 20px 32px 8px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .resumen-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 22px;
+        }
+        .resumen-card-head { display: flex; align-items: center; gap: 9px; margin-bottom: 2px; }
+        .resumen-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+        .resumen-dot.activas     { background: var(--status-ok); }
+        .resumen-dot.pendientes  { background: var(--status-warn); }
+        .resumen-dot.prioritarias{ background: var(--status-crit); }
+        .resumen-card h3 {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .resumen-count { font-size: 2rem; font-weight: 800; line-height: 1; color: var(--text); margin: 6px 0 16px; }
+        .resumen-hint { font-size: 0.78rem; color: var(--muted); margin: 4px 0 16px; line-height: 1.4; }
+        .resumen-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; max-height: 230px; overflow-y: auto; }
+        .resumen-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.85rem;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--bg2);
+        }
+        .resumen-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .resumen-item strong { color: var(--text); }
+        .resumen-item small { color: var(--muted); display: block; margin-top: 2px; font-size: 0.76rem; }
+        .resumen-llenado { font-weight: 700; color: var(--moss-dark); white-space: nowrap; font-size: 0.85rem; }
+        .resumen-empty { color: var(--muted); font-size: 0.85rem; font-style: italic; }
+        .resumen-item-acciones { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .btn-sm { padding: 4px 10px; font-size: 0.76rem; border-radius: 6px; }
+
+        .modal-lg { max-width: 860px; }
+        .levante-layout { display: grid; grid-template-columns: 1.2fr 1fr; gap: 18px; margin: 16px 0; }
+        .levante-map { border: 1px solid var(--border); border-radius: var(--radius); min-height: 340px; overflow: hidden; }
+        .levante-map #mapaLevante { height: 340px; width: 100%; }
+        .levante-form { display: flex; flex-direction: column; gap: 12px; }
+        .levante-form label { font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .levante-form label:not(:first-child) { margin-top: 4px; }
+        .levante-historial { border-top: 1px solid var(--border); padding-top: 14px; }
+        .levante-historial h4 { margin: 0 0 10px; font-size: 0.9rem; color: var(--text); }
+        .levante-historial .resumen-item { font-size: 0.82rem; }
+        .levante-resumen-lev { display: inline-flex; gap: 8px; align-items: center; font-size: 0.8rem; color: var(--muted); }
+        .mapa-orden-badge {
+            display: inline-block; min-width: 20px; height: 20px; line-height: 20px; text-align: center;
+            border-radius: 50%; background: var(--moss-dark); color: #fff; font-size: 0.7rem; font-weight: 700;
+            margin-right: 6px;
+        }
+        .mapa-popup { font-size: 0.82rem; }
+        .mapa-popup small { color: var(--muted); }
+
+        @media (max-width: 1024px) { .resumen-section { padding: 16px 20px 4px; } }
+        @media (max-width: 768px)  { .resumen-section { grid-template-columns: 1fr; padding: 16px 16px 4px; gap: 14px; }
+                                     .levante-layout { grid-template-columns: 1fr; } }
+    </style>
 </head>
 <body>
 
@@ -57,20 +126,29 @@
 
 <section class="hero">
     <h1 class="hero-title">Rutas</h1>
-    <p class="hero-sub">Gestioná las rutas de recolección dentro de cada circuito.</p>
+    <p class="hero-sub">Las rutas se generan automáticamente desde cada circuito según el nivel de llenado de sus contenedores.</p>
+</section>
+
+<section class="resumen-section">
+    <div class="resumen-card">
+        <div class="resumen-card-head"><span class="resumen-dot activas"></span><h3>Rutas activas</h3></div>
+        <div class="resumen-count" id="countActivas">—</div>
+        <ul class="resumen-list" id="listaActivas"></ul>
+    </div>
+    <div class="resumen-card">
+        <div class="resumen-card-head"><span class="resumen-dot pendientes"></span><h3>Rutas pendientes</h3></div>
+        <div class="resumen-count" id="countPendientes">—</div>
+        <ul class="resumen-list" id="listaPendientes"></ul>
+    </div>
+    <div class="resumen-card">
+        <div class="resumen-card-head"><span class="resumen-dot prioritarias"></span><h3>Rutas prioritarias</h3></div>
+        <p class="resumen-hint">Ordenadas por nivel de llenado promedio de sus contenedores</p>
+        <ul class="resumen-list" id="listaPrioritarias"></ul>
+    </div>
 </section>
 
 <section class="cards-section">
     <div class="cards-grid">
-
-        <div class="card-operar" onclick="abrirModalAgregar()">
-            <div class="card-content">
-                <div class="card-icon"><img src="img/plus.svg" alt="" class="card-svg-icon"></div>
-                <h3>Agregar Ruta</h3>
-                <p>Registrar una nueva ruta</p>
-                <button class="card-btn">Agregar</button>
-            </div>
-        </div>
 
         <div class="card-operar" onclick="toggleFiltros()">
             <div class="card-content">
@@ -87,15 +165,6 @@
                 <h3>Buscar por ID</h3>
                 <p>Obtener una ruta específica</p>
                 <button class="card-btn">Buscar</button>
-            </div>
-        </div>
-
-        <div class="card-operar" onclick="toggleModificar()">
-            <div class="card-content">
-                <div class="card-icon"><img src="img/refresh.svg" alt="" class="card-svg-icon"></div>
-                <h3>Modificar Ruta</h3>
-                <p>Editar datos de una ruta existente</p>
-                <button class="card-btn">Modificar</button>
             </div>
         </div>
 
@@ -118,6 +187,7 @@
             <option value="circuitoId">Circuito (ID)</option>
             <option value="actividad">Actividad</option>
             <option value="nombre">Nombre</option>
+            <option value="estadoLevante">Estado del levante</option>
         </select>
         <input type="text" id="filtroValor" class="ctrl-input" placeholder="Valor del filtro..." style="display:none">
         <select id="filtroValorSelect" class="ctrl-select" style="display:none"></select>
@@ -132,22 +202,6 @@
                placeholder="ID de la ruta..." min="1" style="max-width:200px">
         <button class="btn-primary" onclick="buscarPorId()">Buscar</button>
         <button class="btn-secondary" onclick="listarRutas()">Ver Todas</button>
-    </div>
-</section>
-
-<section class="control-bar" id="modificarBar" style="display:none">
-    <div class="control-inner">
-        <input type="number" id="modificarId" class="ctrl-input"
-               placeholder="ID de la ruta..." min="1" style="max-width:120px">
-        <select id="modificarCampo" class="ctrl-select" onchange="actualizarPlaceholderModificar()">
-            <option value="">— Campo —</option>
-            <option value="circuitoId">Circuito (ID)</option>
-            <option value="nombre">Nombre</option>
-            <option value="actividad">Actividad</option>
-        </select>
-        <input type="text" id="modificarValor" class="ctrl-input" style="display:none" placeholder="Seleccioná un campo...">
-        <button class="btn-primary" onclick="modificarRuta()">Modificar</button>
-        <button class="btn-secondary" onclick="ocultarControles()">Cancelar</button>
     </div>
 </section>
 
@@ -173,6 +227,9 @@
                     <th>Circuito</th>
                     <th>Nombre</th>
                     <th>Actividad</th>
+                    <th>Turno</th>
+                    <th>Levante</th>
+                    <th>Llenado prom.</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -187,39 +244,36 @@
     </div>
 </section>
 
-<div class="modal-overlay" id="modalForm" style="display:none"
-     onclick="onOverlayClick(event,'modalForm')">
-    <div class="modal">
+<div class="modal-overlay" id="modalLevante" style="display:none"
+     onclick="onOverlayClick(event,'modalLevante')">
+    <div class="modal modal-lg">
         <div class="modal-header">
-            <h3 id="modalTitle">Agregar Ruta</h3>
-            <button class="modal-close" onclick="cerrarModal()">✕</button>
+            <h3>Planificar levante — <span id="levanteRutaTitulo"></span></h3>
+            <button class="modal-close" onclick="cerrarModalLevante()">✕</button>
         </div>
-        <form id="rutaForm" onsubmit="guardarRuta(event)">
-            <input type="hidden" id="rutaId">
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="circuitoId">Circuito (ID)</label>
-                    <input type="number" id="circuitoId" class="form-input"
-                           placeholder="1" min="1" required>
-                </div>
-                <div class="form-group">
-                    <label for="nombre">Nombre</label>
-                    <input type="text" id="nombre" class="form-input"
-                           placeholder="Ruta Norte" maxlength="100" required>
-                </div>
+        <div class="levante-layout">
+            <div class="levante-map">
+                <div id="mapaLevante"></div>
             </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="actividad">Actividad</label>
-                    <input type="text" id="actividad" class="form-input"
-                           placeholder="Recolección domiciliaria" maxlength="60" required>
-                </div>
+            <div class="levante-form" id="levanteFormWrap">
+                <label>Camion disponible</label>
+                <select id="levanteCamion" class="ctrl-select"></select>
+                <label>Cuadrilla asignada</label>
+                <select id="levanteCuadrilla" class="ctrl-select"></select>
+                <label>Hora de salida</label>
+                <input type="datetime-local" id="levanteHoraSalida" class="ctrl-input" style="min-width:0">
+                <label>Fecha del levante</label>
+                <input type="date" id="levanteFecha" class="ctrl-input" style="min-width:0">
+                <button class="btn-primary" onclick="planificarLevante()" style="margin-top:4px">Planificar levante</button>
             </div>
-            <div class="modal-actions">
-                <button type="button" class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
-                <button type="submit" class="btn-primary">Guardar</button>
-            </div>
-        </form>
+            <p class="resumen-empty" id="levanteFormBloqueado" style="display:none">
+                Esta ruta ya tiene un levante pendiente o en curso. Cancelalo o esperá a que se complete para planificar uno nuevo.
+            </p>
+        </div>
+        <div class="levante-historial">
+            <h4>Levantes de esta ruta</h4>
+            <ul class="resumen-list" id="levantesRuta"></ul>
+        </div>
     </div>
 </div>
 
@@ -263,11 +317,15 @@
     <p class="footer-copy">&copy; 2026 Recolix. Todos los derechos reservados.</p>
 </footer>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 const API_BASE = '/recolix/API_Recoleccion';
 let rutaIdParaEliminar = null;
 let toastTimeout;
 let reglas = {};
+let mapaLevante = null;
+let levanteRutaActual = null;
+let marcadoresLevante = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
     await cargarReglas();
@@ -296,18 +354,57 @@ async function cargarReglas() {
     }
 }
 
+async function cargarResumen() {
+    try {
+        const res  = await fetch(`${API_BASE}/rutas/obtenerResumen`);
+        const json = await res.json();
+        if (json.status !== 'success') return [];
+
+        const rutas = json.data || [];
+        renderResumenCard('listaActivas', 'countActivas', rutas.filter(r => r.estado === 'activa'));
+
+        const pendientes = rutas.filter(r => r.estado === 'pendiente');
+        renderResumenCard('listaPendientes', 'countPendientes', pendientes);
+
+        const prioritarias = rutas
+            .filter(r => r.llenado_promedio !== null)
+            .sort((a, b) => b.llenado_promedio - a.llenado_promedio)
+            .slice(0, 5);
+        renderResumenCard('listaPrioritarias', null, prioritarias);
+
+        return rutas;
+    } catch {
+        return [];
+    }
+}
+
+function renderResumenCard(listaId, countId, rutas) {
+    if (countId) document.getElementById(countId).textContent = rutas.length;
+    const ul = document.getElementById(listaId);
+    if (!rutas.length) {
+        ul.innerHTML = '<li class="resumen-empty">Sin rutas para mostrar.</li>';
+        return;
+    }
+    ul.innerHTML = rutas.map(r => `
+        <li class="resumen-item">
+            <span><strong>#${r.id_ruta}</strong> ${r.nombre}<br><small>Circuito ${r.id_circuito} · ${r.contenedores_count} contenedor${r.contenedores_count !== 1 ? 'es' : ''}</small></span>
+            <span class="resumen-llenado">${r.llenado_promedio !== null ? r.llenado_promedio + '%' : '—'}</span>
+        </li>
+    `).join('');
+}
+
+const ORDEN_ESTADO_LEVANTE_DEFAULT = { sin_levante: 0, pendiente: 1, en_curso: 2 };
+
 async function listarRutas() {
     ocultarControles();
     setLoading(true);
     try {
-        const res  = await fetch(`${API_BASE}/rutas`);
-        const json = await res.json();
-        if (json.status === 'success') {
-            renderTabla(json.data);
-            setTableTitle('Todas las Rutas');
-        } else {
-            mostrarToast(json.message, 'error');
-        }
+        const rutas = await cargarResumen();
+        const visibles = (rutas || [])
+            .filter(r => r.estado_levante in ORDEN_ESTADO_LEVANTE_DEFAULT)
+            .sort((a, b) => ORDEN_ESTADO_LEVANTE_DEFAULT[a.estado_levante] - ORDEN_ESTADO_LEVANTE_DEFAULT[b.estado_levante]);
+        renderTabla(visibles);
+        setTableTitle('Todas las Rutas');
     } catch {
         mostrarToast('Error al conectar con la API', 'error');
     } finally {
@@ -336,6 +433,14 @@ async function buscarPorId() {
     }
 }
 
+const ESTADOS_LEVANTE = {
+    sin_levante: 'Sin levante (pendiente de planificar)',
+    pendiente:   'Asignada (levante pendiente)',
+    en_curso:    'En curso',
+    completado:  'Completada',
+    cancelado:   'Cancelada'
+};
+
 function actualizarFiltroValor() {
     const tipo   = document.getElementById('filtroTipo').value;
     const input  = document.getElementById('filtroValor');
@@ -348,6 +453,13 @@ function actualizarFiltroValor() {
 
     if (!tipo) return;
 
+    if (tipo === 'estadoLevante') {
+        select.innerHTML = '<option value="">— Seleccionar —</option>' +
+            Object.entries(ESTADOS_LEVANTE).map(([v, label]) => `<option value="${v}">${label}</option>`).join('');
+        select.style.display = '';
+        return;
+    }
+
     const placeholders = {
         circuitoId: 'ej: 1',
         actividad:  'ej: Recolección domiciliaria',
@@ -358,11 +470,12 @@ function actualizarFiltroValor() {
 }
 
 async function aplicarFiltro() {
-    const tipo  = document.getElementById('filtroTipo').value;
-    const input = document.getElementById('filtroValor');
+    const tipo   = document.getElementById('filtroTipo').value;
+    const input  = document.getElementById('filtroValor');
+    const select = document.getElementById('filtroValorSelect');
     if (!tipo) { mostrarToast('Seleccioná un filtro', 'warning'); return; }
 
-    const valor = input.value.trim();
+    const valor = (tipo === 'estadoLevante' ? select : input).value.trim();
     if (!valor) {
         mostrarToast('Ingresá un valor para el filtro', 'warning');
         return;
@@ -370,6 +483,13 @@ async function aplicarFiltro() {
 
     setLoading(true);
     try {
+        if (tipo === 'estadoLevante') {
+            const rutas = await cargarResumen();
+            renderTabla((rutas || []).filter(r => r.estado_levante === valor));
+            setTableTitle(`Filtro — Estado del levante: ${ESTADOS_LEVANTE[valor]}`);
+            return;
+        }
+
         const res  = await fetch(`${API_BASE}/rutas?${tipo}=${encodeURIComponent(valor)}`);
         const json = await res.json();
         if (json.status === 'success') {
@@ -388,78 +508,160 @@ async function aplicarFiltro() {
     }
 }
 
-function abrirModalAgregar() {
-    document.getElementById('modalTitle').textContent = 'Agregar Ruta';
-    document.getElementById('rutaId').value = '';
-    document.getElementById('rutaForm').reset();
-    document.getElementById('modalForm').style.display = 'flex';
+async function abrirPlanificarLevante(rutaId) {
+    levanteRutaActual = rutaId;
+    document.getElementById('levanteRutaTitulo').textContent = `Ruta #${rutaId}`;
+    document.getElementById('modalLevante').style.display = 'flex';
+    await Promise.all([cargarSelectsLevante(), cargarContenedoresLevante(rutaId), cargarLevantesRuta(rutaId)]);
 }
 
-function abrirModalEditar(ruta) {
-    document.getElementById('modalTitle').textContent = 'Editar Ruta';
-    document.getElementById('rutaId').value     = ruta.id_ruta;
-    document.getElementById('circuitoId').value = ruta.id_circuito;
-    document.getElementById('nombre').value     = ruta.nombre;
-    document.getElementById('actividad').value  = ruta.actividad;
-    document.getElementById('modalForm').style.display = 'flex';
+async function cargarSelectsLevante() {
+    const [camRes, cuaRes] = await Promise.all([
+        fetch(`${API_BASE}/camiones/filtrarDisponibilidad`),
+        fetch(`${API_BASE}/levantes/obtenerCuadrillas`)
+    ]);
+    const camiones = (await camRes.json()).data || [];
+    const cuadrillas = (await cuaRes.json()).data || [];
+
+    const selCam = document.getElementById('levanteCamion');
+    selCam.innerHTML = camiones.length
+        ? camiones.map(c => `<option value="${c.id_camion}">${c.matricula}${c.modelo ? ' · ' + c.modelo : ''}</option>`).join('')
+        : '<option value="">Sin camiones disponibles</option>';
+
+    const selCua = document.getElementById('levanteCuadrilla');
+    selCua.innerHTML = cuadrillas.length
+        ? cuadrillas.map(c => `<option value="${c.id_cuadrilla}">Cuadrilla #${c.id_cuadrilla}${c.municipio ? ' · ' + c.municipio : ''}</option>`).join('')
+        : '<option value="">Sin cuadrillas activas</option>';
+
+    const ahora = new Date();
+    document.getElementById('levanteHoraSalida').value = ahora.toISOString().slice(0, 16);
+    document.getElementById('levanteFecha').value = ahora.toISOString().slice(0, 10);
 }
 
-async function guardarRuta(e) {
-    e.preventDefault();
-    const id = document.getElementById('rutaId').value;
+async function cargarContenedoresLevante(rutaId) {
+    const res = await fetch(`${API_BASE}/rutas/${rutaId}/obtenerContenedores`);
+    const json = await res.json();
+    const contenedores = (json.status === 'success' && json.data) ? json.data : [];
 
-    const campos = {
-        circuitoId: document.getElementById('circuitoId').value,
-        nombre:     document.getElementById('nombre').value,
-        actividad:  document.getElementById('actividad').value
-    };
+    if (mapaLevante) {
+        mapaLevante.remove();
+        mapaLevante = null;
+    }
+    marcadoresLevante = [];
 
-    for (const [campo, valor] of Object.entries(campos)) {
-        const regla = reglas[campo];
-        if (!regla) continue;
-        if (regla.max !== undefined && String(valor).length > regla.max) {
-            mostrarToast(`${regla.label} no puede superar los ${regla.max} caracteres`, 'warning');
-            return;
-        }
-        if (regla.tipo === 'entero') {
-            const num = parseInt(valor);
-            if (isNaN(num)) {
-                mostrarToast(`${regla.label} debe ser un número entero`, 'warning');
-                return;
-            }
-            if (regla.min !== undefined && num < regla.min) {
-                mostrarToast(`${regla.label} no puede ser menor que ${regla.min}`, 'warning');
-                return;
-            }
-        }
+    mapaLevante = L.map('mapaLevante').setView([-34.9, -56.2], 13);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(mapaLevante);
+
+    if (!contenedores.length) {
+        L.marker([-34.9, -56.2]).addTo(mapaLevante).bindPopup('La ruta no tiene contenedores asignados.');
+        return;
     }
 
-    const body = {
-        circuitoId: parseInt(campos.circuitoId),
-        nombre:     campos.nombre,
-        actividad:  campos.actividad
-    };
+    const puntos = [];
+    contenedores.forEach(c => {
+        if (c.latitud === null || c.longitud === null) return;
+        puntos.push([parseFloat(c.latitud), parseFloat(c.longitud)]);
+        const marker = L.marker(puntos[puntos.length - 1]).addTo(mapaLevante);
+        marker.bindPopup(`
+            <div class="mapa-popup">
+                <span class="mapa-orden-badge">${c.orden_visita}</span>
+                <strong>#${c.id_contenedor}</strong> ${c.calle ?? ''} ${c.num_calle ?? ''}<br>
+                <small>Capacidad ${c.capacidad ?? '—'} · ${c.estado ?? ''}</small>
+            </div>`);
+        marcadoresLevante.push(marker);
+    });
 
+    if (puntos.length > 1) {
+        L.polyline(puntos, { color: '#3f5a33', weight: 2, dashArray: '6 6' }).addTo(mapaLevante);
+    }
+    if (puntos.length) {
+        mapaLevante.fitBounds(L.latLngBounds(puntos).pad(0.15));
+    }
+}
+
+async function cargarLevantesRuta(rutaId) {
+    const res = await fetch(`${API_BASE}/levantes/obtenerPorRuta/${rutaId}`);
+    const json = await res.json();
+    const levantes = (json.status === 'success' && json.data) ? json.data : [];
+    const ul = document.getElementById('levantesRuta');
+
+    const hayActivo = levantes.some(l => l.estado === 'pendiente' || l.estado === 'en_curso');
+    document.getElementById('levanteFormWrap').style.display = hayActivo ? 'none' : '';
+    document.getElementById('levanteFormBloqueado').style.display = hayActivo ? '' : 'none';
+
+    if (!levantes.length) {
+        ul.innerHTML = '<li class="resumen-empty">Esta ruta no tiene levantes planificados.</li>';
+        return;
+    }
+
+    const estados = { pendiente: 'warning', en_curso: 'info', completado: 'success', cancelado: 'neutral' };
+    ul.innerHTML = levantes.map(l => `
+        <li class="resumen-item">
+            <span>
+                <strong>#${l.id_levante}</strong> ${l.hora_levante ?? ''}<br>
+                <small>Camion ${l.matricula ?? '—'} · salida ${l.hora_salida ? l.hora_salida.slice(11, 16) : '—'}</small>
+            </span>
+            <span class="resumen-item-acciones">
+                <span class="badge badge-${estados[l.estado] ?? 'neutral'}">${l.estado}</span>
+                ${l.estado === 'pendiente' ? `<button type="button" class="btn-danger btn-sm" onclick="cancelarLevanteItem(${l.id_levante})">Cancelar</button>` : ''}
+            </span>
+        </li>
+    `).join('');
+}
+
+async function cancelarLevanteItem(idLevante) {
     try {
-        const res = await fetch(
-            id ? `${API_BASE}/rutas/${id}` : `${API_BASE}/rutas`,
-            {
-                method:  id ? 'PUT' : 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body:    JSON.stringify(body)
-            }
-        );
+        const res = await fetch(`${API_BASE}/levantes/cancelar/${idLevante}`, { method: 'POST' });
         const json = await res.json();
         if (json.status === 'success') {
-            mostrarToast(json.message, 'success');
-            cerrarModal();
+            mostrarToast('Levante cancelado correctamente', 'success');
+            await Promise.all([cargarLevantesRuta(levanteRutaActual), cargarSelectsLevante()]);
             listarRutas();
         } else {
             mostrarToast(json.message, 'error');
         }
     } catch {
-        mostrarToast('Error al guardar', 'error');
+        mostrarToast('Error al cancelar el levante', 'error');
     }
+}
+
+async function planificarLevante() {
+    const camionId = document.getElementById('levanteCamion').value;
+    const cuadrillaId = document.getElementById('levanteCuadrilla').value;
+    if (!camionId || !cuadrillaId) {
+        mostrarToast('Faltan camión disponible y cuadrilla para planificar', 'warning');
+        return;
+    }
+    const horaSalida = document.getElementById('levanteHoraSalida').value.replace('T', ' ');
+    const fecha = document.getElementById('levanteFecha').value;
+    if (!fecha) { mostrarToast('Ingresá la fecha del levante', 'warning'); return; }
+
+    try {
+        const res = await fetch(`${API_BASE}/levantes/planificar`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ rutaId: levanteRutaActual, camionId: parseInt(camionId), cuadrillaId: parseInt(cuadrillaId), horaSalida, horaLevante: fecha })
+        });
+        const json = await res.json();
+        if (json.status === 'success') {
+            mostrarToast('Levante planificado correctamente', 'success');
+            cerrarModalLevante();
+            listarRutas();
+        } else {
+            mostrarToast(json.message, 'error');
+        }
+    } catch {
+        mostrarToast('Error al conectar con la API', 'error');
+    }
+}
+
+function cerrarModalLevante() {
+    document.getElementById('modalLevante').style.display = 'none';
+    if (mapaLevante) { mapaLevante.remove(); mapaLevante = null; }
+    levanteRutaActual = null;
 }
 
 function confirmarBorrar(id, nombre) {
@@ -484,94 +686,6 @@ async function confirmarDelete() {
     }
 }
 
-function actualizarPlaceholderModificar() {
-    const campo = document.getElementById('modificarCampo').value;
-    const input = document.getElementById('modificarValor');
-
-    input.value = '';
-    input.style.display = 'none';
-
-    const placeholders = {
-        circuitoId: 'ej: 1',
-        nombre:     'Ruta Norte',
-        actividad:  'Recolección domiciliaria'
-    };
-    const maxlengths = { nombre: 100, actividad: 60 };
-    input.placeholder = placeholders[campo] || 'Seleccioná un campo...';
-    input.maxLength = maxlengths[campo] || '';
-    input.style.display = '';
-}
-
-async function modificarRuta() {
-    const id = document.getElementById('modificarId').value.trim();
-    if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
-    const campo = document.getElementById('modificarCampo').value;
-    if (!campo) { mostrarToast('Seleccioná un campo a modificar', 'warning'); return; }
-
-    const valor = document.getElementById('modificarValor').value.trim();
-    if (!valor) { mostrarToast('Ingresá el nuevo valor', 'warning'); return; }
-
-    const regla = reglas[campo];
-    if (regla) {
-        if (regla.max !== undefined && valor.length > regla.max) {
-            mostrarToast(`${regla.label} no puede superar los ${regla.max} caracteres`, 'warning');
-            return;
-        }
-        if (regla.tipo === 'entero') {
-            const num = parseInt(valor);
-            if (isNaN(num)) {
-                mostrarToast(`${regla.label} debe ser un número entero`, 'warning');
-                return;
-            }
-            if (regla.min !== undefined && num < regla.min) {
-                mostrarToast(`${regla.label} no puede ser menor que ${regla.min}`, 'warning');
-                return;
-            }
-        }
-    }
-
-    setLoading(true);
-    try {
-        const res  = await fetch(`${API_BASE}/rutas/${id}`);
-        const json = await res.json();
-        if (json.status !== 'success' || !json.data) {
-            mostrarToast(json.message || 'Ruta no encontrada', 'error');
-            return;
-        }
-        const ruta = json.data;
-
-        const campoMap = {
-            circuitoId: 'id_circuito',
-            nombre:     'nombre',
-            actividad:  'actividad'
-        };
-
-        ruta[campoMap[campo]] = valor;
-
-        const putRes = await fetch(`${API_BASE}/rutas/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                circuitoId: parseInt(ruta.id_circuito),
-                nombre:     ruta.nombre,
-                actividad:  ruta.actividad
-            })
-        });
-        const putJson = await putRes.json();
-        if (putJson.status === 'success') {
-            mostrarToast(putJson.message, 'success');
-            ocultarControles();
-            listarRutas();
-        } else {
-            mostrarToast(putJson.message, 'error');
-        }
-    } catch {
-        mostrarToast('Error al modificar', 'error');
-    } finally {
-        setLoading(false);
-    }
-}
-
 async function darDeBajaRuta() {
     const id = document.getElementById('deleteId').value.trim();
     if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
@@ -592,6 +706,26 @@ async function darDeBajaRuta() {
     }
 }
 
+function badgeClassTurno(turno) {
+    const map = { 'mañana': 'info', 'tarde': 'warning', 'noche': 'neutral' };
+    return map[turno] ?? 'neutral';
+}
+
+const BADGE_ESTADO_LEVANTE = {
+    sin_levante: { clase: 'neutral', label: 'Sin asignar' },
+    pendiente:   { clase: 'warning', label: 'Asignada' },
+    en_curso:    { clase: 'info',    label: 'En curso' },
+    completado:  { clase: 'success', label: 'Completada' },
+    cancelado:   { clase: 'danger',  label: 'Cancelada' }
+};
+
+function levanteBadgeHtml(r) {
+    const info = BADGE_ESTADO_LEVANTE[r.estado_levante];
+    if (info) return `<span class="badge badge-${info.clase}">${info.label}</span>`;
+    const tieneLevante = (r.levantes_count ?? 0) > 0;
+    return `<span class="badge badge-${tieneLevante ? 'info' : 'neutral'}">${tieneLevante ? 'Asignado' : 'Sin asignar'}</span>`;
+}
+
 function renderTabla(rutas) {
     const tbody = document.getElementById('rutasBody');
     const noRes = document.getElementById('noResultados');
@@ -610,13 +744,17 @@ function renderTabla(rutas) {
 
     rutas.forEach(r => {
         const tr = document.createElement('tr');
+        const levanteBadge = levanteBadgeHtml(r);
         tr.innerHTML = `
             <td class="td-id" data-label="ID">${r.id_ruta}</td>
             <td data-label="Circuito">${r.id_circuito}</td>
             <td data-label="Nombre"><strong>${r.nombre}</strong></td>
             <td data-label="Actividad">${r.actividad ?? ''}</td>
+            <td data-label="Turno">${r.turno ? `<span class="badge badge-${badgeClassTurno(r.turno)}">${r.turno}</span>` : '—'}</td>
+            <td data-label="Levante">${levanteBadge}</td>
+            <td data-label="Llenado prom.">${r.llenado_promedio !== undefined && r.llenado_promedio !== null ? r.llenado_promedio + '%' : '—'}</td>
             <td class="td-actions" data-label="Acciones">
-                <button class="btn-action" onclick='abrirModalEditar(${JSON.stringify(r)})' title="Editar">✏️</button>
+                <button class="btn-action" onclick="abrirPlanificarLevante(${r.id_ruta})" title="Planificar levante">🗓️</button>
                 <button class="btn-action" onclick="confirmarBorrar(${r.id_ruta},'${r.nombre}')" title="Eliminar">🗑️</button>
             </td>
         `;
@@ -627,10 +765,8 @@ function renderTabla(rutas) {
 function toggleFiltros() {
     const fb = document.getElementById('filterBar');
     const sb = document.getElementById('searchBar');
-    const mb = document.getElementById('modificarBar');
     const db = document.getElementById('deleteBar');
     sb.style.display = 'none';
-    mb.style.display = 'none';
     db.style.display = 'none';
     fb.style.display = fb.style.display === 'none' ? 'block' : 'none';
 }
@@ -638,10 +774,8 @@ function toggleFiltros() {
 function toggleBusquedaId() {
     const sb = document.getElementById('searchBar');
     const fb = document.getElementById('filterBar');
-    const mb = document.getElementById('modificarBar');
     const db = document.getElementById('deleteBar');
     fb.style.display = 'none';
-    mb.style.display = 'none';
     db.style.display = 'none';
     sb.style.display = sb.style.display === 'none' ? 'block' : 'none';
 }
@@ -649,34 +783,16 @@ function toggleBusquedaId() {
 function ocultarControles() {
     document.getElementById('filterBar').style.display = 'none';
     document.getElementById('searchBar').style.display = 'none';
-    document.getElementById('modificarBar').style.display = 'none';
     document.getElementById('deleteBar').style.display = 'none';
-}
-
-function toggleModificar() {
-    const mb = document.getElementById('modificarBar');
-    const fb = document.getElementById('filterBar');
-    const sb = document.getElementById('searchBar');
-    const db = document.getElementById('deleteBar');
-    fb.style.display = 'none';
-    sb.style.display = 'none';
-    db.style.display = 'none';
-    mb.style.display = mb.style.display === 'none' ? 'block' : 'none';
 }
 
 function toggleDarDeBaja() {
     const db = document.getElementById('deleteBar');
     const fb = document.getElementById('filterBar');
     const sb = document.getElementById('searchBar');
-    const mb = document.getElementById('modificarBar');
     fb.style.display = 'none';
     sb.style.display = 'none';
-    mb.style.display = 'none';
     db.style.display = db.style.display === 'none' ? 'block' : 'none';
-}
-
-function cerrarModal() {
-    document.getElementById('modalForm').style.display = 'none';
 }
 
 function cerrarModalDelete() {
@@ -686,7 +802,11 @@ function cerrarModalDelete() {
 
 function onOverlayClick(e, modalId) {
     if (e.target.id === modalId) {
-        modalId === 'modalForm' ? cerrarModal() : cerrarModalDelete();
+        if (modalId === 'modalLevante') {
+            cerrarModalLevante();
+        } else {
+            cerrarModalDelete();
+        }
     }
 }
 

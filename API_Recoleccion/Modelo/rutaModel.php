@@ -36,8 +36,18 @@ class RutaModel {
         return true;
     }
 
+    // Todas las lecturas de ruta incluyen levantes_count (cantidad de levantes asignados)
+    // para que la UI pueda mostrar "Asignado"/"Sin asignar" sin importar por qué endpoint
+    // haya llegado la fila (listado completo, por id, o filtrada).
+    private const SELECT_CON_LEVANTES = "
+        SELECT r.*, ci.turno,
+               (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta) AS levantes_count
+        FROM ruta_recoleccion r
+        LEFT JOIN circuito ci ON ci.id_circuito = r.id_circuito
+    ";
+
     public function getAllRutas() {
-        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM ruta_recoleccion");
+        $stmt = mysqli_prepare($this->conn->getConexion(), self::SELECT_CON_LEVANTES);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
         $rutas = [];
@@ -49,7 +59,7 @@ class RutaModel {
     }
 
     public function getRuta($id) {
-        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM ruta_recoleccion WHERE id_ruta = ?");
+        $stmt = mysqli_prepare($this->conn->getConexion(), self::SELECT_CON_LEVANTES . " WHERE r.id_ruta = ?");
         mysqli_stmt_bind_param($stmt, "i", $id);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
@@ -59,7 +69,7 @@ class RutaModel {
     }
 
     public function obtenerPorCircuito($circuitoId) {
-        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM ruta_recoleccion WHERE id_circuito = ?");
+        $stmt = mysqli_prepare($this->conn->getConexion(), self::SELECT_CON_LEVANTES . " WHERE r.id_circuito = ?");
         mysqli_stmt_bind_param($stmt, "i", $circuitoId);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
@@ -72,7 +82,7 @@ class RutaModel {
     }
 
     public function filtrarPorActividad($actividad) {
-        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM ruta_recoleccion WHERE actividad = ?");
+        $stmt = mysqli_prepare($this->conn->getConexion(), self::SELECT_CON_LEVANTES . " WHERE r.actividad = ?");
         mysqli_stmt_bind_param($stmt, "s", $actividad);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
@@ -85,7 +95,7 @@ class RutaModel {
     }
 
     public function filtrarPorNombre($nombre) {
-        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM ruta_recoleccion WHERE nombre LIKE ?");
+        $stmt = mysqli_prepare($this->conn->getConexion(), self::SELECT_CON_LEVANTES . " WHERE r.nombre LIKE ?");
         $like = '%' . $nombre . '%';
         mysqli_stmt_bind_param($stmt, "s", $like);
         mysqli_stmt_execute($stmt);
@@ -167,5 +177,27 @@ class RutaModel {
         }
         mysqli_stmt_close($stmt);
         return $levantes;
+    }
+
+    public function obtenerResumen() {
+        $sql = "SELECT r.*, ci.turno,
+                (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta AND l.estado = 'en_curso') AS en_curso_count,
+                (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta AND l.estado = 'pendiente') AS pendiente_count,
+                (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta AND l.estado = 'completado') AS completado_count,
+                (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta) AS levantes_count,
+                (SELECT COUNT(*) FROM ruta_contenedor rc WHERE rc.id_ruta = r.id_ruta) AS contenedores_count,
+                (SELECT AVG(c.nivel_llenado) FROM ruta_contenedor rc JOIN contenedor c ON c.id_contenedor = rc.id_contenedor WHERE rc.id_ruta = r.id_ruta) AS llenado_promedio
+                FROM ruta_recoleccion r
+                LEFT JOIN circuito ci ON ci.id_circuito = r.id_circuito
+                ORDER BY r.id_ruta DESC";
+        $stmt = mysqli_prepare($this->conn->getConexion(), $sql);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $rutas = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $rutas[] = $row;
+        }
+        mysqli_stmt_close($stmt);
+        return $rutas;
     }
 }

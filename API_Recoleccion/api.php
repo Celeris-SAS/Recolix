@@ -101,12 +101,39 @@ $config = [
                 'asignarCuadrilla',
                 'quitarCuadrilla',
                 'obtenerCuadrillas',
-                'obtenerLevantes'
+                'obtenerLevantes',
+                'generarOptima',
+                'obtenerResumen'
             ],
             'filters' => [
                 'circuitoId' => 'obtenerPorCircuito',
                 'actividad' => 'filtrarPorActividad',
                 'nombre' => 'filtrarPorNombre'
+            ]
+        ],
+        'levantes' => [
+            'singular' => 'Levante',
+            'controller' => 'LevanteController',
+            'file' => 'Controlador/levanteController.php',
+            'getAllMethod' => 'getAllLevantes',
+            'getMethod' => 'getLevante',
+            'insertMethod' => 'planificar',
+            'updateMethod' => 'updateLevante',
+            'deleteMethod' => 'deleteLevante',
+            'actions' => [
+                'reglasValidacion',
+                'obtenerPorRuta',
+                'obtenerCuadrillas',
+                'planificar',
+                'iniciar',
+                'registrarContenedor',
+                'completar',
+                'cancelar',
+                'obtenerResumen',
+                'obtenerPendientesVencidos'
+            ],
+            'filters' => [
+                'rutaId' => 'obtenerPorRuta'
             ]
         ],
         'circuitos' => [
@@ -124,6 +151,7 @@ $config = [
                 'filtrarPorTurno',
                 'filtrarPorActividad',
                 'filtrarPorFrecuencia',
+                'filtrarPorDia',
                 'obtenerRutas',
                 'obtenerContenedores'
             ],
@@ -131,7 +159,8 @@ $config = [
                 'municipioId' => 'obtenerPorMunicipio',
                 'turno' => 'filtrarPorTurno',
                 'actividad' => 'filtrarPorActividad',
-                'frecuencia' => 'filtrarPorFrecuencia'
+                'frecuencia' => 'filtrarPorFrecuencia',
+                'dia' => 'filtrarPorDia'
             ]
         ],
     ]
@@ -144,7 +173,7 @@ $basePath = rtrim($config['base_path'], '/');
 if (strpos($uri, $basePath) === 0) {
     $relativePath = substr($uri, strlen($basePath));
     $uriSegments = explode('/', trim($relativePath, '/'));
-    
+
     $resource = isset($uriSegments[0]) ? $uriSegments[0] : null;
     $id = isset($uriSegments[1]) ? $uriSegments[1] : null;
 
@@ -273,14 +302,14 @@ if (strpos($uri, $basePath) === 0) {
 
         case 'POST':
             $data = json_decode(file_get_contents('php://input'), true);
-            
+
             if (!$data) {
                 http_response_code(400);
                 echo json_encode(['status' => 'error', 'message' => 'Datos inválidos o vacíos']);
             } else {
                 try {
                     $result = call_user_func_array(
-                        [$controller, $resourceConfig['insertMethod']], 
+                        [$controller, $resourceConfig['insertMethod']],
                         array_values($data)
                     );
                     http_response_code(201);
@@ -298,7 +327,7 @@ if (strpos($uri, $basePath) === 0) {
                 echo json_encode(['status' => 'error', 'message' => 'ID requerido']);
             } else {
                 $data = json_decode(file_get_contents('php://input'), true);
-                
+
                 if (!$data) {
                     http_response_code(400);
                     echo json_encode(['status' => 'error', 'message' => 'Datos inválidos o vacíos']);
@@ -306,7 +335,7 @@ if (strpos($uri, $basePath) === 0) {
                     try {
                         $params = array_merge([$id], array_values($data));
                         $result = call_user_func_array(
-                            [$controller, $resourceConfig['updateMethod']], 
+                            [$controller, $resourceConfig['updateMethod']],
                             $params
                         );
                         echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' actualizado', 'data' => $result]);
@@ -342,4 +371,3 @@ if (strpos($uri, $basePath) === 0) {
     http_response_code(400);
     echo json_encode(['status' => 'error', 'message' => 'Ruta base inválida. Use: ' . $config['base_path']]);
 }
-?>
