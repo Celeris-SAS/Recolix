@@ -577,7 +577,8 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             document.getElementById('capacidad').value = contenedor.capacidad;
             document.getElementById('idTipo').value = contenedor.id_tipo;
             document.getElementById('idCircuito').value = contenedor.id_circuito;
-            document.getElementById('estadoGroup').style.display = 'none';
+            document.getElementById('estadoGroup').style.display = '';
+            document.getElementById('estado').value = contenedor.estado;
             document.getElementById('contenedorEstadoForm').value = contenedor.estado;
             aplicarRequeridoDireccion(contenedor.estado === 'en_deposito');
             document.getElementById('modalForm').style.display = 'flex';
@@ -609,6 +610,29 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 };
             if (!id) {
                 body.estado = document.getElementById('estado').value;
+            }
+
+            // Al editar, el estado no viaja en este PUT (updateContenedor no lo acepta como
+            // parámetro) — se cambia aparte con cambiarEstado, y tiene que ir ANTES del PUT de
+            // datos: updateContenedor decide si nulear o exigir dirección leyendo el estado
+            // actual del contenedor en la base, así que primero hay que dejar el estado nuevo
+            // asentado para que esa regla evalúe correctamente (RF27).
+            if (id) {
+                try {
+                    const estadoRes = await fetch(`${API_BASE}/contenedores/cambiarEstado/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ nuevoEstado: document.getElementById('estado').value })
+                    });
+                    const estadoJson = await estadoRes.json();
+                    if (estadoJson.status !== 'success') {
+                        mostrarToast(estadoJson.message, 'error');
+                        return;
+                    }
+                } catch {
+                    mostrarToast('Error al actualizar el estado', 'error');
+                    return;
+                }
             }
 
             const camposDireccion = ['calle', 'numCalle', 'latitud', 'longitud'];
