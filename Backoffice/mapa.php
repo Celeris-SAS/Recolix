@@ -61,6 +61,7 @@
 <div class="mapa-tabs" id="mapaTabs">
     <button class="mapa-tab is-active" data-tipo="contenedores">Contenedores</button>
     <button class="mapa-tab" data-tipo="centros">Centros de acopio</button>
+    <button class="mapa-tab" data-tipo="camiones">Camiones en operativa</button>
 </div>
 
 <section class="hero">
@@ -84,6 +85,11 @@
                 <li><span>Saturados</span><strong id="countSaturados">0</strong></li>
                 <li><span>Cerrados</span><strong id="countCerrados">0</strong></li>
             </ul>
+            <ul class="mapa-info-list" id="indicadores-camiones" style="display:none">
+                <li><span>Camiones en operativa</span><strong id="countCamionesTotal">0</strong></li>
+                <li><span>Con tiempo estimado</span><strong id="countCamionesConEta">0</strong></li>
+                <li><span>Sin próxima parada</span><strong id="countCamionesSinEta">0</strong></li>
+            </ul>
         </div>
 
         <div class="mapa-panel">
@@ -98,6 +104,9 @@
                 <li class="leyenda-operativo">Operativo</li>
                 <li class="leyenda-saturado">Saturado</li>
                 <li class="leyenda-cerrado">Cerrado</li>
+            </ul>
+            <ul class="mapa-leyenda" id="leyenda-camiones" style="display:none">
+                <li class="leyenda-en-ruta">Camión en ruta</li>
             </ul>
         </div>
 
