@@ -66,9 +66,6 @@ class tipoResiduoModel {
         return $rows;
     }
 
-    // ==========================================
-    // FILTROS
-    // ==========================================
 
     public function filtrarReciclable($reciclable) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM TIPO_RESIDUO WHERE reciclable = ?");

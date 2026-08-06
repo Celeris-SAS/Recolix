@@ -56,9 +56,6 @@ class ContenedorModel {
         return $rows;
     }
 
-    // ==========================================
-    // OPERACIONES DE NEGOCIO
-    // ==========================================
 
     public function cambiarEstado($id, $nuevoEstado) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE CONTENEDOR SET estado = ? WHERE id_contenedor = ?");
@@ -180,6 +177,16 @@ class ContenedorModel {
         mysqli_stmt_close($stmt);
         return $rows;
     }
+    public function filtrarCriticos() {
+    $stmt = mysqli_prepare($this->conn->getConexion(),
+        "SELECT * FROM CONTENEDOR WHERE estado IN ('desbordado', 'roto')");
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $rows = [];
+    while ($row = mysqli_fetch_assoc($result)) { $rows[] = $row; }
+    mysqli_stmt_close($stmt);
+    return $rows;
+}
 
     public function tipoResiduoExiste($idTipo) {
     $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT 1 FROM TIPO_RESIDUO WHERE id_tipo = ?");

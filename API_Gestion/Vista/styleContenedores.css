@@ -1,4 +1,3 @@
-/* ── RESET Y BASE ──────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
@@ -36,7 +35,6 @@ body {
 
 a { text-decoration: none; color: inherit; }
 
-/* ── BARRA DE NAVEGACIÓN ──────────────────────────────────────────── */
 .navbar {
     background: var(--card-bg);
     border-bottom: 1px solid var(--border);
@@ -137,7 +135,6 @@ a { text-decoration: none; color: inherit; }
     display: block;
 }
 
-/* ── ENCABEZADO ────────────────────────────────────────────────────── */
 .hero { padding: 36px 32px 18px; }
 
 .hero-title {
@@ -149,7 +146,6 @@ a { text-decoration: none; color: inherit; }
 
 .hero-sub { color: var(--muted); font-size: 0.95rem; }
 
-/* ── TARJETAS ──────────────────────────────────────────────────────── */
 .cards-section { padding: 20px 32px 32px; }
 
 .cards-grid {
@@ -247,7 +243,6 @@ a { text-decoration: none; color: inherit; }
 }
 .card-btn:hover { filter: brightness(1.1); transform: scale(1.04); }
 
-/* ── BARRAS DE CONTROL ────────────────────────────────────────────── */
 .control-bar {
     padding: 14px 32px;
     background: var(--bg2);
@@ -276,7 +271,6 @@ a { text-decoration: none; color: inherit; }
 .ctrl-input { min-width: 180px; }
 .ctrl-input::placeholder { color: var(--muted); }
 
-/* ── BOTONES COMPARTIDOS ──────────────────────────────────────────── */
 .btn-primary {
     background: var(--green);
     color: #fff;
@@ -315,7 +309,6 @@ a { text-decoration: none; color: inherit; }
 }
 .btn-danger:hover { filter: brightness(1.1); }
 
-/* ── TABLA ─────────────────────────────────────────────────────────── */
 .table-section {
     padding: 28px 32px;
     flex: 1;
@@ -376,7 +369,6 @@ tbody td { padding: 12px 16px; color: var(--text); }
 
 .td-id { color: var(--muted); font-size: 0.8rem; }
 
-/* Insignias */
 .badge {
     display: inline-block;
     padding: 3px 10px;
@@ -392,7 +384,6 @@ tbody td { padding: 12px 16px; color: var(--text); }
 .badge-neutral { background: rgba(75,84,70,0.10);   color: var(--muted); border: 1px solid var(--border); }
 .badge-info    { background: rgba(63,90,51,0.12);   color: var(--moss-dark); border: 1px solid rgba(63,90,51,0.3); }
 
-/* Botones de acción */
 .td-actions { display: flex; gap: 6px; }
 
 .btn-action {
@@ -407,7 +398,6 @@ tbody td { padding: 12px 16px; color: var(--text); }
 }
 .btn-action:hover { background: var(--bg3); border-color: var(--muted); }
 
-/* Estados vacío y de carga */
 .empty-state, .loading-state {
     display: flex;
     align-items: center;
@@ -418,7 +408,6 @@ tbody td { padding: 12px 16px; color: var(--text); }
     gap: 8px;
 }
 
-/* ── MODALES ───────────────────────────────────────────────────────── */
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -509,7 +498,6 @@ tbody td { padding: 12px 16px; color: var(--text); }
 .delete-msg { color: var(--muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 4px; }
 .delete-msg strong { color: var(--text); }
 
-/* ── NOTIFICACIÓN (TOAST) ──────────────────────────────────────────── */
 .toast {
     position: fixed;
     bottom: 28px;
@@ -598,7 +586,6 @@ tbody td { padding: 12px 16px; color: var(--text); }
 
 .footer-copy { color: var(--muted); font-size: 0.78rem; text-align: center; }
 
-/* ── HAMBURGER (oculto en desktop) ────────────────────────────────── */
 .nav-hamburger {
     display: none;
     flex-direction: column;
@@ -621,7 +608,6 @@ tbody td { padding: 12px 16px; color: var(--text); }
 }
 .nav-hamburger:hover span { background: var(--green); }
 
-/* ── MENÚ MOBILE (oculto por defecto) ─────────────────────────────── */
 .nav-mobile {
     display: none;
     flex-direction: column;
@@ -642,7 +628,6 @@ tbody td { padding: 12px 16px; color: var(--text); }
 .nav-mobile a.nav-active { color: var(--green); font-weight: 600; }
 .nav-mobile.nav-mobile-open { display: flex; }
 
-/* ── RESPONSIVE — 1024px (tablet grande / escritorio pequeño) ──────── */
 @media (max-width: 1024px) {
     .nav-inner { padding: 0 20px; }
     .nav-left  { gap: 20px; }
@@ -652,7 +637,6 @@ tbody td { padding: 12px 16px; color: var(--text); }
     .footer { padding-left: 20px; padding-right: 20px; }
 }
 
-/* ── RESPONSIVE — 768px (tablet / móvil) ──────────────────────────── */
 @media (max-width: 768px) {
     .nav-inner { padding: 0 16px; }
 
@@ -661,7 +645,6 @@ tbody td { padding: 12px 16px; color: var(--text); }
     .card-operar { width: calc(50% - 12px); height: 170px; flex-shrink: 1; }
 }
 
-/* ── RESPONSIVE — hamburger y tabla desde 1024px ───────────────────── */
 @media (max-width: 1024px) {
     .nav-links { display: none; }
     .nav-hamburger { display: flex; }
@@ -683,7 +666,6 @@ tbody td { padding: 12px 16px; color: var(--text); }
 
     .table-section { padding: 20px 16px; }
 
-    /* Tabla → formato tarjeta */
     .table-wrapper { border: none; background: transparent; }
     table thead { display: none; }
     table, tbody, tr, td { display: block; width: 100%; }
@@ -721,7 +703,6 @@ tbody td { padding: 12px 16px; color: var(--text); }
     .footer { padding: 12px 16px; }
 }
 
-/* ── RESPONSIVE — 320px (móvil pequeño) ───────────────────────────── */
 @media (max-width: 320px) {
     .hero-title { font-size: 1.2rem; }
     .card-operar { width: 100%; }

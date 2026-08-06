@@ -1,11 +1,8 @@
 <?php
 session_start();
 
-// Cualquier cuenta que inicie sesión desde la Landing Page (login.php) ve su
-// panel acá, sin importar su rol real: el acceso de staff se hace aparte,
-// desde el Portal de Empleados.
 if (!isset($_SESSION['ci_usuario'])) {
-    header("Location: /recolix/LandingPage/login.html");
+    header("Location: ../LandingPage/login.html");
     exit();
 }
 ?>
@@ -47,9 +44,6 @@ if (!isset($_SESSION['ci_usuario'])) {
     </header>
      <main class="container dash-main">
 
-        <!-- =============================================
-         SECCIÓN: PERFIL (RF90, RF91, RF92)
-    ============================================== -->
         <section class="dash-section" id="seccionPerfil">
             <div class="section-header">
                 <div>
@@ -59,7 +53,6 @@ if (!isset($_SESSION['ci_usuario'])) {
                 <button class="btn btn-outline btn-sm" id="editarPerfilBtn">Editar datos</button>
             </div>
 
-            <!-- Vista de solo lectura del perfil -->
             <div class="panel-card" id="perfilVista">
                 <div class="perfil-grid">
                     <div class="perfil-campo">
@@ -85,14 +78,13 @@ if (!isset($_SESSION['ci_usuario'])) {
                 </div>
                 <div style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;">
                     <button class="btn btn-outline btn-sm" id="cambiarContraseniaBtn">Cambiar contraseña</button>
-                    <button class="btn btn-primary btn-sm" id="asignarMunicipioBtn" hidden>Agregar municipio</button>
+                    <button class="btn btn-primary btn-sm" id="asignarMunicipioBtn">Agregar municipio</button>
                 </div>
             </div>
 
-            <!-- Formulario para asignar municipio cuando el vecino todavía no tiene uno -->
             <div class="panel-card" id="municipioForm" hidden>
-                <h3>Agregar municipio</h3>
-                <p class="form-nota">Todavía no tenés un municipio asignado. Seleccioná el que corresponde a tu domicilio.</p>
+                <h3 id="municipioFormTitle">Agregar municipio</h3>
+                <p class="form-nota" id="municipioFormNota">Todavía no tenés un municipio asignado. Seleccioná el que corresponde a tu domicilio.</p>
                 <div class="form-row">
                     <label for="municipioSelect">Municipio</label>
                     <select id="municipioSelect">
@@ -115,7 +107,6 @@ if (!isset($_SESSION['ci_usuario'])) {
                 <p class="form-feedback" id="municipioFeedback"></p>
             </div>
 
-            <!-- Formulario de edición de perfil (RF91) — oculto por defecto -->
             <div class="panel-card" id="perfilForm" hidden>
                 <h3>Editar datos de contacto</h3>
                 <p class="form-nota">Solo podés modificar tu correo y teléfono. Para otros cambios contactá al
@@ -137,7 +128,6 @@ if (!isset($_SESSION['ci_usuario'])) {
                 <p class="form-feedback" id="perfilFeedback"></p>
             </div>
 
-            <!-- Formulario de cambio de contraseña (RF92) — oculto por defecto -->
             <div class="panel-card" id="contraseniaForm" hidden>
                 <h3>Cambiar contraseña</h3>
                 <div class="form-row">
@@ -158,9 +148,6 @@ if (!isset($_SESSION['ci_usuario'])) {
             </div>
         </section>
 
-        <!-- =============================================
-         SECCIÓN: INCIDENCIAS (RF03)
-    ============================================== -->
         <section class="dash-section" id="seccionIncidencias">
             <div class="section-header">
                 <div>
@@ -170,15 +157,11 @@ if (!isset($_SESSION['ci_usuario'])) {
                 <button class="btn btn-primary btn-sm" id="nuevaIncidenciaBtn">+ Nueva incidencia</button>
             </div>
 
-            <!-- Listado de incidencias propias -->
             <div id="incidenciasLista">
                 <p class="estado-carga">Cargando tus incidencias...</p>
             </div>
         </section>
 
-        <!-- =============================================
-         SECCIÓN: NOTIFICACIONES (RF95, RF96)
-    ============================================== -->
         <section class="dash-section" id="seccionNotificaciones">
             <div class="section-header">
                 <div>

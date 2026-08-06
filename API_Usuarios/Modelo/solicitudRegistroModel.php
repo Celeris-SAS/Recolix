@@ -11,15 +11,7 @@ class SolicitudRegistroModel {
         $this->conn = $conexion->getConexion();
     }
 
-    // ==========================================
-    // RF02 — Solicitud de registro de vecino
-    // ==========================================
-
-    // Inserta el vecino en USUARIO con acceso = 'pendiente'.
-    // La contraseña la elige el propio vecino en el formulario (RNF05 — se guarda hasheada,
-    // nunca en texto plano ni se devuelve/muestra al administrador en el listado de solicitudes).
     public function crearSolicitud($ci, $primerNombre, $pApellido, $email, $tel, $idMunicipio, $contrasenia) {
-        // Verificar que no exista ya un registro con esa CI.
         $check = mysqli_prepare($this->conn, "SELECT ci_usuario FROM USUARIO WHERE ci_usuario = ?");
         mysqli_stmt_bind_param($check, 'i', $ci);
         mysqli_stmt_execute($check);
@@ -52,7 +44,7 @@ class SolicitudRegistroModel {
         return $ci;
     }
 
-    // Verifica si ya existe una solicitud con esa CI (para validación en el controller).
+
     public function existePorCI($ci) {
         $stmt = mysqli_prepare($this->conn, "SELECT ci_usuario FROM USUARIO WHERE ci_usuario = ?");
         mysqli_stmt_bind_param($stmt, 'i', $ci);

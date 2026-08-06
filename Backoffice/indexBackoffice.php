@@ -15,7 +15,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
 </head>
 <body>
 
-<!-- ── BARRA DE NAVEGACIÓN ─────────────────────────────────────────── -->
+
 <header class="navbar">
     <div class="nav-inner">
         <div class="nav-left">
@@ -26,10 +26,11 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
             <nav class="nav-links">
                 <a href="#" class="nav-active">Inicio</a>
                 <a href="../API_Recoleccion/Vista/camiones.php">Camiones</a>
+                <a href="../API_Recoleccion/Vista/circuitos.php">Circuitos</a>
+                <a href="../API_Recoleccion/Vista/rutas.php">Rutas</a>
                 <a href="#">Cuadrillas</a>
                 <a href="../API_Gestion/Vista/contenedores.php">Contenedores</a>
-                <a href="#">Vertederos</a>
-                <a href="#">Centros de Acopio</a>
+                <a href="../API_Gestion/Vista/centrosAcopio.php">Centros de Acopio</a>
                 <a href="mapa.php">Mapa</a>
                 <a href="#">Reportes</a>
                 <a href="#">Incidencias</a>
@@ -48,10 +49,11 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
     <nav class="nav-mobile" id="navMobile">
         <a href="#" class="nav-active">Inicio</a>
         <a href="../API_Recoleccion/Vista/camiones.php">Camiones</a>
+        <a href="../API_Recoleccion/Vista/circuitos.php">Circuitos</a>
+        <a href="../API_Recoleccion/Vista/rutas.php">Rutas</a>
         <a href="#">Cuadrillas</a>
         <a href="../API_Gestion/Vista/contenedores.php">Contenedores</a>
-        <a href="#">Vertederos</a>
-        <a href="#">Centros de Acopio</a>
+        <a href="../API_Gestion/Vista/centrosAcopio.php">Centros de Acopio</a>
         <a href="mapa.php">Mapa</a>
         <a href="#">Reportes</a>
         <a href="#">Incidencias</a>
@@ -60,13 +62,13 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
     <div class="nav-hr"></div>
 </header>
 
-<!-- ── HERO ────────────────────────────────────────────────────────── -->
+
 <section class="hero">
     <h1 class="hero-title">Bienvenido, <?= $primerNombre ?></h1>
     <p class="hero-sub">Panel de administración</p>
 </section>
 
-<!-- ── NOVEDADES ───────────────────────────────────────────────────── -->
+
 <section class="novedades">
     <div class="novedades-header">
         <h2 class="novedades-title">Novedades</h2>
@@ -93,7 +95,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
                 <span class="novedad-badge" id="badgeUsuarios">0</span>
             </div>
         </a>
-        <a href="../API_Gestion/Vista/contenedores.php" class="novedad-card">
+        <a href="../API_Gestion/Vista/contenedores.php?vista=criticos" class="novedad-card">
             <div class="novedad-icon novedad-icon-contenedores">
                 <img src="img/contenedor.png" alt="" class="card-svg-icon">
             </div>
@@ -106,7 +108,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
     </div>
 </section>
 
-<!-- ── ACCESOS RÁPIDOS ────────────────────────────────────────────── -->
+
 <section class="cards-section">
     <div class="cards-grid">
 
@@ -115,6 +117,22 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
                 <div class="card-icon"><img src="../API_Recoleccion/Vista/img/truck-svgrepo-com.svg" alt="" class="card-svg-icon"></div>
                 <h3>Gestión de Camiones</h3>
                 <p>Administrar flota de recolección</p>
+            </div>
+        </a>
+
+        <a href="../API_Recoleccion/Vista/circuitos.php" class="card-operar">
+            <div class="card-content">
+                <div class="card-icon"><img src="img/circuito.svg" alt="" class="card-svg-icon"></div>
+                <h3>Gestión de Circuitos</h3>
+                <p>Administrar circuitos de recolección por municipio</p>
+            </div>
+        </a>
+
+        <a href="../API_Recoleccion/Vista/rutas.php" class="card-operar">
+            <div class="card-content">
+                <div class="card-icon"><img src="img/ruta.svg" alt="" class="card-svg-icon"></div>
+                <h3>Gestión de Rutas</h3>
+                <p>Administrar rutas de recolección por circuito</p>
             </div>
         </a>
 
@@ -158,15 +176,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
             </div>
         </a>
 
-        <a href="#" class="card-operar">
-            <div class="card-content">
-                <div class="card-icon"><img src="img/vertedero.svg" alt="" class="card-svg-icon"></div>
-                <h3>Vertederos</h3>
-                <p>Gestionar puntos de descarga</p>
-            </div>
-        </a>
-
-        <a href="#" class="card-operar">
+        <a href="../API_Gestion/Vista/centrosAcopio.php" class="card-operar">
             <div class="card-content">
                 <div class="card-icon"><img src="img/centroAcopio.png" alt="" class="card-svg-icon"></div>
                 <h3>Centros de Acopio</h3>
@@ -184,7 +194,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
     </div>
 </section>
 
-<!-- ── PIE DE PÁGINA ────────────────────────────────────────────────── -->
+
 <footer class="footer">
     <div class="footer-grid">
         <div class="footer-brand">

@@ -13,7 +13,6 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
 
 <body>
 
-    <!-- ── BARRA DE NAVEGACIÓN ─────────────────────────────────────────── -->
     <header class="navbar">
         <div class="nav-inner">
             <div class="nav-left">
@@ -22,12 +21,13 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                     <span class="brand-name">Recolix</span>
                 </div>
                 <nav class="nav-links">
-                <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
-                <a href="../../API_Recoleccion/Vista/camiones.php">Camiones</a>
-                <a href="#">Cuadrillas</a>
+                    <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
+                    <a href="../../API_Recoleccion/Vista/camiones.php">Camiones</a>
+                    <a href="../../API_Recoleccion/Vista/circuitos.php">Circuitos</a>
+                    <a href="../../API_Recoleccion/Vista/rutas.php">Rutas</a>
+                    <a href="#">Cuadrillas</a>
                     <a href="#" class="nav-active">Contenedores</a>
-                    <a href="#">Vertederos</a>
-                    <a href="#">Centros de Acopio</a>
+                    <a href="centrosAcopio.php">Centros de Acopio</a>
                     <a href="../../Backoffice/mapa.php">Mapa</a>
                     <a href="#">Reportes</a>
                     <a href="#">Incidencias</a>
@@ -46,10 +46,11 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
         <nav class="nav-mobile" id="navMobile">
             <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
             <a href="../../API_Recoleccion/Vista/camiones.php">Camiones</a>
+            <a href="../../API_Recoleccion/Vista/circuitos.php">Circuitos</a>
+            <a href="../../API_Recoleccion/Vista/rutas.php">Rutas</a>
             <a href="#">Cuadrillas</a>
             <a href="#" class="nav-active">Contenedores</a>
-            <a href="#">Vertederos</a>
-            <a href="#">Centros de Acopio</a>
+            <a href="centrosAcopio.php">Centros de Acopio</a>
             <a href="../../Backoffice/mapa.php">Mapa</a>
             <a href="#">Reportes</a>
             <a href="#">Incidencias</a>
@@ -58,13 +59,11 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
         <div class="nav-hr"></div>
     </header>
 
-    <!-- ── HERO ───────────────────────────────────────────────────────── -->
     <section class="hero">
         <h1 class="hero-title">Contenedores</h1>
         <p class="hero-sub">Gestioná el inventario de contenedores de residuos urbanos.</p>
     </section>
 
-    <!-- ── TARJETAS ─────────────────────────────────────────────────────── -->
     <section class="cards-section">
         <div class="cards-grid">
 
@@ -116,7 +115,6 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
         </div>
     </section>
 
-    <!-- ── BARRA DE FILTROS ─────────────────────────────────────────────── -->
     <section class="control-bar" id="filterBar" style="display:none">
         <div class="control-inner">
             <select id="filtroTipo" class="ctrl-select" onchange="actualizarFiltroValor()">
@@ -133,7 +131,6 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
         </div>
     </section>
 
-    <!-- ── BARRA DE BÚSQUEDA POR ID ─────────────────────────────────────── -->
     <section class="control-bar" id="searchBar" style="display:none">
         <div class="control-inner">
             <input type="number" id="buscarId" class="ctrl-input" placeholder="ID del contenedor..." min="1"
@@ -143,7 +140,6 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
         </div>
     </section>
 
-    <!-- ── BARRA DE MODIFICACIÓN ──────────────────────────────────────── -->
     <section class="control-bar" id="modificarBar" style="display:none">
         <div class="control-inner">
             <input type="number" id="modificarId" class="ctrl-input" placeholder="ID del contenedor..." min="1"
@@ -165,7 +161,6 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
         </div>
     </section>
 
-    <!-- ── BARRA DE ELIMINACIÓN ───────────────────────────────────────── -->
     <section class="control-bar" id="deleteBar" style="display:none">
         <div class="control-inner">
             <input type="number" id="deleteId" class="ctrl-input" placeholder="ID del contenedor a dar de baja..."
@@ -175,11 +170,11 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
         </div>
     </section>
 
-    <!-- ── TABLA ────────────────────────────────────────────────────────── -->
     <section class="table-section">
         <div class="table-header">
             <h2 class="table-title" id="tableTitle">Contenedores</h2>
             <span class="table-count" id="tableCount"></span>
+            <button class="btn-secondary" id="btnMostrarTodos" style="display:none" onclick="listarContenedores()">Mostrar Todos</button>
         </div>
         <div class="table-wrapper">
             <table>
@@ -206,7 +201,6 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
         </div>
     </section>
 
-    <!-- ── MODAL AGREGAR / MODIFICAR ────────────────────────────────────── -->
     <div class="modal-overlay" id="modalForm" style="display:none" onclick="onOverlayClick(event,'modalForm')">
         <div class="modal">
             <div class="modal-header">
@@ -275,7 +269,6 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
         </div>
     </div>
 
-    <!-- ── MODAL CONFIRMAR BAJA ─────────────────────────────────────────── -->
     <div class="modal-overlay" id="modalDelete" style="display:none" onclick="onOverlayClick(event,'modalDelete')">
         <div class="modal modal-sm">
             <div class="modal-header">
@@ -292,30 +285,28 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
         </div>
     </div>
 
-    <!-- ── NOTIFICACIÓN (TOAST) ─────────────────────────────────────────── -->
     <div id="toast" class="toast"></div>
 
-    <!-- ── PIE DE PÁGINA ────────────────────────────────────────────────── -->
     <footer class="footer">
-    <div class="footer-grid">
-        <div class="footer-brand">
-            <div class="footer-logo">
-                <img src="logoRecolix.png" alt="Recolix" class="footer-logo-img">
-                <span class="footer-logo-name">Recolix</span>
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <img src="logoRecolix.png" alt="Recolix" class="footer-logo-img">
+                    <span class="footer-logo-name">Recolix</span>
+                </div>
+                <p>Plataforma de gestión de residuos urbanos para Montevideo.</p>
             </div>
-            <p>Plataforma de gestión de residuos urbanos para Montevideo.</p>
+            <div class="footer-col">
+                <h3>Navegación</h3>
+                <ul>
+                    <li><a href="../../LandingPage/index_LandingPage.html">Página principal</a></li>
+                    <li><a href="../../LandingPage/mapa.html">Mapa público</a></li>
+                </ul>
+            </div>
         </div>
-        <div class="footer-col">
-            <h3>Navegación</h3>
-            <ul>
-                <li><a href="../../LandingPage/index_LandingPage.html">Página principal</a></li>
-                <li><a href="../../LandingPage/mapa.html">Mapa público</a></li>
-            </ul>
-        </div>
-    </div>
-    <div class="footer-hr"></div>
-    <p class="footer-copy">&copy; 2026 Recolix. Todos los derechos reservados.</p>
-</footer>
+        <div class="footer-hr"></div>
+        <p class="footer-copy">&copy; 2026 Recolix. Todos los derechos reservados.</p>
+    </footer>
 
     <script>
         const API_BASE = '/recolix/API_Gestion';
@@ -323,6 +314,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
         let toastTimeout;
         let reglas = {};
         let contenedoresActuales = [];
+        let vistaActual = 'todos';
         const MUNICIPIOS = [
             { id: 1, nombre: 'Municipio A' },
             { id: 2, nombre: 'Municipio B' },
@@ -381,7 +373,12 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 if (btn.dataset.action === 'editar') abrirModalEditar(c);
                 if (btn.dataset.action === 'baja') confirmarBorrar(c.id_contenedor, `${c.calle} ${c.num_calle}`);
             });
-            listarContenedores();
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('vista') === 'criticos') {
+                listarCriticos();
+            } else {
+                listarContenedores();
+            }
         });
 
         function reglasFallback() {
@@ -411,8 +408,9 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             }
         }
 
-        // ── LISTAR TODOS ──────────────────────────────────────────────────────
         async function listarContenedores() {
+            vistaActual = 'todos';
+            document.getElementById('btnMostrarTodos').style.display = 'none';
             ocultarControles();
             setLoading(true);
             try {
@@ -430,8 +428,35 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 setLoading(false);
             }
         }
+        async function listarCriticos() {
+            vistaActual = 'criticos';
+            document.getElementById('btnMostrarTodos').style.display = '';
+            ocultarControles();
+            setLoading(true);
+            try {
+                const res = await fetch(`${API_BASE}/contenedores/filtrarCriticos`);
+                const json = await res.json();
+                if (json.status === 'success') {
+                    renderTabla(json.data);
+                    setTableTitle('Contenedores Críticos');
+                } else {
+                    mostrarToast(json.message, 'error');
+                }
+            } catch {
+                mostrarToast('Error al conectar con la API', 'error');
+            } finally {
+                setLoading(false);
+            }
+        }
 
-        // ── BUSCAR POR ID ─────────────────────────────────────────────────────
+        function refrescarListado() {
+            if (vistaActual === 'criticos') {
+                listarCriticos();
+            } else {
+                listarContenedores();
+            }
+        }
+
         async function buscarPorId() {
             const id = document.getElementById('buscarId').value.trim();
             if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
@@ -453,7 +478,6 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             }
         }
 
-        // ── FILTRAR ───────────────────────────────────────────────────────────
         function actualizarFiltroValor() {
             const tipo = document.getElementById('filtroTipo').value;
             const input = document.getElementById('filtroValor');
@@ -481,7 +505,8 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             } else if (tipo === 'estado') {
                 select.innerHTML = '<option value="">— Seleccionar —</option>' +
                     ['funcional', 'roto', 'desbordado', 'inactivo', 'en_deposito']
-                        .map(v => `<option value="${v}">${formatearEstado(v)}</option>`).join('');
+                        .map(v => `<option value="${v}">${formatearEstado(v)}</option>`).join('') +
+                    '<option value="critico">Crítico (roto o desbordado)</option>';
                 select.style.display = '';
             }
         }
@@ -495,23 +520,19 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             const valor = (select.style.display !== 'none' ? select.value : input.value).trim();
             if (!valor) { mostrarToast('Seleccioná un valor para el filtro', 'warning'); return; }
 
-            const endpointMap = {
-                municipio: 'filtrarMunicipio',
-                tipoResiduo: 'filtrarTipoResiduo',
-                estado: 'filtrarEstado'
-            };
-
-            const endpoint = endpointMap[tipo];
             setLoading(true);
             try {
-                const res = await fetch(`${API_BASE}/contenedores?${tipo}=${encodeURIComponent(valor)}`);
+                const url = (tipo === 'estado' && valor === 'critico')
+                    ? `${API_BASE}/contenedores/filtrarCriticos`
+                    : `${API_BASE}/contenedores?${tipo}=${encodeURIComponent(valor)}`;
+                const res = await fetch(url);
                 const json = await res.json();
                 if (json.status === 'success') {
                     renderTabla(json.data);
                     const labels = {
                         municipio: `Municipio: ${valor}`,
                         tipoResiduo: `Tipo de Residuo: ${valor}`,
-                        estado: `Estado: ${valor}`
+                        estado: valor === 'critico' ? 'Crítico (roto o desbordado)' : `Estado: ${valor}`
                     };
                     setTableTitle(`Filtro — ${labels[tipo] || tipo}`);
                 } else {
@@ -524,7 +545,6 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             }
         }
 
-        // ── REQUERIDOS DE DIRECCIÓN (no aplica a contenedores en_deposito) ─────
         function aplicarRequeridoDireccion(esDeposito) {
             ['calle', 'numCalle', 'latitud', 'longitud'].forEach(campo => {
                 document.getElementById(campo).required = !esDeposito;
@@ -537,7 +557,6 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             aplicarRequeridoDireccion(estado === 'en_deposito');
         }
 
-        // ── AGREGAR ───────────────────────────────────────────────────────────
         function abrirModalAgregar() {
             document.getElementById('modalTitle').textContent = 'Agregar Contenedor';
             document.getElementById('contenedorId').value = '';
@@ -548,7 +567,6 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             aplicarRequeridoDireccion(document.getElementById('estado').value === 'en_deposito');
             document.getElementById('modalForm').style.display = 'flex';
         }
-        // ── MODAL EDITAR ──────────────────────────────────────────────────────
         function abrirModalEditar(contenedor) {
             document.getElementById('modalTitle').textContent = 'Editar Contenedor';
             document.getElementById('contenedorId').value = contenedor.id_contenedor;
@@ -559,13 +577,13 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             document.getElementById('capacidad').value = contenedor.capacidad;
             document.getElementById('idTipo').value = contenedor.id_tipo;
             document.getElementById('idCircuito').value = contenedor.id_circuito;
-            document.getElementById('estadoGroup').style.display = 'none';
+            document.getElementById('estadoGroup').style.display = '';
+            document.getElementById('estado').value = contenedor.estado;
             document.getElementById('contenedorEstadoForm').value = contenedor.estado;
             aplicarRequeridoDireccion(contenedor.estado === 'en_deposito');
             document.getElementById('modalForm').style.display = 'flex';
         }
 
-        // ── GUARDAR (POST / PUT) ──────────────────────────────────────────────
         async function guardarContenedor(e) {
             e.preventDefault();
             const id = document.getElementById('contenedorId').value;
@@ -594,7 +612,29 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 body.estado = document.getElementById('estado').value;
             }
 
-            // Validaciones frontend usando reglas del controlador
+            // Al editar, el estado no viaja en este PUT (updateContenedor no lo acepta como
+            // parámetro) — se cambia aparte con cambiarEstado, y tiene que ir ANTES del PUT de
+            // datos: updateContenedor decide si nulear o exigir dirección leyendo el estado
+            // actual del contenedor en la base, así que primero hay que dejar el estado nuevo
+            // asentado para que esa regla evalúe correctamente (RF27).
+            if (id) {
+                try {
+                    const estadoRes = await fetch(`${API_BASE}/contenedores/cambiarEstado/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ nuevoEstado: document.getElementById('estado').value })
+                    });
+                    const estadoJson = await estadoRes.json();
+                    if (estadoJson.status !== 'success') {
+                        mostrarToast(estadoJson.message, 'error');
+                        return;
+                    }
+                } catch {
+                    mostrarToast('Error al actualizar el estado', 'error');
+                    return;
+                }
+            }
+
             const camposDireccion = ['calle', 'numCalle', 'latitud', 'longitud'];
             for (const [campo, valor] of Object.entries(body)) {
                 if (esDeposito && camposDireccion.includes(campo)) continue;
@@ -633,7 +673,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 if (json.status === 'success') {
                     mostrarToast(json.message, 'success');
                     cerrarModal();
-                    listarContenedores();
+                    refrescarListado();
                 } else {
                     mostrarToast(json.message, 'error');
                 }
@@ -642,7 +682,6 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             }
         }
 
-        // ── MODIFICAR CAMPO INDIVIDUAL ────────────────────────────────────────
         function actualizarPlaceholderModificar() {
             const campo = document.getElementById('modificarCampo').value;
             const input = document.getElementById('modificarValor');
@@ -682,8 +721,6 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             const valor = (select.style.display !== 'none' ? select : input).value.trim();
             if (!valor) { mostrarToast('Ingresá el nuevo valor', 'warning'); return; }
 
-            // El estado no se modifica con el PUT genérico (el backend no lo actualiza).
-            // Se usa la acción cambiarEstado, que sí registra el nuevo estado (RF19/RF20).
             if (campo === 'estado') {
                 setLoading(true);
                 try {
@@ -696,7 +733,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                     if (json.status === 'success') {
                         mostrarToast('Estado actualizado', 'success');
                         ocultarControles();
-                        listarContenedores();
+                        refrescarListado();
                     } else {
                         mostrarToast(json.message, 'error');
                     }
@@ -718,7 +755,6 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 }
                 const c = json.data;
 
-                // Actualizar solo el campo modificado
                 const campoMap = {
                     calle: 'calle',
                     numCalle: 'num_calle',
@@ -746,7 +782,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 if (putJson.status === 'success') {
                     mostrarToast(putJson.message, 'success');
                     ocultarControles();
-                    listarContenedores();
+                    refrescarListado();
                 } else {
                     mostrarToast(putJson.message, 'error');
                 }
@@ -757,7 +793,6 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             }
         }
 
-        // ── DAR DE BAJA ───────────────────────────────────────────────────────
         async function darDeBajaContenedor() {
             const id = document.getElementById('deleteId').value.trim();
             if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
@@ -791,7 +826,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 if (json.status === 'success') {
                     mostrarToast('Contenedor dado de baja correctamente', 'success');
                     cerrarModalDelete();
-                    listarContenedores();
+                    refrescarListado();
                 } else {
                     mostrarToast(json.message, 'error');
                 }
@@ -800,7 +835,6 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             }
         }
 
-        // ── RENDERIZAR TABLA ──────────────────────────────────────────────────
         function escapeHtml(str) {
             return String(str ?? '').replace(/[&<>"']/g, s => ({
                 '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -860,7 +894,6 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             return map[estado] ?? 'neutral';
         }
 
-        // ── UTILIDADES ────────────────────────────────────────────────────────
         function toggleFiltros() {
             const fb = document.getElementById('filterBar');
             const sb = document.getElementById('searchBar');

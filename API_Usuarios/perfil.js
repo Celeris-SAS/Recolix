@@ -2,12 +2,10 @@ const API = '/recolix/API_Usuarios';
 
 document.addEventListener('DOMContentLoaded', function () {
 
-    // ===================== LOGOUT =====================
     document.getElementById('logoutBtn').addEventListener('click', () => {
-        window.location.href = '/recolix/Backoffice/logout_backoffice.php';
+        window.location.href = '../Backoffice/logout_backoffice.php';
     });
 
-    // ===================== PERFIL =====================
     async function cargarPerfil() {
         const resp  = await fetch(`${API}/usuarios/${CI}`);
         const json  = await resp.json();
@@ -64,7 +62,6 @@ document.addEventListener('DOMContentLoaded', function () {
         mostrarFeedback('perfilFeedback', 'Datos actualizados correctamente.', true);
     });
 
-    // ===================== CONTRASEÑA =====================
     document.getElementById('cambiarContraseniaBtn').addEventListener('click', () => {
         document.getElementById('perfilVista').hidden = true;
         document.getElementById('contraseniaForm').hidden = false;
@@ -107,7 +104,6 @@ document.addEventListener('DOMContentLoaded', function () {
         mostrarFeedback('perfilFeedback', 'Contraseña actualizada correctamente.', true);
     });
 
-    // ===================== UTILIDADES =====================
     function mostrarFeedback(idElemento, mensaje, esExito) {
         const el = document.getElementById(idElemento);
         el.textContent = mensaje;

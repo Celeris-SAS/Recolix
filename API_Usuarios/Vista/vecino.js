@@ -1,7 +1,4 @@
-/* =========================================================
-   RF81, RF82, RF83, RF90, RF91, RF92, RF95, RF96
-   Archivo organizado en secciones
-========================================================= */
+
 
 const API = '/recolix/API_Usuarios';
 
@@ -13,12 +10,12 @@ cargarPerfil();
 cargarIncidencias();
 cargarNotificaciones();
 
-    // ===================== LOGOUT =====================
+
     document.getElementById('logoutBtn').addEventListener('click', () => {
         window.location.href = `${API}/logout.php`;
     });
 
-    // ===================== PERFIL =====================
+
     async function cargarPerfil() {
     const resp  = await fetch(`${API}/usuarios/${CI}`);
     const json  = await resp.json();
@@ -29,10 +26,12 @@ cargarNotificaciones();
     document.getElementById('perfilEmail').textContent = perfil.email || '—';
     document.getElementById('perfilTel').textContent = perfil.tel || '—';
     document.getElementById('perfilMunicipio').textContent = perfil.municipio || 'Sin asignar';
-    document.getElementById('asignarMunicipioBtn').hidden = !!perfil.id_municipio;
+    const btnMunicipio = document.getElementById('asignarMunicipioBtn');
+    btnMunicipio.hidden = false;
+    btnMunicipio.textContent = perfil.id_municipio ? 'Cambiar municipio' : 'Agregar municipio';
 }
 
-    // Mostrar / ocultar formulario de edición de perfil
+
     document.getElementById('editarPerfilBtn').addEventListener('click', () => {
         document.getElementById('perfilVista').hidden = true;
         document.getElementById('perfilForm').hidden = false;
@@ -48,7 +47,7 @@ cargarNotificaciones();
         limpiarFeedback('perfilFeedback');
     });
 
-    // Guardar cambios de perfil (solo email y teléfono)
+
     document.getElementById('guardarPerfilBtn').addEventListener('click', async () => {
         const email = document.getElementById('editEmail').value.trim();
         const tel = document.getElementById('editTel').value.trim();
@@ -86,7 +85,7 @@ if (json.status !== 'success') {
     mostrarFeedback('perfilFeedback', 'Datos actualizados correctamente.', true);;
     });
 
-    // Mostrar / ocultar formulario de cambio de contraseña
+
     document.getElementById('cambiarContraseniaBtn').addEventListener('click', () => {
         document.getElementById('perfilVista').hidden = true;
         document.getElementById('contraseniaForm').hidden = false;
@@ -94,13 +93,18 @@ if (json.status !== 'success') {
         document.getElementById('municipioForm').hidden = true;
     });
 
-    // ===================== MUNICIPIO =====================
+  
     document.getElementById('asignarMunicipioBtn').addEventListener('click', () => {
+        const esCambio = !!perfilActual.id_municipio;
         document.getElementById('perfilVista').hidden = true;
         document.getElementById('municipioForm').hidden = false;
         document.getElementById('perfilForm').hidden = true;
         document.getElementById('contraseniaForm').hidden = true;
-        document.getElementById('municipioSelect').value = '';
+        document.getElementById('municipioFormTitle').textContent = esCambio ? 'Cambiar municipio' : 'Agregar municipio';
+        document.getElementById('municipioFormNota').textContent = esCambio
+            ? 'Podés modificar el municipio que corresponde a tu domicilio.'
+            : 'Todavía no tenés un municipio asignado. Seleccioná el que corresponde a tu domicilio.';
+        document.getElementById('municipioSelect').value = esCambio ? perfilActual.municipio : '';
         limpiarFeedback('municipioFeedback');
     });
 
@@ -115,6 +119,8 @@ if (json.status !== 'success') {
         document.getElementById('municipioSelectError').textContent =
             municipio ? '' : 'Seleccioná un municipio.';
         if (!municipio) return;
+
+        const esCambio = !!perfilActual.id_municipio;
 
         const resp = await fetch(`${API}/usuarios/setMunicipio/${CI}`, {
             method: 'PUT',
@@ -131,7 +137,7 @@ if (json.status !== 'success') {
         await cargarPerfil();
         document.getElementById('perfilVista').hidden = false;
         document.getElementById('municipioForm').hidden = true;
-        mostrarFeedback('perfilFeedback', 'Municipio asignado correctamente.', true);
+        mostrarFeedback('perfilFeedback', esCambio ? 'Municipio actualizado correctamente.' : 'Municipio asignado correctamente.', true);
     });
 
     document.getElementById('cancelarContraBtn').addEventListener('click', () => {
@@ -140,7 +146,7 @@ if (json.status !== 'success') {
         limpiarFeedback('contraFeedback');
     });
 
-    // Guardar nueva contraseña
+
     document.getElementById('guardarContraBtn').addEventListener('click', async () => {
         const actual = document.getElementById('contraActual').value;
         const nueva = document.getElementById('contraNueva').value;
@@ -171,7 +177,7 @@ if (json.status !== 'success') {
     mostrarFeedback('perfilFeedback', 'Contraseña actualizada correctamente.', true);
     });
 
-    // ===================== INCIDENCIAS =====================
+
   async function cargarIncidencias() {
     const contenedor = document.getElementById('incidenciasLista');
     const resp = await fetch(`${API}/usuarios/getIncidencias?ci=${CI}`);
@@ -200,7 +206,7 @@ if (json.status !== 'success') {
         window.location.href = '#';
     });
 
-    // ===================== NOTIFICACIONES =====================
+
     async function cargarNotificaciones() {
     const contenedor = document.getElementById('notificacionesLista');
     const resp = await fetch(`${API}/usuarios/getNotificaciones?ci=${CI}`);
@@ -243,7 +249,7 @@ if (json.status !== 'success') {
         }
     }
 
-    // ===================== UTILIDADES =====================
+
     function formatearFecha(fechaStr) {
         if (!fechaStr) return '—';
         const fecha = new Date(fechaStr);

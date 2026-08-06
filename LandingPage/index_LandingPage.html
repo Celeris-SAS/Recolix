@@ -50,9 +50,6 @@
 
       <div class="header-actions">
         <a href="login.html" id="loginNavLink" class="btn btn-outline btn-sm">Iniciar Sesión</a>
-        <!-- Botón de menú para pantallas chicas (RNF09: 320px / 768px / 1024px).
-             Sin esto, el menú queda fijo fuera de pantalla en celulares y nadie
-             puede abrirlo. -->
         <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú" aria-expanded="false">☰</button>
       </div>
 
@@ -276,9 +273,11 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
+    const API_USUARIOS = '/recolix/API_Usuarios';
+    const API_GESTION = '/recolix/API_Gestion';
+
     document.addEventListener('DOMContentLoaded', function () {
 
-      /* Mini-mapa interactivo en el hero — solo BD, sin CSV ni simulación */
       (async function () {
         if (!window.L) return;
 
@@ -307,7 +306,7 @@
         };
 
         try {
-          const resp = await fetch('/recolix/API_Gestion/contenedores', {
+          const resp = await fetch(`${API_GESTION}/contenedores`, {
             signal: AbortSignal.timeout(5000)
           });
           const json = await resp.json();
@@ -326,13 +325,13 @@
         setTimeout(() => heroMap.invalidateSize(), 250);
       })();
 
-      /* Header: cambia de fondo al hacer scroll */
+
       const header = document.getElementById('siteHeader');
       window.addEventListener('scroll', () => {
         header.classList.toggle('is-scrolled', window.scrollY > 40);
       });
 
-      /* Menú móvil */
+
       const btn = document.getElementById('hamburgerBtn');
       const nav = document.getElementById('mainNav');
       btn.addEventListener('click', () => {
@@ -341,16 +340,14 @@
         btn.textContent = abierto ? '✕' : '☰';
       });
 
-      /* Estadísticas (RF01).
-         TODO: reemplazar por fetch('/api/estadisticas/landing') cuando el backend esté disponible. */
+
       setTimeout(() => {
         document.getElementById('statContenedores').textContent = '13.420';
         document.getElementById('statIncidencias').textContent = '27';
         document.getElementById('statVolumen').textContent = '184 t';
       }, 500);
 
-      /* Formulario de registro de vecinos (RF02).
-         Esta validación también debe repetirse en el backend (RNF12). */
+
       const form = document.getElementById('registerForm');
       const reglas = {
         ci: [/^\d{7,8}$/, 'Ingresá tu cédula sin puntos ni guiones (7-8 números).'],
@@ -384,7 +381,7 @@
         }
 
         try {
-          const resp = await fetch('/recolix/API_Usuarios/solicitudes', {
+          const resp = await fetch(`${API_USUARIOS}/solicitudes`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

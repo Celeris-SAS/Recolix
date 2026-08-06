@@ -10,7 +10,7 @@
 </head>
 <body>
 
-<!-- ── BARRA DE NAVEGACIÓN ─────────────────────────────────────────── -->
+
 <header class="navbar">
     <div class="nav-inner">
         <div class="nav-left">
@@ -21,13 +21,15 @@
             <nav class="nav-links">
                 <a href="indexBackoffice.php">Inicio</a>
                 <a href="../API_Recoleccion/Vista/camiones.php">Camiones</a>
+                <a href="../API_Recoleccion/Vista/circuitos.php">Circuitos</a>
+                <a href="../API_Recoleccion/Vista/rutas.php">Rutas</a>
                 <a href="#">Cuadrillas</a>
                 <a href="../API_Gestion/Vista/contenedores.php">Contenedores</a>
-                <a href="#">Vertederos</a>
-                <a href="#">Centros de Acopio</a>
+                <a href="../API_Gestion/Vista/centrosAcopio.php">Centros de Acopio</a>
                 <a href="mapa.php" class="nav-active">Mapa</a>
                 <a href="#">Reportes</a>
                 <a href="#">Incidencias</a>
+                <a href="../API_Usuarios/Vista/usuarios.php">Usuarios</a>
             </nav>
         </div>
         <div class="nav-right">
@@ -42,43 +44,60 @@
     <nav class="nav-mobile" id="navMobile">
         <a href="indexBackoffice.php">Inicio</a>
         <a href="../API_Recoleccion/Vista/camiones.php">Camiones</a>
+        <a href="../API_Recoleccion/Vista/circuitos.php">Circuitos</a>
+        <a href="../API_Recoleccion/Vista/rutas.php">Rutas</a>
         <a href="#">Cuadrillas</a>
         <a href="../API_Gestion/Vista/contenedores.php">Contenedores</a>
-        <a href="#">Vertederos</a>
-        <a href="#">Centros de Acopio</a>
+        <a href="../API_Gestion/Vista/centrosAcopio.php">Centros de Acopio</a>
         <a href="mapa.php" class="nav-active">Mapa</a>
         <a href="#">Reportes</a>
         <a href="#">Incidencias</a>
+        <a href="../API_Usuarios/Vista/usuarios.php">Usuarios</a>
     </nav>
     <div class="nav-hr"></div>
 </header>
 
-<!-- ── HERO ────────────────────────────────────────────────────────── -->
+
+<div class="mapa-tabs" id="mapaTabs">
+    <button class="mapa-tab is-active" data-tipo="contenedores">Contenedores</button>
+    <button class="mapa-tab" data-tipo="centros">Centros de acopio</button>
+</div>
+
 <section class="hero">
     <h1 class="hero-title">Mapa operativo</h1>
-    <p class="hero-sub">Visualizá el estado de los contenedores en Montevideo.</p>
+    <p class="hero-sub">Visualizá el estado de contenedores y centros de acopio en Montevideo.</p>
 </section>
 
-<!-- ── CONTENIDO DEL MAPA ──────────────────────────────────────────── -->
+
 <section class="mapa-layout">
 
     <aside class="mapa-sidebar">
         <div class="mapa-panel">
             <h2>Indicadores</h2>
-            <ul class="mapa-info-list">
+            <ul class="mapa-info-list" id="indicadores-contenedores">
                 <li><span>Contenedores activos</span><strong id="countActivos">0</strong></li>
                 <li><span>Inactivos</span><strong id="countInactivos">0</strong></li>
                 <li><span>Desbordados</span><strong id="countDesbordados">0</strong></li>
+            </ul>
+            <ul class="mapa-info-list" id="indicadores-centros" style="display:none">
+                <li><span>Operativos</span><strong id="countOperativos">0</strong></li>
+                <li><span>Saturados</span><strong id="countSaturados">0</strong></li>
+                <li><span>Cerrados</span><strong id="countCerrados">0</strong></li>
             </ul>
         </div>
 
         <div class="mapa-panel">
             <h2>Referencia visual</h2>
-            <ul class="mapa-leyenda">
+            <ul class="mapa-leyenda" id="leyenda-contenedores">
                 <li class="leyenda-funcional">Funcional</li>
                 <li class="leyenda-inactivo">Inactivo</li>
                 <li class="leyenda-desbordado">Desbordado</li>
                 <li class="leyenda-roto">Roto</li>
+            </ul>
+            <ul class="mapa-leyenda" id="leyenda-centros" style="display:none">
+                <li class="leyenda-operativo">Operativo</li>
+                <li class="leyenda-saturado">Saturado</li>
+                <li class="leyenda-cerrado">Cerrado</li>
             </ul>
         </div>
 
@@ -94,7 +113,7 @@
 
 </section>
 
-<!-- ── PIE DE PÁGINA ────────────────────────────────────────────────── -->
+
 <footer class="footer">
     <div class="footer-grid">
         <div class="footer-brand">
@@ -117,7 +136,7 @@
 </footer>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="../LandingPage/mapaContenedores.js"></script>
+<script src="../LandingPage/mapa.js"></script>
 <script>
 function toggleMobileMenu() {
     document.getElementById('navMobile').classList.toggle('nav-mobile-open');

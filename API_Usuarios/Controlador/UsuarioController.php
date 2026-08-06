@@ -12,9 +12,6 @@ class UsuarioController {
         $this->usuarioModel = new UsuarioModel();
     }
 
-    // ==========================================
-    // VALIDACIONES
-    // ==========================================
 
     private function validarCI($ci) {
         if (!is_numeric($ci) || intval($ci) <= 0) {
@@ -87,15 +84,13 @@ class UsuarioController {
         return $municipio;
     }
 
-    // Evita que un vecino logueado acceda/modifique los datos de otro vecino (IDOR).
     private function verificarPropioCI($ci) {
         if (!isset($_SESSION['ci_usuario']) || (int)$_SESSION['ci_usuario'] !== (int)$ci) {
             throw new InvalidArgumentException('No tenés permiso para acceder a los datos de otro usuario.');
         }
     }
 
-    // updatePerfil lo usan tanto el vecino (su propio perfil) como el staff del
-    // Backoffice (gestión de cualquier usuario desde usuarios.php) — permite ambos casos.
+
     private function verificarAccesoPerfil($ci) {
         if (isset($_SESSION['ci_usuario']) && (int)$_SESSION['ci_usuario'] === (int)$ci) {
             return;
@@ -117,13 +112,7 @@ class UsuarioController {
         ];
     }
 
-    // ==========================================
-    // AUTENTICACIÓN
-    // ==========================================
 
-    // RF81 — Inicio de sesión por CI y contraseña.
-    // RF82 — El rol devuelto en la respuesta permite que el frontend
-    //        muestre solo las funcionalidades correspondientes al vecino.
     public function login($ci, $contrasenia) {
         $ci = $this->validarCI($ci);
 
@@ -143,23 +132,16 @@ class UsuarioController {
             throw new InvalidArgumentException('Tu solicitud está pendiente de aprobación por un administrador.');
         }
 
-        // TODO: generar y devolver un JWT cuando el módulo de sesiones esté implementado.
+
         return $usuario;
     }
 
-    // RF83 — Cierre de sesión.
-    // Con JWT el token se invalida en el cliente eliminándolo del almacenamiento local.
-    // Este endpoint documenta el flujo y permite agregar lista negra en el futuro.
+
     public function logout() {
-        // TODO: invalidar JWT en lista negra si se implementa server-side session.
         return ['mensaje' => 'Sesión cerrada correctamente.'];
     }
 
-    // ==========================================
-    // PERFIL (RF90, RF91)
-    // ==========================================
 
-    // RF90 — Consultar datos del perfil propio. Nunca devuelve la contraseña.
     public function getPerfil($ci) {
         $ci = $this->validarCI($ci);
         $perfil = $this->usuarioModel->getPerfil($ci);
@@ -169,8 +151,7 @@ class UsuarioController {
         return $perfil;
     }
 
-    // RF91 — Modificar email y teléfono del perfil propio.
-    // La contraseña nunca se recibe ni se devuelve en este endpoint (RF90).
+
     public function updatePerfil($ci, $email, $tel) {
         $ci    = $this->validarCI($ci);
         $email = $this->validarEmail($email);
@@ -185,9 +166,7 @@ class UsuarioController {
         return $this->usuarioModel->updatePerfil($ci, $email, $tel);
     }
 
-    // RF92 — Cambio de contraseña.
-    // Exige la contraseña actual para confirmar la identidad antes de cambiarla.
-    // La contraseña vigente nunca se devuelve en ninguna respuesta (RF90).
+
     public function cambiarContrasenia($ci, $contraseniaActual, $nuevaContrasenia) {
         $ci               = $this->validarCI($ci);
         $nuevaContrasenia = $this->validarContrasenia($nuevaContrasenia);
@@ -197,7 +176,6 @@ class UsuarioController {
             throw new InvalidArgumentException('La contraseña actual no puede estar vacía.');
         }
 
-        // Verificar la contraseña actual antes de permitir el cambio.
         $hash = $this->usuarioModel->getContrasenia($ci);
         if (!$hash || !password_verify($contraseniaActual, $hash)) {
             throw new InvalidArgumentException('La contraseña actual es incorrecta.');
@@ -206,29 +184,25 @@ class UsuarioController {
         return $this->usuarioModel->cambiarContrasenia($ci, $nuevaContrasenia);
     }
 
-    // ==========================================
-    // INCIDENCIAS PROPIAS (RF03)
-    // ==========================================
 
-    // Devuelve las incidencias reportadas por el vecino autenticado.
+
+
     public function getIncidencias($ci) {
         $ci = $this->validarCI($ci);
         $this->verificarPropioCI($ci);
         return $this->usuarioModel->getIncidencias($ci);
     }
 
-    // ==========================================
-    // NOTIFICACIONES (RF95, RF96)
-    // ==========================================
 
-    // RF95 — Consultar notificaciones del vecino, ordenadas por fecha y prioridad.
+
+
     public function getNotificaciones($ci) {
         $ci = $this->validarCI($ci);
         $this->verificarPropioCI($ci);
         return $this->usuarioModel->getNotificaciones($ci);
     }
 
-    // RF96 — Marcar una notificación como leída.
+
     public function marcarNotificacionLeida($idNotificacion) {
         $idNotificacion = $this->validarId($idNotificacion);
         if (!isset($_SESSION['ci_usuario'])) {
@@ -237,28 +211,23 @@ class UsuarioController {
         return $this->usuarioModel->marcarNotificacionLeida($idNotificacion, $_SESSION['ci_usuario']);
     }
 
-    // ==========================================
-    // ADMINISTRACIÓN DE USUARIOS
-    // ==========================================
 
-    // Listado general de usuarios para el panel de administración.
+
     public function listarUsuarios() {
         return $this->usuarioModel->listarUsuarios();
     }
 
-    // Filtrar usuarios por rol.
+
     public function filtrarRol($rol) {
         $rol = $this->validarRol($rol);
         return $this->usuarioModel->filtrarRol($rol);
     }
 
-    // Filtrar usuarios por acceso (pendiente/habilitado/deshabilitado).
     public function filtrarAcceso($acceso) {
         $acceso = $this->validarAcceso($acceso);
         return $this->usuarioModel->filtrarAcceso($acceso);
     }
 
-    // Cambia el rol de un usuario existente (RNE 01: administrador, cuadrilla, operario, vecino).
     public function cambiarRol($ci, $nuevoRol) {
         $ci       = $this->validarCI($ci);
         $nuevoRol = $this->validarRol($nuevoRol);
@@ -271,7 +240,6 @@ class UsuarioController {
         return $this->usuarioModel->cambiarRol($ci, $nuevoRol);
     }
 
-    // Habilita, deshabilita o revierte a pendiente el acceso de un usuario (equivalente a "dar de baja").
     public function cambiarAcceso($ci, $nuevoAcceso) {
         $ci         = $this->validarCI($ci);
         $nuevoAcceso = $this->validarAcceso($nuevoAcceso);
@@ -284,7 +252,6 @@ class UsuarioController {
         return $this->usuarioModel->cambiarAcceso($ci, $nuevoAcceso);
     }
 
-    // Alta directa de un usuario por parte de un administrador (sin pasar por el flujo de solicitud de RF02).
     public function crearUsuario($ci, $primerNombre, $pApellido, $email, $tel, $contrasenia, $rol, $idMunicipio) {
         $ci           = $this->validarCI($ci);
         $primerNombre = $this->validarNombre($primerNombre, 'Nombre');
@@ -301,7 +268,6 @@ class UsuarioController {
 
         return $this->usuarioModel->crearUsuario($ci, $primerNombre, $pApellido, $email, $tel, $contrasenia, $rol, $idMunicipio);
     }
-    // Asigna el municipio de un vecino que todavía no tiene uno (completado desde su perfil).
     public function setMunicipio($ci, $municipio) {
         $ci        = $this->validarCI($ci);
         $municipio = $this->validarMunicipio($municipio);

@@ -5,11 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Camiones — Recolix</title>
-    <link rel="stylesheet" href="styleCamiones.css">
+    <link rel="stylesheet" href="styleRecoleccion.css">
 </head>
 <body>
 
-<!-- ── BARRA DE NAVEGACIÓN ─────────────────────────────────────────── -->
 <header class="navbar">
     <div class="nav-inner">
         <div class="nav-left">
@@ -20,10 +19,11 @@
             <nav class="nav-links">
                 <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
                 <a href="#" class="nav-active">Camiones</a>
+                <a href="circuitos.php">Circuitos</a>
+                <a href="rutas.php">Rutas</a>
                 <a href="#">Cuadrillas</a>
                 <a href="../../API_Gestion/Vista/contenedores.php">Contenedores</a>
-                <a href="#">Vertederos</a>
-                <a href="#">Centros de Acopio</a>
+                <a href="../../API_Gestion/Vista/centrosAcopio.php">Centros de Acopio</a>
                 <a href="../../Backoffice/mapa.php">Mapa</a>
                 <a href="#">Reportes</a>
                 <a href="#">Incidencias</a>
@@ -42,10 +42,11 @@
     <nav class="nav-mobile" id="navMobile">
         <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
         <a href="#" class="nav-active">Camiones</a>
+        <a href="circuitos.php">Circuitos</a>
+        <a href="rutas.php">Rutas</a>
         <a href="#">Cuadrillas</a>
         <a href="../../API_Gestion/Vista/contenedores.php">Contenedores</a>
-        <a href="#">Vertederos</a>
-        <a href="#">Centros de Acopio</a>
+        <a href="../../API_Gestion/Vista/centrosAcopio.php">Centros de Acopio</a>
         <a href="../../Backoffice/mapa.php">Mapa</a>
         <a href="#">Reportes</a>
         <a href="#">Incidencias</a>
@@ -54,13 +55,11 @@
     <div class="nav-hr"></div>
 </header>
 
-<!-- ── HERO (ENCABEZADO) ───────────────────────────────────────────── -->
 <section class="hero">
     <h1 class="hero-title">Camiones</h1>
     <p class="hero-sub">Gestioná la flota de vehículos de recolección de residuos.</p>
 </section>
 
-<!-- ── TARJETAS ─────────────────────────────────────────────────────── -->
 <section class="cards-section">
     <div class="cards-grid">
 
@@ -109,10 +108,27 @@
             </div>
         </div>
 
+        <div class="card-operar" onclick="toggleMantenimientoRegistrar()">
+            <div class="card-content">
+                <div class="card-icon"><img src="img/correctivo.svg" alt="" class="card-svg-icon"></div>
+                <h3>Registrar Mantenimiento</h3>
+                <p>Registrar un mantenimiento con fecha y hora</p>
+                <button class="card-btn">Registrar</button>
+            </div>
+        </div>
+
+        <div class="card-operar" onclick="toggleMantenimientoProgramar()">
+            <div class="card-content">
+                <div class="card-icon"><img src="img/preventivo.svg" alt="" class="card-svg-icon"></div>
+                <h3>Programar Mantenimiento</h3>
+                <p>Agendar un mantenimiento con fecha y hora</p>
+                <button class="card-btn">Programar</button>
+            </div>
+        </div>
+
     </div>
 </section>
 
-<!-- ── BARRA DE FILTROS ─────────────────────────────────────────────── -->
 <section class="control-bar" id="filterBar" style="display:none">
     <div class="control-inner">
         <select id="filtroTipo" class="ctrl-select" onchange="actualizarFiltroValor()">
@@ -121,6 +137,7 @@
             <option value="tipoCarga">Tipo de Carga</option>
             <option value="disponibilidad">Disponibles</option>
             <option value="mantenimiento">En Mantenimiento</option>
+            <option value="proximosMantenimientos">Mantenimientos Próximos</option>
             <option value="anio">Año</option>
             <option value="modelo">Modelo</option>
             <option value="capacidad">Capacidad mínima (kg)</option>
@@ -132,7 +149,6 @@
     </div>
 </section>
 
-<!-- ── BARRA DE BÚSQUEDA POR ID ─────────────────────────────────────── -->
 <section class="control-bar" id="searchBar" style="display:none">
     <div class="control-inner">
         <input type="number" id="buscarId" class="ctrl-input"
@@ -142,7 +158,6 @@
     </div>
 </section>
 
-<!-- ── BARRA DE MODIFICACIÓN ──────────────────────────────────────── -->
 <section class="control-bar" id="modificarBar" style="display:none">
     <div class="control-inner">
         <input type="number" id="modificarId" class="ctrl-input"
@@ -163,7 +178,6 @@
     </div>
 </section>
 
-<!-- ── BARRA DE ELIMINACIÓN ───────────────────────────────────────── -->
 <section class="control-bar" id="deleteBar" style="display:none">
     <div class="control-inner">
         <input type="number" id="deleteId" class="ctrl-input"
@@ -173,16 +187,51 @@
     </div>
 </section>
 
-<!-- ── TABLA ────────────────────────────────────────────────────────── -->
+<section class="control-bar" id="mantenimientoRegistrarBar" style="display:none">
+    <div class="control-inner">
+        <input type="number" id="regMantId" class="ctrl-input"
+               placeholder="ID del camión..." min="1" style="max-width:130px">
+        <select id="regMantTipo" class="ctrl-select">
+            <option value="preventivo">Preventivo</option>
+            <option value="correctivo">Correctivo</option>
+        </select>
+        <input type="datetime-local" id="regMantFecha" class="ctrl-input" style="max-width:220px">
+        <input type="datetime-local" id="regMantFechaFin" class="ctrl-input" style="max-width:220px">
+        <input type="text" id="regMantDescripcion" class="ctrl-input"
+               placeholder="Descripción..." style="max-width:240px">
+        <input type="number" id="regMantCosto" class="ctrl-input"
+               placeholder="Costo ($)..." min="0" step="0.01" style="max-width:120px">
+        <button class="btn-primary" onclick="registrarMantenimiento()">Registrar</button>
+        <button class="btn-secondary" onclick="ocultarControles()">Cancelar</button>
+    </div>
+</section>
+
+<section class="control-bar" id="mantenimientoProgramarBar" style="display:none">
+    <div class="control-inner">
+        <input type="number" id="progMantId" class="ctrl-input"
+               placeholder="ID del camión..." min="1" style="max-width:130px">
+        <select id="progMantTipo" class="ctrl-select">
+            <option value="preventivo">Preventivo</option>
+            <option value="correctivo">Correctivo</option>
+        </select>
+        <input type="datetime-local" id="progMantFecha" class="ctrl-input" style="max-width:220px">
+        <input type="datetime-local" id="progMantFechaFin" class="ctrl-input" style="max-width:220px">
+        <input type="text" id="progMantDescripcion" class="ctrl-input"
+               placeholder="Descripción..." style="max-width:240px">
+        <button class="btn-primary" onclick="programarMantenimiento()">Programar</button>
+        <button class="btn-secondary" onclick="ocultarControles()">Cancelar</button>
+    </div>
+</section>
+
 <section class="table-section">
     <div class="table-header">
         <h2 class="table-title" id="tableTitle">Camiones</h2>
         <span class="table-count" id="tableCount"></span>
     </div>
     <div class="table-wrapper">
-        <table>
+        <table id="tablaPrincipal">
             <thead>
-                <tr>
+                <tr id="tablaHeaders">
                     <th>ID</th>
                     <th>Matrícula</th>
                     <th>Tipo de Carga</th>
@@ -204,7 +253,6 @@
     </div>
 </section>
 
-<!-- ── MODAL AGREGAR / MODIFICAR ────────────────────────────────────── -->
 <div class="modal-overlay" id="modalForm" style="display:none"
      onclick="onOverlayClick(event,'modalForm')">
     <div class="modal">
@@ -255,6 +303,7 @@
                         <option value="en_ruta">En ruta</option>
                         <option value="en_mantenimiento">En mantenimiento</option>
                         <option value="de_baja">De baja</option>
+                        <option value="en_deposito">En depósito</option>
                     </select>
                 </div>
             </div>
@@ -266,7 +315,6 @@
     </div>
 </div>
 
-<!-- ── MODAL CONFIRMAR BAJA ─────────────────────────────────────────── -->
 <div class="modal-overlay" id="modalDelete" style="display:none"
      onclick="onOverlayClick(event,'modalDelete')">
     <div class="modal modal-sm">
@@ -284,10 +332,8 @@
     </div>
 </div>
 
-<!-- ── NOTIFICACIÓN (TOAST) ─────────────────────────────────────────── -->
 <div id="toast" class="toast"></div>
 
-<!-- ── PIE DE PÁGINA ────────────────────────────────────────────────── -->
 <footer class="footer">
     <div class="footer-grid">
         <div class="footer-brand">
@@ -314,10 +360,13 @@ const API_BASE = '/recolix/API_Recoleccion';
 let camionIdParaEliminar = null;
 let toastTimeout;
 let reglas = {};
+let vistaActual = { url: '', render: 'tabla' };
+let firmaTabla = '';
 
 document.addEventListener('DOMContentLoaded', async () => {
     await cargarReglas();
     listarCamiones();
+    setInterval(refrescarVistaActual, 30000);
 });
 
 function reglasFallback() {
@@ -327,7 +376,7 @@ function reglasFallback() {
         capacidad: { tipo: 'entero', min: 1, max: 100000, label: 'Capacidad' },
         anio: { tipo: 'entero', min: 1990, max: 2030, label: 'Año' },
         modelo: { max: 100, label: 'Modelo' },
-        estado: { valores: ['disponible', 'en_ruta', 'en_mantenimiento', 'de_baja'], max: 50, label: 'Estado' }
+        estado: { valores: ['disponible', 'en_ruta', 'en_mantenimiento', 'de_baja', 'en_deposito'], max: 50, label: 'Estado' }
     };
 }
 
@@ -345,10 +394,10 @@ async function cargarReglas() {
     }
 }
 
-// ── LISTAR TODOS ──────────────────────────────────────────────────────
 async function listarCamiones() {
     ocultarControles();
     setLoading(true);
+    vistaActual = { url: `${API_BASE}/camiones`, render: 'tabla' };
     try {
         const res  = await fetch(`${API_BASE}/camiones`);
         const json = await res.json();
@@ -365,11 +414,11 @@ async function listarCamiones() {
     }
 }
 
-// ── BUSCAR POR ID ─────────────────────────────────────────────────────
 async function buscarPorId() {
     const id = document.getElementById('buscarId').value.trim();
     if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
     setLoading(true);
+    vistaActual = { url: `${API_BASE}/camiones/${id}`, render: 'tabla' };
     try {
         const res  = await fetch(`${API_BASE}/camiones/${id}`);
         const json = await res.json();
@@ -387,7 +436,6 @@ async function buscarPorId() {
     }
 }
 
-// ── FILTRAR ───────────────────────────────────────────────────────────
 function actualizarFiltroValor() {
     const tipo   = document.getElementById('filtroTipo').value;
     const input  = document.getElementById('filtroValor');
@@ -402,8 +450,9 @@ function actualizarFiltroValor() {
     if (sinValor.includes(tipo) || !tipo) return;
 
     const listas = {
-        estado:    ['disponible', 'en_ruta', 'en_mantenimiento', 'de_baja'],
-        tipoCarga: ['carga_lateral', 'carga_trasera', 'puerta_a_puerta']
+        estado:    ['disponible', 'en_ruta', 'en_mantenimiento', 'de_baja', 'en_deposito'],
+        tipoCarga: ['carga_lateral', 'carga_trasera', 'puerta_a_puerta'],
+        proximosMantenimientos: ['preventivo', 'correctivo']
     };
 
     if (listas[tipo]) {
@@ -433,18 +482,32 @@ async function aplicarFiltro() {
     }
 
     const accionMap = { disponibilidad: 'filtrarDisponibilidad', mantenimiento: 'filtrarMantenimiento' };
-    const url = sinValor.includes(tipo)
-        ? `${API_BASE}/camiones/${accionMap[tipo]}`
-        : `${API_BASE}/camiones?${tipo}=${encodeURIComponent(valor)}`;
+    const url = tipo === 'proximosMantenimientos'
+        ? `${API_BASE}/mantenimientos/proximos?tipo=${encodeURIComponent(valor)}`
+        : sinValor.includes(tipo)
+            ? `${API_BASE}/camiones/${accionMap[tipo]}`
+            : `${API_BASE}/camiones?${tipo}=${encodeURIComponent(valor)}`;
+    vistaActual = {
+        url,
+        render: tipo === 'proximosMantenimientos' ? 'proximos'
+            : tipo === 'mantenimiento' ? 'mantenimiento' : 'tabla'
+    };
     setLoading(true);
     try {
         const res  = await fetch(url);
         const json = await res.json();
         if (json.status === 'success') {
-            renderTabla(json.data);
+            if (tipo === 'proximosMantenimientos') {
+                renderTablaMantenimientos(json.data);
+            } else if (tipo === 'mantenimiento') {
+                renderTablaEnMantenimiento(json.data);
+            } else {
+                renderTabla(json.data);
+            }
             const labels = {
                 estado: `Estado: ${formatearValor(valor)}`, tipoCarga: `Tipo: ${formatearValor(valor)}`,
                 disponibilidad: 'Disponibles', mantenimiento: 'En Mantenimiento',
+                proximosMantenimientos: `Mantenimientos Próximos — ${formatearValor(valor)}`,
                 anio: `Año: ${valor}`, modelo: `Modelo: ${valor}`,
                 capacidad: `Capacidad ≥ ${valor} kg`
             };
@@ -459,7 +522,6 @@ async function aplicarFiltro() {
     }
 }
 
-// ── AGREGAR ───────────────────────────────────────────────────────────
 function abrirModalAgregar() {
     document.getElementById('modalTitle').textContent = 'Agregar Camión';
     document.getElementById('camionId').value = '';
@@ -467,7 +529,6 @@ function abrirModalAgregar() {
     document.getElementById('modalForm').style.display = 'flex';
 }
 
-// ── MODAL EDITAR ──────────────────────────────────────────────────────
 function abrirModalEditar(camion) {
     document.getElementById('modalTitle').textContent = 'Editar Camión';
     document.getElementById('camionId').value  = camion.id_camion;
@@ -487,7 +548,6 @@ function abrirModalEditar(camion) {
     document.getElementById('modalForm').style.display = 'flex';
 }
 
-// ── GUARDAR (POST / PUT) ──────────────────────────────────────────────
 async function guardarCamion(e) {
     e.preventDefault();
     const id = document.getElementById('camionId').value;
@@ -586,7 +646,6 @@ async function guardarCamion(e) {
     }
 }
 
-// ── ELIMINAR ──────────────────────────────────────────────────────────
 function confirmarBorrar(id, matricula) {
     camionIdParaEliminar = id;
     document.getElementById('deleteNombre').textContent = matricula;
@@ -609,7 +668,6 @@ async function confirmarDelete() {
     }
 }
 
-// ── VERIFICAR DISPONIBILIDAD ──────────────────────────────────────────
 async function verificarDisponibilidad(id, matricula) {
     try {
         const res  = await fetch(`${API_BASE}/camiones/${id}/esDisponible`);
@@ -639,7 +697,7 @@ function actualizarPlaceholderModificar() {
 
     const listas = {
         tipoCarga: ['carga_lateral', 'carga_trasera', 'puerta_a_puerta'],
-        estado:    ['disponible', 'en_ruta', 'en_mantenimiento', 'de_baja']
+        estado:    ['disponible', 'en_ruta', 'en_mantenimiento', 'de_baja', 'en_deposito']
     };
 
     if (listas[campo]) {
@@ -666,7 +724,6 @@ function actualizarPlaceholderModificar() {
     }
 }
 
-// ── MODIFICAR ─────────────────────────────────────────────────────────────
 async function modificarCamion() {
     const id = document.getElementById('modificarId').value.trim();
     if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
@@ -757,7 +814,6 @@ async function modificarCamion() {
     }
 }
 
-// ── DAR DE BAJA ───────────────────────────────────────────────────────
 async function darDeBajaCamion() {
     const id = document.getElementById('deleteId').value.trim();
     if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
@@ -778,12 +834,24 @@ async function darDeBajaCamion() {
     }
 }
 
-// ── RENDERIZAR TABLA ──────────────────────────────────────────────────
+function restaurarHeadersCamiones() {
+    document.getElementById('tablaHeaders').innerHTML = `
+        <th>ID</th>
+        <th>Matrícula</th>
+        <th>Tipo de Carga</th>
+        <th>Capacidad (kg)</th>
+        <th>Año</th>
+        <th>Modelo</th>
+        <th>Estado</th>
+        <th>Acciones</th>`;
+}
+
 function renderTabla(camiones) {
     const tbody = document.getElementById('camionesBody');
     const noRes = document.getElementById('noResultados');
     const count = document.getElementById('tableCount');
 
+    restaurarHeadersCamiones();
     tbody.innerHTML = '';
 
     if (!camiones || camiones.length === 0) {
@@ -815,36 +883,118 @@ function renderTabla(camiones) {
     });
 }
 
+function formatearFecha(fechaStr) {
+    if (!fechaStr) return '—';
+    const d = new Date(fechaStr.replace(' ', 'T'));
+    if (isNaN(d.getTime())) return fechaStr;
+    return d.toLocaleString('es-UY', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+function renderTablaEnMantenimiento(camiones) {
+    const tbody = document.getElementById('camionesBody');
+    const noRes = document.getElementById('noResultados');
+    const count = document.getElementById('tableCount');
+
+    document.getElementById('tablaHeaders').innerHTML = `
+        <th>ID</th>
+        <th>Matrícula</th>
+        <th>Tipo de Carga</th>
+        <th>Capacidad (kg)</th>
+        <th>Año</th>
+        <th>Modelo</th>
+        <th>Hasta</th>
+        <th>Acciones</th>`;
+
+    tbody.innerHTML = '';
+
+    if (!camiones || camiones.length === 0) {
+        noRes.style.display = 'flex';
+        count.textContent   = '';
+        return;
+    }
+
+    noRes.style.display = 'none';
+    count.textContent   = `${camiones.length} resultado${camiones.length !== 1 ? 's' : ''}`;
+
+    camiones.forEach(c => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td class="td-id" data-label="ID">${c.id_camion}</td>
+            <td data-label="Matrícula"><strong>${c.matricula}</strong></td>
+            <td data-label="Tipo de Carga">${formatearValor(c.tipo_carga)}</td>
+            <td data-label="Capacidad (kg)">${Number(c.capacidad).toLocaleString()}</td>
+            <td data-label="Año">${c.anio}</td>
+            <td data-label="Modelo">${c.modelo}</td>
+            <td data-label="Hasta"><span class="badge badge-warning">${formatearFecha(c.fecha_fin_mantenimiento)}</span></td>
+            <td class="td-actions" data-label="Acciones">
+                <button class="btn-action" onclick='abrirModalEditar(${JSON.stringify(c)})' title="Editar">✏️</button>
+                <button class="btn-action" onclick="verificarDisponibilidad(${c.id_camion},'${c.matricula}')" title="Verificar disponibilidad">✅</button>
+                <button class="btn-action" onclick="confirmarBorrar(${c.id_camion},'${c.matricula}')" title="Eliminar">🗑️</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function renderTablaMantenimientos(mantenimientos) {
+    const tbody = document.getElementById('camionesBody');
+    const noRes = document.getElementById('noResultados');
+    const count = document.getElementById('tableCount');
+
+    document.getElementById('tablaHeaders').innerHTML = `
+        <th>ID</th>
+        <th>Camion</th>
+        <th>Tipo</th>
+        <th>Descripcion</th>
+        <th>Fecha Programada</th>
+        <th>Costo</th>`;
+
+    tbody.innerHTML = '';
+
+    if (!mantenimientos || mantenimientos.length === 0) {
+        noRes.style.display = 'flex';
+        count.textContent   = '';
+        return;
+    }
+
+    noRes.style.display = 'none';
+    count.textContent   = `${mantenimientos.length} resultado${mantenimientos.length !== 1 ? 's' : ''}`;
+
+    mantenimientos.forEach(m => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td class="td-id" data-label="ID">${m.id_mantenimiento}</td>
+            <td data-label="Camion">${m.id_camion}</td>
+            <td data-label="Tipo"><span class="badge badge-${m.tipo === 'correctivo' ? 'danger' : 'info'}">${formatearValor(m.tipo)}</span></td>
+            <td data-label="Descripcion">${m.descripcion || '—'}</td>
+            <td data-label="Fecha Programada">${formatearFecha(m.fecha_inicio)}</td>
+            <td data-label="Costo">${m.costo != null ? '$ ' + Number(m.costo).toLocaleString() : '—'}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
 function formatearValor(v) {
     return v.replace(/_/g, ' ');
 }
 
 function badgeClass(estado) {
-    const map = { 'disponible': 'success', 'en_ruta': 'info', 'en_mantenimiento': 'warning', 'de_baja': 'danger' };
+    const map = { 'disponible': 'success', 'en_ruta': 'info', 'en_mantenimiento': 'warning', 'de_baja': 'danger', 'en_deposito': 'neutral' };
     return map[estado] ?? 'neutral';
 }
 
-// ── UTILIDADES ────────────────────────────────────────────────────────
 function toggleFiltros() {
     const fb = document.getElementById('filterBar');
-    const sb = document.getElementById('searchBar');
-    const mb = document.getElementById('modificarBar');
-    const db = document.getElementById('deleteBar');
-    sb.style.display = 'none';
-    mb.style.display = 'none';
-    db.style.display = 'none';
-    fb.style.display = fb.style.display === 'none' ? 'block' : 'none';
+    const mostrar = fb.style.display === 'none';
+    ocultarControles();
+    if (mostrar) fb.style.display = 'block';
 }
 
 function toggleBusquedaId() {
     const sb = document.getElementById('searchBar');
-    const fb = document.getElementById('filterBar');
-    const mb = document.getElementById('modificarBar');
-    const db = document.getElementById('deleteBar');
-    fb.style.display = 'none';
-    mb.style.display = 'none';
-    db.style.display = 'none';
-    sb.style.display = sb.style.display === 'none' ? 'block' : 'none';
+    const mostrar = sb.style.display === 'none';
+    ocultarControles();
+    if (mostrar) sb.style.display = 'block';
 }
 
 function ocultarControles() {
@@ -852,28 +1002,137 @@ function ocultarControles() {
     document.getElementById('searchBar').style.display = 'none';
     document.getElementById('modificarBar').style.display = 'none';
     document.getElementById('deleteBar').style.display = 'none';
+    document.getElementById('mantenimientoRegistrarBar').style.display = 'none';
+    document.getElementById('mantenimientoProgramarBar').style.display = 'none';
 }
 
 function toggleModificar() {
     const mb = document.getElementById('modificarBar');
-    const fb = document.getElementById('filterBar');
-    const sb = document.getElementById('searchBar');
-    const db = document.getElementById('deleteBar');
-    fb.style.display = 'none';
-    sb.style.display = 'none';
-    db.style.display = 'none';
-    mb.style.display = mb.style.display === 'none' ? 'block' : 'none';
+    const mostrar = mb.style.display === 'none';
+    ocultarControles();
+    if (mostrar) mb.style.display = 'block';
 }
 
 function toggleDarDeBaja() {
     const db = document.getElementById('deleteBar');
-    const fb = document.getElementById('filterBar');
-    const sb = document.getElementById('searchBar');
-    const mb = document.getElementById('modificarBar');
-    fb.style.display = 'none';
-    sb.style.display = 'none';
-    mb.style.display = 'none';
-    db.style.display = db.style.display === 'none' ? 'block' : 'none';
+    const mostrar = db.style.display === 'none';
+    ocultarControles();
+    if (mostrar) db.style.display = 'block';
+}
+
+function ahoraLocal() {
+    const d = new Date();
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    return d.toISOString().slice(0, 16);
+}
+
+function toggleMantenimientoRegistrar() {
+    const bar = document.getElementById('mantenimientoRegistrarBar');
+    const mostrar = bar.style.display === 'none';
+    ocultarControles();
+    if (mostrar) {
+        document.getElementById('regMantFecha').value = ahoraLocal();
+        document.getElementById('regMantFechaFin').value = '';
+        document.getElementById('regMantId').value = '';
+        document.getElementById('regMantDescripcion').value = '';
+        document.getElementById('regMantCosto').value = '';
+        document.getElementById('regMantTipo').value = 'preventivo';
+        bar.style.display = 'block';
+    }
+}
+
+function toggleMantenimientoProgramar() {
+    const bar = document.getElementById('mantenimientoProgramarBar');
+    const mostrar = bar.style.display === 'none';
+    ocultarControles();
+    if (mostrar) {
+        document.getElementById('progMantFecha').value = '';
+        document.getElementById('progMantFechaFin').value = '';
+        document.getElementById('progMantId').value = '';
+        document.getElementById('progMantDescripcion').value = '';
+        document.getElementById('progMantTipo').value = 'preventivo';
+        bar.style.display = 'block';
+    }
+}
+
+async function registrarMantenimiento() {
+    const id = document.getElementById('regMantId').value.trim();
+    const tipo = document.getElementById('regMantTipo').value;
+    const fechaInicio = document.getElementById('regMantFecha').value;
+    const fechaFin = document.getElementById('regMantFechaFin').value;
+    const descripcion = document.getElementById('regMantDescripcion').value.trim();
+    const costo = document.getElementById('regMantCosto').value.trim();
+
+    if (!id) { mostrarToast('Ingresá el ID del camión', 'warning'); return; }
+    if (!fechaInicio) { mostrarToast('Ingresá la fecha y hora de inicio', 'warning'); return; }
+    if (!fechaFin) { mostrarToast('Ingresá la fecha y hora de fin', 'warning'); return; }
+    if (fechaFin < fechaInicio) { mostrarToast('La fecha de fin no puede ser anterior a la de inicio', 'warning'); return; }
+
+    setLoading(true);
+    try {
+        const res = await fetch(`${API_BASE}/mantenimientos`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                camionId: parseInt(id),
+                tipo,
+                descripcion: descripcion || 'Sin descripción',
+                fechaInicio: fechaInicio.replace('T', ' '),
+                fechaFin: fechaFin.replace('T', ' '),
+                costo: costo ? parseFloat(costo) : 0
+            })
+        });
+        const json = await res.json();
+        if (json.status === 'success') {
+            mostrarToast('Mantenimiento registrado correctamente', 'success');
+            listarCamiones();
+        } else {
+            mostrarToast(json.message, 'error');
+        }
+    } catch {
+        mostrarToast('Error al conectar con la API', 'error');
+    } finally {
+        setLoading(false);
+    }
+}
+
+async function programarMantenimiento() {
+    const id = document.getElementById('progMantId').value.trim();
+    const tipo = document.getElementById('progMantTipo').value;
+    const fechaInicio = document.getElementById('progMantFecha').value;
+    const fechaFin = document.getElementById('progMantFechaFin').value;
+    const descripcion = document.getElementById('progMantDescripcion').value.trim();
+
+    if (!id) { mostrarToast('Ingresá el ID del camión', 'warning'); return; }
+    if (!fechaInicio) { mostrarToast('Ingresá la fecha y hora de inicio', 'warning'); return; }
+    if (!fechaFin) { mostrarToast('Ingresá la fecha y hora de fin', 'warning'); return; }
+    if (fechaFin < fechaInicio) { mostrarToast('La fecha de fin no puede ser anterior a la de inicio', 'warning'); return; }
+
+    setLoading(true);
+    try {
+        const res = await fetch(`${API_BASE}/mantenimientos/programar`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                camionId: parseInt(id),
+                tipo,
+                descripcion: descripcion || 'Sin descripción',
+                fechaInicio: fechaInicio.replace('T', ' '),
+                fechaFin: fechaFin.replace('T', ' ')
+            })
+        });
+        const json = await res.json();
+        if (json.status === 'success') {
+            mostrarToast('Mantenimiento programado correctamente', 'success');
+            listarCamiones();
+        } else {
+            mostrarToast(json.message, 'error');
+        }
+    } catch {
+        mostrarToast('Error al conectar con la API', 'error');
+    } finally {
+        setLoading(false);
+    }
 }
 
 function cerrarModal() {
@@ -898,6 +1157,25 @@ function setTableTitle(title) {
 function setLoading(show) {
     document.getElementById('loadingState').style.display = show ? 'flex' : 'none';
     document.getElementById('camionesBody').style.opacity = show ? '0.3' : '1';
+}
+
+async function refrescarVistaActual() {
+    if (document.hidden || !vistaActual.url) return;
+    try {
+        const res = await fetch(vistaActual.url);
+        const json = await res.json();
+        if (json.status !== 'success') return;
+        const firma = JSON.stringify(json.data);
+        if (firma === firmaTabla) return;
+        firmaTabla = firma;
+        if (vistaActual.render === 'tabla') {
+            renderTabla(json.data);
+        } else if (vistaActual.render === 'mantenimiento') {
+            renderTablaEnMantenimiento(json.data);
+        } else if (vistaActual.render === 'proximos') {
+            renderTablaMantenimientos(json.data);
+        }
+    } catch {}
 }
 
 function toggleMobileMenu() {

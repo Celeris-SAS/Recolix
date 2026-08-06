@@ -11,7 +11,6 @@
 
 <body>
 
-    <!-- ── BARRA DE NAVEGACIÓN ─────────────────────────────────────────── -->
     <header class="navbar">
         <div class="nav-inner">
             <div class="nav-left">
@@ -22,10 +21,11 @@
                 <nav class="nav-links">
                     <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
                     <a href="../../API_Recoleccion/Vista/camiones.php">Camiones</a>
+                    <a href="../../API_Recoleccion/Vista/circuitos.php">Circuitos</a>
+                    <a href="../../API_Recoleccion/Vista/rutas.php">Rutas</a>
                     <a href="#">Cuadrillas</a>
                     <a href="../../API_Gestion/Vista/contenedores.php">Contenedores</a>
-                    <a href="#">Vertederos</a>
-                    <a href="#">Centros de Acopio</a>
+                    <a href="../../API_Gestion/Vista/centrosAcopio.php">Centros de Acopio</a>
                     <a href="../../Backoffice/mapa.php">Mapa</a>
                     <a href="#">Reportes</a>
                     <a href="#">Incidencias</a>
@@ -44,10 +44,11 @@
         <nav class="nav-mobile" id="navMobile">
             <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
             <a href="../../API_Recoleccion/Vista/camiones.php">Camiones</a>
+            <a href="../../API_Recoleccion/Vista/circuitos.php">Circuitos</a>
+            <a href="../../API_Recoleccion/Vista/rutas.php">Rutas</a>
             <a href="#">Cuadrillas</a>
             <a href="../../API_Gestion/Vista/contenedores.php">Contenedores</a>
-            <a href="#">Vertederos</a>
-            <a href="#">Centros de Acopio</a>
+            <a href="../../API_Gestion/Vista/centrosAcopio.php">Centros de Acopio</a>
             <a href="../../Backoffice/mapa.php">Mapa</a>
             <a href="#">Reportes</a>
             <a href="#">Incidencias</a>
@@ -56,13 +57,11 @@
         <div class="nav-hr"></div>
     </header>
 
-    <!-- ── HERO ───────────────────────────────────────────────────────── -->
     <section class="hero">
         <h1 class="hero-title">Usuarios</h1>
         <p class="hero-sub">Administrá las cuentas de vecinos, cuadrillas y administradores del sistema.</p>
     </section>
 
-    <!-- ── TARJETAS ─────────────────────────────────────────────────────── -->
     <section class="cards-section">
         <div class="cards-grid">
 
@@ -122,7 +121,6 @@
         </div>
     </section>
 
-    <!-- ── BARRA DE FILTROS ─────────────────────────────────────────────── -->
     <section class="control-bar" id="filterBar" style="display:none">
         <div class="control-inner">
             <select id="filtroTipo" class="ctrl-select" onchange="actualizarFiltroValor()">
@@ -136,7 +134,6 @@
         </div>
     </section>
 
-    <!-- ── BARRA DE BÚSQUEDA POR CÉDULA ─────────────────────────────────── -->
     <section class="control-bar" id="searchBar" style="display:none">
         <div class="control-inner">
             <input type="number" id="buscarCi" class="ctrl-input" placeholder="Cédula del usuario..." min="1"
@@ -146,7 +143,6 @@
         </div>
     </section>
 
-    <!-- ── BARRA DE MODIFICACIÓN ──────────────────────────────────────── -->
     <section class="control-bar" id="modificarBar" style="display:none">
         <div class="control-inner">
             <input type="number" id="modificarCi" class="ctrl-input" placeholder="Cédula del usuario..." min="1"
@@ -165,7 +161,6 @@
         </div>
     </section>
 
-    <!-- ── BARRA DE CAMBIO DE ESTADO ─────────────────────────────────────── -->
     <section class="control-bar" id="estadoBar" style="display:none">
         <div class="control-inner">
             <input type="number" id="estadoCi" class="ctrl-input" placeholder="Cédula del usuario..." min="1"
@@ -175,7 +170,6 @@
         </div>
     </section>
 
-    <!-- ── TABLA ────────────────────────────────────────────────────────── -->
     <section class="table-section">
         <div class="table-header">
             <h2 class="table-title" id="tableTitle">Usuarios</h2>
@@ -206,7 +200,6 @@
         </div>
     </section>
 
-    <!-- ── MODAL EDITAR ─────────────────────────────────────────────────── -->
     <div class="modal-overlay" id="modalForm" style="display:none" onclick="onOverlayClick(event,'modalForm')">
         <div class="modal">
             <div class="modal-header">
@@ -273,7 +266,6 @@
         </div>
     </div>
 
-    <!-- ── MODAL CONFIRMAR CAMBIO DE ESTADO ─────────────────────────────── -->
     <div class="modal-overlay" id="modalDelete" style="display:none" onclick="onOverlayClick(event,'modalDelete')">
         <div class="modal modal-sm">
             <div class="modal-header">
@@ -288,10 +280,8 @@
         </div>
     </div>
 
-    <!-- ── NOTIFICACIÓN (TOAST) ─────────────────────────────────────────── -->
     <div id="toast" class="toast"></div>
 
-    <!-- ── PIE DE PÁGINA ────────────────────────────────────────────────── -->
     <footer class="footer">
         <div class="footer-grid">
             <div class="footer-brand">
@@ -373,7 +363,6 @@
             listarUsuarios();
         });
 
-        // ── LISTAR TODOS ──────────────────────────────────────────────────────
         async function listarUsuarios() {
             ocultarControles();
             setLoading(true);
@@ -393,7 +382,6 @@
             }
         }
 
-        // ── BUSCAR POR CÉDULA ─────────────────────────────────────────────────
         async function buscarPorCi() {
             const ci = document.getElementById('buscarCi').value.trim();
             if (!ci) { mostrarToast('Ingresá una cédula', 'warning'); return; }
@@ -415,7 +403,6 @@
             }
         }
 
-        // ── FILTRAR ───────────────────────────────────────────────────────────
         function actualizarFiltroValor() {
             const tipo = document.getElementById('filtroTipo').value;
             const select = document.getElementById('filtroValorSelect');
@@ -457,7 +444,6 @@
             }
         }
 
-        // ── MODAL AGREGAR ──────────────────────────────────────────────────────
         function abrirModalAgregar() {
             modoEdicion = false;
             document.getElementById('modalTitle').textContent = 'Agregar Usuario';
@@ -476,7 +462,6 @@
             document.getElementById('modalForm').style.display = 'flex';
         }
 
-        // ── MODAL EDITAR ──────────────────────────────────────────────────────
         function abrirModalEditar(usuario) {
             modoEdicion = true;
             document.getElementById('modalTitle').textContent = 'Editar Usuario';
@@ -498,7 +483,6 @@
             document.getElementById('modalForm').style.display = 'flex';
         }
 
-        // ── GUARDAR (POST / PUT) ───────────────────────────────────────────────
         async function guardarUsuario(e) {
             e.preventDefault();
             const email = document.getElementById('email').value.trim();
@@ -541,7 +525,6 @@
                 return;
             }
 
-            // Modo creación
             const ci            = document.getElementById('usuarioCi').value.trim();
             const idMunicipio    = document.getElementById('idMunicipio').value;
             const primerNombre   = document.getElementById('primerNombre').value.trim();
@@ -581,7 +564,6 @@
             }
         }
 
-        // ── MODIFICAR CAMPO INDIVIDUAL ────────────────────────────────────────
         function actualizarPlaceholderModificar() {
             const campo  = document.getElementById('modificarCampo').value;
             const input  = document.getElementById('modificarValor');
@@ -685,7 +667,6 @@
             return true;
         }
 
-        // ── CAMBIAR ESTADO (HABILITAR / DESHABILITAR) ─────────────────────────
         async function buscarParaCambiarEstado() {
             const ci = document.getElementById('estadoCi').value.trim();
             if (!ci) { mostrarToast('Ingresá una cédula', 'warning'); return; }
@@ -736,7 +717,6 @@
             }
         }
 
-        // ── RENDERIZAR TABLA ──────────────────────────────────────────────────
         function escapeHtml(str) {
             return String(str ?? '').replace(/[&<>"']/g, s => ({
                 '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -790,7 +770,6 @@
             return map[acceso] ?? 'neutral';
         }
 
-        // ── UTILIDADES ────────────────────────────────────────────────────────
         function toggleFiltros() {
             const fb = document.getElementById('filterBar');
             const sb = document.getElementById('searchBar');

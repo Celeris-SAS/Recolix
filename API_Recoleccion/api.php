@@ -4,7 +4,6 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('Access-Control-Allow-Headers: Content-Type');
 
-// Configuración parametrizable - Mapping de recursos a controllers
 $config = [
     'base_path' => '/recolix/API_Recoleccion/',
     'resources' => [
@@ -29,7 +28,6 @@ $config = [
                 'filtrarCapacidad',
                 'obtenerHistorial'
             ],
-            // filtros por query param: paramName => controllerMethod (null significa que no se pasa parámetro)
             'filters' => [
                 'estado' => 'filtrarEstado',
                 'tipoCarga' => 'filtrarTipoCarga',
@@ -75,11 +73,94 @@ $config = [
                 'programar',
                 'obtenerPorCamion',
                 'filtrarPorTipo',
-                'obtenerCostoTotal'
+                'obtenerCostoTotal',
+                'proximos'
             ],
             'filters' => [
                 'camionId' => 'obtenerPorCamion',
                 'tipo' => 'filtrarPorTipo'
+            ]
+        ],
+        'rutas' => [
+            'singular' => 'Ruta',
+            'controller' => 'RutaController',
+            'file' => 'Controlador/rutaController.php',
+            'getAllMethod' => 'getAllRutas',
+            'getMethod' => 'getRuta',
+            'insertMethod' => 'insertRuta',
+            'updateMethod' => 'updateRuta',
+            'deleteMethod' => 'deleteRuta',
+            'actions' => [
+                'reglasValidacion',
+                'obtenerPorCircuito',
+                'filtrarPorActividad',
+                'filtrarPorNombre',
+                'agregarContenedor',
+                'quitarContenedor',
+                'obtenerContenedores',
+                'asignarCuadrilla',
+                'quitarCuadrilla',
+                'obtenerCuadrillas',
+                'obtenerLevantes',
+                'generarOptima',
+                'obtenerResumen'
+            ],
+            'filters' => [
+                'circuitoId' => 'obtenerPorCircuito',
+                'actividad' => 'filtrarPorActividad',
+                'nombre' => 'filtrarPorNombre'
+            ]
+        ],
+        'levantes' => [
+            'singular' => 'Levante',
+            'controller' => 'LevanteController',
+            'file' => 'Controlador/levanteController.php',
+            'getAllMethod' => 'getAllLevantes',
+            'getMethod' => 'getLevante',
+            'insertMethod' => 'planificar',
+            'updateMethod' => 'updateLevante',
+            'deleteMethod' => 'deleteLevante',
+            'actions' => [
+                'reglasValidacion',
+                'obtenerPorRuta',
+                'obtenerCuadrillas',
+                'planificar',
+                'iniciar',
+                'registrarContenedor',
+                'completar',
+                'cancelar',
+                'obtenerResumen',
+                'obtenerPendientesVencidos'
+            ],
+            'filters' => [
+                'rutaId' => 'obtenerPorRuta'
+            ]
+        ],
+        'circuitos' => [
+            'singular' => 'Circuito',
+            'controller' => 'CircuitoController',
+            'file' => 'Controlador/circuitoController.php',
+            'getAllMethod' => 'getAllCircuitos',
+            'getMethod' => 'getCircuito',
+            'insertMethod' => 'insertCircuito',
+            'updateMethod' => 'updateCircuito',
+            'deleteMethod' => 'deleteCircuito',
+            'actions' => [
+                'reglasValidacion',
+                'obtenerPorMunicipio',
+                'filtrarPorTurno',
+                'filtrarPorActividad',
+                'filtrarPorFrecuencia',
+                'filtrarPorDia',
+                'obtenerRutas',
+                'obtenerContenedores'
+            ],
+            'filters' => [
+                'municipioId' => 'obtenerPorMunicipio',
+                'turno' => 'filtrarPorTurno',
+                'actividad' => 'filtrarPorActividad',
+                'frecuencia' => 'filtrarPorFrecuencia',
+                'dia' => 'filtrarPorDia'
             ]
         ],
     ]
@@ -88,12 +169,11 @@ $config = [
 $method = $_SERVER['REQUEST_METHOD'];
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-// Obtener la ruta relativa después de la ruta base
 $basePath = rtrim($config['base_path'], '/');
 if (strpos($uri, $basePath) === 0) {
     $relativePath = substr($uri, strlen($basePath));
     $uriSegments = explode('/', trim($relativePath, '/'));
-    
+
     $resource = isset($uriSegments[0]) ? $uriSegments[0] : null;
     $id = isset($uriSegments[1]) ? $uriSegments[1] : null;
 
@@ -103,7 +183,6 @@ if (strpos($uri, $basePath) === 0) {
         exit;
     }
 
-    // Cargar el controller correspondiente
     $resourceConfig = $config['resources'][$resource];
     require_once __DIR__ . '/' . $resourceConfig['file'];
 
@@ -116,14 +195,11 @@ if (strpos($uri, $basePath) === 0) {
         exit;
     }
 
-    // Determinar si la ruta contiene una acción: /resource/{action}/{id} o /resource/{id}/{action}
     $action = null;
-    // recalcular segments para soportar acción como segundo segmento
     $action = isset($uriSegments[1]) && !is_numeric($uriSegments[1]) ? $uriSegments[1] : null;
     if ($action) {
         $id = isset($uriSegments[2]) ? $uriSegments[2] : null;
     } else {
-        // si el segundo segmento es numérico, es el id; si el tercero existe y no es numérico, es una acción
         if (isset($uriSegments[1]) && is_numeric($uriSegments[1])) {
             $id = $uriSegments[1];
             if (isset($uriSegments[2]) && !is_numeric($uriSegments[2])) {
@@ -132,27 +208,22 @@ if (strpos($uri, $basePath) === 0) {
         }
     }
 
-    // permitir override de acción vía query parameter `action`
     if (isset($_GET['action']) && $_GET['action']) {
         $action = $_GET['action'];
     }
 
-    // Si se solicita una acción y el controller la expone, llamarla directamente
     if ($action && isset($resourceConfig['actions']) && in_array($action, $resourceConfig['actions']) && method_exists($controller, $action)) {
-        // construir parámetros: preferir ID como primer param, luego body (para POST/PUT) o query params (para GET)
         $callParams = [];
         if ($id !== null) $callParams[] = $id;
         if ($method === 'GET') {
             $query = $_GET;
             unset($query['action']);
-            // agregar valores de query
             if (!empty($query)) $callParams = array_merge($callParams, array_values($query));
         } else {
             $body = json_decode(file_get_contents('php://input'), true);
             if (is_array($body) && !empty($body)) {
                 $callParams = array_merge($callParams, array_values($body));
             } else {
-                // fallback a query params
                 $query = $_GET; unset($query['action']);
                 if (!empty($query)) $callParams = array_merge($callParams, array_values($query));
             }
@@ -168,11 +239,9 @@ if (strpos($uri, $basePath) === 0) {
         exit;
     }
 
-    // Procesar la solicitud según el método HTTP
     switch ($method) {
         case 'GET':
             if ($id !== null) {
-                // GET con ID
                 try {
                     $result = $controller->{$resourceConfig['getMethod']}($id);
                     if ($result) {
@@ -186,7 +255,6 @@ if (strpos($uri, $basePath) === 0) {
                     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
                 }
             } else {
-                // GET sin ID (listar todos) — comprobar filtros por query params
                 $query = $_GET;
                 unset($query['action']);
                 $handled = false;
@@ -198,7 +266,6 @@ if (strpos($uri, $basePath) === 0) {
                             if (method_exists($controller, $filterMethod)) {
                                 try {
                                     if (is_array($qv)) {
-                                        // múltiples valores: pasar como parámetros
                                         $params = array_values($qv);
                                         $result = call_user_func_array([$controller, $filterMethod], $params);
                                     } else {
@@ -235,14 +302,14 @@ if (strpos($uri, $basePath) === 0) {
 
         case 'POST':
             $data = json_decode(file_get_contents('php://input'), true);
-            
+
             if (!$data) {
                 http_response_code(400);
                 echo json_encode(['status' => 'error', 'message' => 'Datos inválidos o vacíos']);
             } else {
                 try {
                     $result = call_user_func_array(
-                        [$controller, $resourceConfig['insertMethod']], 
+                        [$controller, $resourceConfig['insertMethod']],
                         array_values($data)
                     );
                     http_response_code(201);
@@ -260,16 +327,15 @@ if (strpos($uri, $basePath) === 0) {
                 echo json_encode(['status' => 'error', 'message' => 'ID requerido']);
             } else {
                 $data = json_decode(file_get_contents('php://input'), true);
-                
+
                 if (!$data) {
                     http_response_code(400);
                     echo json_encode(['status' => 'error', 'message' => 'Datos inválidos o vacíos']);
                 } else {
                     try {
-                        // Agregar el ID al principio de los parámetros
                         $params = array_merge([$id], array_values($data));
                         $result = call_user_func_array(
-                            [$controller, $resourceConfig['updateMethod']], 
+                            [$controller, $resourceConfig['updateMethod']],
                             $params
                         );
                         echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' actualizado', 'data' => $result]);
@@ -305,4 +371,3 @@ if (strpos($uri, $basePath) === 0) {
     http_response_code(400);
     echo json_encode(['status' => 'error', 'message' => 'Ruta base inválida. Use: ' . $config['base_path']]);
 }
-?>

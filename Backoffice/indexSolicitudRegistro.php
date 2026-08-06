@@ -31,10 +31,11 @@ if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['rol'] !== 'administrad
             <nav class="nav-links">
                 <a href="indexBackoffice.php">Inicio</a>
                 <a href="../API_Recoleccion/Vista/camiones.php">Camiones</a>
+                <a href="../API_Recoleccion/Vista/circuitos.php">Circuitos</a>
+                <a href="../API_Recoleccion/Vista/rutas.php">Rutas</a>
                 <a href="#">Cuadrillas</a>
                 <a href="../API_Gestion/Vista/contenedores.php">Contenedores</a>
-                <a href="#">Vertederos</a>
-                <a href="#">Centros de Acopio</a>
+                <a href="../API_Gestion/Vista/centrosAcopio.php">Centros de Acopio</a>
                 <a href="mapa.php">Mapa</a>
                 <a href="#">Reportes</a>
                 <a href="#">Incidencias</a>
@@ -53,10 +54,11 @@ if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['rol'] !== 'administrad
     <nav class="nav-mobile" id="navMobile">
         <a href="indexBackoffice.php">Inicio</a>
         <a href="../API_Recoleccion/Vista/camiones.php">Camiones</a>
+        <a href="../API_Recoleccion/Vista/circuitos.php">Circuitos</a>
+        <a href="../API_Recoleccion/Vista/rutas.php">Rutas</a>
         <a href="#">Cuadrillas</a>
         <a href="../API_Gestion/Vista/contenedores.php">Contenedores</a>
-        <a href="#">Vertederos</a>
-        <a href="#">Centros de Acopio</a>
+        <a href="../API_Gestion/Vista/centrosAcopio.php">Centros de Acopio</a>
         <a href="mapa.php">Mapa</a>
         <a href="#">Reportes</a>
         <a href="#">Incidencias</a>
@@ -76,10 +78,10 @@ if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['rol'] !== 'administrad
       <a href="indexBackoffice.php" class="btn btn-outline btn-sm">← Volver</a>
     </div>
 
-    <!-- Feedback global -->
+    
     <p class="form-feedback" id="feedbackGlobal"></p>
 
-    <!-- Tabla de solicitudes -->
+   
     <div class="panel-card">
       <div id="solicitudesContenedor">
         <p class="estado-carga">Cargando solicitudes...</p>
@@ -87,6 +89,26 @@ if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['rol'] !== 'administrad
     </div>
 
   </main>
+  <footer class="footer">
+    <div class="footer-grid">
+        <div class="footer-brand">
+            <div class="footer-logo">
+                <img src="../API_Recoleccion/Vista/logoRecolix.png" alt="Recolix" class="footer-logo-img">
+                <span class="footer-logo-name">Recolix</span>
+            </div>
+            <p>Plataforma de gestión de residuos urbanos para Montevideo.</p>
+        </div>
+        <div class="footer-col">
+            <h3>Navegación</h3>
+            <ul>
+                <li><a href="../LandingPage/index_LandingPage.html">Página principal</a></li>
+                <li><a href="../LandingPage/mapa.html">Mapa público</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-hr"></div>
+    <p class="footer-copy">&copy; 2026 Recolix. Todos los derechos reservados.</p>
+</footer>
 
   <script src="logica_solicitudes.js"></script>
   <script>

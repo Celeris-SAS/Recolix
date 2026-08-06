@@ -16,7 +16,7 @@ $config = [
             'insertMethod' => 'insertContenedor',
             'updateMethod' => 'updateContenedor',
             'deleteMethod' => 'bajaContenedor',
-            'actions' => [
+                'actions' => [
                 'reglasValidacion',
                 'cambiarEstado',
                 'clasificarPorTipoResiduo',
@@ -26,7 +26,8 @@ $config = [
                 'getHistorial',
                 'filtrarMunicipio',
                 'filtrarTipoResiduo',
-                'filtrarEstado'
+                'filtrarEstado',
+                'filtrarCriticos'
             ],
             'filters' => [
                 'municipio'   => 'filtrarMunicipio',
@@ -66,6 +67,53 @@ $config = [
                 'getAllPredicciones'
             ],
             'filters' => []
+        ],
+        'centros-acopio' => [
+            'singular'    => 'Centro',
+            'controller'  => 'CentroAcopioController',
+            'file'        => 'Controlador/centroAcopioController.php',
+            'getAllMethod' => 'getAllCentros',
+            'getMethod'   => 'getCentro',
+            'insertMethod' => 'insertCentro',
+            'updateMethod' => 'updateCentro',
+            'deleteMethod' => 'bajaCentro',
+            'actions' => [
+                'reglasValidacion',
+                'getOcupacion',
+                'asignarTipoResiduo',
+                'getResiduosPorCentro',
+                'actualizarOcupacion',
+                'filtrarMunicipio',
+                'filtrarTipo',
+                'filtrarEstado'
+            ],
+            'filters' => [
+                'municipio' => 'filtrarMunicipio',
+                'tipo'      => 'filtrarTipo',
+                'estado'    => 'filtrarEstado'
+            ]
+        ],
+        'maquinaria' => [
+            'singular'    => 'Maquinaria',
+            'controller'  => 'MaquinariaController',
+            'file'        => 'Controlador/maquinariaController.php',
+            'getAllMethod' => 'getAllMaquinarias',
+            'getMethod'   => 'getMaquinaria',
+            'insertMethod' => 'insertMaquinaria',
+            'updateMethod' => 'updateMaquinaria',
+            'deleteMethod' => 'bajaMaquinaria',
+            'actions' => [
+                'reglasValidacion',
+                'cambiarEstado',
+                'obtenerPorCentro',
+                'filtrarPorTipo',
+                'filtrarPorEstado'
+            ],
+            'filters' => [
+                'centro' => 'obtenerPorCentro',
+                'tipo'   => 'filtrarPorTipo',
+                'estado' => 'filtrarPorEstado'
+            ]
         ]
     ]
 ];
@@ -101,7 +149,6 @@ if (strpos($uri, $basePath) === 0) {
         exit;
     }
 
-    // Determinar acción
     $action = null;
     $action = isset($uriSegments[1]) && !is_numeric($uriSegments[1]) ? $uriSegments[1] : null;
     if ($action) {
@@ -119,7 +166,6 @@ if (strpos($uri, $basePath) === 0) {
         $action = $_GET['action'];
     }
 
-    // Ejecutar acción si existe
     if ($action && isset($resourceConfig['actions']) && in_array($action, $resourceConfig['actions']) && method_exists($controller, $action)) {
         $callParams = [];
         if ($id !== null) $callParams[] = $id;
@@ -148,7 +194,6 @@ if (strpos($uri, $basePath) === 0) {
         exit;
     }
 
-    // Procesar según método HTTP
     switch ($method) {
         case 'GET':
             if ($id !== null) {
@@ -210,6 +255,11 @@ if (strpos($uri, $basePath) === 0) {
             break;
 
         case 'POST':
+            if (!$resourceConfig['insertMethod']) {
+                http_response_code(405);
+                echo json_encode(['status' => 'error', 'message' => 'Este recurso es de solo lectura']);
+                break;
+            }
             $data = json_decode(file_get_contents('php://input'), true);
             if (!$data) {
                 http_response_code(400);

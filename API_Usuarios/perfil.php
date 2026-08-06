@@ -1,22 +1,17 @@
 <?php
 session_start();
 
-// Esta página es exclusiva del staff que entra por el Portal de Empleados
-// (Backoffice/login_backoffice.php, guarda $_SESSION['usuario'] como array
-// anidado). La Landing Page no debe poder llegar acá: esa sesión (login.php,
-// $_SESSION['ci_usuario']/$_SESSION['rol'] planos) siempre va a vecino.php.
 $ci  = $_SESSION['usuario']['ci_usuario'] ?? null;
 $rol = $_SESSION['usuario']['rol'] ?? null;
 
 if (!$ci) {
-    header("Location: /recolix/Backoffice/login_backoffice.php");
+    header("Location: ../Backoffice/login_backoffice.php");
     exit();
 }
 
-// Solo administrador, cuadrilla u operario pueden entrar
 $rolesPermitidos = ['administrador', 'cuadrilla', 'operario'];
 if (!in_array($rol, $rolesPermitidos)) {
-    header("Location: /recolix/Backoffice/login_backoffice.php");
+    header("Location: ../Backoffice/login_backoffice.php");
     exit();
 }
 ?>
@@ -48,10 +43,11 @@ if (!in_array($rol, $rolesPermitidos)) {
                 <nav class="nav-links">
                     <a href="../Backoffice/indexBackoffice.php">Inicio</a>
                     <a href="../API_Recoleccion/Vista/camiones.php">Camiones</a>
+                    <a href="../API_Recoleccion/Vista/circuitos.php">Circuitos</a>
+                    <a href="../API_Recoleccion/Vista/rutas.php">Rutas</a>
                     <a href="#">Cuadrillas</a>
                     <a href="../API_Gestion/Vista/contenedores.php">Contenedores</a>
-                    <a href="#">Vertederos</a>
-                    <a href="#">Centros de Acopio</a>
+                    <a href="../API_Gestion/Vista/centrosAcopio.php">Centros de Acopio</a>
                     <a href="../Backoffice/mapa.php">Mapa</a>
                     <a href="#">Reportes</a>
                     <a href="#">Incidencias</a>
@@ -70,10 +66,11 @@ if (!in_array($rol, $rolesPermitidos)) {
         <nav class="nav-mobile" id="navMobile">
             <a href="../Backoffice/indexBackoffice.php">Inicio</a>
             <a href="../API_Recoleccion/Vista/camiones.php">Camiones</a>
+            <a href="../API_Recoleccion/Vista/circuitos.php">Circuitos</a>
+            <a href="../API_Recoleccion/Vista/rutas.php">Rutas</a>
             <a href="#">Cuadrillas</a>
             <a href="../API_Gestion/Vista/contenedores.php">Contenedores</a>
-            <a href="#">Vertederos</a>
-            <a href="#">Centros de Acopio</a>
+            <a href="../API_Gestion/Vista/centrosAcopio.php">Centros de Acopio</a>
             <a href="../Backoffice/mapa.php">Mapa</a>
             <a href="#">Reportes</a>
             <a href="#">Incidencias</a>
@@ -160,6 +157,26 @@ if (!in_array($rol, $rolesPermitidos)) {
             </div>
         </section>
     </main>
+    <footer class="footer">
+    <div class="footer-grid">
+        <div class="footer-brand">
+            <div class="footer-logo">
+                <img src="../API_Recoleccion/Vista/logoRecolix.png" alt="Recolix" class="footer-logo-img">
+                <span class="footer-logo-name">Recolix</span>
+            </div>
+            <p>Plataforma de gestión de residuos urbanos para Montevideo.</p>
+        </div>
+        <div class="footer-col">
+            <h3>Navegación</h3>
+            <ul>
+                <li><a href="../LandingPage/index_LandingPage.html">Página principal</a></li>
+                <li><a href="../LandingPage/mapa.html">Mapa público</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-hr"></div>
+    <p class="footer-copy">&copy; 2026 Recolix. Todos los derechos reservados.</p>
+</footer>   
 
     <script>const CI = <?= json_encode($ci) ?>;</script>
     <script src="perfil.js"></script>
