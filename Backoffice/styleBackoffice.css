@@ -408,6 +408,8 @@ a { text-decoration: none; color: inherit; }
 .leyenda-saturado::before   { background: #8e44ad; }
 .leyenda-cerrado::before    { background: #5b2c6f; }
 
+.leyenda-en-ruta::before    { background: #2c7be5; }
+
 .mapa-tabs {
     display: flex;
     justify-content: center;
