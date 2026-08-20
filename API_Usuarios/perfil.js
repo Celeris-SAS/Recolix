@@ -39,8 +39,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
         const telOk = /^\d{9}$/.test(tel);
 
-        document.getElementById('editEmailError').textContent = emailOk ? '' : 'Ingresá un correo válido.';
-        document.getElementById('editTelError').textContent = telOk ? '' : 'El teléfono debe tener 9 dígitos.';
+        document.getElementById('editEmailError').textContent = emailOk ? '' : I18N.msgEmailInvalido;
+        document.getElementById('editTelError').textContent = telOk ? '' : I18N.msgTelInvalido;
 
         if (!emailOk || !telOk) return;
 
@@ -52,14 +52,14 @@ document.addEventListener('DOMContentLoaded', function () {
         const json = await resp.json();
 
         if (json.status !== 'success') {
-            mostrarFeedback('perfilFeedback', json.message || 'No se pudo guardar.', false);
+            mostrarFeedback('perfilFeedback', json.message || I18N.msgNoPudoGuardar, false);
             return;
         }
 
         await cargarPerfil();
         document.getElementById('perfilVista').hidden = false;
         document.getElementById('perfilForm').hidden = true;
-        mostrarFeedback('perfilFeedback', 'Datos actualizados correctamente.', true);
+        mostrarFeedback('perfilFeedback', I18N.msgDatosActualizados, true);
     });
 
     document.getElementById('cambiarContraseniaBtn').addEventListener('click', () => {
@@ -79,9 +79,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const nueva = document.getElementById('contraNueva').value;
 
         document.getElementById('contraActualError').textContent =
-            actual.length < 1 ? 'Ingresá tu contraseña actual.' : '';
+            actual.length < 1 ? I18N.msgContraActualRequerida : '';
         document.getElementById('contraNuevaError').textContent =
-            nueva.length < 8 ? 'La nueva contraseña debe tener al menos 8 caracteres.' : '';
+            nueva.length < 8 ? I18N.msgContraNuevaMin : '';
 
         if (actual.length < 1 || nueva.length < 8) return;
 
@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const json = await resp.json();
 
         if (json.status !== 'success') {
-            mostrarFeedback('contraFeedback', json.message || 'No se pudo cambiar la contraseña.', false);
+            mostrarFeedback('contraFeedback', json.message || I18N.msgNoPudoCambiarContra, false);
             return;
         }
 
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('contraNueva').value = '';
         document.getElementById('perfilVista').hidden = false;
         document.getElementById('contraseniaForm').hidden = true;
-        mostrarFeedback('perfilFeedback', 'Contraseña actualizada correctamente.', true);
+        mostrarFeedback('perfilFeedback', I18N.msgContraActualizada, true);
     });
 
     function mostrarFeedback(idElemento, mensaje, esExito) {

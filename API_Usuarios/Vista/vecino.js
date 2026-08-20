@@ -25,10 +25,10 @@ cargarNotificaciones();
     document.getElementById('perfilCI').textContent = perfil.ci_usuario;
     document.getElementById('perfilEmail').textContent = perfil.email || '—';
     document.getElementById('perfilTel').textContent = perfil.tel || '—';
-    document.getElementById('perfilMunicipio').textContent = perfil.municipio || 'Sin asignar';
+    document.getElementById('perfilMunicipio').textContent = perfil.municipio || I18N.sinAsignar;
     const btnMunicipio = document.getElementById('asignarMunicipioBtn');
     btnMunicipio.hidden = false;
-    btnMunicipio.textContent = perfil.id_municipio ? 'Cambiar municipio' : 'Agregar municipio';
+    btnMunicipio.textContent = perfil.id_municipio ? I18N.btnCambiarMunicipio : I18N.btnAgregarMunicipio;
 }
 
 
@@ -53,8 +53,8 @@ cargarNotificaciones();
         const tel = document.getElementById('editTel').value.trim();
 
         const reglas = {
-            email: [/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/, 'Ingresá un correo válido.', 'editEmailError'],
-            tel: [/^\d{9}$/, 'El teléfono debe tener 9 dígitos.', 'editTelError']
+            email: [/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/, I18N.msgEmailInvalido, 'editEmailError'],
+            tel: [/^\d{9}$/, I18N.msgTelInvalido, 'editTelError']
         };
 
         let esValido = true;
@@ -75,14 +75,14 @@ cargarNotificaciones();
 const json = await resp.json();
 
 if (json.status !== 'success') {
-    mostrarFeedback('perfilFeedback', json.message || 'No se pudo guardar.', false);
+    mostrarFeedback('perfilFeedback', json.message || I18N.msgNoPudoGuardar, false);
     return;
 }
 
     await cargarPerfil();
     document.getElementById('perfilVista').hidden = false;
     document.getElementById('perfilForm').hidden = true;
-    mostrarFeedback('perfilFeedback', 'Datos actualizados correctamente.', true);;
+    mostrarFeedback('perfilFeedback', I18N.msgDatosActualizados, true);
     });
 
 
@@ -100,10 +100,10 @@ if (json.status !== 'success') {
         document.getElementById('municipioForm').hidden = false;
         document.getElementById('perfilForm').hidden = true;
         document.getElementById('contraseniaForm').hidden = true;
-        document.getElementById('municipioFormTitle').textContent = esCambio ? 'Cambiar municipio' : 'Agregar municipio';
+        document.getElementById('municipioFormTitle').textContent = esCambio ? I18N.btnCambiarMunicipio : I18N.btnAgregarMunicipio;
         document.getElementById('municipioFormNota').textContent = esCambio
-            ? 'Podés modificar el municipio que corresponde a tu domicilio.'
-            : 'Todavía no tenés un municipio asignado. Seleccioná el que corresponde a tu domicilio.';
+            ? I18N.municipioFormNotaCambiar
+            : I18N.municipioFormNotaAgregar;
         document.getElementById('municipioSelect').value = esCambio ? perfilActual.municipio : '';
         limpiarFeedback('municipioFeedback');
     });
@@ -117,7 +117,7 @@ if (json.status !== 'success') {
     document.getElementById('guardarMunicipioBtn').addEventListener('click', async () => {
         const municipio = document.getElementById('municipioSelect').value;
         document.getElementById('municipioSelectError').textContent =
-            municipio ? '' : 'Seleccioná un municipio.';
+            municipio ? '' : I18N.msgSeleccionaMunicipioPunto;
         if (!municipio) return;
 
         const esCambio = !!perfilActual.id_municipio;
@@ -130,14 +130,14 @@ if (json.status !== 'success') {
         const json = await resp.json();
 
         if (json.status !== 'success') {
-            mostrarFeedback('municipioFeedback', json.message || 'No se pudo guardar el municipio.', false);
+            mostrarFeedback('municipioFeedback', json.message || I18N.msgNoPudoGuardarMunicipio, false);
             return;
         }
 
         await cargarPerfil();
         document.getElementById('perfilVista').hidden = false;
         document.getElementById('municipioForm').hidden = true;
-        mostrarFeedback('perfilFeedback', esCambio ? 'Municipio actualizado correctamente.' : 'Municipio asignado correctamente.', true);
+        mostrarFeedback('perfilFeedback', esCambio ? I18N.msgMunicipioActualizado : I18N.msgMunicipioAsignado, true);
     });
 
     document.getElementById('cancelarContraBtn').addEventListener('click', () => {
@@ -152,9 +152,9 @@ if (json.status !== 'success') {
         const nueva = document.getElementById('contraNueva').value;
 
         document.getElementById('contraActualError').textContent =
-            actual.length < 1 ? 'Ingresá tu contraseña actual.' : '';
+            actual.length < 1 ? I18N.msgContraActualRequerida : '';
         document.getElementById('contraNuevaError').textContent =
-            nueva.length < 8 ? 'La nueva contraseña debe tener al menos 8 caracteres.' : '';
+            nueva.length < 8 ? I18N.msgContraNuevaMin : '';
 
         if (actual.length < 1 || nueva.length < 8) return;
 
@@ -166,7 +166,7 @@ if (json.status !== 'success') {
     const json = await resp.json();
 
     if (json.status !== 'success') {
-        mostrarFeedback('contraFeedback', json.message || 'No se pudo cambiar la contraseña.', false);
+        mostrarFeedback('contraFeedback', json.message || I18N.msgNoPudoCambiarContra, false);
         return;
     }
 
@@ -174,7 +174,7 @@ if (json.status !== 'success') {
     document.getElementById('contraNueva').value = '';
     document.getElementById('perfilVista').hidden = false;
     document.getElementById('contraseniaForm').hidden = true;
-    mostrarFeedback('perfilFeedback', 'Contraseña actualizada correctamente.', true);
+    mostrarFeedback('perfilFeedback', I18N.msgContraActualizada, true);
     });
 
 
@@ -185,7 +185,7 @@ if (json.status !== 'success') {
     const lista = json.data;
 
     if (!lista.length) {
-        contenedor.innerHTML = '<div class="estado-vacio">Todavía no reportaste ninguna incidencia.</div>';
+        contenedor.innerHTML = `<div class="estado-vacio">${I18N.sinIncidencias}</div>`;
         return;
     }
 
@@ -214,7 +214,7 @@ if (json.status !== 'success') {
     const lista = json.data;
 
     if (!lista.length) {
-        contenedor.innerHTML = '<div class="estado-vacio">No tenés notificaciones por el momento.</div>';
+        contenedor.innerHTML = `<div class="estado-vacio">${I18N.sinNotificaciones}</div>`;
         return;
     }contenedor.innerHTML = lista.map(n => `
         <div class="notif-card ${n.estado === 'leida' ? 'leida' : 'no-leida'}" id="notif-${n.id_notificacion}">
@@ -226,7 +226,7 @@ if (json.status !== 'success') {
                     <span>${formatearFecha(n.fecha_creacion)}</span>
                 </div>
             </div>
-            ${n.estado !== 'leida' ? `<button class="btn-marcar-leida" data-id="${n.id_notificacion}">Marcar leída</button>` : ''}
+            ${n.estado !== 'leida' ? `<button class="btn-marcar-leida" data-id="${n.id_notificacion}">${I18N.btnMarcarLeida}</button>` : ''}
         </div>
     `).join('');contenedor.querySelectorAll('.btn-marcar-leida').forEach(btn => {
         btn.addEventListener('click', () => marcarLeida(btn.dataset.id));
@@ -253,7 +253,7 @@ if (json.status !== 'success') {
     function formatearFecha(fechaStr) {
         if (!fechaStr) return '—';
         const fecha = new Date(fechaStr);
-        return fecha.toLocaleDateString('es-UY', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        return fecha.toLocaleDateString(LOCALE, { day: '2-digit', month: '2-digit', year: 'numeric' });
     }
 
     function mostrarFeedback(idElemento, mensaje, esExito) {

@@ -42,24 +42,24 @@ document.addEventListener('DOMContentLoaded', function () {
   };
 
   const ETIQUETAS_TIPO = {
-    ecocentro: 'Ecocentro',
-    planta_clasificacion: 'Planta de clasificación',
-    relleno_sanitario: 'Relleno sanitario',
-    vertedero: 'Vertedero'
+    ecocentro: I18N.tipoEcocentro,
+    planta_clasificacion: I18N.tipoPlantaClasificacion,
+    relleno_sanitario: I18N.tipoRellenoSanitario,
+    vertedero: I18N.tipoVertedero
   };
 
   const ETIQUETAS_ESTADO_CONTENEDOR = {
-    funcional: 'Funcional',
-    inactivo: 'Inactivo',
-    desbordado: 'Desbordado',
-    roto: 'Roto',
-    en_deposito: 'En depósito'
+    funcional: I18N.estadoFuncional,
+    inactivo: I18N.estadoInactivo,
+    desbordado: I18N.estadoDesbordado,
+    roto: I18N.estadoRoto,
+    en_deposito: I18N.estadoEnDeposito
   };
 
   const ETIQUETAS_ESTADO_CENTRO = {
-    operativo: 'Operativo',
-    saturado: 'Saturado',
-    cerrado: 'Cerrado'
+    operativo: I18N.estadoOperativo,
+    saturado: I18N.estadoSaturado,
+    cerrado: I18N.estadoCerrado
   };
 
   const counts = {
@@ -80,16 +80,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const filas = [];
     if (vista === 'centros') {
       filas.push(`<b>${info.nombre}</b>`);
-      filas.push(`<b>Tipo:</b> ${etiqueta(ETIQUETAS_TIPO, info.tipo)}`);
-      filas.push(`<b>Estado:</b> ${etiqueta(ETIQUETAS_ESTADO_CENTRO, info.estado)}`);
-      if (info.calle) filas.push(`<b>Dirección:</b> ${info.calle}${info.num_calle ? ' ' + info.num_calle : ''}`);
-      if (info.municipio) filas.push(`<b>Municipio:</b> ${info.municipio}`);
-      if (info.capacidad_total != null) filas.push(`<b>Capacidad:</b> ${Number(info.capacidad_total).toLocaleString()}`);
+      filas.push(`<b>${I18N.popupTipo}</b> ${etiqueta(ETIQUETAS_TIPO, info.tipo)}`);
+      filas.push(`<b>${I18N.popupEstado}</b> ${etiqueta(ETIQUETAS_ESTADO_CENTRO, info.estado)}`);
+      if (info.calle) filas.push(`<b>${I18N.popupDireccion}</b> ${info.calle}${info.num_calle ? ' ' + info.num_calle : ''}`);
+      if (info.municipio) filas.push(`<b>${I18N.popupMunicipio}</b> ${info.municipio}`);
+      if (info.capacidad_total != null) filas.push(`<b>${I18N.popupCapacidad}</b> ${Number(info.capacidad_total).toLocaleString()}`);
     } else {
-      if (info && info.calle) filas.push(`<b>Calle:</b> ${info.calle}${info.num_calle ? ' ' + info.num_calle : ''}`);
-      if (info && info.capacidad) filas.push(`<b>Capacidad:</b> ${info.capacidad} L`);
-      if (info && info.nivel_llenado != null) filas.push(`<b>Nivel de llenado:</b> ${info.nivel_llenado}%`);
-      filas.push(`<b>Estado:</b> ${etiqueta(ETIQUETAS_ESTADO_CONTENEDOR, info.estado)}`);
+      if (info && info.calle) filas.push(`<b>${I18N.popupDireccion}</b> ${info.calle}${info.num_calle ? ' ' + info.num_calle : ''}`);
+      if (info && info.capacidad) filas.push(`<b>${I18N.popupCapacidad}</b> ${info.capacidad} L`);
+      if (info && info.nivel_llenado != null) filas.push(`<b>${I18N.popupNivelLlenado}</b> ${info.nivel_llenado}%`);
+      filas.push(`<b>${I18N.popupEstado}</b> ${etiqueta(ETIQUETAS_ESTADO_CONTENEDOR, info.estado)}`);
     }
     return filas.join('<br>');
   };
@@ -119,14 +119,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const marker = L.marker([lat, lon], { icon: ICONO_CAMION }).addTo(grupo);
 
-    const filas = [`<b>Camión ${camion.matricula}</b>`];
-    if (camion.modelo) filas.push(`<b>Modelo:</b> ${camion.modelo}`);
-    filas.push(`<b>Última posición:</b> ${camion.ubicacion.calle || 'sin dirección'}${camion.ubicacion.num_calle ? ' ' + camion.ubicacion.num_calle : ''}`);
+    const filas = [`<b>${I18N.popupCamion} ${camion.matricula}</b>`];
+    if (camion.modelo) filas.push(`<b>${I18N.popupModelo}</b> ${camion.modelo}`);
+    filas.push(`<b>${I18N.popupUltimaPosicion}</b> ${camion.ubicacion.calle || I18N.sinDireccion}${camion.ubicacion.num_calle ? ' ' + camion.ubicacion.num_calle : ''}`);
     if (camion.proxima_parada) {
-      filas.push(`<b>Próxima parada:</b> ${camion.proxima_parada.calle || 'sin dirección'}${camion.proxima_parada.num_calle ? ' ' + camion.proxima_parada.num_calle : ''}`);
-      filas.push(`<b>Tiempo hasta próximo contenedor:</b> ${camion.eta.texto} (${camion.eta.distancia_km} km a ${camion.eta.velocidad_kmh} km/h)`);
+      filas.push(`<b>${I18N.popupProximaParada}</b> ${camion.proxima_parada.calle || I18N.sinDireccion}${camion.proxima_parada.num_calle ? ' ' + camion.proxima_parada.num_calle : ''}`);
+      filas.push(`<b>${I18N.popupTiempoProximo}</b> ${camion.eta.texto} (${camion.eta.distancia_km} km a ${camion.eta.velocidad_kmh} km/h)`);
     } else {
-      filas.push(`<b>Próxima parada:</b> sin pendientes en este levante`);
+      filas.push(`<b>${I18N.popupProximaParada}</b> ${I18N.sinPendientes}`);
     }
     marker.bindPopup(filas.join('<br>'), { maxWidth: 260 });
     return [lat, lon];
@@ -148,8 +148,8 @@ document.addEventListener('DOMContentLoaded', function () {
       document.getElementById('countDesbordados').textContent = c.desbordado;
     }
 
-    const hora = new Date().toLocaleTimeString('es-UY', { hour: '2-digit', minute: '2-digit' });
-    const etiquetaTotal = vista === 'centros' ? 'centros' : (vista === 'camiones' ? 'camiones' : 'puntos');
+    const hora = new Date().toLocaleTimeString(I18N_LOCALE, { hour: '2-digit', minute: '2-digit' });
+    const etiquetaTotal = vista === 'centros' ? I18N.unidadCentros : (vista === 'camiones' ? I18N.unidadCamiones : I18N.unidadPuntos);
     document.getElementById('mapSummaryValue').textContent = `${total} ${etiquetaTotal} · ${hora}`;
   };
 
@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       const json = await resp.json();
       puntos = Array.isArray(json) ? json : json && json.data;
-      if (!Array.isArray(puntos)) throw new Error('Respuesta inesperada de la API');
+      if (!Array.isArray(puntos)) throw new Error(I18N.respuestaInesperada);
     } catch (_) {
       puntos = [];
     }

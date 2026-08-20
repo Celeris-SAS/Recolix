@@ -214,11 +214,39 @@ h3 {
     border-color: var(--leaf);
 }
 
-.header-actions {
+.header-actions,
+.nav-right {
     display: flex;
     align-items: center;
     gap: 18px;
     flex: 0 0 auto;
+}
+
+.lang-switcher {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.lang-switcher-item {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    padding: 4px 7px;
+    border-radius: 6px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+}
+
+.lang-switcher-item:hover {
+    color: var(--ink);
+    background: var(--paper-dim);
+}
+
+.lang-switcher-item.is-active {
+    color: var(--ink);
+    background: var(--paper-dim);
 }
 
 .hamburger {
@@ -228,9 +256,34 @@ h3 {
     color: var(--ink);
 }
 
+.nav-hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    width: 36px;
+    height: 36px;
+}
+
+.nav-hamburger span {
+    display: block;
+    height: 2px;
+    width: 24px;
+    background: var(--ink);
+    border-radius: 2px;
+}
+
 @media (max-width: 1023px) {
     .hamburger {
         display: block;
+    }
+
+    .nav-hamburger {
+        display: flex;
     }
 
     .main-nav {

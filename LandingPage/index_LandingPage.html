@@ -1,11 +1,13 @@
+<?php require_once __DIR__ . '/../i18n/i18n.php'; ?>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="<?= htmlspecialchars($RECOLIX_IDIOMA) ?>">
 
 <head>
   <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recolix</title>
-  <meta name="description" content="Recolix es la plataforma de gestión de residuos urbanos de Montevideo.">
+  <title><?= t('landing.title') ?></title>
+  <meta name="description" content="<?= htmlspecialchars(t('landing.meta_description')) ?>">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -43,14 +45,15 @@
 
       <nav class="main-nav" id="mainNav">
         <ul>
-          <li><a href="index_LandingPage.html">Inicio</a></li>
-          <li><a href="mapa.html">Mapa</a></li>
+          <li><a href="index_LandingPage.html"><?= t('common.nav_inicio') ?></a></li>
+          <li><a href="mapa.html"><?= t('common.nav_mapa') ?></a></li>
         </ul>
       </nav>
 
       <div class="header-actions">
-        <a href="login.html" id="loginNavLink" class="btn btn-outline btn-sm">Iniciar Sesión</a>
-        <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú" aria-expanded="false">☰</button>
+        <?php include __DIR__ . '/../i18n/switcher.php'; ?>
+        <a href="login.html" id="loginNavLink" class="btn btn-outline btn-sm"><?= t('common.nav_iniciar_sesion') ?></a>
+        <button class="hamburger" id="hamburgerBtn" aria-label="<?= htmlspecialchars(t('common.nav_abrir_menu')) ?>" aria-expanded="false">☰</button>
       </div>
 
     </div>
@@ -63,14 +66,13 @@
       <div class="container hero-inner">
         <div class="hero-panel">
           <h1>Recolix</h1>
-          <h2 class="hero-tagline">Por un Montevideo más limpio.</h2>
+          <h2 class="hero-tagline"><?= t('landing.hero_tagline') ?></h2>
           <p class="hero-desc">
-            Gestión integral de contenedores, rutas de recolección, flota y centros de acopio, con seguimiento de
-            incidencias en tiempo real para vecinos y equipos operativos.
+            <?= t('landing.hero_desc') ?>
           </p>
           <div class="hero-actions">
-            <a href="#" class="btn btn-primary">Reportar Incidencia</a>
-            <a href="index_LandingPage.html#registro" class="btn btn-outline">Crear Cuenta</a>
+            <a href="#" class="btn btn-primary"><?= t('landing.hero_reportar_incidencia') ?></a>
+            <a href="index_LandingPage.html#registro" class="btn btn-outline"><?= t('landing.hero_crear_cuenta') ?></a>
           </div>
         </div>
 
@@ -80,13 +82,13 @@
               <div id="hero-mapa"></div>
             </div>
             <div class="map-legend">
-              <p class="map-legend-title">Estado de los contenedores</p>
-              <p class="legend-item legend-ok">Funcional</p>
-              <p class="legend-item legend-warn">Inactivo</p>
-              <p class="legend-item legend-crit">Desbordado</p>
-              <p class="legend-item legend-off">Roto</p>
+              <p class="map-legend-title"><?= t('landing.map_legend_title') ?></p>
+              <p class="legend-item legend-ok"><?= t('landing.legend_funcional') ?></p>
+              <p class="legend-item legend-warn"><?= t('landing.legend_inactivo') ?></p>
+              <p class="legend-item legend-crit"><?= t('landing.legend_desbordado') ?></p>
+              <p class="legend-item legend-off"><?= t('landing.legend_roto') ?></p>
             </div>
-            <a href="mapa.html" class="map-link">Ver mapa interactivo completo →</a>
+            <a href="mapa.html" class="map-link"><?= t('landing.ver_mapa_completo') ?></a>
           </div>
         </div>
       </div>
@@ -94,21 +96,21 @@
 
     <div class="stats" id="estadisticas">
       <div class="container">
-        <p class="section-eyebrow">Datos abiertos</p>
-        <h2 class="section-title">Recolix en números</h2>
+        <p class="section-eyebrow"><?= t('landing.stats_eyebrow') ?></p>
+        <h2 class="section-title"><?= t('landing.stats_title') ?></h2>
 
         <div class="stats-grid">
           <div class="stat-card">
             <p class="stat-value" id="statContenedores">0</p>
-            <p class="stat-label">Contenedores registrados</p>
+            <p class="stat-label"><?= t('landing.stats_contenedores') ?></p>
           </div>
           <div class="stat-card" data-status="warn">
             <p class="stat-value" id="statIncidencias">0</p>
-            <p class="stat-label">Incidencias reportadas hoy</p>
+            <p class="stat-label"><?= t('landing.stats_incidencias') ?></p>
           </div>
           <div class="stat-card">
             <p class="stat-value" id="statVolumen">0</p>
-            <p class="stat-label">Toneladas recolectadas este mes</p>
+            <p class="stat-label"><?= t('landing.stats_volumen') ?></p>
           </div>
         </div>
         <p class="stats-note" id="statsUpdatedAt"></p>
@@ -118,9 +120,9 @@
     <div class="about" id="nosotros">
       <div class="container about-grid">
         <div class="about-text">
-          <p class="section-eyebrow">Qué es Recolix</p>
-          <h2 class="section-title">Una sola plataforma para toda la operativa</h2>
-          <p>Centraliza la gestión municipal de residuos urbanos y el seguimiento de incidencias ciudadanas.</p>
+          <p class="section-eyebrow"><?= t('landing.about_eyebrow') ?></p>
+          <h2 class="section-title"><?= t('landing.about_title') ?></h2>
+          <p><?= t('landing.about_desc') ?></p>
         </div>
 
         <div class="features-grid">
@@ -133,8 +135,8 @@
               <path
                 d="M8.714 14h-3.71a1 1 0 0 0-.948.683l-2.004 6A1 1 0 0 0 3 22h18a1 1 0 0 0 .948-1.316l-2-6a1 1 0 0 0-.949-.684h-3.712" />
             </svg>
-            <h3>Mapa en tiempo real</h3>
-            <p>Visualizá el estado de los contenedores y detectá zonas críticas al instante.</p>
+            <h3><?= t('landing.feature_mapa_titulo') ?></h3>
+            <p><?= t('landing.feature_mapa_desc') ?></p>
           </div>
 
           <div class="feature-card">
@@ -146,8 +148,8 @@
               <path d="M3 6h18" />
               <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
             </svg>
-            <h3>Reporte de incidencias</h3>
-            <p>Reportá contenedores rotos o desbordados indicando ubicación y foto.</p>
+            <h3><?= t('landing.feature_incidencias_titulo') ?></h3>
+            <p><?= t('landing.feature_incidencias_desc') ?></p>
           </div>
 
           <div class="feature-card">
@@ -160,8 +162,8 @@
               <path d="M4 18.463V21" />
               <path d="M8 14.656V21" />
             </svg>
-            <h3>Reportes y estadísticas</h3>
-            <p>Indicadores de volumen y zonas críticas exportables en PDF y CSV.</p>
+            <h3><?= t('landing.feature_reportes_titulo') ?></h3>
+            <p><?= t('landing.feature_reportes_desc') ?></p>
           </div>
 
           <div class="feature-card">
@@ -173,8 +175,8 @@
                 d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" />
               <path d="M4 2C2.8 3.7 2 5.7 2 8" />
             </svg>
-            <h3>Notificaciones</h3>
-            <p>Alertas automáticas cuando tu reporte cambia de estado.</p>
+            <h3><?= t('landing.feature_notificaciones_titulo') ?></h3>
+            <p><?= t('landing.feature_notificaciones_desc') ?></p>
           </div>
         </div>
       </div>
@@ -183,58 +185,58 @@
     <div class="register" id="registro">
       <div class="container register-grid">
         <div class="register-info">
-          <p class="section-eyebrow" style="color:var(--leaf);">Cuenta de vecino</p>
-          <h2>Sumate como vecino</h2>
+          <p class="section-eyebrow" style="color:var(--leaf);"><?= t('landing.register_eyebrow') ?></p>
+          <h2><?= t('landing.register_titulo') ?></h2>
           <div class="steps">
             <div class="step">
               <p class="step-num">1</p>
-              <p>Completá el formulario.</p>
+              <p><?= t('landing.register_paso1') ?></p>
             </div>
             <div class="step">
               <p class="step-num">2</p>
-              <p>Un administrador revisa tu solicitud.</p>
+              <p><?= t('landing.register_paso2') ?></p>
             </div>
             <div class="step">
               <p class="step-num">3</p>
-              <p>Te avisamos cuando esté activa.</p>
+              <p><?= t('landing.register_paso3') ?></p>
             </div>
           </div>
         </div>
 
         <form class="register-form" id="registerForm" novalidate>
           <div class="form-row">
-            <label for="ci">Cédula de identidad</label>
-            <input type="text" id="ci" name="ci" placeholder="Ej: 4123456" required>
+            <label for="ci"><?= t('landing.register_cedula') ?></label>
+            <input type="text" id="ci" name="ci" placeholder="<?= htmlspecialchars(t('landing.register_cedula_placeholder')) ?>" required>
             <p class="error-msg" id="ciError"></p>
           </div>
           <div class="form-row-2col">
             <div>
-              <label for="nombre">Nombre</label>
+              <label for="nombre"><?= t('landing.register_nombre') ?></label>
               <input type="text" id="nombre" name="nombre" required>
               <p class="error-msg" id="nombreError"></p>
             </div>
             <div>
-              <label for="apellido">Apellido</label>
+              <label for="apellido"><?= t('landing.register_apellido') ?></label>
               <input type="text" id="apellido" name="apellido" required>
               <p class="error-msg" id="apellidoError"></p>
             </div>
           </div>
           <div class="form-row">
-            <label for="email">Correo electrónico</label>
-            <input type="email" id="email" name="email" placeholder="nombre@correo.com" required>
+            <label for="email"><?= t('landing.register_email') ?></label>
+            <input type="email" id="email" name="email" placeholder="<?= htmlspecialchars(t('landing.register_email_placeholder')) ?>" required>
             <p class="error-msg" id="emailError"></p>
           </div>
           <div class="form-row">
-            <label for="telefono">Teléfono</label>
-            <input type="tel" id="telefono" name="telefono" placeholder="Ej: 099123456" required>
+            <label for="telefono"><?= t('landing.register_telefono') ?></label>
+            <input type="tel" id="telefono" name="telefono" placeholder="<?= htmlspecialchars(t('landing.register_telefono_placeholder')) ?>" required>
             <p class="error-msg" id="telefonoError"></p>
           </div>
           <div class="form-row">
-            <label for="contrasenia">Contraseña</label>
-            <input type="password" id="contrasenia" name="contrasenia" placeholder="Mínimo 8 caracteres" required>
+            <label for="contrasenia"><?= t('landing.register_contrasenia') ?></label>
+            <input type="password" id="contrasenia" name="contrasenia" placeholder="<?= htmlspecialchars(t('landing.register_contrasenia_placeholder')) ?>" required>
             <p class="error-msg" id="contraseniaError"></p>
           </div>
-          <button type="submit" class="btn btn-primary btn-block" id="registerSubmitBtn">Enviar solicitud</button>
+          <button type="submit" class="btn btn-primary btn-block" id="registerSubmitBtn"><?= t('landing.register_submit') ?></button>
           <p class="form-feedback" id="formFeedback"></p>
         </form>
       </div>
@@ -249,21 +251,21 @@
             <img src="img/LogoBlanco.png" alt="Logo Recolix" class="logo-imageBlanco" />
             <div class="logo-text">Recolix</div>
           </a>
-          <p>Plataforma de gestión de residuos urbanos para Montevideo.</p>
+          <p><?= t('common.footer_desc') ?></p>
         </div>
         <div class="footer-col">
-          <h3>Navegación</h3>
+          <h3><?= t('common.footer_navegacion') ?></h3>
           <ul>
-            <li><a href="index_LandingPage.html">Inicio</a></li>
-            <li><a href="mapa.html">Mapa</a></li>
-            <li><a href="../Backoffice/login_backoffice.php">Portal de empleados</a></li>
+            <li><a href="index_LandingPage.html"><?= t('common.footer_inicio') ?></a></li>
+            <li><a href="mapa.html"><?= t('common.footer_mapa') ?></a></li>
+            <li><a href="../Backoffice/login_backoffice.php"><?= t('common.footer_portal_empleados') ?></a></li>
           </ul>
         </div>
         <div class="footer-col">
-          <h3>Canales de la Intendencia</h3>
+          <h3><?= t('common.footer_canales') ?></h3>
           <ul>
-            <li>Línea 1950 3000</li>
-            <li>Whatsapp: 092 250 260</li>
+            <li><?= t('common.footer_linea') ?></li>
+            <li><?= t('common.footer_whatsapp') ?></li>
           </ul>
         </div>
       </div>
@@ -275,6 +277,18 @@
   <script>
     const API_USUARIOS = '/recolix/API_Usuarios';
     const API_GESTION = '/recolix/API_Gestion';
+    const I18N = <?= json_encode(t_array([
+      'ci' => 'landing.validation_ci',
+      'nombre' => 'landing.validation_nombre',
+      'apellido' => 'landing.validation_apellido',
+      'email' => 'landing.validation_email',
+      'telefono' => 'landing.validation_telefono',
+      'contrasenia' => 'landing.validation_contrasenia',
+      'revisarCampos' => 'landing.feedback_revisar_campos',
+      'solicitudEnviada' => 'landing.feedback_solicitud_enviada',
+      'errorConexion' => 'landing.feedback_error_conexion',
+      'errorEnviar' => 'landing.feedback_error_enviar',
+    ])) ?>;
 
     document.addEventListener('DOMContentLoaded', function () {
 
@@ -350,12 +364,12 @@
 
       const form = document.getElementById('registerForm');
       const reglas = {
-        ci: [/^\d{7,8}$/, 'Ingresá tu cédula sin puntos ni guiones (7-8 números).'],
-        nombre: [/^[A-Za-zÁÉÍÓÚÑÜáéíóúñü\s]{2,50}$/, 'El nombre solo puede contener letras.'],
-        apellido: [/^[A-Za-zÁÉÍÓÚÑÜáéíóúñü\s]{2,50}$/, 'El apellido solo puede contener letras.'],
-        email: [/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/, 'Ingresá un correo válido, ej: nombre@correo.com'],
-        telefono: [/^\d{9}$/, 'Ingresá un teléfono de 9 números, sin espacios.'],
-        contrasenia: [/^.{8,}$/, 'La contraseña debe tener al menos 8 caracteres.']
+        ci: [/^\d{7,8}$/, I18N.ci],
+        nombre: [/^[A-Za-zÁÉÍÓÚÑÜáéíóúñü\s]{2,50}$/, I18N.nombre],
+        apellido: [/^[A-Za-zÁÉÍÓÚÑÜáéíóúñü\s]{2,50}$/, I18N.apellido],
+        email: [/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/, I18N.email],
+        telefono: [/^\d{9}$/, I18N.telefono],
+        contrasenia: [/^.{8,}$/, I18N.contrasenia]
       };
 
       form.addEventListener('submit', async (e) => {
@@ -376,7 +390,7 @@
 
         if (!esValido) {
           feedback.className = 'form-feedback is-error';
-          feedback.textContent = 'Revisá los campos marcados antes de continuar.';
+          feedback.textContent = I18N.revisarCampos;
           return;
         }
 
@@ -397,17 +411,17 @@
 
           if (json.status !== 'success') {
             feedback.className = 'form-feedback is-error';
-            feedback.textContent = json.message || 'No se pudo enviar la solicitud.';
+            feedback.textContent = json.message || I18N.errorEnviar;
             return;
           }
 
           feedback.className = 'form-feedback is-success';
-          feedback.textContent = 'Solicitud enviada exitosamente. Te avisaremos cuando esté aprobada.';
+          feedback.textContent = I18N.solicitudEnviada;
           form.reset();
 
         } catch (e) {
           feedback.className = 'form-feedback is-error';
-          feedback.textContent = 'No se pudo conectar con el servidor. Intentá de nuevo.';
+          feedback.textContent = I18N.errorConexion;
         }
       });
     });

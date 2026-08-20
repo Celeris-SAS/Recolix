@@ -303,6 +303,42 @@ h3 {
   color: var(--ink);
 }
 
+.lang-switcher {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.lang-switcher-item {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  padding: 4px 7px;
+  border-radius: 6px;
+  color: var(--white);
+  opacity: 0.75;
+  text-decoration: none;
+  transition: opacity 0.2s, background 0.2s, color 0.2s;
+}
+
+.lang-switcher-item:hover {
+  opacity: 1;
+}
+
+.lang-switcher-item.is-active {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.site-header.is-scrolled .lang-switcher-item {
+  color: var(--ink);
+}
+
+.site-header.is-scrolled .lang-switcher-item.is-active {
+  background: var(--paper-dim);
+}
+
 @media (max-width: 1023px) {
   .hamburger {
     display: block;

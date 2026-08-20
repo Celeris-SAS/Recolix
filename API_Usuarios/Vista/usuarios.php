@@ -1,11 +1,15 @@
-<?php require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php'; ?>
+<?php
+require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
+require_once __DIR__ . '/../../i18n/i18n.php';
+?>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="<?= htmlspecialchars($RECOLIX_IDIOMA) ?>">
 
 <head>
     <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Usuarios — Recolix</title>
+    <title><?= t('usuarios.title') ?></title>
     <link rel="stylesheet" href="styleUsuarios.css">
 </head>
 
@@ -19,47 +23,48 @@
                     <span class="brand-name">Recolix</span>
                 </div>
                 <nav class="nav-links">
-                    <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
-                    <a href="../../API_Recoleccion/Vista/camiones.php">Camiones</a>
-                    <a href="../../API_Recoleccion/Vista/circuitos.php">Circuitos</a>
-                    <a href="../../API_Recoleccion/Vista/rutas.php">Rutas</a>
-                    <a href="#">Cuadrillas</a>
-                    <a href="../../API_Gestion/Vista/contenedores.php">Contenedores</a>
-                    <a href="../../API_Gestion/Vista/centrosAcopio.php">Centros de Acopio</a>
-                    <a href="../../Backoffice/mapa.php">Mapa</a>
-                    <a href="#">Reportes</a>
-                    <a href="#">Incidencias</a>
-                    <a href="#" class="nav-active">Usuarios</a>
+                    <a href="../../Backoffice/indexBackoffice.php"><?= t('backoffice.nav_inicio') ?></a>
+                    <a href="../../API_Recoleccion/Vista/camiones.php"><?= t('backoffice.nav_camiones') ?></a>
+                    <a href="../../API_Recoleccion/Vista/circuitos.php"><?= t('backoffice.nav_circuitos') ?></a>
+                    <a href="../../API_Recoleccion/Vista/rutas.php"><?= t('backoffice.nav_rutas') ?></a>
+                    <a href="#"><?= t('backoffice.nav_cuadrillas') ?></a>
+                    <a href="../../API_Gestion/Vista/contenedores.php"><?= t('backoffice.nav_contenedores') ?></a>
+                    <a href="../../API_Gestion/Vista/centrosAcopio.php"><?= t('backoffice.nav_centros_acopio') ?></a>
+                    <a href="../../Backoffice/mapa.php"><?= t('backoffice.nav_mapa') ?></a>
+                    <a href="#"><?= t('backoffice.nav_reportes') ?></a>
+                    <a href="#"><?= t('backoffice.nav_incidencias') ?></a>
+                    <a href="#" class="nav-active"><?= t('backoffice.nav_usuarios') ?></a>
                 </nav>
             </div>
             <div class="nav-right">
-                <a href="../perfil.php" class="btn-user" title="Perfil de usuario">
+                <?php include __DIR__ . '/../../i18n/switcher.php'; ?>
+                <a href="../perfil.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
                     <img src="img/user.svg" alt="Usuario" class="nav-user-icon">
                 </a>
-                <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menú">
+                <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="<?= htmlspecialchars(t('backoffice.nav_menu')) ?>">
                     <span></span><span></span><span></span>
                 </button>
             </div>
         </div>
         <nav class="nav-mobile" id="navMobile">
-            <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
-            <a href="../../API_Recoleccion/Vista/camiones.php">Camiones</a>
-            <a href="../../API_Recoleccion/Vista/circuitos.php">Circuitos</a>
-            <a href="../../API_Recoleccion/Vista/rutas.php">Rutas</a>
-            <a href="#">Cuadrillas</a>
-            <a href="../../API_Gestion/Vista/contenedores.php">Contenedores</a>
-            <a href="../../API_Gestion/Vista/centrosAcopio.php">Centros de Acopio</a>
-            <a href="../../Backoffice/mapa.php">Mapa</a>
-            <a href="#">Reportes</a>
-            <a href="#">Incidencias</a>
-            <a href="#" class="nav-active">Usuarios</a>
+            <a href="../../Backoffice/indexBackoffice.php"><?= t('backoffice.nav_inicio') ?></a>
+            <a href="../../API_Recoleccion/Vista/camiones.php"><?= t('backoffice.nav_camiones') ?></a>
+            <a href="../../API_Recoleccion/Vista/circuitos.php"><?= t('backoffice.nav_circuitos') ?></a>
+            <a href="../../API_Recoleccion/Vista/rutas.php"><?= t('backoffice.nav_rutas') ?></a>
+            <a href="#"><?= t('backoffice.nav_cuadrillas') ?></a>
+            <a href="../../API_Gestion/Vista/contenedores.php"><?= t('backoffice.nav_contenedores') ?></a>
+            <a href="../../API_Gestion/Vista/centrosAcopio.php"><?= t('backoffice.nav_centros_acopio') ?></a>
+            <a href="../../Backoffice/mapa.php"><?= t('backoffice.nav_mapa') ?></a>
+            <a href="#"><?= t('backoffice.nav_reportes') ?></a>
+            <a href="#"><?= t('backoffice.nav_incidencias') ?></a>
+            <a href="#" class="nav-active"><?= t('backoffice.nav_usuarios') ?></a>
         </nav>
         <div class="nav-hr"></div>
     </header>
 
     <section class="hero">
-        <h1 class="hero-title">Usuarios</h1>
-        <p class="hero-sub">Administrá las cuentas de vecinos, cuadrillas y administradores del sistema.</p>
+        <h1 class="hero-title"><?= t('usuarios.hero_title') ?></h1>
+        <p class="hero-sub"><?= t('usuarios.hero_sub') ?></p>
     </section>
 
     <section class="cards-section">
@@ -68,53 +73,53 @@
             <div class="card-operar" onclick="abrirModalAgregar()">
                 <div class="card-content">
                     <div class="card-icon"><img src="img/plus.svg" alt="" class="card-svg-icon"></div>
-                    <h3>Agregar Usuario</h3>
-                    <p>Crear una cuenta nueva directamente</p>
-                    <button class="card-btn">Agregar</button>
+                    <h3><?= t('usuarios.card_agregar_titulo') ?></h3>
+                    <p><?= t('usuarios.card_agregar_desc') ?></p>
+                    <button class="card-btn"><?= t('crud.btn_agregar') ?></button>
                 </div>
             </div>
 
             <a href="../../Backoffice/indexSolicitudRegistro.php" class="card-operar">
                 <div class="card-content">
                     <div class="card-icon"><img src="img/user.svg" alt="" class="card-svg-icon"></div>
-                    <h3>Solicitudes Pendientes</h3>
-                    <p>Aprobar o rechazar registros de vecinos</p>
+                    <h3><?= t('usuarios.card_solicitudes_titulo') ?></h3>
+                    <p><?= t('usuarios.card_solicitudes_desc') ?></p>
                 </div>
             </a>
 
             <div class="card-operar" onclick="toggleFiltros()">
                 <div class="card-content">
                     <div class="card-icon"><img src="img/loupe.svg" alt="" class="card-svg-icon"></div>
-                    <h3>Filtrar</h3>
-                    <p>Buscar por rol o acceso...</p>
-                    <button class="card-btn">Filtrar</button>
+                    <h3><?= t('crud.btn_filtrar') ?></h3>
+                    <p><?= t('usuarios.card_filtrar_desc') ?></p>
+                    <button class="card-btn"><?= t('crud.btn_filtrar') ?></button>
                 </div>
             </div>
 
             <div class="card-operar" onclick="toggleBusquedaId()">
                 <div class="card-content">
                     <div class="card-icon"><img src="img/question.svg" alt="" class="card-svg-icon"></div>
-                    <h3>Buscar por Cédula</h3>
-                    <p>Obtener un usuario específico</p>
-                    <button class="card-btn">Buscar</button>
+                    <h3><?= t('usuarios.card_buscarid_titulo') ?></h3>
+                    <p><?= t('usuarios.card_buscarid_desc') ?></p>
+                    <button class="card-btn"><?= t('crud.btn_buscar') ?></button>
                 </div>
             </div>
 
             <div class="card-operar" onclick="toggleModificar()">
                 <div class="card-content">
                     <div class="card-icon"><img src="img/refresh.svg" alt="" class="card-svg-icon"></div>
-                    <h3>Modificar Usuario</h3>
-                    <p>Editar rol, contacto o estado de un usuario</p>
-                    <button class="card-btn">Modificar</button>
+                    <h3><?= t('usuarios.card_modificar_titulo') ?></h3>
+                    <p><?= t('usuarios.card_modificar_desc') ?></p>
+                    <button class="card-btn"><?= t('crud.btn_modificar') ?></button>
                 </div>
             </div>
 
             <div class="card-operar" onclick="toggleCambiarEstado()">
                 <div class="card-content">
                     <div class="card-icon"><img src="img/minus.svg" alt="" class="card-svg-icon"></div>
-                    <h3>Habilitar / Deshabilitar</h3>
-                    <p>Bloquear o restaurar el acceso de un usuario</p>
-                    <button class="card-btn">Cambiar Estado</button>
+                    <h3><?= t('usuarios.card_estado_titulo') ?></h3>
+                    <p><?= t('usuarios.card_estado_desc') ?></p>
+                    <button class="card-btn"><?= t('usuarios.btn_cambiar_estado') ?></button>
                 </div>
             </div>
 
@@ -124,78 +129,78 @@
     <section class="control-bar" id="filterBar" style="display:none">
         <div class="control-inner">
             <select id="filtroTipo" class="ctrl-select" onchange="actualizarFiltroValor()">
-                <option value="">— Filtrar por —</option>
-                <option value="rol">Rol</option>
-                <option value="acceso">Acceso</option>
+                <option value=""><?= t('crud.filtrar_por') ?></option>
+                <option value="rol"><?= t('usuarios.filtro_opt_rol') ?></option>
+                <option value="acceso"><?= t('usuarios.filtro_opt_acceso') ?></option>
             </select>
             <select id="filtroValorSelect" class="ctrl-select" style="display:none"></select>
-            <button class="btn-primary" onclick="aplicarFiltro()">Aplicar</button>
-            <button class="btn-secondary" onclick="listarUsuarios()">Limpiar</button>
+            <button class="btn-primary" onclick="aplicarFiltro()"><?= t('crud.btn_aplicar') ?></button>
+            <button class="btn-secondary" onclick="listarUsuarios()"><?= t('crud.btn_limpiar') ?></button>
         </div>
     </section>
 
     <section class="control-bar" id="searchBar" style="display:none">
         <div class="control-inner">
-            <input type="number" id="buscarCi" class="ctrl-input" placeholder="Cédula del usuario..." min="1"
+            <input type="number" id="buscarCi" class="ctrl-input" placeholder="<?= htmlspecialchars(t('usuarios.searchid_ph')) ?>" min="1"
                 style="max-width:200px">
-            <button class="btn-primary" onclick="buscarPorCi()">Buscar</button>
-            <button class="btn-secondary" onclick="listarUsuarios()">Ver Todos</button>
+            <button class="btn-primary" onclick="buscarPorCi()"><?= t('crud.btn_buscar') ?></button>
+            <button class="btn-secondary" onclick="listarUsuarios()"><?= t('crud.btn_vertodos') ?></button>
         </div>
     </section>
 
     <section class="control-bar" id="modificarBar" style="display:none">
         <div class="control-inner">
-            <input type="number" id="modificarCi" class="ctrl-input" placeholder="Cédula del usuario..." min="1"
+            <input type="number" id="modificarCi" class="ctrl-input" placeholder="<?= htmlspecialchars(t('usuarios.modificarid_ph')) ?>" min="1"
                 style="max-width:160px">
             <select id="modificarCampo" class="ctrl-select" onchange="actualizarPlaceholderModificar()">
-                <option value="">— Campo —</option>
-                <option value="rol">Rol</option>
-                <option value="email">Correo electrónico</option>
-                <option value="tel">Teléfono</option>
+                <option value=""><?= t('crud.campo') ?></option>
+                <option value="rol"><?= t('usuarios.campo_opt_rol') ?></option>
+                <option value="email"><?= t('usuarios.campo_opt_email') ?></option>
+                <option value="tel"><?= t('usuarios.campo_opt_tel') ?></option>
             </select>
             <input type="text" id="modificarValor" class="ctrl-input" style="display:none"
-                placeholder="Seleccioná un campo...">
+                placeholder="<?= htmlspecialchars(t('crud.seleccionar_campo_placeholder')) ?>">
             <select id="modificarValorSelect" class="ctrl-select" style="display:none"></select>
-            <button class="btn-primary" onclick="modificarUsuario()">Modificar</button>
-            <button class="btn-secondary" onclick="ocultarControles()">Cancelar</button>
+            <button class="btn-primary" onclick="modificarUsuario()"><?= t('crud.btn_modificar') ?></button>
+            <button class="btn-secondary" onclick="ocultarControles()"><?= t('crud.btn_cancelar') ?></button>
         </div>
     </section>
 
     <section class="control-bar" id="estadoBar" style="display:none">
         <div class="control-inner">
-            <input type="number" id="estadoCi" class="ctrl-input" placeholder="Cédula del usuario..." min="1"
+            <input type="number" id="estadoCi" class="ctrl-input" placeholder="<?= htmlspecialchars(t('usuarios.estadoid_ph')) ?>" min="1"
                 style="max-width:200px">
-            <button class="btn-danger" onclick="buscarParaCambiarEstado()">Continuar</button>
-            <button class="btn-secondary" onclick="ocultarControles()">Cancelar</button>
+            <button class="btn-danger" onclick="buscarParaCambiarEstado()"><?= t('usuarios.btn_continuar') ?></button>
+            <button class="btn-secondary" onclick="ocultarControles()"><?= t('crud.btn_cancelar') ?></button>
         </div>
     </section>
 
     <section class="table-section">
         <div class="table-header">
-            <h2 class="table-title" id="tableTitle">Usuarios</h2>
+            <h2 class="table-title" id="tableTitle"><?= t('usuarios.hero_title') ?></h2>
             <span class="table-count" id="tableCount"></span>
         </div>
         <div class="table-wrapper">
             <table>
                 <thead>
                     <tr>
-                        <th>Cédula</th>
-                        <th>Nombre</th>
-                        <th>Apellido</th>
-                        <th>Email</th>
-                        <th>Teléfono</th>
-                        <th>Rol</th>
-                        <th>Acceso</th>
-                        <th>Acciones</th>
+                        <th><?= t('usuarios.th_cedula') ?></th>
+                        <th><?= t('usuarios.th_nombre') ?></th>
+                        <th><?= t('usuarios.th_apellido') ?></th>
+                        <th><?= t('usuarios.th_email') ?></th>
+                        <th><?= t('usuarios.th_telefono') ?></th>
+                        <th><?= t('usuarios.th_rol') ?></th>
+                        <th><?= t('usuarios.th_acceso') ?></th>
+                        <th><?= t('usuarios.th_acciones') ?></th>
                     </tr>
                 </thead>
                 <tbody id="usuariosBody"></tbody>
             </table>
             <div id="noResultados" class="empty-state" style="display:none">
-                Sin resultados para mostrar.
+                <?= t('crud.empty_state') ?>
             </div>
             <div id="loadingState" class="loading-state">
-                Cargando...
+                <?= t('crud.loading_state') ?>
             </div>
         </div>
     </section>
@@ -203,64 +208,64 @@
     <div class="modal-overlay" id="modalForm" style="display:none" onclick="onOverlayClick(event,'modalForm')">
         <div class="modal">
             <div class="modal-header">
-                <h3 id="modalTitle">Agregar Usuario</h3>
+                <h3 id="modalTitle"><?= t('usuarios.modal_add_title') ?></h3>
                 <button class="modal-close" onclick="cerrarModal()">✕</button>
             </div>
             <form id="usuarioForm" onsubmit="guardarUsuario(event)">
                 <div class="form-row" id="identidadRow">
                     <div class="form-group">
-                        <label for="usuarioCi">Cédula</label>
+                        <label for="usuarioCi"><?= t('usuarios.field_cedula') ?></label>
                         <input type="number" id="usuarioCi" class="form-input" placeholder="12345678" min="1000000"
                             required>
                     </div>
                     <div class="form-group" id="municipioGroup">
-                        <label for="idMunicipio">Municipio</label>
+                        <label for="idMunicipio"><?= t('usuarios.field_municipio') ?></label>
                         <select id="idMunicipio" class="form-input">
-                            <option value="">— Seleccionar —</option>
+                            <option value=""><?= t('crud.seleccionar') ?></option>
                         </select>
                     </div>
                 </div>
                 <div class="form-row" id="nombreRow">
                     <div class="form-group">
-                        <label for="primerNombre">Nombre</label>
-                        <input type="text" id="primerNombre" class="form-input" placeholder="Juan" maxlength="50">
+                        <label for="primerNombre"><?= t('usuarios.field_nombre') ?></label>
+                        <input type="text" id="primerNombre" class="form-input" placeholder="<?= htmlspecialchars(t('usuarios.field_nombre_ph')) ?>" maxlength="50">
                     </div>
                     <div class="form-group">
-                        <label for="pApellido">Apellido</label>
-                        <input type="text" id="pApellido" class="form-input" placeholder="Pérez" maxlength="50">
+                        <label for="pApellido"><?= t('usuarios.field_apellido') ?></label>
+                        <input type="text" id="pApellido" class="form-input" placeholder="<?= htmlspecialchars(t('usuarios.field_apellido_ph')) ?>" maxlength="50">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="email">Correo electrónico</label>
-                        <input type="email" id="email" class="form-input" placeholder="vecino@correo.com"
+                        <label for="email"><?= t('usuarios.field_email') ?></label>
+                        <input type="email" id="email" class="form-input" placeholder="<?= htmlspecialchars(t('usuarios.field_email_ph')) ?>"
                             maxlength="120" required>
                     </div>
                     <div class="form-group">
-                        <label for="tel">Teléfono</label>
-                        <input type="text" id="tel" class="form-input" placeholder="099123456" maxlength="9"
+                        <label for="tel"><?= t('usuarios.field_telefono') ?></label>
+                        <input type="text" id="tel" class="form-input" placeholder="<?= htmlspecialchars(t('usuarios.field_telefono_ph')) ?>" maxlength="9"
                             required>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="rol">Rol</label>
+                        <label for="rol"><?= t('usuarios.field_rol') ?></label>
                         <select id="rol" class="form-input" required>
-                            <option value="vecino">Vecino</option>
-                            <option value="cuadrilla">Cuadrilla</option>
-                            <option value="operario">Operario</option>
-                            <option value="administrador">Administrador</option>
+                            <option value="vecino"><?= t('usuarios.opt_vecino') ?></option>
+                            <option value="cuadrilla"><?= t('usuarios.opt_cuadrilla') ?></option>
+                            <option value="operario"><?= t('usuarios.opt_operario') ?></option>
+                            <option value="administrador"><?= t('usuarios.opt_administrador') ?></option>
                         </select>
                     </div>
                     <div class="form-group" id="contraseniaGroup">
-                        <label for="contrasenia">Contraseña</label>
-                        <input type="password" id="contrasenia" class="form-input" placeholder="Mínimo 8 caracteres"
+                        <label for="contrasenia"><?= t('usuarios.field_contrasenia') ?></label>
+                        <input type="password" id="contrasenia" class="form-input" placeholder="<?= htmlspecialchars(t('usuarios.field_contrasenia_ph')) ?>"
                             minlength="8">
                     </div>
                 </div>
                 <div class="modal-actions">
-                    <button type="button" class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
-                    <button type="submit" class="btn-primary">Guardar</button>
+                    <button type="button" class="btn-secondary" onclick="cerrarModal()"><?= t('crud.btn_cancelar') ?></button>
+                    <button type="submit" class="btn-primary"><?= t('crud.btn_guardar') ?></button>
                 </div>
             </form>
         </div>
@@ -269,13 +274,13 @@
     <div class="modal-overlay" id="modalDelete" style="display:none" onclick="onOverlayClick(event,'modalDelete')">
         <div class="modal modal-sm">
             <div class="modal-header">
-                <h3>Cambiar estado</h3>
+                <h3><?= t('usuarios.modal_estado_title') ?></h3>
                 <button class="modal-close" onclick="cerrarModalDelete()">✕</button>
             </div>
             <p class="delete-msg" id="deleteMsg"></p>
             <div class="modal-actions">
-                <button class="btn-secondary" onclick="cerrarModalDelete()">Cancelar</button>
-                <button class="btn-danger" onclick="confirmarDelete()">Confirmar</button>
+                <button class="btn-secondary" onclick="cerrarModalDelete()"><?= t('crud.btn_cancelar') ?></button>
+                <button class="btn-danger" onclick="confirmarDelete()"><?= t('usuarios.btn_confirmar') ?></button>
             </div>
         </div>
     </div>
@@ -289,22 +294,78 @@
                     <img src="Logo.png" alt="Recolix" class="footer-logo-img">
                     <span class="footer-logo-name">Recolix</span>
                 </div>
-                <p>Plataforma de gestión de residuos urbanos para Montevideo.</p>
+                <p><?= t('common.footer_desc') ?></p>
             </div>
             <div class="footer-col">
-                <h3>Navegación</h3>
+                <h3><?= t('common.footer_navegacion') ?></h3>
                 <ul>
-                    <li><a href="../../LandingPage/index_LandingPage.html">Página principal</a></li>
-                    <li><a href="../../LandingPage/mapa.html">Mapa público</a></li>
+                    <li><a href="../../LandingPage/index_LandingPage.html"><?= t('backoffice.footer_pagina_principal') ?></a></li>
+                    <li><a href="../../LandingPage/mapa.html"><?= t('backoffice.footer_mapa_publico') ?></a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-hr"></div>
-        <p class="footer-copy">&copy; 2026 Recolix. Todos los derechos reservados.</p>
+        <p class="footer-copy"><?= t('backoffice.footer_copyright') ?></p>
     </footer>
 
     <script>
         const API_BASE = '/recolix/API_Usuarios';
+        const I18N = <?= json_encode(t_array([
+            'msgIngresaCedula' => 'usuarios.msg_ingresa_cedula',
+            'msgUsuarioNoEncontrado' => 'usuarios.msg_usuario_no_encontrado',
+            'msgErrorConectar' => 'crud.msg_error_conectar',
+            'msgSeleccionaFiltro' => 'crud.msg_selecciona_filtro',
+            'msgSeleccionaValorFiltro' => 'crud.msg_selecciona_valor_filtro',
+            'msgSeleccionaCampo' => 'crud.msg_selecciona_campo',
+            'msgIngresaValor' => 'crud.msg_ingresa_valor',
+            'msgErrorGuardar' => 'crud.msg_error_guardar',
+            'msgErrorModificar' => 'crud.msg_error_modificar',
+            'resultadoSingular' => 'crud.resultado_singular',
+            'resultadoPlural' => 'crud.resultado_plural',
+            'filtroPrefijo' => 'crud.filtro_prefijo',
+            'modalAddTitle' => 'usuarios.modal_add_title',
+            'modalEditTitle' => 'usuarios.modal_edit_title',
+            'msgUsuarioActualizado' => 'usuarios.msg_usuario_actualizado',
+            'msgUsuarioCreado' => 'usuarios.msg_usuario_creado',
+            'msgIngresaLaCedula' => 'usuarios.msg_ingresa_la_cedula',
+            'msgSeleccionaMunicipio' => 'usuarios.msg_selecciona_municipio',
+            'msgIngresaNombreApellido' => 'usuarios.msg_ingresa_nombre_apellido',
+            'msgContraseniaMin' => 'usuarios.msg_contrasenia_min',
+            'msgRolActualizado' => 'usuarios.msg_rol_actualizado',
+            'msgErrorCambiarEstado' => 'usuarios.msg_error_cambiar_estado',
+            'confirmEstadoBefore' => 'usuarios.confirm_estado_before',
+            'confirmEstadoHabilitar' => 'usuarios.confirm_estado_habilitar',
+            'confirmEstadoDeshabilitar' => 'usuarios.confirm_estado_deshabilitar',
+            'confirmEstadoMiddle' => 'usuarios.confirm_estado_middle',
+            'confirmEstadoAfter' => 'usuarios.confirm_estado_after',
+            'usuarioHabilitadoOk' => 'usuarios.usuario_habilitado_ok',
+            'usuarioDeshabilitadoOk' => 'usuarios.usuario_deshabilitado_ok',
+            'titleDeshabilitar' => 'usuarios.title_deshabilitar',
+            'titleHabilitar' => 'usuarios.title_habilitar',
+            'crudTitleEditar' => 'crud.title_editar',
+            'filtroPhEmail' => 'usuarios.filtro_ph_email',
+            'filtroPhTel' => 'usuarios.filtro_ph_tel',
+            'phNuevoValor' => 'usuarios.ph_nuevo_valor',
+            'tableTitleTodos' => 'usuarios.table_title_todos',
+            'tableTitleUsuarioId' => 'usuarios.table_title_usuario_id',
+            'th_cedula' => 'usuarios.th_cedula',
+            'th_nombre' => 'usuarios.th_nombre',
+            'th_apellido' => 'usuarios.th_apellido',
+            'th_email' => 'usuarios.th_email',
+            'th_telefono' => 'usuarios.th_telefono',
+            'th_rol' => 'usuarios.th_rol',
+            'th_acceso' => 'usuarios.th_acceso',
+            'th_acciones' => 'usuarios.th_acciones',
+        ])) ?>;
+        const VALORES_TRADUCIDOS = <?= json_encode(t_array([
+            'habilitado' => 'usuarios.val_habilitado',
+            'pendiente' => 'usuarios.val_pendiente',
+            'deshabilitado' => 'usuarios.val_deshabilitado',
+            'vecino' => 'usuarios.val_vecino',
+            'cuadrilla' => 'usuarios.val_cuadrilla',
+            'operario' => 'usuarios.val_operario',
+            'administrador' => 'usuarios.val_administrador',
+        ])) ?>;
         let usuarioCiParaEstado = null;
         let estadoDestino = null;
         let toastTimeout;
@@ -371,12 +432,12 @@
                 const json = await res.json();
                 if (json.status === 'success') {
                     renderTabla(json.data);
-                    setTableTitle('Todos los Usuarios');
+                    setTableTitle(I18N.tableTitleTodos);
                 } else {
                     mostrarToast(json.message, 'error');
                 }
             } catch {
-                mostrarToast('Error al conectar con la API', 'error');
+                mostrarToast(I18N.msgErrorConectar, 'error');
             } finally {
                 setLoading(false);
             }
@@ -384,20 +445,20 @@
 
         async function buscarPorCi() {
             const ci = document.getElementById('buscarCi').value.trim();
-            if (!ci) { mostrarToast('Ingresá una cédula', 'warning'); return; }
+            if (!ci) { mostrarToast(I18N.msgIngresaCedula, 'warning'); return; }
             setLoading(true);
             try {
                 const res = await fetch(`${API_BASE}/usuarios/${ci}`);
                 const json = await res.json();
                 if (json.status === 'success' && json.data) {
                     renderTabla([json.data]);
-                    setTableTitle(`Usuario #${ci}`);
+                    setTableTitle(`${I18N.tableTitleUsuarioId}${ci}`);
                 } else {
                     renderTabla([]);
-                    mostrarToast(json.message || 'Usuario no encontrado', 'error');
+                    mostrarToast(json.message || I18N.msgUsuarioNoEncontrado, 'error');
                 }
             } catch {
-                mostrarToast('Error al conectar con la API', 'error');
+                mostrarToast(I18N.msgErrorConectar, 'error');
             } finally {
                 setLoading(false);
             }
@@ -418,14 +479,15 @@
 
         async function aplicarFiltro() {
             const tipo = document.getElementById('filtroTipo').value;
-            if (!tipo) { mostrarToast('Seleccioná un filtro', 'warning'); return; }
+            if (!tipo) { mostrarToast(I18N.msgSeleccionaFiltro, 'warning'); return; }
             const valor = document.getElementById('filtroValorSelect').value;
-            if (!valor) { mostrarToast('Seleccioná un valor para el filtro', 'warning'); return; }
+            if (!valor) { mostrarToast(I18N.msgSeleccionaValorFiltro, 'warning'); return; }
 
             const endpointMap = {
                 rol: 'filtrarRol',
                 acceso: 'filtrarAcceso'
             };
+            const labelMap = { rol: I18N.th_rol, acceso: I18N.th_acceso };
 
             setLoading(true);
             try {
@@ -433,12 +495,12 @@
                 const json = await res.json();
                 if (json.status === 'success') {
                     renderTabla(json.data);
-                    setTableTitle(`Filtro — ${reglas[tipo]?.label || tipo}: ${formatearValor(valor)}`);
+                    setTableTitle(`${I18N.filtroPrefijo} ${labelMap[tipo] || tipo}: ${formatearValor(valor)}`);
                 } else {
                     mostrarToast(json.message, 'error');
                 }
             } catch {
-                mostrarToast('Error al conectar con la API', 'error');
+                mostrarToast(I18N.msgErrorConectar, 'error');
             } finally {
                 setLoading(false);
             }
@@ -446,7 +508,7 @@
 
         function abrirModalAgregar() {
             modoEdicion = false;
-            document.getElementById('modalTitle').textContent = 'Agregar Usuario';
+            document.getElementById('modalTitle').textContent = I18N.modalAddTitle;
             document.getElementById('usuarioForm').reset();
             document.getElementById('usuarioCi').disabled = false;
             poblarSelectMunicipio();
@@ -464,7 +526,7 @@
 
         function abrirModalEditar(usuario) {
             modoEdicion = true;
-            document.getElementById('modalTitle').textContent = 'Editar Usuario';
+            document.getElementById('modalTitle').textContent = I18N.modalEditTitle;
             document.getElementById('usuarioForm').reset();
             document.getElementById('usuarioCi').value = usuario.ci_usuario;
             document.getElementById('usuarioCi').disabled = true;
@@ -516,11 +578,11 @@
                         return;
                     }
 
-                    mostrarToast('Usuario actualizado', 'success');
+                    mostrarToast(I18N.msgUsuarioActualizado, 'success');
                     cerrarModal();
                     listarUsuarios();
                 } catch {
-                    mostrarToast('Error al guardar', 'error');
+                    mostrarToast(I18N.msgErrorGuardar, 'error');
                 }
                 return;
             }
@@ -531,10 +593,10 @@
             const pApellido      = document.getElementById('pApellido').value.trim();
             const contrasenia    = document.getElementById('contrasenia').value;
 
-            if (!ci) { mostrarToast('Ingresá la cédula', 'warning'); return; }
-            if (!idMunicipio) { mostrarToast('Seleccioná un municipio', 'warning'); return; }
-            if (!primerNombre || !pApellido) { mostrarToast('Ingresá nombre y apellido', 'warning'); return; }
-            if (contrasenia.length < 8) { mostrarToast('La contraseña debe tener al menos 8 caracteres', 'warning'); return; }
+            if (!ci) { mostrarToast(I18N.msgIngresaLaCedula, 'warning'); return; }
+            if (!idMunicipio) { mostrarToast(I18N.msgSeleccionaMunicipio, 'warning'); return; }
+            if (!primerNombre || !pApellido) { mostrarToast(I18N.msgIngresaNombreApellido, 'warning'); return; }
+            if (contrasenia.length < 8) { mostrarToast(I18N.msgContraseniaMin, 'warning'); return; }
 
             try {
                 const res = await fetch(`${API_BASE}/usuarios`, {
@@ -553,14 +615,14 @@
                 });
                 const json = await res.json();
                 if (json.status === 'success') {
-                    mostrarToast('Usuario creado', 'success');
+                    mostrarToast(I18N.msgUsuarioCreado, 'success');
                     cerrarModal();
                     listarUsuarios();
                 } else {
                     mostrarToast(json.message, 'error');
                 }
             } catch {
-                mostrarToast('Error al guardar', 'error');
+                mostrarToast(I18N.msgErrorGuardar, 'error');
             }
         }
 
@@ -580,24 +642,24 @@
                 select.style.display = '';
             } else if (campo) {
                 const placeholders = {
-                    email: 'ej: vecino@correo.com',
-                    tel: 'ej: 099123456'
+                    email: I18N.filtroPhEmail,
+                    tel: I18N.filtroPhTel
                 };
-                input.placeholder = placeholders[campo] || 'Nuevo valor...';
+                input.placeholder = placeholders[campo] || I18N.phNuevoValor;
                 input.style.display = '';
             }
         }
 
         async function modificarUsuario() {
             const ci = document.getElementById('modificarCi').value.trim();
-            if (!ci) { mostrarToast('Ingresá una cédula', 'warning'); return; }
+            if (!ci) { mostrarToast(I18N.msgIngresaCedula, 'warning'); return; }
             const campo = document.getElementById('modificarCampo').value;
-            if (!campo) { mostrarToast('Seleccioná un campo a modificar', 'warning'); return; }
+            if (!campo) { mostrarToast(I18N.msgSeleccionaCampo, 'warning'); return; }
 
             const input  = document.getElementById('modificarValor');
             const select = document.getElementById('modificarValorSelect');
             const valor  = (campo === 'rol' ? select : input).value.trim();
-            if (!valor) { mostrarToast('Ingresá el nuevo valor', 'warning'); return; }
+            if (!valor) { mostrarToast(I18N.msgIngresaValor, 'warning'); return; }
 
             if (!validarCampo(campo, valor)) return;
 
@@ -611,7 +673,7 @@
                     });
                     const json = await res.json();
                     if (json.status === 'success') {
-                        mostrarToast('Rol actualizado', 'success');
+                        mostrarToast(I18N.msgRolActualizado, 'success');
                         ocultarControles();
                         listarUsuarios();
                     } else {
@@ -623,7 +685,7 @@
                 const res = await fetch(`${API_BASE}/usuarios/${ci}`);
                 const json = await res.json();
                 if (json.status !== 'success' || !json.data) {
-                    mostrarToast(json.message || 'Usuario no encontrado', 'error');
+                    mostrarToast(json.message || I18N.msgUsuarioNoEncontrado, 'error');
                     return;
                 }
                 const u = { ...json.data };
@@ -643,7 +705,7 @@
                     mostrarToast(putJson.message, 'error');
                 }
             } catch {
-                mostrarToast('Error al modificar', 'error');
+                mostrarToast(I18N.msgErrorModificar, 'error');
             } finally {
                 setLoading(false);
             }
@@ -669,7 +731,7 @@
 
         async function buscarParaCambiarEstado() {
             const ci = document.getElementById('estadoCi').value.trim();
-            if (!ci) { mostrarToast('Ingresá una cédula', 'warning'); return; }
+            if (!ci) { mostrarToast(I18N.msgIngresaCedula, 'warning'); return; }
             setLoading(true);
             try {
                 const res = await fetch(`${API_BASE}/usuarios/${ci}`);
@@ -679,10 +741,10 @@
                     confirmarCambioEstado(json.data.ci_usuario, `${json.data.primer_nombre} ${json.data.p_apellido}`, destino);
                     ocultarControles();
                 } else {
-                    mostrarToast(json.message || 'Usuario no encontrado', 'error');
+                    mostrarToast(json.message || I18N.msgUsuarioNoEncontrado, 'error');
                 }
             } catch {
-                mostrarToast('Error al conectar con la API', 'error');
+                mostrarToast(I18N.msgErrorConectar, 'error');
             } finally {
                 setLoading(false);
             }
@@ -691,9 +753,9 @@
         function confirmarCambioEstado(ci, nombre, destino) {
             usuarioCiParaEstado = ci;
             estadoDestino = destino;
-            const verbo = destino === 'habilitado' ? 'habilitar' : 'deshabilitar';
+            const verbo = destino === 'habilitado' ? I18N.confirmEstadoHabilitar : I18N.confirmEstadoDeshabilitar;
             document.getElementById('deleteMsg').innerHTML =
-                `¿Confirmás que querés <strong>${verbo}</strong> al usuario <strong>${nombre}</strong>?`;
+                `${I18N.confirmEstadoBefore} <strong>${verbo}</strong> ${I18N.confirmEstadoMiddle} <strong>${nombre}</strong>${I18N.confirmEstadoAfter}`;
             document.getElementById('modalDelete').style.display = 'flex';
         }
 
@@ -706,14 +768,14 @@
                 });
                 const json = await res.json();
                 if (json.status === 'success') {
-                    mostrarToast(`Usuario ${estadoDestino === 'habilitado' ? 'habilitado' : 'deshabilitado'} correctamente`, 'success');
+                    mostrarToast(estadoDestino === 'habilitado' ? I18N.usuarioHabilitadoOk : I18N.usuarioDeshabilitadoOk, 'success');
                     cerrarModalDelete();
                     listarUsuarios();
                 } else {
                     mostrarToast(json.message, 'error');
                 }
             } catch {
-                mostrarToast('Error al cambiar el estado', 'error');
+                mostrarToast(I18N.msgErrorCambiarEstado, 'error');
             }
         }
 
@@ -738,22 +800,22 @@
             }
 
             noRes.style.display = 'none';
-            count.textContent = `${usuariosActuales.length} resultado${usuariosActuales.length !== 1 ? 's' : ''}`;
+            count.textContent = `${usuariosActuales.length} ${usuariosActuales.length !== 1 ? I18N.resultadoPlural : I18N.resultadoSingular}`;
 
             usuariosActuales.forEach(u => {
                 const tr = document.createElement('tr');
                 const esHabilitado = u.acceso === 'habilitado';
                 tr.innerHTML = `
-    <td class="td-id" data-label="Cédula">${escapeHtml(u.ci_usuario)}</td>
-    <td data-label="Nombre"><strong>${escapeHtml(u.primer_nombre)}</strong></td>
-    <td data-label="Apellido">${escapeHtml(u.p_apellido)}</td>
-    <td data-label="Email">${escapeHtml(u.email)}</td>
-    <td data-label="Teléfono">${escapeHtml(u.tel)}</td>
-    <td data-label="Rol"><span class="badge badge-neutral">${formatearValor(u.rol)}</span></td>
-    <td data-label="Acceso"><span class="badge badge-${badgeClaseAcceso(u.acceso)}">${formatearValor(u.acceso)}</span></td>
-    <td class="td-actions" data-label="Acciones">
-        <button class="btn-action" data-action="editar" data-id="${escapeHtml(u.ci_usuario)}" title="Editar">✏️</button>
-        <button class="btn-action" data-action="estado" data-id="${escapeHtml(u.ci_usuario)}" title="${esHabilitado ? 'Deshabilitar' : 'Habilitar'}">${esHabilitado ? '🔒' : '🔓'}</button>
+    <td class="td-id" data-label="${I18N.th_cedula}">${escapeHtml(u.ci_usuario)}</td>
+    <td data-label="${I18N.th_nombre}"><strong>${escapeHtml(u.primer_nombre)}</strong></td>
+    <td data-label="${I18N.th_apellido}">${escapeHtml(u.p_apellido)}</td>
+    <td data-label="${I18N.th_email}">${escapeHtml(u.email)}</td>
+    <td data-label="${I18N.th_telefono}">${escapeHtml(u.tel)}</td>
+    <td data-label="${I18N.th_rol}"><span class="badge badge-neutral">${formatearValor(u.rol)}</span></td>
+    <td data-label="${I18N.th_acceso}"><span class="badge badge-${badgeClaseAcceso(u.acceso)}">${formatearValor(u.acceso)}</span></td>
+    <td class="td-actions" data-label="${I18N.th_acciones}">
+        <button class="btn-action" data-action="editar" data-id="${escapeHtml(u.ci_usuario)}" title="${I18N.crudTitleEditar}">✏️</button>
+        <button class="btn-action" data-action="estado" data-id="${escapeHtml(u.ci_usuario)}" title="${esHabilitado ? I18N.titleDeshabilitar : I18N.titleHabilitar}">${esHabilitado ? '🔒' : '🔓'}</button>
     </td>
 `;
                 tbody.appendChild(tr);
@@ -761,7 +823,9 @@
         }
 
         function formatearValor(valor) {
-            const texto = String(valor ?? '').replace(/_/g, ' ');
+            const clave = String(valor ?? '');
+            if (VALORES_TRADUCIDOS[clave]) return VALORES_TRADUCIDOS[clave];
+            const texto = clave.replace(/_/g, ' ');
             return texto.charAt(0).toUpperCase() + texto.slice(1);
         }
 

@@ -198,6 +198,14 @@ body {
   color: var(--ink);
 }
 
+.lang-switcher-item {
+  color: var(--ink);
+}
+
+.lang-switcher-item.is-active {
+  background: var(--paper-dim);
+}
+
 @media (max-width: 1023px) {
   .hamburger {
     display: block;

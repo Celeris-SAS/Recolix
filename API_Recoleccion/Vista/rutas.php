@@ -1,10 +1,14 @@
-<?php require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php'; ?>
+<?php
+require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
+require_once __DIR__ . '/../../i18n/i18n.php';
+?>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="<?= htmlspecialchars($RECOLIX_IDIOMA) ?>">
 <head>
     <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rutas — Recolix</title>
+    <title><?= t('rutas.title') ?></title>
     <link rel="stylesheet" href="styleRecoleccion.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <style>
@@ -86,63 +90,64 @@
                 <span class="brand-name">Recolix</span>
             </div>
             <nav class="nav-links">
-                <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
-                <a href="camiones.php">Camiones</a>
-                <a href="circuitos.php">Circuitos</a>
-                <a href="#" class="nav-active">Rutas</a>
-                <a href="#">Cuadrillas</a>
-                <a href="../../API_Gestion/Vista/contenedores.php">Contenedores</a>
-                <a href="#">Centros de Acopio</a>
-                <a href="../../Backoffice/mapa.php">Mapa</a>
-                <a href="#">Reportes</a>
-                <a href="#">Incidencias</a>
-                <a href="../../API_Usuarios/Vista/usuarios.php">Usuarios</a>
+                <a href="../../Backoffice/indexBackoffice.php"><?= t('backoffice.nav_inicio') ?></a>
+                <a href="camiones.php"><?= t('backoffice.nav_camiones') ?></a>
+                <a href="circuitos.php"><?= t('backoffice.nav_circuitos') ?></a>
+                <a href="#" class="nav-active"><?= t('backoffice.nav_rutas') ?></a>
+                <a href="#"><?= t('backoffice.nav_cuadrillas') ?></a>
+                <a href="../../API_Gestion/Vista/contenedores.php"><?= t('backoffice.nav_contenedores') ?></a>
+                <a href="../../API_Gestion/Vista/centrosAcopio.php"><?= t('backoffice.nav_centros_acopio') ?></a>
+                <a href="../../Backoffice/mapa.php"><?= t('backoffice.nav_mapa') ?></a>
+                <a href="#"><?= t('backoffice.nav_reportes') ?></a>
+                <a href="#"><?= t('backoffice.nav_incidencias') ?></a>
+                <a href="../../API_Usuarios/Vista/usuarios.php"><?= t('backoffice.nav_usuarios') ?></a>
             </nav>
         </div>
         <div class="nav-right">
-            <a href="/recolix/API_Usuarios/perfil.php" class="btn-user" title="Perfil de usuario">
+            <?php include __DIR__ . '/../../i18n/switcher.php'; ?>
+            <a href="/recolix/API_Usuarios/perfil.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
                 <img src="img/user.svg" alt="Usuario" class="nav-user-icon">
             </a>
-            <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menú">
+            <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="<?= htmlspecialchars(t('backoffice.nav_menu')) ?>">
                 <span></span><span></span><span></span>
             </button>
         </div>
     </div>
     <nav class="nav-mobile" id="navMobile">
-        <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
-        <a href="camiones.php">Camiones</a>
-        <a href="circuitos.php">Circuitos</a>
-        <a href="#" class="nav-active">Rutas</a>
-        <a href="#">Cuadrillas</a>
-        <a href="../../API_Gestion/Vista/contenedores.php">Contenedores</a>
-        <a href="#">Centros de Acopio</a>
-        <a href="../../Backoffice/mapa.php">Mapa</a>
-        <a href="#">Reportes</a>
-        <a href="#">Incidencias</a>
-        <a href="../../API_Usuarios/Vista/usuarios.php">Usuarios</a>
+        <a href="../../Backoffice/indexBackoffice.php"><?= t('backoffice.nav_inicio') ?></a>
+        <a href="camiones.php"><?= t('backoffice.nav_camiones') ?></a>
+        <a href="circuitos.php"><?= t('backoffice.nav_circuitos') ?></a>
+        <a href="#" class="nav-active"><?= t('backoffice.nav_rutas') ?></a>
+        <a href="#"><?= t('backoffice.nav_cuadrillas') ?></a>
+        <a href="../../API_Gestion/Vista/contenedores.php"><?= t('backoffice.nav_contenedores') ?></a>
+        <a href="../../API_Gestion/Vista/centrosAcopio.php"><?= t('backoffice.nav_centros_acopio') ?></a>
+        <a href="../../Backoffice/mapa.php"><?= t('backoffice.nav_mapa') ?></a>
+        <a href="#"><?= t('backoffice.nav_reportes') ?></a>
+        <a href="#"><?= t('backoffice.nav_incidencias') ?></a>
+        <a href="../../API_Usuarios/Vista/usuarios.php"><?= t('backoffice.nav_usuarios') ?></a>
     </nav>
     <div class="nav-hr"></div>
 </header>
 
 <section class="hero">
-    <h1 class="hero-title">Rutas</h1>
-    <p class="hero-sub">Las rutas se generan automáticamente desde cada circuito según el nivel de llenado de sus contenedores.</p>
+    <h1 class="hero-title"><?= t('rutas.hero_title') ?></h1>
+    <p class="hero-sub"><?= t('rutas.hero_sub') ?></p>
 </section>
 
 <section class="resumen-section">
     <div class="resumen-card">
-        <div class="resumen-card-head"><span class="resumen-dot activas"></span><h3>Rutas activas</h3></div>
+        <div class="resumen-card-head"><span class="resumen-dot activas"></span><h3><?= t('rutas.resumen_activas') ?></h3></div>
         <div class="resumen-count" id="countActivas">—</div>
         <ul class="resumen-list" id="listaActivas"></ul>
     </div>
     <div class="resumen-card">
-        <div class="resumen-card-head"><span class="resumen-dot pendientes"></span><h3>Rutas pendientes</h3></div>
+        <div class="resumen-card-head"><span class="resumen-dot pendientes"></span><h3><?= t('rutas.resumen_pendientes') ?></h3></div>
         <div class="resumen-count" id="countPendientes">—</div>
         <ul class="resumen-list" id="listaPendientes"></ul>
     </div>
     <div class="resumen-card">
-        <div class="resumen-card-head"><span class="resumen-dot prioritarias"></span><h3>Rutas prioritarias</h3></div>
-        <p class="resumen-hint">Ordenadas por nivel de llenado promedio de sus contenedores</p>
+        <div class="resumen-card-head"><span class="resumen-dot prioritarias"></span><h3><?= t('rutas.resumen_prioritarias') ?></h3></div>
+        <p class="resumen-hint"><?= t('rutas.resumen_prioritarias_hint') ?></p>
         <ul class="resumen-list" id="listaPrioritarias"></ul>
     </div>
 </section>
@@ -153,27 +158,27 @@
         <div class="card-operar" onclick="toggleFiltros()">
             <div class="card-content">
                 <div class="card-icon"><img src="img/loupe.svg" alt="" class="card-svg-icon"></div>
-                <h3>Filtrar</h3>
-                <p>Buscar por circuito, nombre...</p>
-                <button class="card-btn">Filtrar</button>
+                <h3><?= t('crud.btn_filtrar') ?></h3>
+                <p><?= t('rutas.card_filtrar_desc') ?></p>
+                <button class="card-btn"><?= t('crud.btn_filtrar') ?></button>
             </div>
         </div>
 
         <div class="card-operar" onclick="toggleBusquedaId()">
             <div class="card-content">
                 <div class="card-icon"><img src="img/question.svg" alt="" class="card-svg-icon"></div>
-                <h3>Buscar por ID</h3>
-                <p>Obtener una ruta específica</p>
-                <button class="card-btn">Buscar</button>
+                <h3><?= t('camiones.card_buscarid_titulo') ?></h3>
+                <p><?= t('rutas.card_buscarid_desc') ?></p>
+                <button class="card-btn"><?= t('crud.btn_buscar') ?></button>
             </div>
         </div>
 
         <div class="card-operar" onclick="toggleDarDeBaja()">
             <div class="card-content">
                 <div class="card-icon"><img src="img/minus.svg" alt="" class="card-svg-icon"></div>
-                <h3>Eliminar Ruta</h3>
-                <p>Quitar una ruta del registro</p>
-                <button class="card-btn">Eliminar</button>
+                <h3><?= t('rutas.card_eliminar_titulo') ?></h3>
+                <p><?= t('rutas.card_eliminar_desc') ?></p>
+                <button class="card-btn"><?= t('crud.btn_eliminar') ?></button>
             </div>
         </div>
 
@@ -183,63 +188,63 @@
 <section class="control-bar" id="filterBar" style="display:none">
     <div class="control-inner">
         <select id="filtroTipo" class="ctrl-select" onchange="actualizarFiltroValor()">
-            <option value="">— Filtrar por —</option>
-            <option value="circuitoId">Circuito (ID)</option>
-            <option value="actividad">Actividad</option>
-            <option value="nombre">Nombre</option>
-            <option value="estadoLevante">Estado del levante</option>
+            <option value=""><?= t('crud.filtrar_por') ?></option>
+            <option value="circuitoId"><?= t('rutas.filtro_opt_circuito') ?></option>
+            <option value="actividad"><?= t('rutas.filtro_opt_actividad') ?></option>
+            <option value="nombre"><?= t('rutas.filtro_opt_nombre') ?></option>
+            <option value="estadoLevante"><?= t('rutas.filtro_opt_estado_levante') ?></option>
         </select>
-        <input type="text" id="filtroValor" class="ctrl-input" placeholder="Valor del filtro..." style="display:none">
+        <input type="text" id="filtroValor" class="ctrl-input" placeholder="<?= htmlspecialchars(t('crud.valor_filtro_placeholder')) ?>" style="display:none">
         <select id="filtroValorSelect" class="ctrl-select" style="display:none"></select>
-        <button class="btn-primary" onclick="aplicarFiltro()">Aplicar</button>
-        <button class="btn-secondary" onclick="listarRutas()">Limpiar</button>
+        <button class="btn-primary" onclick="aplicarFiltro()"><?= t('crud.btn_aplicar') ?></button>
+        <button class="btn-secondary" onclick="listarRutas()"><?= t('crud.btn_limpiar') ?></button>
     </div>
 </section>
 
 <section class="control-bar" id="searchBar" style="display:none">
     <div class="control-inner">
         <input type="number" id="buscarId" class="ctrl-input"
-               placeholder="ID de la ruta..." min="1" style="max-width:200px">
-        <button class="btn-primary" onclick="buscarPorId()">Buscar</button>
-        <button class="btn-secondary" onclick="listarRutas()">Ver Todas</button>
+               placeholder="<?= htmlspecialchars(t('rutas.searchid_ph')) ?>" min="1" style="max-width:200px">
+        <button class="btn-primary" onclick="buscarPorId()"><?= t('crud.btn_buscar') ?></button>
+        <button class="btn-secondary" onclick="listarRutas()"><?= t('crud.btn_vertodos') ?></button>
     </div>
 </section>
 
 <section class="control-bar" id="deleteBar" style="display:none">
     <div class="control-inner">
         <input type="number" id="deleteId" class="ctrl-input"
-               placeholder="ID de la ruta a eliminar..." min="1" style="max-width:240px">
-        <button class="btn-danger" onclick="darDeBajaRuta()">Eliminar</button>
-        <button class="btn-secondary" onclick="ocultarControles()">Cancelar</button>
+               placeholder="<?= htmlspecialchars(t('rutas.deleteid_ph')) ?>" min="1" style="max-width:240px">
+        <button class="btn-danger" onclick="darDeBajaRuta()"><?= t('crud.btn_eliminar') ?></button>
+        <button class="btn-secondary" onclick="ocultarControles()"><?= t('crud.btn_cancelar') ?></button>
     </div>
 </section>
 
 <section class="table-section">
     <div class="table-header">
-        <h2 class="table-title" id="tableTitle">Rutas</h2>
+        <h2 class="table-title" id="tableTitle"><?= t('rutas.hero_title') ?></h2>
         <span class="table-count" id="tableCount"></span>
     </div>
     <div class="table-wrapper">
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Circuito</th>
-                    <th>Nombre</th>
-                    <th>Actividad</th>
-                    <th>Turno</th>
-                    <th>Levante</th>
-                    <th>Llenado prom.</th>
-                    <th>Acciones</th>
+                    <th><?= t('crud.th_id') ?></th>
+                    <th><?= t('rutas.th_circuito') ?></th>
+                    <th><?= t('rutas.th_nombre') ?></th>
+                    <th><?= t('rutas.th_actividad') ?></th>
+                    <th><?= t('rutas.th_turno') ?></th>
+                    <th><?= t('rutas.th_levante') ?></th>
+                    <th><?= t('rutas.th_llenado_prom') ?></th>
+                    <th><?= t('crud.th_acciones') ?></th>
                 </tr>
             </thead>
             <tbody id="rutasBody"></tbody>
         </table>
         <div id="noResultados" class="empty-state" style="display:none">
-            Sin resultados para mostrar.
+            <?= t('crud.empty_state') ?>
         </div>
         <div id="loadingState" class="loading-state">
-            Cargando...
+            <?= t('crud.loading_state') ?>
         </div>
     </div>
 </section>
@@ -248,7 +253,7 @@
      onclick="onOverlayClick(event,'modalLevante')">
     <div class="modal modal-lg">
         <div class="modal-header">
-            <h3>Planificar levante — <span id="levanteRutaTitulo"></span></h3>
+            <h3><?= t('rutas.modal_levante_titulo') ?> <span id="levanteRutaTitulo"></span></h3>
             <button class="modal-close" onclick="cerrarModalLevante()">✕</button>
         </div>
         <div class="levante-layout">
@@ -256,22 +261,22 @@
                 <div id="mapaLevante"></div>
             </div>
             <div class="levante-form" id="levanteFormWrap">
-                <label>Camion disponible</label>
+                <label><?= t('rutas.field_camion_disp') ?></label>
                 <select id="levanteCamion" class="ctrl-select"></select>
-                <label>Cuadrilla asignada</label>
+                <label><?= t('rutas.field_cuadrilla') ?></label>
                 <select id="levanteCuadrilla" class="ctrl-select"></select>
-                <label>Hora de salida</label>
+                <label><?= t('rutas.field_hora_salida') ?></label>
                 <input type="datetime-local" id="levanteHoraSalida" class="ctrl-input" style="min-width:0">
-                <label>Fecha del levante</label>
+                <label><?= t('rutas.field_fecha_levante') ?></label>
                 <input type="date" id="levanteFecha" class="ctrl-input" style="min-width:0">
-                <button class="btn-primary" onclick="planificarLevante()" style="margin-top:4px">Planificar levante</button>
+                <button class="btn-primary" onclick="planificarLevante()" style="margin-top:4px"><?= t('rutas.btn_planificar_levante') ?></button>
             </div>
             <p class="resumen-empty" id="levanteFormBloqueado" style="display:none">
-                Esta ruta ya tiene un levante pendiente o en curso. Cancelalo o esperá a que se complete para planificar uno nuevo.
+                <?= t('rutas.levante_bloqueado_msg') ?>
             </p>
         </div>
         <div class="levante-historial">
-            <h4>Levantes de esta ruta</h4>
+            <h4><?= t('rutas.levantes_de_ruta') ?></h4>
             <ul class="resumen-list" id="levantesRuta"></ul>
         </div>
     </div>
@@ -281,15 +286,15 @@
      onclick="onOverlayClick(event,'modalDelete')">
     <div class="modal modal-sm">
         <div class="modal-header">
-            <h3>Eliminar ruta</h3>
+            <h3><?= t('rutas.modal_delete_title') ?></h3>
             <button class="modal-close" onclick="cerrarModalDelete()">✕</button>
         </div>
         <p class="delete-msg">
-            ¿Confirmás eliminar la ruta <strong id="deleteNombre"></strong>?
+            <?= t('rutas.delete_confirm_before') ?> <strong id="deleteNombre"></strong><?= t('rutas.delete_confirm_after') ?>
         </p>
         <div class="modal-actions">
-            <button class="btn-secondary" onclick="cerrarModalDelete()">Cancelar</button>
-            <button class="btn-danger" onclick="confirmarDelete()">Eliminar</button>
+            <button class="btn-secondary" onclick="cerrarModalDelete()"><?= t('crud.btn_cancelar') ?></button>
+            <button class="btn-danger" onclick="confirmarDelete()"><?= t('crud.btn_eliminar') ?></button>
         </div>
     </div>
 </div>
@@ -303,23 +308,83 @@
                 <img src="logoRecolix.png" alt="Recolix" class="footer-logo-img">
                 <span class="footer-logo-name">Recolix</span>
             </div>
-            <p>Plataforma de gestión de residuos urbanos para Montevideo.</p>
+            <p><?= t('common.footer_desc') ?></p>
         </div>
         <div class="footer-col">
-            <h3>Navegación</h3>
+            <h3><?= t('common.footer_navegacion') ?></h3>
             <ul>
-                <li><a href="../../LandingPage/index_LandingPage.html">Página principal</a></li>
-                <li><a href="../../LandingPage/mapa.html">Mapa público</a></li>
+                <li><a href="../../LandingPage/index_LandingPage.html"><?= t('backoffice.footer_pagina_principal') ?></a></li>
+                <li><a href="../../LandingPage/mapa.html"><?= t('backoffice.footer_mapa_publico') ?></a></li>
             </ul>
         </div>
     </div>
     <div class="footer-hr"></div>
-    <p class="footer-copy">&copy; 2026 Recolix. Todos los derechos reservados.</p>
+    <p class="footer-copy"><?= t('backoffice.footer_copyright') ?></p>
 </footer>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 const API_BASE = '/recolix/API_Recoleccion';
+const I18N = <?= json_encode(t_array([
+    'msgIngresaId' => 'crud.msg_ingresa_id',
+    'msgErrorConectar' => 'crud.msg_error_conectar',
+    'msgSeleccionaFiltro' => 'crud.msg_selecciona_filtro',
+    'msgIngresaValorFiltro' => 'crud.msg_ingresa_valor_filtro',
+    'msgErrorEliminar' => 'crud.msg_error_eliminar',
+    'resultadoSingular' => 'crud.resultado_singular',
+    'resultadoPlural' => 'crud.resultado_plural',
+    'filtroPrefijo' => 'crud.filtro_prefijo',
+    'thId' => 'crud.th_id',
+    'thAcciones' => 'crud.th_acciones',
+    'thCircuito' => 'rutas.th_circuito',
+    'thNombre' => 'rutas.th_nombre',
+    'thActividad' => 'rutas.th_actividad',
+    'thTurno' => 'rutas.th_turno',
+    'thLevante' => 'rutas.th_levante',
+    'thLlenadoProm' => 'rutas.th_llenado_prom',
+    'resumenSinRutas' => 'rutas.resumen_sin_rutas',
+    'resumenCircuitoPrefijo' => 'rutas.resumen_circuito_prefijo',
+    'resumenContenedorSingular' => 'rutas.resumen_contenedor_singular',
+    'resumenContenedorPlural' => 'rutas.resumen_contenedor_plural',
+    'filtroPhCircuito' => 'rutas.filtro_ph_circuito',
+    'filtroPhActividad' => 'rutas.filtro_ph_actividad',
+    'filtroPhNombre' => 'rutas.filtro_ph_nombre',
+    'filtroValorPh' => 'crud.valor_filtro_placeholder',
+    'filtroOptCircuito' => 'rutas.filtro_opt_circuito',
+    'filtroOptActividad' => 'rutas.filtro_opt_actividad',
+    'filtroOptNombre' => 'rutas.filtro_opt_nombre',
+    'filtroEstadoLevantePrefijo' => 'rutas.filtro_estado_levante_prefijo',
+    'tableTitleTodas' => 'rutas.table_title_todas',
+    'tableTitleRutaId' => 'rutas.table_title_ruta_id',
+    'msgRutaNoEncontrada' => 'rutas.msg_ruta_no_encontrada',
+    'estadoSinLevante' => 'rutas.estado_sin_levante',
+    'estadoPendiente' => 'rutas.estado_pendiente',
+    'estadoEnCurso' => 'rutas.estado_en_curso',
+    'estadoCompletado' => 'rutas.estado_completado',
+    'estadoCancelado' => 'rutas.estado_cancelado',
+    'sinCamionesDisp' => 'rutas.sin_camiones_disp',
+    'sinCuadrillasActivas' => 'rutas.sin_cuadrillas_activas',
+    'cuadrillaPrefijo' => 'rutas.cuadrilla_prefijo',
+    'sinContenedoresAsignados' => 'rutas.sin_contenedores_asignados',
+    'popupCapacidad' => 'rutas.popup_capacidad',
+    'sinLevantesPlanificados' => 'rutas.sin_levantes_planificados',
+    'camionPrefijo' => 'rutas.camion_prefijo',
+    'salidaPrefijo' => 'rutas.salida_prefijo',
+    'btnCancelarLevante' => 'rutas.btn_cancelar_levante',
+    'msgLevanteCancelado' => 'rutas.msg_levante_cancelado',
+    'msgErrorCancelarLevante' => 'rutas.msg_error_cancelar_levante',
+    'msgFaltanCamionCuadrilla' => 'rutas.msg_faltan_camion_cuadrilla',
+    'msgIngresaFechaLevante' => 'rutas.msg_ingresa_fecha_levante',
+    'msgLevantePlanificado' => 'rutas.msg_levante_planificado',
+    'msgRutaEliminada' => 'rutas.msg_ruta_eliminada',
+    'badgeSinAsignar' => 'rutas.badge_sin_asignar',
+    'badgeAsignado' => 'rutas.badge_asignado',
+    'titlePlanificarLevante' => 'rutas.title_planificar_levante',
+    'btnEliminar' => 'crud.btn_eliminar',
+    'turnoManana' => 'circuitos.opt_turno_manana',
+    'turnoTarde' => 'circuitos.opt_turno_tarde',
+    'turnoNoche' => 'circuitos.opt_turno_noche',
+])) ?>;
 let rutaIdParaEliminar = null;
 let toastTimeout;
 let reglas = {};
@@ -382,12 +447,12 @@ function renderResumenCard(listaId, countId, rutas) {
     if (countId) document.getElementById(countId).textContent = rutas.length;
     const ul = document.getElementById(listaId);
     if (!rutas.length) {
-        ul.innerHTML = '<li class="resumen-empty">Sin rutas para mostrar.</li>';
+        ul.innerHTML = `<li class="resumen-empty">${I18N.resumenSinRutas}</li>`;
         return;
     }
     ul.innerHTML = rutas.map(r => `
         <li class="resumen-item">
-            <span><strong>#${r.id_ruta}</strong> ${r.nombre}<br><small>Circuito ${r.id_circuito} · ${r.contenedores_count} contenedor${r.contenedores_count !== 1 ? 'es' : ''}</small></span>
+            <span><strong>#${r.id_ruta}</strong> ${r.nombre}<br><small>${I18N.resumenCircuitoPrefijo} ${r.id_circuito} · ${r.contenedores_count} ${r.contenedores_count !== 1 ? I18N.resumenContenedorPlural : I18N.resumenContenedorSingular}</small></span>
             <span class="resumen-llenado">${r.llenado_promedio !== null ? r.llenado_promedio + '%' : '—'}</span>
         </li>
     `).join('');
@@ -404,9 +469,9 @@ async function listarRutas() {
             .filter(r => r.estado_levante in ORDEN_ESTADO_LEVANTE_DEFAULT)
             .sort((a, b) => ORDEN_ESTADO_LEVANTE_DEFAULT[a.estado_levante] - ORDEN_ESTADO_LEVANTE_DEFAULT[b.estado_levante]);
         renderTabla(visibles);
-        setTableTitle('Todas las Rutas');
+        setTableTitle(I18N.tableTitleTodas);
     } catch {
-        mostrarToast('Error al conectar con la API', 'error');
+        mostrarToast(I18N.msgErrorConectar, 'error');
     } finally {
         setLoading(false);
     }
@@ -414,31 +479,31 @@ async function listarRutas() {
 
 async function buscarPorId() {
     const id = document.getElementById('buscarId').value.trim();
-    if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
+    if (!id) { mostrarToast(I18N.msgIngresaId, 'warning'); return; }
     setLoading(true);
     try {
         const res  = await fetch(`${API_BASE}/rutas/${id}`);
         const json = await res.json();
         if (json.status === 'success' && json.data) {
             renderTabla([json.data]);
-            setTableTitle(`Ruta #${id}`);
+            setTableTitle(`${I18N.tableTitleRutaId}${id}`);
         } else {
             renderTabla([]);
-            mostrarToast(json.message || 'Ruta no encontrada', 'error');
+            mostrarToast(json.message || I18N.msgRutaNoEncontrada, 'error');
         }
     } catch {
-        mostrarToast('Error al conectar con la API', 'error');
+        mostrarToast(I18N.msgErrorConectar, 'error');
     } finally {
         setLoading(false);
     }
 }
 
 const ESTADOS_LEVANTE = {
-    sin_levante: 'Sin levante (pendiente de planificar)',
-    pendiente:   'Asignada (levante pendiente)',
-    en_curso:    'En curso',
-    completado:  'Completada',
-    cancelado:   'Cancelada'
+    sin_levante: I18N.estadoSinLevante,
+    pendiente:   I18N.estadoPendiente,
+    en_curso:    I18N.estadoEnCurso,
+    completado:  I18N.estadoCompletado,
+    cancelado:   I18N.estadoCancelado
 };
 
 function actualizarFiltroValor() {
@@ -461,11 +526,11 @@ function actualizarFiltroValor() {
     }
 
     const placeholders = {
-        circuitoId: 'ej: 1',
-        actividad:  'ej: Recolección domiciliaria',
-        nombre:     'ej: Ruta Norte'
+        circuitoId: I18N.filtroPhCircuito,
+        actividad:  I18N.filtroPhActividad,
+        nombre:     I18N.filtroPhNombre
     };
-    input.placeholder = placeholders[tipo] || 'Valor del filtro...';
+    input.placeholder = placeholders[tipo] || I18N.filtroValorPh;
     input.style.display = '';
 }
 
@@ -473,11 +538,11 @@ async function aplicarFiltro() {
     const tipo   = document.getElementById('filtroTipo').value;
     const input  = document.getElementById('filtroValor');
     const select = document.getElementById('filtroValorSelect');
-    if (!tipo) { mostrarToast('Seleccioná un filtro', 'warning'); return; }
+    if (!tipo) { mostrarToast(I18N.msgSeleccionaFiltro, 'warning'); return; }
 
     const valor = (tipo === 'estadoLevante' ? select : input).value.trim();
     if (!valor) {
-        mostrarToast('Ingresá un valor para el filtro', 'warning');
+        mostrarToast(I18N.msgIngresaValorFiltro, 'warning');
         return;
     }
 
@@ -486,7 +551,7 @@ async function aplicarFiltro() {
         if (tipo === 'estadoLevante') {
             const rutas = await cargarResumen();
             renderTabla((rutas || []).filter(r => r.estado_levante === valor));
-            setTableTitle(`Filtro — Estado del levante: ${ESTADOS_LEVANTE[valor]}`);
+            setTableTitle(`${I18N.filtroEstadoLevantePrefijo} ${ESTADOS_LEVANTE[valor]}`);
             return;
         }
 
@@ -495,14 +560,14 @@ async function aplicarFiltro() {
         if (json.status === 'success') {
             renderTabla(json.data);
             const labels = {
-                circuitoId: `Circuito: ${valor}`, actividad: `Actividad: ${valor}`, nombre: `Nombre: ${valor}`
+                circuitoId: `${I18N.filtroOptCircuito}: ${valor}`, actividad: `${I18N.filtroOptActividad}: ${valor}`, nombre: `${I18N.filtroOptNombre}: ${valor}`
             };
-            setTableTitle(`Filtro — ${labels[tipo] || tipo}`);
+            setTableTitle(`${I18N.filtroPrefijo} ${labels[tipo] || tipo}`);
         } else {
             mostrarToast(json.message, 'error');
         }
     } catch {
-        mostrarToast('Error al conectar con la API', 'error');
+        mostrarToast(I18N.msgErrorConectar, 'error');
     } finally {
         setLoading(false);
     }
@@ -510,7 +575,7 @@ async function aplicarFiltro() {
 
 async function abrirPlanificarLevante(rutaId) {
     levanteRutaActual = rutaId;
-    document.getElementById('levanteRutaTitulo').textContent = `Ruta #${rutaId}`;
+    document.getElementById('levanteRutaTitulo').textContent = `${I18N.tableTitleRutaId}${rutaId}`;
     document.getElementById('modalLevante').style.display = 'flex';
     await Promise.all([cargarSelectsLevante(), cargarContenedoresLevante(rutaId), cargarLevantesRuta(rutaId)]);
 }
@@ -526,12 +591,12 @@ async function cargarSelectsLevante() {
     const selCam = document.getElementById('levanteCamion');
     selCam.innerHTML = camiones.length
         ? camiones.map(c => `<option value="${c.id_camion}">${c.matricula}${c.modelo ? ' · ' + c.modelo : ''}</option>`).join('')
-        : '<option value="">Sin camiones disponibles</option>';
+        : `<option value="">${I18N.sinCamionesDisp}</option>`;
 
     const selCua = document.getElementById('levanteCuadrilla');
     selCua.innerHTML = cuadrillas.length
-        ? cuadrillas.map(c => `<option value="${c.id_cuadrilla}">Cuadrilla #${c.id_cuadrilla}${c.municipio ? ' · ' + c.municipio : ''}</option>`).join('')
-        : '<option value="">Sin cuadrillas activas</option>';
+        ? cuadrillas.map(c => `<option value="${c.id_cuadrilla}">${I18N.cuadrillaPrefijo}${c.id_cuadrilla}${c.municipio ? ' · ' + c.municipio : ''}</option>`).join('')
+        : `<option value="">${I18N.sinCuadrillasActivas}</option>`;
 
     const ahora = new Date();
     document.getElementById('levanteHoraSalida').value = ahora.toISOString().slice(0, 16);
@@ -556,7 +621,7 @@ async function cargarContenedoresLevante(rutaId) {
     }).addTo(mapaLevante);
 
     if (!contenedores.length) {
-        L.marker([-34.9, -56.2]).addTo(mapaLevante).bindPopup('La ruta no tiene contenedores asignados.');
+        L.marker([-34.9, -56.2]).addTo(mapaLevante).bindPopup(I18N.sinContenedoresAsignados);
         return;
     }
 
@@ -569,7 +634,7 @@ async function cargarContenedoresLevante(rutaId) {
             <div class="mapa-popup">
                 <span class="mapa-orden-badge">${c.orden_visita}</span>
                 <strong>#${c.id_contenedor}</strong> ${c.calle ?? ''} ${c.num_calle ?? ''}<br>
-                <small>Capacidad ${c.capacidad ?? '—'} · ${c.estado ?? ''}</small>
+                <small>${I18N.popupCapacidad} ${c.capacidad ?? '—'} · ${c.estado ?? ''}</small>
             </div>`);
         marcadoresLevante.push(marker);
     });
@@ -593,7 +658,7 @@ async function cargarLevantesRuta(rutaId) {
     document.getElementById('levanteFormBloqueado').style.display = hayActivo ? '' : 'none';
 
     if (!levantes.length) {
-        ul.innerHTML = '<li class="resumen-empty">Esta ruta no tiene levantes planificados.</li>';
+        ul.innerHTML = `<li class="resumen-empty">${I18N.sinLevantesPlanificados}</li>`;
         return;
     }
 
@@ -602,11 +667,11 @@ async function cargarLevantesRuta(rutaId) {
         <li class="resumen-item">
             <span>
                 <strong>#${l.id_levante}</strong> ${l.hora_levante ?? ''}<br>
-                <small>Camion ${l.matricula ?? '—'} · salida ${l.hora_salida ? l.hora_salida.slice(11, 16) : '—'}</small>
+                <small>${I18N.camionPrefijo} ${l.matricula ?? '—'} · ${I18N.salidaPrefijo} ${l.hora_salida ? l.hora_salida.slice(11, 16) : '—'}</small>
             </span>
             <span class="resumen-item-acciones">
-                <span class="badge badge-${estados[l.estado] ?? 'neutral'}">${l.estado}</span>
-                ${l.estado === 'pendiente' ? `<button type="button" class="btn-danger btn-sm" onclick="cancelarLevanteItem(${l.id_levante})">Cancelar</button>` : ''}
+                <span class="badge badge-${estados[l.estado] ?? 'neutral'}">${ESTADOS_LEVANTE[l.estado] ?? l.estado}</span>
+                ${l.estado === 'pendiente' ? `<button type="button" class="btn-danger btn-sm" onclick="cancelarLevanteItem(${l.id_levante})">${I18N.btnCancelarLevante}</button>` : ''}
             </span>
         </li>
     `).join('');
@@ -617,14 +682,14 @@ async function cancelarLevanteItem(idLevante) {
         const res = await fetch(`${API_BASE}/levantes/cancelar/${idLevante}`, { method: 'POST' });
         const json = await res.json();
         if (json.status === 'success') {
-            mostrarToast('Levante cancelado correctamente', 'success');
+            mostrarToast(I18N.msgLevanteCancelado, 'success');
             await Promise.all([cargarLevantesRuta(levanteRutaActual), cargarSelectsLevante()]);
             listarRutas();
         } else {
             mostrarToast(json.message, 'error');
         }
     } catch {
-        mostrarToast('Error al cancelar el levante', 'error');
+        mostrarToast(I18N.msgErrorCancelarLevante, 'error');
     }
 }
 
@@ -632,12 +697,12 @@ async function planificarLevante() {
     const camionId = document.getElementById('levanteCamion').value;
     const cuadrillaId = document.getElementById('levanteCuadrilla').value;
     if (!camionId || !cuadrillaId) {
-        mostrarToast('Faltan camión disponible y cuadrilla para planificar', 'warning');
+        mostrarToast(I18N.msgFaltanCamionCuadrilla, 'warning');
         return;
     }
     const horaSalida = document.getElementById('levanteHoraSalida').value.replace('T', ' ');
     const fecha = document.getElementById('levanteFecha').value;
-    if (!fecha) { mostrarToast('Ingresá la fecha del levante', 'warning'); return; }
+    if (!fecha) { mostrarToast(I18N.msgIngresaFechaLevante, 'warning'); return; }
 
     try {
         const res = await fetch(`${API_BASE}/levantes/planificar`, {
@@ -647,14 +712,14 @@ async function planificarLevante() {
         });
         const json = await res.json();
         if (json.status === 'success') {
-            mostrarToast('Levante planificado correctamente', 'success');
+            mostrarToast(I18N.msgLevantePlanificado, 'success');
             cerrarModalLevante();
             listarRutas();
         } else {
             mostrarToast(json.message, 'error');
         }
     } catch {
-        mostrarToast('Error al conectar con la API', 'error');
+        mostrarToast(I18N.msgErrorConectar, 'error');
     }
 }
 
@@ -675,20 +740,20 @@ async function confirmarDelete() {
         const res  = await fetch(`${API_BASE}/rutas/${rutaIdParaEliminar}`, { method: 'DELETE' });
         const json = await res.json();
         if (json.status === 'success') {
-            mostrarToast('Ruta eliminada correctamente', 'success');
+            mostrarToast(I18N.msgRutaEliminada, 'success');
             cerrarModalDelete();
             listarRutas();
         } else {
             mostrarToast(json.message, 'error');
         }
     } catch {
-        mostrarToast('Error al eliminar', 'error');
+        mostrarToast(I18N.msgErrorEliminar, 'error');
     }
 }
 
 async function darDeBajaRuta() {
     const id = document.getElementById('deleteId').value.trim();
-    if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
+    if (!id) { mostrarToast(I18N.msgIngresaId, 'warning'); return; }
     setLoading(true);
     try {
         const res  = await fetch(`${API_BASE}/rutas/${id}`);
@@ -697,10 +762,10 @@ async function darDeBajaRuta() {
             confirmarBorrar(json.data.id_ruta, json.data.nombre);
             ocultarControles();
         } else {
-            mostrarToast(json.message || 'Ruta no encontrada', 'error');
+            mostrarToast(json.message || I18N.msgRutaNoEncontrada, 'error');
         }
     } catch {
-        mostrarToast('Error al conectar con la API', 'error');
+        mostrarToast(I18N.msgErrorConectar, 'error');
     } finally {
         setLoading(false);
     }
@@ -711,19 +776,24 @@ function badgeClassTurno(turno) {
     return map[turno] ?? 'neutral';
 }
 
+function turnoFormateado(turno) {
+    const map = { 'mañana': I18N.turnoManana, 'tarde': I18N.turnoTarde, 'noche': I18N.turnoNoche };
+    return map[turno] ?? turno;
+}
+
 const BADGE_ESTADO_LEVANTE = {
-    sin_levante: { clase: 'neutral', label: 'Sin asignar' },
-    pendiente:   { clase: 'warning', label: 'Asignada' },
-    en_curso:    { clase: 'info',    label: 'En curso' },
-    completado:  { clase: 'success', label: 'Completada' },
-    cancelado:   { clase: 'danger',  label: 'Cancelada' }
+    sin_levante: { clase: 'neutral', label: I18N.badgeSinAsignar },
+    pendiente:   { clase: 'warning', label: I18N.estadoPendiente },
+    en_curso:    { clase: 'info',    label: I18N.estadoEnCurso },
+    completado:  { clase: 'success', label: I18N.estadoCompletado },
+    cancelado:   { clase: 'danger',  label: I18N.estadoCancelado }
 };
 
 function levanteBadgeHtml(r) {
     const info = BADGE_ESTADO_LEVANTE[r.estado_levante];
     if (info) return `<span class="badge badge-${info.clase}">${info.label}</span>`;
     const tieneLevante = (r.levantes_count ?? 0) > 0;
-    return `<span class="badge badge-${tieneLevante ? 'info' : 'neutral'}">${tieneLevante ? 'Asignado' : 'Sin asignar'}</span>`;
+    return `<span class="badge badge-${tieneLevante ? 'info' : 'neutral'}">${tieneLevante ? I18N.badgeAsignado : I18N.badgeSinAsignar}</span>`;
 }
 
 function renderTabla(rutas) {
@@ -740,22 +810,22 @@ function renderTabla(rutas) {
     }
 
     noRes.style.display = 'none';
-    count.textContent   = `${rutas.length} resultado${rutas.length !== 1 ? 's' : ''}`;
+    count.textContent   = `${rutas.length} ${rutas.length !== 1 ? I18N.resultadoPlural : I18N.resultadoSingular}`;
 
     rutas.forEach(r => {
         const tr = document.createElement('tr');
         const levanteBadge = levanteBadgeHtml(r);
         tr.innerHTML = `
-            <td class="td-id" data-label="ID">${r.id_ruta}</td>
-            <td data-label="Circuito">${r.id_circuito}</td>
-            <td data-label="Nombre"><strong>${r.nombre}</strong></td>
-            <td data-label="Actividad">${r.actividad ?? ''}</td>
-            <td data-label="Turno">${r.turno ? `<span class="badge badge-${badgeClassTurno(r.turno)}">${r.turno}</span>` : '—'}</td>
-            <td data-label="Levante">${levanteBadge}</td>
-            <td data-label="Llenado prom.">${r.llenado_promedio !== undefined && r.llenado_promedio !== null ? r.llenado_promedio + '%' : '—'}</td>
-            <td class="td-actions" data-label="Acciones">
-                <button class="btn-action" onclick="abrirPlanificarLevante(${r.id_ruta})" title="Planificar levante">🗓️</button>
-                <button class="btn-action" onclick="confirmarBorrar(${r.id_ruta},'${r.nombre}')" title="Eliminar">🗑️</button>
+            <td class="td-id" data-label="${I18N.thId}">${r.id_ruta}</td>
+            <td data-label="${I18N.thCircuito}">${r.id_circuito}</td>
+            <td data-label="${I18N.thNombre}"><strong>${r.nombre}</strong></td>
+            <td data-label="${I18N.thActividad}">${r.actividad ?? ''}</td>
+            <td data-label="${I18N.thTurno}">${r.turno ? `<span class="badge badge-${badgeClassTurno(r.turno)}">${turnoFormateado(r.turno)}</span>` : '—'}</td>
+            <td data-label="${I18N.thLevante}">${levanteBadge}</td>
+            <td data-label="${I18N.thLlenadoProm}">${r.llenado_promedio !== undefined && r.llenado_promedio !== null ? r.llenado_promedio + '%' : '—'}</td>
+            <td class="td-actions" data-label="${I18N.thAcciones}">
+                <button class="btn-action" onclick="abrirPlanificarLevante(${r.id_ruta})" title="${I18N.titlePlanificarLevante}">🗓️</button>
+                <button class="btn-action" onclick="confirmarBorrar(${r.id_ruta},'${r.nombre}')" title="${I18N.btnEliminar}">🗑️</button>
             </td>
         `;
         tbody.appendChild(tr);

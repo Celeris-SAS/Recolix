@@ -20,6 +20,14 @@
     color: var(--ink);
 }
 
+.lang-switcher-item {
+    color: var(--ink);
+}
+
+.lang-switcher-item.is-active {
+    background: var(--paper-dim);
+}
+
 .map-page {
     padding-top: 8rem;
 }
