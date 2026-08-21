@@ -48,6 +48,26 @@ $config = [
                 'setMunicipio'
             ],
             'filters' => []
+        ],
+
+        'cuadrillas' => [
+            'singular'    => 'Cuadrilla',
+            'controller'  => 'CuadrillaController',
+            'file'        => 'Controlador/cuadrillaController.php',
+            'getAllMethod' => 'getAllCuadrillas',
+            'getMethod'   => 'getCuadrilla',
+            'insertMethod' => 'insertCuadrilla',
+            'updateMethod' => 'updateCuadrilla',
+            'deleteMethod' => 'deleteCuadrilla',
+            'actions' => [
+                'reglasValidacion',
+                'esDisponible',
+                'filtrarEstado',
+                'filtrarMunicipio',
+                'filtrarDisponibilidad',
+                'obtenerHistorial'
+            ],
+            'filters' => []
         ]
 
     ]
@@ -215,8 +235,26 @@ if (strpos($uri, $basePath) === 0) {
             }
             break;
 
+        case 'DELETE':
+            if ($id === null) {
+                http_response_code(400);
+                echo json_encode(['status' => 'error', 'message' => 'ID requerido']);
+            } elseif (!$resourceConfig['deleteMethod']) {
+                http_response_code(405);
+                echo json_encode(['status' => 'error', 'message' => 'Este recurso no admite baja directa']);
+            } else {
+                try {
+                    $result = $controller->{$resourceConfig['deleteMethod']}($id);
+                    echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' dado de baja', 'data' => $result]);
+                } catch (Throwable $e) {
+                    http_response_code(400);
+                    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                }
+            }
+            break;
+
         default:
-            http_response_code(405); 
+            http_response_code(405);
             echo json_encode(['status' => 'error', 'message' => 'Método no permitido']);
             break;
     }
