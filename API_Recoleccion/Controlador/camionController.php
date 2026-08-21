@@ -200,5 +200,9 @@
             return $this->camionModel->obtenerHistorial($camionId);
         }
 
+        public function obtenerEnOperativa() {
+            return $this->camionModel->obtenerEnOperativa();
+        }
+
     }
 ?>

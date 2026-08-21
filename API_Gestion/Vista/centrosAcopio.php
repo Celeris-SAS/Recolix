@@ -1,13 +1,15 @@
 <?php
 require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
+require_once __DIR__ . '/../../i18n/i18n.php';
 ?>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="<?= htmlspecialchars($RECOLIX_IDIOMA) ?>">
 
 <head>
     <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Centros de Acopio — Recolix</title>
+    <title><?= t('centrosAcopio.title') ?></title>
     <link rel="stylesheet" href="styleContenedores.css">
 </head>
 
@@ -17,53 +19,54 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
     <header class="navbar">
         <div class="nav-inner">
             <div class="nav-left">
-                <div class="brand">
+                <a href="../../Backoffice/indexBackoffice.php" class="brand">
                     <img src="logoRecolix.png" alt="Recolix" class="brand-logo">
                     <span class="brand-name">Recolix</span>
-                </div>
+                </a>
                 <nav class="nav-links">
-                    <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
-                    <a href="../../API_Recoleccion/Vista/camiones.php">Camiones</a>
-                    <a href="../../API_Recoleccion/Vista/circuitos.php">Circuitos</a>
-                    <a href="../../API_Recoleccion/Vista/rutas.php">Rutas</a>
-                    <a href="#">Cuadrillas</a>
-                    <a href="contenedores.php">Contenedores</a>
-                    <a href="#" class="nav-active">Centros de Acopio</a>
-                    <a href="../../Backoffice/mapa.php">Mapa</a>
-                    <a href="#">Reportes</a>
-                    <a href="#">Incidencias</a>
-                    <a href="../../API_Usuarios/Vista/usuarios.php">Usuarios</a>
+                    <a href="../../Backoffice/indexBackoffice.php"><?= t('backoffice.nav_inicio') ?></a>
+                    <a href="../../API_Recoleccion/Vista/camiones.php"><?= t('backoffice.nav_camiones') ?></a>
+                    <a href="../../API_Recoleccion/Vista/circuitos.php"><?= t('backoffice.nav_circuitos') ?></a>
+                    <a href="../../API_Recoleccion/Vista/rutas.php"><?= t('backoffice.nav_rutas') ?></a>
+                    <a href="#"><?= t('backoffice.nav_cuadrillas') ?></a>
+                    <a href="contenedores.php"><?= t('backoffice.nav_contenedores') ?></a>
+                    <a href="#" class="nav-active"><?= t('backoffice.nav_centros_acopio') ?></a>
+                    <a href="../../Backoffice/mapa.php"><?= t('backoffice.nav_mapa') ?></a>
+                    <a href="#"><?= t('backoffice.nav_reportes') ?></a>
+                    <a href="#"><?= t('backoffice.nav_incidencias') ?></a>
+                    <a href="../../API_Usuarios/Vista/usuarios.php"><?= t('backoffice.nav_usuarios') ?></a>
                 </nav>
             </div>
             <div class="nav-right">
-                <a href="/recolix/API_Usuarios/perfil.php" class="btn-user" title="Perfil de usuario">
+                <?php include __DIR__ . '/../../i18n/switcher.php'; ?>
+                <a href="/recolix/API_Usuarios/perfil.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
                     <img src="user.svg" alt="Usuario" class="nav-user-icon">
                 </a>
-                <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menú">
+                <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="<?= htmlspecialchars(t('backoffice.nav_menu')) ?>">
                     <span></span><span></span><span></span>
                 </button>
             </div>
         </div>
         <nav class="nav-mobile" id="navMobile">
-            <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
-            <a href="../../API_Recoleccion/Vista/camiones.php">Camiones</a>
-            <a href="../../API_Recoleccion/Vista/circuitos.php">Circuitos</a>
-            <a href="../../API_Recoleccion/Vista/rutas.php">Rutas</a>
-            <a href="#">Cuadrillas</a>
-            <a href="contenedores.php">Contenedores</a>
-            <a href="#" class="nav-active">Centros de Acopio</a>
-            <a href="../../Backoffice/mapa.php">Mapa</a>
-            <a href="#">Reportes</a>
-            <a href="#">Incidencias</a>
-            <a href="../../API_Usuarios/Vista/usuarios.php">Usuarios</a>
+            <a href="../../Backoffice/indexBackoffice.php"><?= t('backoffice.nav_inicio') ?></a>
+            <a href="../../API_Recoleccion/Vista/camiones.php"><?= t('backoffice.nav_camiones') ?></a>
+            <a href="../../API_Recoleccion/Vista/circuitos.php"><?= t('backoffice.nav_circuitos') ?></a>
+            <a href="../../API_Recoleccion/Vista/rutas.php"><?= t('backoffice.nav_rutas') ?></a>
+            <a href="#"><?= t('backoffice.nav_cuadrillas') ?></a>
+            <a href="contenedores.php"><?= t('backoffice.nav_contenedores') ?></a>
+            <a href="#" class="nav-active"><?= t('backoffice.nav_centros_acopio') ?></a>
+            <a href="../../Backoffice/mapa.php"><?= t('backoffice.nav_mapa') ?></a>
+            <a href="#"><?= t('backoffice.nav_reportes') ?></a>
+            <a href="#"><?= t('backoffice.nav_incidencias') ?></a>
+            <a href="../../API_Usuarios/Vista/usuarios.php"><?= t('backoffice.nav_usuarios') ?></a>
         </nav>
         <div class="nav-hr"></div>
     </header>
 
-    
+
     <section class="hero">
-        <h1 class="hero-title">Centros de Acopio</h1>
-        <p class="hero-sub">Gestioná ecocentros, plantas de clasificación, rellenos sanitarios y vertederos.</p>
+        <h1 class="hero-title"><?= t('centrosAcopio.hero_title') ?></h1>
+        <p class="hero-sub"><?= t('centrosAcopio.hero_sub') ?></p>
     </section>
 
     
@@ -73,193 +76,193 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             <div class="card-operar" onclick="abrirModalAgregar()">
                 <div class="card-content">
                     <div class="card-icon"><img src="img/plus.svg" alt="" class="card-svg-icon"></div>
-                    <h3>Agregar Centro</h3>
-                    <p>Registrar un nuevo centro de acopio</p>
-                    <button class="card-btn">Agregar</button>
+                    <h3><?= t('centrosAcopio.card_agregar_titulo') ?></h3>
+                    <p><?= t('centrosAcopio.card_agregar_desc') ?></p>
+                    <button class="card-btn"><?= t('crud.btn_agregar') ?></button>
                 </div>
             </div>
 
             <div class="card-operar" onclick="toggleFiltros()">
                 <div class="card-content">
                     <div class="card-icon"><img src="img/loupe.svg" alt="" class="card-svg-icon"></div>
-                    <h3>Filtrar</h3>
-                    <p>Buscar por municipio, tipo o estado...</p>
-                    <button class="card-btn">Filtrar</button>
+                    <h3><?= t('crud.btn_filtrar') ?></h3>
+                    <p><?= t('centrosAcopio.card_filtrar_desc') ?></p>
+                    <button class="card-btn"><?= t('crud.btn_filtrar') ?></button>
                 </div>
             </div>
 
             <div class="card-operar" onclick="toggleBusquedaId()">
                 <div class="card-content">
                     <div class="card-icon"><img src="img/question.svg" alt="" class="card-svg-icon"></div>
-                    <h3>Buscar por ID</h3>
-                    <p>Obtener un centro específico</p>
-                    <button class="card-btn">Buscar</button>
+                    <h3><?= t('camiones.card_buscarid_titulo') ?></h3>
+                    <p><?= t('centrosAcopio.card_buscarid_desc') ?></p>
+                    <button class="card-btn"><?= t('crud.btn_buscar') ?></button>
                 </div>
             </div>
 
             <div class="card-operar" onclick="toggleDarDeBaja()">
                 <div class="card-content">
                     <div class="card-icon"><img src="img/minus.svg" alt="" class="card-svg-icon"></div>
-                    <h3>Dar de Baja</h3>
-                    <p>Cerrar un centro de acopio</p>
-                    <button class="card-btn">Dar de Baja</button>
+                    <h3><?= t('camiones.card_baja_titulo') ?></h3>
+                    <p><?= t('centrosAcopio.card_baja_desc') ?></p>
+                    <button class="card-btn"><?= t('camiones.card_baja_btn') ?></button>
                 </div>
             </div>
 
         </div>
     </section>
 
-    
+
     <section class="control-bar" id="filterBar" style="display:none">
         <div class="control-inner">
             <select id="filtroCampo" class="ctrl-select" onchange="actualizarFiltroValor()">
-                <option value="">— Filtrar por —</option>
-                <option value="municipio">Municipio</option>
-                <option value="tipo">Tipo</option>
-                <option value="estado">Estado</option>
+                <option value=""><?= t('crud.filtrar_por') ?></option>
+                <option value="municipio"><?= t('centrosAcopio.filtro_opt_municipio') ?></option>
+                <option value="tipo"><?= t('centrosAcopio.filtro_opt_tipo') ?></option>
+                <option value="estado"><?= t('centrosAcopio.filtro_opt_estado') ?></option>
             </select>
             <select id="filtroValorSelect" class="ctrl-select" style="display:none"></select>
-            <button class="btn-primary" onclick="aplicarFiltro()">Aplicar</button>
-            <button class="btn-secondary" onclick="listarCentros()">Limpiar</button>
+            <button class="btn-primary" onclick="aplicarFiltro()"><?= t('crud.btn_aplicar') ?></button>
+            <button class="btn-secondary" onclick="listarCentros()"><?= t('crud.btn_limpiar') ?></button>
         </div>
     </section>
 
-    
+
     <section class="control-bar" id="searchBar" style="display:none">
         <div class="control-inner">
-            <input type="number" id="buscarId" class="ctrl-input" placeholder="ID del centro..." min="1"
+            <input type="number" id="buscarId" class="ctrl-input" placeholder="<?= htmlspecialchars(t('centrosAcopio.searchid_ph')) ?>" min="1"
                 style="max-width:200px">
-            <button class="btn-primary" onclick="buscarPorId()">Buscar</button>
-            <button class="btn-secondary" onclick="listarCentros()">Ver Todos</button>
+            <button class="btn-primary" onclick="buscarPorId()"><?= t('crud.btn_buscar') ?></button>
+            <button class="btn-secondary" onclick="listarCentros()"><?= t('crud.btn_vertodos') ?></button>
         </div>
     </section>
 
-    
+
     <section class="control-bar" id="deleteBar" style="display:none">
         <div class="control-inner">
-            <input type="number" id="deleteId" class="ctrl-input" placeholder="ID del centro a dar de baja..."
+            <input type="number" id="deleteId" class="ctrl-input" placeholder="<?= htmlspecialchars(t('centrosAcopio.deleteid_ph')) ?>"
                 min="1" style="max-width:280px">
-            <button class="btn-danger" onclick="darDeBajaCentro()">Dar de Baja</button>
-            <button class="btn-secondary" onclick="ocultarControles()">Cancelar</button>
+            <button class="btn-danger" onclick="darDeBajaCentro()"><?= t('camiones.card_baja_btn') ?></button>
+            <button class="btn-secondary" onclick="ocultarControles()"><?= t('crud.btn_cancelar') ?></button>
         </div>
     </section>
 
     
     <section class="table-section">
         <div class="table-header">
-            <h2 class="table-title" id="tableTitle">Centros de Acopio</h2>
+            <h2 class="table-title" id="tableTitle"><?= t('centrosAcopio.hero_title') ?></h2>
             <span class="table-count" id="tableCount"></span>
-            <button class="btn-secondary" id="btnMostrarTodos" style="display:none" onclick="listarCentros()">Mostrar Todos</button>
+            <button class="btn-secondary" id="btnMostrarTodos" style="display:none" onclick="listarCentros()"><?= t('centrosAcopio.btn_mostrar_todos') ?></button>
         </div>
         <div class="table-wrapper">
             <table>
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Tipo</th>
-                        <th>Municipio</th>
-                        <th>Ocupación</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
+                        <th><?= t('crud.th_id') ?></th>
+                        <th><?= t('centrosAcopio.th_nombre') ?></th>
+                        <th><?= t('centrosAcopio.th_tipo') ?></th>
+                        <th><?= t('centrosAcopio.th_municipio') ?></th>
+                        <th><?= t('centrosAcopio.th_ocupacion') ?></th>
+                        <th><?= t('centrosAcopio.th_estado') ?></th>
+                        <th><?= t('crud.th_acciones') ?></th>
                     </tr>
                 </thead>
                 <tbody id="centrosBody"></tbody>
             </table>
             <div id="noResultados" class="empty-state" style="display:none">
-                Sin resultados para mostrar.
+                <?= t('crud.empty_state') ?>
             </div>
             <div id="loadingState" class="loading-state">
-                Cargando...
+                <?= t('crud.loading_state') ?>
             </div>
         </div>
     </section>
 
-    
+
     <div class="modal-overlay" id="modalForm" style="display:none" onclick="onOverlayClick(event,'modalForm')">
         <div class="modal">
             <div class="modal-header">
-                <h3 id="modalTitle">Agregar Centro</h3>
+                <h3 id="modalTitle"><?= t('centrosAcopio.modal_add_title') ?></h3>
                 <button class="modal-close" onclick="cerrarModal()">✕</button>
             </div>
             <form id="centroForm" onsubmit="guardarCentro(event)">
                 <input type="hidden" id="centroId">
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="idMunicipio">Municipio</label>
+                        <label for="idMunicipio"><?= t('centrosAcopio.field_municipio') ?></label>
                         <select id="idMunicipio" class="form-input" required></select>
                     </div>
                     <div class="form-group">
-                        <label for="nombre">Nombre</label>
-                        <input type="text" id="nombre" class="form-input" placeholder="Ecocentro Malvín" maxlength="100" required>
+                        <label for="nombre"><?= t('centrosAcopio.field_nombre') ?></label>
+                        <input type="text" id="nombre" class="form-input" placeholder="<?= htmlspecialchars(t('centrosAcopio.field_nombre_ph')) ?>" maxlength="100" required>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="tipo">Tipo</label>
+                        <label for="tipo"><?= t('centrosAcopio.field_tipo') ?></label>
                         <select id="tipo" class="form-input" required>
-                            <option value="ecocentro">Ecocentro</option>
-                            <option value="planta_clasificacion">Planta de clasificación</option>
-                            <option value="relleno_sanitario">Relleno sanitario</option>
-                            <option value="vertedero">Vertedero</option>
+                            <option value="ecocentro"><?= t('centrosAcopio.opt_ecocentro') ?></option>
+                            <option value="planta_clasificacion"><?= t('centrosAcopio.opt_planta_clasificacion') ?></option>
+                            <option value="relleno_sanitario"><?= t('centrosAcopio.opt_relleno_sanitario') ?></option>
+                            <option value="vertedero"><?= t('centrosAcopio.opt_vertedero') ?></option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="estado">Estado</label>
+                        <label for="estado"><?= t('centrosAcopio.field_estado') ?></label>
                         <select id="estado" class="form-input" required>
-                            <option value="operativo">Operativo</option>
-                            <option value="saturado">Saturado</option>
-                            <option value="cerrado">Cerrado</option>
+                            <option value="operativo"><?= t('centrosAcopio.opt_operativo') ?></option>
+                            <option value="saturado"><?= t('centrosAcopio.opt_saturado') ?></option>
+                            <option value="cerrado"><?= t('centrosAcopio.opt_cerrado') ?></option>
                         </select>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="calle">Calle</label>
-                        <input type="text" id="calle" class="form-input" placeholder="Av. 18 de Julio" maxlength="100" required>
+                        <label for="calle"><?= t('centrosAcopio.field_calle') ?></label>
+                        <input type="text" id="calle" class="form-input" placeholder="<?= htmlspecialchars(t('centrosAcopio.field_calle_ph')) ?>" maxlength="100" required>
                     </div>
                     <div class="form-group">
-                        <label for="numCalle">Número de puerta</label>
-                        <input type="number" id="numCalle" class="form-input" placeholder="1234" min="1" required>
+                        <label for="numCalle"><?= t('centrosAcopio.field_numcalle') ?></label>
+                        <input type="number" id="numCalle" class="form-input" placeholder="<?= htmlspecialchars(t('centrosAcopio.field_numcalle_ph')) ?>" min="1" required>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="latitud">Latitud</label>
+                        <label for="latitud"><?= t('centrosAcopio.field_latitud') ?></label>
                         <input type="number" id="latitud" class="form-input" placeholder="-34.9011" step="any" required>
                     </div>
                     <div class="form-group">
-                        <label for="longitud">Longitud</label>
+                        <label for="longitud"><?= t('centrosAcopio.field_longitud') ?></label>
                         <input type="number" id="longitud" class="form-input" placeholder="-56.1645" step="any" required>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="capacidadTotal">Capacidad total</label>
-                        <input type="number" id="capacidadTotal" class="form-input" placeholder="5000" min="1" required>
+                        <label for="capacidadTotal"><?= t('centrosAcopio.field_capacidad_total') ?></label>
+                        <input type="number" id="capacidadTotal" class="form-input" placeholder="<?= htmlspecialchars(t('centrosAcopio.field_capacidad_total_ph')) ?>" min="1" required>
                     </div>
                 </div>
                 <div class="modal-actions">
-                    <button type="button" class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
-                    <button type="submit" class="btn-primary">Guardar</button>
+                    <button type="button" class="btn-secondary" onclick="cerrarModal()"><?= t('crud.btn_cancelar') ?></button>
+                    <button type="submit" class="btn-primary"><?= t('crud.btn_guardar') ?></button>
                 </div>
             </form>
         </div>
     </div>
 
-    
+
     <div class="modal-overlay" id="modalDelete" style="display:none" onclick="onOverlayClick(event,'modalDelete')">
         <div class="modal modal-sm">
             <div class="modal-header">
-                <h3>Dar de baja</h3>
+                <h3><?= t('centrosAcopio.modal_delete_title') ?></h3>
                 <button class="modal-close" onclick="cerrarModalDelete()">✕</button>
             </div>
             <p class="delete-msg">
-                ¿Confirmás cerrar el centro <strong id="deleteNombre"></strong>?
+                <?= t('centrosAcopio.delete_confirm_before') ?> <strong id="deleteNombre"></strong><?= t('centrosAcopio.delete_confirm_after') ?>
             </p>
             <div class="modal-actions">
-                <button class="btn-secondary" onclick="cerrarModalDelete()">Cancelar</button>
-                <button class="btn-danger" onclick="confirmarDelete()">Dar de Baja</button>
+                <button class="btn-secondary" onclick="cerrarModalDelete()"><?= t('crud.btn_cancelar') ?></button>
+                <button class="btn-danger" onclick="confirmarDelete()"><?= t('camiones.card_baja_btn') ?></button>
             </div>
         </div>
     </div>
@@ -268,57 +271,57 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
     <div class="modal-overlay" id="modalMaquinaria" style="display:none" onclick="onOverlayClick(event,'modalMaquinaria')">
         <div class="modal" style="max-width:820px">
             <div class="modal-header">
-                <h3>Maquinaria de <span id="maquinariaCentroNombre"></span></h3>
+                <h3><?= t('centrosAcopio.maquinaria_titulo_prefijo') ?> <span id="maquinariaCentroNombre"></span></h3>
                 <button class="modal-close" onclick="cerrarModalMaquinaria()">✕</button>
             </div>
             <div class="table-wrapper" style="margin-bottom:20px">
                 <table>
                     <thead>
                         <tr>
-                            <th>Nombre</th><th>Tipo</th><th>Adquisición</th><th>Estado</th><th></th>
+                            <th><?= t('centrosAcopio.maq_th_nombre') ?></th><th><?= t('centrosAcopio.maq_th_tipo') ?></th><th><?= t('centrosAcopio.maq_th_adquisicion') ?></th><th><?= t('centrosAcopio.maq_th_estado') ?></th><th></th>
                         </tr>
                     </thead>
                     <tbody id="maquinariaBody"></tbody>
                 </table>
-                <div id="maquinariaVacio" class="empty-state" style="display:none">Este centro todavía no tiene maquinaria registrada.</div>
+                <div id="maquinariaVacio" class="empty-state" style="display:none"><?= t('centrosAcopio.maquinaria_vacio') ?></div>
             </div>
             <form id="maquinariaForm" onsubmit="guardarMaquinaria(event)">
                 <input type="hidden" id="maquinariaIdCentro">
                 <input type="hidden" id="maquinariaId">
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="maqNombre">Nombre</label>
-                        <input type="text" id="maqNombre" class="form-input" placeholder="Compactadora CX-200" maxlength="100" required>
+                        <label for="maqNombre"><?= t('centrosAcopio.maq_field_nombre') ?></label>
+                        <input type="text" id="maqNombre" class="form-input" placeholder="<?= htmlspecialchars(t('centrosAcopio.maq_field_nombre_ph')) ?>" maxlength="100" required>
                     </div>
                     <div class="form-group">
-                        <label for="maqTipo">Tipo</label>
+                        <label for="maqTipo"><?= t('centrosAcopio.maq_field_tipo') ?></label>
                         <select id="maqTipo" class="form-input" required>
-                            <option value="compactadora">Compactadora</option>
-                            <option value="cinta">Cinta</option>
-                            <option value="pala">Pala</option>
-                            <option value="bascula">Báscula</option>
-                            <option value="herramienta">Herramienta</option>
-                            <option value="otro">Otro</option>
+                            <option value="compactadora"><?= t('centrosAcopio.opt_compactadora') ?></option>
+                            <option value="cinta"><?= t('centrosAcopio.opt_cinta') ?></option>
+                            <option value="pala"><?= t('centrosAcopio.opt_pala') ?></option>
+                            <option value="bascula"><?= t('centrosAcopio.opt_bascula') ?></option>
+                            <option value="herramienta"><?= t('centrosAcopio.opt_herramienta') ?></option>
+                            <option value="otro"><?= t('centrosAcopio.opt_otro') ?></option>
                         </select>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="maqFecha">Fecha de adquisición</label>
+                        <label for="maqFecha"><?= t('centrosAcopio.maq_field_fecha') ?></label>
                         <input type="date" id="maqFecha" class="form-input" required>
                     </div>
                     <div class="form-group">
-                        <label for="maqEstado">Estado</label>
+                        <label for="maqEstado"><?= t('centrosAcopio.maq_field_estado') ?></label>
                         <select id="maqEstado" class="form-input" required>
-                            <option value="operativa">Operativa</option>
-                            <option value="en_mantenimiento">En mantenimiento</option>
-                            <option value="fuera_servicio">Fuera de servicio</option>
+                            <option value="operativa"><?= t('centrosAcopio.opt_maq_operativa') ?></option>
+                            <option value="en_mantenimiento"><?= t('centrosAcopio.opt_maq_en_mantenimiento') ?></option>
+                            <option value="fuera_servicio"><?= t('centrosAcopio.opt_maq_fuera_servicio') ?></option>
                         </select>
                     </div>
                 </div>
                 <div class="modal-actions">
-                    <button type="button" class="btn-secondary" id="maquinariaCancelarBtn" style="display:none" onclick="cancelarEdicionMaquinaria()">Cancelar edición</button>
-                    <button type="submit" class="btn-primary" id="maquinariaSubmitBtn">Agregar maquinaria</button>
+                    <button type="button" class="btn-secondary" id="maquinariaCancelarBtn" style="display:none" onclick="cancelarEdicionMaquinaria()"><?= t('centrosAcopio.btn_cancelar_edicion') ?></button>
+                    <button type="submit" class="btn-primary" id="maquinariaSubmitBtn"><?= t('centrosAcopio.btn_agregar_maquinaria') ?></button>
                 </div>
             </form>
         </div>
@@ -334,22 +337,76 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                     <img src="logoRecolix.png" alt="Recolix" class="footer-logo-img">
                     <span class="footer-logo-name">Recolix</span>
                 </div>
-                <p>Plataforma de gestión de residuos urbanos para Montevideo.</p>
+                <p><?= t('common.footer_desc') ?></p>
             </div>
             <div class="footer-col">
-                <h3>Navegación</h3>
+                <h3><?= t('common.footer_navegacion') ?></h3>
                 <ul>
-                    <li><a href="../../LandingPage/index_LandingPage.html">Página principal</a></li>
-                    <li><a href="../../LandingPage/mapa.html">Mapa público</a></li>
+                    <li><a href="../../LandingPage/index_LandingPage.html"><?= t('backoffice.footer_pagina_principal') ?></a></li>
+                    <li><a href="../../LandingPage/mapa.html"><?= t('backoffice.footer_mapa_publico') ?></a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-hr"></div>
-        <p class="footer-copy">&copy; 2026 Recolix. Todos los derechos reservados.</p>
+        <p class="footer-copy"><?= t('backoffice.footer_copyright') ?></p>
     </footer>
 
     <script>
         const API_BASE = '/recolix/API_Gestion';
+        const I18N = <?= json_encode(t_array([
+            'msgNoConectarApi' => 'centrosAcopio.msg_no_conectar_api',
+            'msgErrorBuscarCentro' => 'centrosAcopio.msg_error_buscar_centro',
+            'msgErrorFiltrar' => 'centrosAcopio.msg_error_filtrar',
+            'msgCentroModificado' => 'centrosAcopio.msg_centro_modificado',
+            'msgCentroAgregado' => 'centrosAcopio.msg_centro_agregado',
+            'msgErrorGuardar' => 'centrosAcopio.msg_error_guardar',
+            'msgErrorConexionApi' => 'centrosAcopio.msg_error_conexion_api',
+            'msgCentroDadoBaja' => 'centrosAcopio.msg_centro_dado_baja',
+            'msgErrorDarBaja' => 'centrosAcopio.msg_error_dar_baja',
+            'msgNoPudoCargarMaquinaria' => 'centrosAcopio.msg_no_pudo_cargar_maquinaria',
+            'msgMaquinariaModificada' => 'centrosAcopio.msg_maquinaria_modificada',
+            'msgMaquinariaAgregada' => 'centrosAcopio.msg_maquinaria_agregada',
+            'msgErrorGuardarMaquinaria' => 'centrosAcopio.msg_error_guardar_maquinaria',
+            'msgEstadoMaquinariaActualizado' => 'centrosAcopio.msg_estado_maquinaria_actualizado',
+            'msgErrorCambiarEstado' => 'centrosAcopio.msg_error_cambiar_estado',
+            'sinDatos' => 'centrosAcopio.sin_datos',
+            'municipioPrefijo' => 'centrosAcopio.municipio_prefijo',
+            'modalAddTitle' => 'centrosAcopio.modal_add_title',
+            'modalEditTitle' => 'centrosAcopio.modal_edit_title',
+            'titleVerMaquinaria' => 'centrosAcopio.title_ver_maquinaria',
+            'crudTitleEditar' => 'crud.title_editar',
+            'modalDeleteTitle' => 'centrosAcopio.modal_delete_title',
+            'optCambiarEstado' => 'centrosAcopio.opt_cambiar_estado',
+            'optMaqOperativa' => 'centrosAcopio.opt_maq_operativa',
+            'optMaqEnMantenimiento' => 'centrosAcopio.opt_maq_en_mantenimiento',
+            'optMaqFueraServicio' => 'centrosAcopio.opt_maq_fuera_servicio',
+            'btnGuardarCambios' => 'centrosAcopio.btn_guardar_cambios',
+            'btnAgregarMaquinaria' => 'centrosAcopio.btn_agregar_maquinaria',
+        ])) ?>;
+        const LABELS_TIPO_CENTRO_I18N = <?= json_encode(t_array([
+            'ecocentro' => 'centrosAcopio.opt_ecocentro',
+            'planta_clasificacion' => 'centrosAcopio.opt_planta_clasificacion',
+            'relleno_sanitario' => 'centrosAcopio.opt_relleno_sanitario',
+            'vertedero' => 'centrosAcopio.opt_vertedero',
+        ])) ?>;
+        const LABELS_ESTADO_CENTRO_I18N = <?= json_encode(t_array([
+            'operativo' => 'centrosAcopio.opt_operativo',
+            'saturado' => 'centrosAcopio.opt_saturado',
+            'cerrado' => 'centrosAcopio.opt_cerrado',
+        ])) ?>;
+        const LABELS_TIPO_MAQUINARIA_I18N = <?= json_encode(t_array([
+            'compactadora' => 'centrosAcopio.opt_compactadora',
+            'cinta' => 'centrosAcopio.opt_cinta',
+            'pala' => 'centrosAcopio.opt_pala',
+            'bascula' => 'centrosAcopio.opt_bascula',
+            'herramienta' => 'centrosAcopio.opt_herramienta',
+            'otro' => 'centrosAcopio.opt_otro',
+        ])) ?>;
+        const LABELS_ESTADO_MAQUINARIA_I18N = <?= json_encode(t_array([
+            'operativa' => 'centrosAcopio.opt_maq_operativa',
+            'en_mantenimiento' => 'centrosAcopio.opt_maq_en_mantenimiento',
+            'fuera_servicio' => 'centrosAcopio.opt_maq_fuera_servicio',
+        ])) ?>;
         let centroIdParaEliminar = null;
         let toastTimeout;
         let reglasCentro = {};
@@ -370,18 +427,8 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
         const TIPOS_CENTRO = ['ecocentro', 'planta_clasificacion', 'relleno_sanitario', 'vertedero'];
         const ESTADOS_CENTRO = ['operativo', 'saturado', 'cerrado'];
 
-        
-        const LABELS_TIPO_CENTRO = {
-            ecocentro: 'Ecocentro',
-            planta_clasificacion: 'Planta de clasificación',
-            relleno_sanitario: 'Relleno sanitario',
-            vertedero: 'Vertedero'
-        };
-        const LABELS_ESTADO_CENTRO = {
-            operativo: 'Operativo',
-            saturado: 'Saturado',
-            cerrado: 'Cerrado'
-        };
+        const LABELS_TIPO_CENTRO = LABELS_TIPO_CENTRO_I18N;
+        const LABELS_ESTADO_CENTRO = LABELS_ESTADO_CENTRO_I18N;
 
         function poblarSelectMunicipio() {
             const select = document.getElementById('idMunicipio');
@@ -390,7 +437,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
 
         function nombreMunicipio(id) {
             const m = MUNICIPIOS.find(x => x.id == id);
-            return m ? m.nombre : `Municipio ${id}`;
+            return m ? m.nombre : `${I18N.municipioPrefijo} ${id}`;
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
@@ -451,7 +498,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 renderCentros(centrosActuales);
                 document.getElementById('btnMostrarTodos').style.display = 'none';
             } catch {
-                mostrarToast('No se pudo conectar con la API', 'error');
+                mostrarToast(I18N.msgNoConectarApi, 'error');
                 renderCentros([]);
             }
             mostrarCargando(false);
@@ -472,14 +519,14 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 <tr data-id="${c.id_centro}">
                     <td class="td-id">${c.id_centro}</td>
                     <td>${c.nombre}</td>
-                    <td>${c.tipo}</td>
+                    <td>${LABELS_TIPO_CENTRO[c.tipo] ?? c.tipo}</td>
                     <td>${nombreMunicipio(c.id_municipio)}</td>
                     <td id="ocupacion-${c.id_centro}">—</td>
-                    <td><span class="badge ${badgeClaseEstado(c.estado)}">${c.estado}</span></td>
+                    <td><span class="badge ${badgeClaseEstado(c.estado)}">${LABELS_ESTADO_CENTRO[c.estado] ?? c.estado}</span></td>
                     <td class="td-actions">
-                        <button class="btn-action" data-action="maquinaria" data-id="${c.id_centro}" title="Ver maquinaria">🔧</button>
-                        <button class="btn-action" data-action="editar" data-id="${c.id_centro}" title="Editar">✎</button>
-                        <button class="btn-action" data-action="baja" data-id="${c.id_centro}" title="Dar de baja">🗑</button>
+                        <button class="btn-action" data-action="maquinaria" data-id="${c.id_centro}" title="${I18N.titleVerMaquinaria}">🔧</button>
+                        <button class="btn-action" data-action="editar" data-id="${c.id_centro}" title="${I18N.crudTitleEditar}">✎</button>
+                        <button class="btn-action" data-action="baja" data-id="${c.id_centro}" title="${I18N.modalDeleteTitle}">🗑</button>
                     </td>
                 </tr>
             `).join('');
@@ -496,10 +543,10 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 if (json.status === 'success' && json.data.porcentaje !== null) {
                     celda.textContent = `${json.data.porcentaje}%`;
                 } else {
-                    celda.textContent = 'Sin datos';
+                    celda.textContent = I18N.sinDatos;
                 }
             } catch {
-                celda.textContent = 'Sin datos';
+                celda.textContent = I18N.sinDatos;
             }
         }
 
@@ -522,7 +569,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                     renderCentros([]);
                 }
             } catch {
-                mostrarToast('Error al buscar el centro', 'error');
+                mostrarToast(I18N.msgErrorBuscarCentro, 'error');
             }
             mostrarCargando(false);
         }
@@ -556,22 +603,22 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 renderCentros(centrosActuales);
                 document.getElementById('btnMostrarTodos').style.display = 'inline-block';
             } catch {
-                mostrarToast('Error al filtrar', 'error');
+                mostrarToast(I18N.msgErrorFiltrar, 'error');
             }
             mostrarCargando(false);
         }
 
-        
+
 
         function abrirModalAgregar() {
-            document.getElementById('modalTitle').textContent = 'Agregar Centro';
+            document.getElementById('modalTitle').textContent = I18N.modalAddTitle;
             document.getElementById('centroForm').reset();
             document.getElementById('centroId').value = '';
             document.getElementById('modalForm').style.display = 'flex';
         }
 
         function abrirModalEditar(c) {
-            document.getElementById('modalTitle').textContent = 'Modificar Centro';
+            document.getElementById('modalTitle').textContent = I18N.modalEditTitle;
             document.getElementById('centroId').value = c.id_centro;
             document.getElementById('idMunicipio').value = c.id_municipio;
             document.getElementById('nombre').value = c.nombre;
@@ -615,18 +662,18 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 );
                 const json = await res.json();
                 if (json.status === 'success') {
-                    mostrarToast(id ? 'Centro modificado' : 'Centro agregado');
+                    mostrarToast(id ? I18N.msgCentroModificado : I18N.msgCentroAgregado);
                     cerrarModal();
                     listarCentros();
                 } else {
-                    mostrarToast(json.message || 'Error al guardar', 'error');
+                    mostrarToast(json.message || I18N.msgErrorGuardar, 'error');
                 }
             } catch {
-                mostrarToast('Error de conexión con la API', 'error');
+                mostrarToast(I18N.msgErrorConexionApi, 'error');
             }
         }
 
-        
+
 
         function confirmarBorrar(id, nombre) {
             centroIdParaEliminar = id;
@@ -645,13 +692,13 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 const res = await fetch(`${API_BASE}/centros-acopio/${centroIdParaEliminar}`, { method: 'DELETE' });
                 const json = await res.json();
                 if (json.status === 'success') {
-                    mostrarToast('Centro dado de baja');
+                    mostrarToast(I18N.msgCentroDadoBaja);
                     listarCentros();
                 } else {
-                    mostrarToast(json.message || 'Error al dar de baja', 'error');
+                    mostrarToast(json.message || I18N.msgErrorDarBaja, 'error');
                 }
             } catch {
-                mostrarToast('Error de conexión con la API', 'error');
+                mostrarToast(I18N.msgErrorConexionApi, 'error');
             }
             cerrarModalDelete();
         }
@@ -690,23 +737,23 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 body.innerHTML = maquinariaActual.map(m => `
                     <tr>
                         <td>${m.nombre}</td>
-                        <td>${m.tipo}</td>
+                        <td>${LABELS_TIPO_MAQUINARIA_I18N[m.tipo] ?? m.tipo}</td>
                         <td>${m.fecha_adquisicion}</td>
-                        <td><span class="badge ${badgeClaseEstado(m.estado)}">${m.estado}</span></td>
+                        <td><span class="badge ${badgeClaseEstado(m.estado)}">${LABELS_ESTADO_MAQUINARIA_I18N[m.estado] ?? m.estado}</span></td>
                         <td class="td-actions" style="flex-wrap:wrap">
                             <select class="ctrl-select" style="font-size:0.78rem;padding:4px 6px;max-width:130px"
                                 onchange="cambiarEstadoMaquinaria(${m.id_maquinaria}, this.value, ${idCentro})">
-                                <option value="">Cambiar estado...</option>
-                                <option value="operativa">Operativa</option>
-                                <option value="en_mantenimiento">En mantenimiento</option>
-                                <option value="fuera_servicio">Fuera de servicio</option>
+                                <option value="">${I18N.optCambiarEstado}</option>
+                                <option value="operativa">${I18N.optMaqOperativa}</option>
+                                <option value="en_mantenimiento">${I18N.optMaqEnMantenimiento}</option>
+                                <option value="fuera_servicio">${I18N.optMaqFueraServicio}</option>
                             </select>
-                            <button type="button" class="btn-action" onclick="abrirEdicionMaquinaria(${m.id_maquinaria})" title="Editar">✎</button>
+                            <button type="button" class="btn-action" onclick="abrirEdicionMaquinaria(${m.id_maquinaria})" title="${I18N.crudTitleEditar}">✎</button>
                         </td>
                     </tr>
                 `).join('');
             } catch {
-                mostrarToast('No se pudo cargar la maquinaria', 'error');
+                mostrarToast(I18N.msgNoPudoCargarMaquinaria, 'error');
             }
         }
 
@@ -718,14 +765,14 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             document.getElementById('maqTipo').value = m.tipo;
             document.getElementById('maqFecha').value = m.fecha_adquisicion;
             document.getElementById('maqEstado').value = m.estado;
-            document.getElementById('maquinariaSubmitBtn').textContent = 'Guardar cambios';
+            document.getElementById('maquinariaSubmitBtn').textContent = I18N.btnGuardarCambios;
             document.getElementById('maquinariaCancelarBtn').style.display = 'inline-block';
         }
 
         function cancelarEdicionMaquinaria() {
             document.getElementById('maquinariaForm').reset();
             document.getElementById('maquinariaId').value = '';
-            document.getElementById('maquinariaSubmitBtn').textContent = 'Agregar maquinaria';
+            document.getElementById('maquinariaSubmitBtn').textContent = I18N.btnAgregarMaquinaria;
             document.getElementById('maquinariaCancelarBtn').style.display = 'none';
         }
 
@@ -754,14 +801,14 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 );
                 const json = await res.json();
                 if (json.status === 'success') {
-                    mostrarToast(editando ? 'Maquinaria modificada' : 'Maquinaria agregada');
+                    mostrarToast(editando ? I18N.msgMaquinariaModificada : I18N.msgMaquinariaAgregada);
                     cancelarEdicionMaquinaria();
                     cargarMaquinariaDeCentro(idCentro);
                 } else {
-                    mostrarToast(json.message || 'Error al guardar la maquinaria', 'error');
+                    mostrarToast(json.message || I18N.msgErrorGuardarMaquinaria, 'error');
                 }
             } catch {
-                mostrarToast('Error de conexión con la API', 'error');
+                mostrarToast(I18N.msgErrorConexionApi, 'error');
             }
         }
 
@@ -775,13 +822,13 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 });
                 const json = await res.json();
                 if (json.status === 'success') {
-                    mostrarToast('Estado de maquinaria actualizado');
+                    mostrarToast(I18N.msgEstadoMaquinariaActualizado);
                     cargarMaquinariaDeCentro(idCentro);
                 } else {
-                    mostrarToast(json.message || 'Error al cambiar estado', 'error');
+                    mostrarToast(json.message || I18N.msgErrorCambiarEstado, 'error');
                 }
             } catch {
-                mostrarToast('Error de conexión con la API', 'error');
+                mostrarToast(I18N.msgErrorConexionApi, 'error');
             }
         }
 

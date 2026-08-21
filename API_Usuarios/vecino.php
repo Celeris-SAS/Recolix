@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once __DIR__ . '/../i18n/i18n.php';
 
 if (!isset($_SESSION['ci_usuario'])) {
     header("Location: ../LandingPage/login.html");
@@ -7,11 +8,12 @@ if (!isset($_SESSION['ci_usuario'])) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="<?= htmlspecialchars($RECOLIX_IDIOMA) ?>">
 <head>
     <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recolix — Mi panel</title>
+    <title><?= t('perfil.title') ?></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -28,15 +30,16 @@ if (!isset($_SESSION['ci_usuario'])) {
             </a>
             <nav class="main-nav" id="mainNav">
                 <ul>
-                    <li><a href="../LandingPage/index_LandingPage.html">Inicio</a></li>
-                    <li><a href="../LandingPage/mapa.html">Mapa</a></li>
+                    <li><a href="../LandingPage/index_LandingPage.html"><?= t('common.nav_inicio') ?></a></li>
+                    <li><a href="../LandingPage/mapa.html"><?= t('common.nav_mapa') ?></a></li>
                 </ul>
             </nav>
             <div class="nav-right">
-                <a href="vecino.php" class="btn-user" title="Perfil de usuario">
+                <?php include __DIR__ . '/../i18n/switcher.php'; ?>
+                <a href="vecino.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
                     <img src="Vista/img/user.svg" alt="Usuario" class="nav-user-icon">
                 </a>
-                <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menú">
+                <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="<?= htmlspecialchars(t('common.nav_abrir_menu')) ?>">
                     <span></span><span></span><span></span>
                 </button>
             </div>
@@ -47,48 +50,48 @@ if (!isset($_SESSION['ci_usuario'])) {
         <section class="dash-section" id="seccionPerfil">
             <div class="section-header">
                 <div>
-                    <p class="section-eyebrow">Mi cuenta</p>
-                    <h2>Mis datos</h2>
+                    <p class="section-eyebrow"><?= t('perfil.eyebrow') ?></p>
+                    <h2><?= t('perfil.titulo') ?></h2>
                 </div>
-                <button class="btn btn-outline btn-sm" id="editarPerfilBtn">Editar datos</button>
+                <button class="btn btn-outline btn-sm" id="editarPerfilBtn"><?= t('perfil.btn_editar') ?></button>
             </div>
 
             <div class="panel-card" id="perfilVista">
                 <div class="perfil-grid">
                     <div class="perfil-campo">
-                        <p class="campo-label">Nombre completo</p>
+                        <p class="campo-label"><?= t('perfil.label_nombre_completo') ?></p>
                         <p class="campo-valor" id="perfilNombre">—</p>
                     </div>
                     <div class="perfil-campo">
-                        <p class="campo-label">Cédula de identidad</p>
+                        <p class="campo-label"><?= t('perfil.label_cedula') ?></p>
                         <p class="campo-valor" id="perfilCI">—</p>
                     </div>
                     <div class="perfil-campo">
-                        <p class="campo-label">Correo electrónico</p>
+                        <p class="campo-label"><?= t('perfil.label_email') ?></p>
                         <p class="campo-valor" id="perfilEmail">—</p>
                     </div>
                     <div class="perfil-campo">
-                        <p class="campo-label">Teléfono</p>
+                        <p class="campo-label"><?= t('perfil.label_telefono') ?></p>
                         <p class="campo-valor" id="perfilTel">—</p>
                     </div>
                     <div class="perfil-campo">
-                        <p class="campo-label">Municipio</p>
+                        <p class="campo-label"><?= t('vecino.label_municipio') ?></p>
                         <p class="campo-valor" id="perfilMunicipio">—</p>
                     </div>
                 </div>
                 <div style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;">
-                    <button class="btn btn-outline btn-sm" id="cambiarContraseniaBtn">Cambiar contraseña</button>
-                    <button class="btn btn-primary btn-sm" id="asignarMunicipioBtn">Agregar municipio</button>
+                    <button class="btn btn-outline btn-sm" id="cambiarContraseniaBtn"><?= t('perfil.btn_cambiar_contrasenia') ?></button>
+                    <button class="btn btn-primary btn-sm" id="asignarMunicipioBtn"><?= t('vecino.btn_agregar_municipio') ?></button>
                 </div>
             </div>
 
             <div class="panel-card" id="municipioForm" hidden>
-                <h3 id="municipioFormTitle">Agregar municipio</h3>
-                <p class="form-nota" id="municipioFormNota">Todavía no tenés un municipio asignado. Seleccioná el que corresponde a tu domicilio.</p>
+                <h3 id="municipioFormTitle"><?= t('vecino.btn_agregar_municipio') ?></h3>
+                <p class="form-nota" id="municipioFormNota"><?= t('vecino.municipio_form_nota_agregar') ?></p>
                 <div class="form-row">
-                    <label for="municipioSelect">Municipio</label>
+                    <label for="municipioSelect"><?= t('vecino.label_municipio') ?></label>
                     <select id="municipioSelect">
-                        <option value="">Seleccioná tu municipio</option>
+                        <option value=""><?= t('vecino.opt_seleccionar_municipio') ?></option>
                         <option value="Municipio A">Municipio A</option>
                         <option value="Municipio B">Municipio B</option>
                         <option value="Municipio C">Municipio C</option>
@@ -101,48 +104,47 @@ if (!isset($_SESSION['ci_usuario'])) {
                     <p class="error-msg" id="municipioSelectError"></p>
                 </div>
                 <div class="form-actions">
-                    <button class="btn btn-primary" id="guardarMunicipioBtn">Guardar municipio</button>
-                    <button class="btn btn-outline btn-sm" id="cancelarMunicipioBtn">Cancelar</button>
+                    <button class="btn btn-primary" id="guardarMunicipioBtn"><?= t('vecino.btn_guardar_municipio') ?></button>
+                    <button class="btn btn-outline btn-sm" id="cancelarMunicipioBtn"><?= t('perfil.btn_cancelar') ?></button>
                 </div>
                 <p class="form-feedback" id="municipioFeedback"></p>
             </div>
 
             <div class="panel-card" id="perfilForm" hidden>
-                <h3>Editar datos de contacto</h3>
-                <p class="form-nota">Solo podés modificar tu correo y teléfono. Para otros cambios contactá al
-                    administrador.</p>
+                <h3><?= t('perfil.titulo_editar') ?></h3>
+                <p class="form-nota"><?= t('perfil.nota_editar') ?></p>
                 <div class="form-row">
-                    <label for="editEmail">Correo electrónico</label>
-                    <input type="email" id="editEmail" name="email" placeholder="nombre@correo.com">
+                    <label for="editEmail"><?= t('perfil.field_email') ?></label>
+                    <input type="email" id="editEmail" name="email" placeholder="<?= htmlspecialchars(t('perfil.field_email_ph')) ?>">
                     <p class="error-msg" id="editEmailError"></p>
                 </div>
                 <div class="form-row">
-                    <label for="editTel">Teléfono</label>
-                    <input type="tel" id="editTel" name="tel" placeholder="Ej: 099123456">
+                    <label for="editTel"><?= t('perfil.field_tel') ?></label>
+                    <input type="tel" id="editTel" name="tel" placeholder="<?= htmlspecialchars(t('perfil.field_tel_ph')) ?>">
                     <p class="error-msg" id="editTelError"></p>
                 </div>
                 <div class="form-actions">
-                    <button class="btn btn-primary" id="guardarPerfilBtn">Guardar cambios</button>
-                    <button class="btn btn-outline btn-sm" id="cancelarPerfilBtn">Cancelar</button>
+                    <button class="btn btn-primary" id="guardarPerfilBtn"><?= t('perfil.btn_guardar_cambios') ?></button>
+                    <button class="btn btn-outline btn-sm" id="cancelarPerfilBtn"><?= t('perfil.btn_cancelar') ?></button>
                 </div>
                 <p class="form-feedback" id="perfilFeedback"></p>
             </div>
 
             <div class="panel-card" id="contraseniaForm" hidden>
-                <h3>Cambiar contraseña</h3>
+                <h3><?= t('perfil.titulo_cambiar_contrasenia') ?></h3>
                 <div class="form-row">
-                    <label for="contraActual">Contraseña actual</label>
-                    <input type="password" id="contraActual" placeholder="Tu contraseña actual">
+                    <label for="contraActual"><?= t('perfil.field_contra_actual') ?></label>
+                    <input type="password" id="contraActual" placeholder="<?= htmlspecialchars(t('perfil.field_contra_actual_ph')) ?>">
                     <p class="error-msg" id="contraActualError"></p>
                 </div>
                 <div class="form-row">
-                    <label for="contraNueva">Nueva contraseña</label>
-                    <input type="password" id="contraNueva" placeholder="Mínimo 8 caracteres">
+                    <label for="contraNueva"><?= t('perfil.field_contra_nueva') ?></label>
+                    <input type="password" id="contraNueva" placeholder="<?= htmlspecialchars(t('perfil.field_contra_nueva_ph')) ?>">
                     <p class="error-msg" id="contraNuevaError"></p>
                 </div>
                 <div class="form-actions">
-                    <button class="btn btn-primary" id="guardarContraBtn">Cambiar contraseña</button>
-                    <button class="btn btn-outline btn-sm" id="cancelarContraBtn">Cancelar</button>
+                    <button class="btn btn-primary" id="guardarContraBtn"><?= t('perfil.btn_cambiar_contrasenia') ?></button>
+                    <button class="btn btn-outline btn-sm" id="cancelarContraBtn"><?= t('perfil.btn_cancelar') ?></button>
                 </div>
                 <p class="form-feedback" id="contraFeedback"></p>
             </div>
@@ -151,30 +153,30 @@ if (!isset($_SESSION['ci_usuario'])) {
         <section class="dash-section" id="seccionIncidencias">
             <div class="section-header">
                 <div>
-                    <p class="section-eyebrow">Mis reportes</p>
-                    <h2>Incidencias</h2>
+                    <p class="section-eyebrow"><?= t('vecino.eyebrow_incidencias') ?></p>
+                    <h2><?= t('vecino.titulo_incidencias') ?></h2>
                 </div>
-                <button class="btn btn-primary btn-sm" id="nuevaIncidenciaBtn">+ Nueva incidencia</button>
+                <button class="btn btn-primary btn-sm" id="nuevaIncidenciaBtn"><?= t('vecino.btn_nueva_incidencia') ?></button>
             </div>
 
             <div id="incidenciasLista">
-                <p class="estado-carga">Cargando tus incidencias...</p>
+                <p class="estado-carga"><?= t('vecino.cargando_incidencias') ?></p>
             </div>
         </section>
 
         <section class="dash-section" id="seccionNotificaciones">
             <div class="section-header">
                 <div>
-                    <p class="section-eyebrow">Alertas</p>
-                    <h2>Notificaciones</h2>
+                    <p class="section-eyebrow"><?= t('vecino.eyebrow_notificaciones') ?></p>
+                    <h2><?= t('vecino.titulo_notificaciones') ?></h2>
                 </div>
             </div>
             <div id="notificacionesLista">
-                <p class="estado-carga">Cargando notificaciones...</p>
+                <p class="estado-carga"><?= t('vecino.cargando_notificaciones') ?></p>
             </div>
             <div class="logout">
-                <button class="btn btn-outline btn-sm" id="logoutBtn">Cerrar sesión</button>
-                
+                <button class="btn btn-outline btn-sm" id="logoutBtn"><?= t('perfil.btn_cerrar_sesion') ?></button>
+
             </div>
         </section>
 
@@ -187,28 +189,53 @@ if (!isset($_SESSION['ci_usuario'])) {
             <img src="../LandingPage/img/LogoBlanco.png" alt="Logo Recolix" class="logo-imageBlanco" />
             <div class="logo-text">Recolix</div>
           </a>
-          <p>Plataforma de gestión de residuos urbanos para Montevideo.</p>
+          <p><?= t('common.footer_desc') ?></p>
         </div>
         <div class="footer-col">
-          <h3>Navegación</h3>
+          <h3><?= t('common.footer_navegacion') ?></h3>
           <ul>
-            <li><a href="../LandingPage/index_LandingPage.html">Inicio</a></li>
-            <li><a href="../LandingPage/mapa.html">Mapa</a></li>
-            <li><a href="../Backoffice/login_backoffice.php">Portal de empleados</a></li>
+            <li><a href="../LandingPage/index_LandingPage.html"><?= t('common.footer_inicio') ?></a></li>
+            <li><a href="../LandingPage/mapa.html"><?= t('common.footer_mapa') ?></a></li>
+            <li><a href="../Backoffice/login_backoffice.php"><?= t('common.footer_portal_empleados') ?></a></li>
           </ul>
         </div>
         <div class="footer-col">
-          <h3>Canales de la Intendencia</h3>
+          <h3><?= t('common.footer_canales') ?></h3>
           <ul>
-            <li>Línea 1950 3000</li>
-            <li>Whatsapp: 092 250 260</li>
+            <li><?= t('common.footer_linea') ?></li>
+            <li><?= t('common.footer_whatsapp') ?></li>
           </ul>
         </div>
       </div>
     </div>
   </footer>
 
-    <script>const CI = <?= json_encode($_SESSION['ci_usuario']) ?>;</script>
+    <script>
+        const CI = <?= json_encode($_SESSION['ci_usuario']) ?>;
+        const I18N = <?= json_encode(t_array([
+            'msgEmailInvalido' => 'perfil.msg_email_invalido',
+            'msgTelInvalido' => 'perfil.msg_tel_invalido',
+            'msgNoPudoGuardar' => 'perfil.msg_no_pudo_guardar',
+            'msgDatosActualizados' => 'perfil.msg_datos_actualizados',
+            'msgContraActualRequerida' => 'perfil.msg_contra_actual_requerida',
+            'msgContraNuevaMin' => 'perfil.msg_contra_nueva_min',
+            'msgNoPudoCambiarContra' => 'perfil.msg_no_pudo_cambiar_contra',
+            'msgContraActualizada' => 'perfil.msg_contra_actualizada',
+            'sinAsignar' => 'vecino.sin_asignar',
+            'btnAgregarMunicipio' => 'vecino.btn_agregar_municipio',
+            'btnCambiarMunicipio' => 'vecino.btn_cambiar_municipio',
+            'municipioFormNotaAgregar' => 'vecino.municipio_form_nota_agregar',
+            'municipioFormNotaCambiar' => 'vecino.municipio_form_nota_cambiar',
+            'msgSeleccionaMunicipioPunto' => 'vecino.msg_selecciona_municipio_punto',
+            'msgNoPudoGuardarMunicipio' => 'vecino.msg_no_pudo_guardar_municipio',
+            'msgMunicipioActualizado' => 'vecino.msg_municipio_actualizado',
+            'msgMunicipioAsignado' => 'vecino.msg_municipio_asignado',
+            'sinIncidencias' => 'vecino.sin_incidencias',
+            'sinNotificaciones' => 'vecino.sin_notificaciones',
+            'btnMarcarLeida' => 'vecino.btn_marcar_leida',
+        ])) ?>;
+        const LOCALE = <?= json_encode(t_locale()) ?>;
+    </script>
     <script src="Vista/vecino.js"></script>
 </body>
 
