@@ -1,13 +1,15 @@
 <?php
 require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
+require_once __DIR__ . '/../../i18n/i18n.php';
 ?>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="<?= htmlspecialchars($RECOLIX_IDIOMA) ?>">
 
 <head>
     <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contenedores — Recolix</title>
+    <title><?= t('contenedores.title') ?></title>
     <link rel="stylesheet" href="styleContenedores.css">
 </head>
 
@@ -16,52 +18,53 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
     <header class="navbar">
         <div class="nav-inner">
             <div class="nav-left">
-                <div class="brand">
+                <a href="../../Backoffice/indexBackoffice.php" class="brand">
                     <img src="logoRecolix.png" alt="Recolix" class="brand-logo">
                     <span class="brand-name">Recolix</span>
-                </div>
+                </a>
                 <nav class="nav-links">
-                    <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
-                    <a href="../../API_Recoleccion/Vista/camiones.php">Camiones</a>
-                    <a href="../../API_Recoleccion/Vista/circuitos.php">Circuitos</a>
-                    <a href="../../API_Recoleccion/Vista/rutas.php">Rutas</a>
-                    <a href="#">Cuadrillas</a>
-                    <a href="#" class="nav-active">Contenedores</a>
-                    <a href="centrosAcopio.php">Centros de Acopio</a>
-                    <a href="../../Backoffice/mapa.php">Mapa</a>
-                    <a href="#">Reportes</a>
-                    <a href="#">Incidencias</a>
-                    <a href="../../API_Usuarios/Vista/usuarios.php">Usuarios</a>
+                    <a href="../../Backoffice/indexBackoffice.php"><?= t('backoffice.nav_inicio') ?></a>
+                    <a href="../../API_Recoleccion/Vista/camiones.php"><?= t('backoffice.nav_camiones') ?></a>
+                    <a href="../../API_Recoleccion/Vista/circuitos.php"><?= t('backoffice.nav_circuitos') ?></a>
+                    <a href="../../API_Recoleccion/Vista/rutas.php"><?= t('backoffice.nav_rutas') ?></a>
+                    <a href="../../API_Usuarios/Vista/cuadrillas.php"><?= t('backoffice.nav_cuadrillas') ?></a>
+                    <a href="#" class="nav-active"><?= t('backoffice.nav_contenedores') ?></a>
+                    <a href="centrosAcopio.php"><?= t('backoffice.nav_centros_acopio') ?></a>
+                    <a href="../../Backoffice/mapa.php"><?= t('backoffice.nav_mapa') ?></a>
+                    <a href="#"><?= t('backoffice.nav_reportes') ?></a>
+                    <a href="#"><?= t('backoffice.nav_incidencias') ?></a>
+                    <a href="../../API_Usuarios/Vista/usuarios.php"><?= t('backoffice.nav_usuarios') ?></a>
                 </nav>
             </div>
             <div class="nav-right">
-                <a href="/recolix/API_Usuarios/perfil.php" class="btn-user" title="Perfil de usuario">
+                <?php include __DIR__ . '/../../i18n/switcher.php'; ?>
+                <a href="/recolix/API_Usuarios/perfil.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
                     <img src="user.svg" alt="Usuario" class="nav-user-icon">
                 </a>
-                <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menú">
+                <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="<?= htmlspecialchars(t('backoffice.nav_menu')) ?>">
                     <span></span><span></span><span></span>
                 </button>
             </div>
         </div>
         <nav class="nav-mobile" id="navMobile">
-            <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
-            <a href="../../API_Recoleccion/Vista/camiones.php">Camiones</a>
-            <a href="../../API_Recoleccion/Vista/circuitos.php">Circuitos</a>
-            <a href="../../API_Recoleccion/Vista/rutas.php">Rutas</a>
-            <a href="#">Cuadrillas</a>
-            <a href="#" class="nav-active">Contenedores</a>
-            <a href="centrosAcopio.php">Centros de Acopio</a>
-            <a href="../../Backoffice/mapa.php">Mapa</a>
-            <a href="#">Reportes</a>
-            <a href="#">Incidencias</a>
-            <a href="../../API_Usuarios/Vista/usuarios.php">Usuarios</a>
+            <a href="../../Backoffice/indexBackoffice.php"><?= t('backoffice.nav_inicio') ?></a>
+            <a href="../../API_Recoleccion/Vista/camiones.php"><?= t('backoffice.nav_camiones') ?></a>
+            <a href="../../API_Recoleccion/Vista/circuitos.php"><?= t('backoffice.nav_circuitos') ?></a>
+            <a href="../../API_Recoleccion/Vista/rutas.php"><?= t('backoffice.nav_rutas') ?></a>
+            <a href="../../API_Usuarios/Vista/cuadrillas.php"><?= t('backoffice.nav_cuadrillas') ?></a>
+            <a href="#" class="nav-active"><?= t('backoffice.nav_contenedores') ?></a>
+            <a href="centrosAcopio.php"><?= t('backoffice.nav_centros_acopio') ?></a>
+            <a href="../../Backoffice/mapa.php"><?= t('backoffice.nav_mapa') ?></a>
+            <a href="#"><?= t('backoffice.nav_reportes') ?></a>
+            <a href="#"><?= t('backoffice.nav_incidencias') ?></a>
+            <a href="../../API_Usuarios/Vista/usuarios.php"><?= t('backoffice.nav_usuarios') ?></a>
         </nav>
         <div class="nav-hr"></div>
     </header>
 
     <section class="hero">
-        <h1 class="hero-title">Contenedores</h1>
-        <p class="hero-sub">Gestioná el inventario de contenedores de residuos urbanos.</p>
+        <h1 class="hero-title"><?= t('contenedores.hero_title') ?></h1>
+        <p class="hero-sub"><?= t('contenedores.hero_sub') ?></p>
     </section>
 
     <section class="cards-section">
@@ -70,45 +73,45 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             <div class="card-operar" onclick="abrirModalAgregar()">
                 <div class="card-content">
                     <div class="card-icon"><img src="img/plus.svg" alt="" class="card-svg-icon"></div>
-                    <h3>Agregar Contenedor</h3>
-                    <p>Registrar un nuevo contenedor</p>
-                    <button class="card-btn">Agregar</button>
+                    <h3><?= t('contenedores.card_agregar_titulo') ?></h3>
+                    <p><?= t('contenedores.card_agregar_desc') ?></p>
+                    <button class="card-btn"><?= t('crud.btn_agregar') ?></button>
                 </div>
             </div>
 
             <div class="card-operar" onclick="toggleFiltros()">
                 <div class="card-content">
                     <div class="card-icon"><img src="img/loupe.svg" alt="" class="card-svg-icon"></div>
-                    <h3>Filtrar</h3>
-                    <p>Buscar por municipio, tipo o estado...</p>
-                    <button class="card-btn">Filtrar</button>
+                    <h3><?= t('crud.btn_filtrar') ?></h3>
+                    <p><?= t('contenedores.card_filtrar_desc') ?></p>
+                    <button class="card-btn"><?= t('crud.btn_filtrar') ?></button>
                 </div>
             </div>
 
             <div class="card-operar" onclick="toggleBusquedaId()">
                 <div class="card-content">
                     <div class="card-icon"><img src="img/question.svg" alt="" class="card-svg-icon"></div>
-                    <h3>Buscar por ID</h3>
-                    <p>Obtener un contenedor específico</p>
-                    <button class="card-btn">Buscar</button>
+                    <h3><?= t('camiones.card_buscarid_titulo') ?></h3>
+                    <p><?= t('contenedores.card_buscarid_desc') ?></p>
+                    <button class="card-btn"><?= t('crud.btn_buscar') ?></button>
                 </div>
             </div>
 
             <div class="card-operar" onclick="toggleModificar()">
                 <div class="card-content">
                     <div class="card-icon"><img src="img/refresh.svg" alt="" class="card-svg-icon"></div>
-                    <h3>Modificar Contenedor</h3>
-                    <p>Editar datos de un contenedor existente</p>
-                    <button class="card-btn">Modificar</button>
+                    <h3><?= t('contenedores.card_modificar_titulo') ?></h3>
+                    <p><?= t('contenedores.card_modificar_desc') ?></p>
+                    <button class="card-btn"><?= t('crud.btn_modificar') ?></button>
                 </div>
             </div>
 
             <div class="card-operar" onclick="toggleDarDeBaja()">
                 <div class="card-content">
                     <div class="card-icon"><img src="img/minus.svg" alt="" class="card-svg-icon"></div>
-                    <h3>Dar de Baja</h3>
-                    <p>Desactivar un contenedor del registro</p>
-                    <button class="card-btn">Dar de Baja</button>
+                    <h3><?= t('camiones.card_baja_titulo') ?></h3>
+                    <p><?= t('contenedores.card_baja_desc') ?></p>
+                    <button class="card-btn"><?= t('camiones.card_baja_btn') ?></button>
                 </div>
             </div>
 
@@ -118,85 +121,85 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
     <section class="control-bar" id="filterBar" style="display:none">
         <div class="control-inner">
             <select id="filtroTipo" class="ctrl-select" onchange="actualizarFiltroValor()">
-                <option value="">— Filtrar por —</option>
-                <option value="municipio">Municipio</option>
-                <option value="tipoResiduo">Tipo de Residuo</option>
-                <option value="estado">Estado</option>
+                <option value=""><?= t('crud.filtrar_por') ?></option>
+                <option value="municipio"><?= t('contenedores.filtro_opt_municipio') ?></option>
+                <option value="tipoResiduo"><?= t('contenedores.filtro_opt_tiporesiduo') ?></option>
+                <option value="estado"><?= t('contenedores.filtro_opt_estado') ?></option>
             </select>
-            <input type="text" id="filtroValor" class="ctrl-input" placeholder="Valor del filtro..."
+            <input type="text" id="filtroValor" class="ctrl-input" placeholder="<?= htmlspecialchars(t('crud.valor_filtro_placeholder')) ?>"
                 style="display:none">
             <select id="filtroValorSelect" class="ctrl-select" style="display:none"></select>
-            <button class="btn-primary" onclick="aplicarFiltro()">Aplicar</button>
-            <button class="btn-secondary" onclick="listarContenedores()">Limpiar</button>
+            <button class="btn-primary" onclick="aplicarFiltro()"><?= t('crud.btn_aplicar') ?></button>
+            <button class="btn-secondary" onclick="listarContenedores()"><?= t('crud.btn_limpiar') ?></button>
         </div>
     </section>
 
     <section class="control-bar" id="searchBar" style="display:none">
         <div class="control-inner">
-            <input type="number" id="buscarId" class="ctrl-input" placeholder="ID del contenedor..." min="1"
+            <input type="number" id="buscarId" class="ctrl-input" placeholder="<?= htmlspecialchars(t('contenedores.searchid_ph')) ?>" min="1"
                 style="max-width:200px">
-            <button class="btn-primary" onclick="buscarPorId()">Buscar</button>
-            <button class="btn-secondary" onclick="listarContenedores()">Ver Todos</button>
+            <button class="btn-primary" onclick="buscarPorId()"><?= t('crud.btn_buscar') ?></button>
+            <button class="btn-secondary" onclick="listarContenedores()"><?= t('crud.btn_vertodos') ?></button>
         </div>
     </section>
 
     <section class="control-bar" id="modificarBar" style="display:none">
         <div class="control-inner">
-            <input type="number" id="modificarId" class="ctrl-input" placeholder="ID del contenedor..." min="1"
+            <input type="number" id="modificarId" class="ctrl-input" placeholder="<?= htmlspecialchars(t('contenedores.modificarid_ph')) ?>" min="1"
                 style="max-width:140px">
             <select id="modificarCampo" class="ctrl-select" onchange="actualizarPlaceholderModificar()">
-                <option value="">— Campo —</option>
-                <option value="calle">Calle</option>
-                <option value="numCalle">Número de puerta</option>
-                <option value="capacidad">Capacidad (L)</option>
-                <option value="estado">Estado</option>
-                <option value="idTipo">Tipo de Residuo (ID)</option>
-                <option value="idCircuito">Circuito (ID)</option>
+                <option value=""><?= t('crud.campo') ?></option>
+                <option value="calle"><?= t('contenedores.campo_opt_calle') ?></option>
+                <option value="numCalle"><?= t('contenedores.campo_opt_numcalle') ?></option>
+                <option value="capacidad"><?= t('contenedores.campo_opt_capacidad') ?></option>
+                <option value="estado"><?= t('contenedores.campo_opt_estado') ?></option>
+                <option value="idTipo"><?= t('contenedores.campo_opt_idtipo') ?></option>
+                <option value="idCircuito"><?= t('contenedores.campo_opt_idcircuito') ?></option>
             </select>
             <input type="text" id="modificarValor" class="ctrl-input" style="display:none"
-                placeholder="Seleccioná un campo...">
+                placeholder="<?= htmlspecialchars(t('crud.seleccionar_campo_placeholder')) ?>">
             <select id="modificarValorSelect" class="ctrl-select" style="display:none"></select>
-            <button class="btn-primary" onclick="modificarContenedor()">Modificar</button>
-            <button class="btn-secondary" onclick="ocultarControles()">Cancelar</button>
+            <button class="btn-primary" onclick="modificarContenedor()"><?= t('crud.btn_modificar') ?></button>
+            <button class="btn-secondary" onclick="ocultarControles()"><?= t('crud.btn_cancelar') ?></button>
         </div>
     </section>
 
     <section class="control-bar" id="deleteBar" style="display:none">
         <div class="control-inner">
-            <input type="number" id="deleteId" class="ctrl-input" placeholder="ID del contenedor a dar de baja..."
+            <input type="number" id="deleteId" class="ctrl-input" placeholder="<?= htmlspecialchars(t('contenedores.deleteid_ph')) ?>"
                 min="1" style="max-width:280px">
-            <button class="btn-danger" onclick="darDeBajaContenedor()">Dar de Baja</button>
-            <button class="btn-secondary" onclick="ocultarControles()">Cancelar</button>
+            <button class="btn-danger" onclick="darDeBajaContenedor()"><?= t('camiones.card_baja_btn') ?></button>
+            <button class="btn-secondary" onclick="ocultarControles()"><?= t('crud.btn_cancelar') ?></button>
         </div>
     </section>
 
     <section class="table-section">
         <div class="table-header">
-            <h2 class="table-title" id="tableTitle">Contenedores</h2>
+            <h2 class="table-title" id="tableTitle"><?= t('contenedores.hero_title') ?></h2>
             <span class="table-count" id="tableCount"></span>
-            <button class="btn-secondary" id="btnMostrarTodos" style="display:none" onclick="listarContenedores()">Mostrar Todos</button>
+            <button class="btn-secondary" id="btnMostrarTodos" style="display:none" onclick="listarContenedores()"><?= t('contenedores.btn_mostrar_todos') ?></button>
         </div>
         <div class="table-wrapper">
             <table>
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Calle</th>
-                        <th>Nº Puerta</th>
-                        <th>Capacidad (L)</th>
-                        <th>Tipo Residuo</th>
-                        <th>Circuito</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
+                        <th><?= t('crud.th_id') ?></th>
+                        <th><?= t('contenedores.th_calle') ?></th>
+                        <th><?= t('contenedores.th_numpuerta') ?></th>
+                        <th><?= t('contenedores.th_capacidad') ?></th>
+                        <th><?= t('contenedores.th_tiporesiduo') ?></th>
+                        <th><?= t('contenedores.th_circuito') ?></th>
+                        <th><?= t('contenedores.th_estado') ?></th>
+                        <th><?= t('crud.th_acciones') ?></th>
                     </tr>
                 </thead>
                 <tbody id="contenedoresBody"></tbody>
             </table>
             <div id="noResultados" class="empty-state" style="display:none">
-                Sin resultados para mostrar.
+                <?= t('crud.empty_state') ?>
             </div>
             <div id="loadingState" class="loading-state">
-                Cargando...
+                <?= t('crud.loading_state') ?>
             </div>
         </div>
     </section>
@@ -204,7 +207,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
     <div class="modal-overlay" id="modalForm" style="display:none" onclick="onOverlayClick(event,'modalForm')">
         <div class="modal">
             <div class="modal-header">
-                <h3 id="modalTitle">Agregar Contenedor</h3>
+                <h3 id="modalTitle"><?= t('contenedores.modal_add_title') ?></h3>
                 <button class="modal-close" onclick="cerrarModal()">✕</button>
             </div>
             <form id="contenedorForm" onsubmit="guardarContenedor(event)">
@@ -212,58 +215,58 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 <input type="hidden" id="contenedorEstadoForm" value="funcional">
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="calle">Calle</label>
-                        <input type="text" id="calle" class="form-input" placeholder="Av. 18 de Julio" maxlength="100"
+                        <label for="calle"><?= t('contenedores.field_calle') ?></label>
+                        <input type="text" id="calle" class="form-input" placeholder="<?= htmlspecialchars(t('contenedores.field_calle_ph')) ?>" maxlength="100"
                             required>
                     </div>
                     <div class="form-group">
-                        <label for="numCalle">Número de puerta</label>
-                        <input type="text" id="numCalle" class="form-input" placeholder="1234" maxlength="20" required>
+                        <label for="numCalle"><?= t('contenedores.field_numcalle') ?></label>
+                        <input type="text" id="numCalle" class="form-input" placeholder="<?= htmlspecialchars(t('contenedores.field_numcalle_ph')) ?>" maxlength="20" required>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="latitud">Latitud</label>
+                        <label for="latitud"><?= t('contenedores.field_latitud') ?></label>
                         <input type="number" id="latitud" class="form-input" placeholder="-34.9011" step="any" required>
                     </div>
                     <div class="form-group">
-                        <label for="longitud">Longitud</label>
+                        <label for="longitud"><?= t('contenedores.field_longitud') ?></label>
                         <input type="number" id="longitud" class="form-input" placeholder="-56.1645" step="any"
                             required>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="capacidad">Capacidad (litros)</label>
-                        <input type="number" id="capacidad" class="form-input" placeholder="1100" min="1" step="any"
+                        <label for="capacidad"><?= t('contenedores.field_capacidad_litros') ?></label>
+                        <input type="number" id="capacidad" class="form-input" placeholder="<?= htmlspecialchars(t('contenedores.field_capacidad_ph')) ?>" min="1" step="any"
                             required>
                     </div>
                     <div class="form-group" id="estadoGroup">
-                        <label for="estado">Estado</label>
+                        <label for="estado"><?= t('contenedores.field_estado') ?></label>
                         <select id="estado" class="form-input" onchange="onEstadoFormChange()">
-                            <option value="funcional">Funcional</option>
-                            <option value="roto">Roto</option>
-                            <option value="desbordado">Desbordado</option>
-                            <option value="inactivo">Inactivo</option>
-                            <option value="en_deposito">En depósito</option>
+                            <option value="funcional"><?= t('contenedores.opt_funcional') ?></option>
+                            <option value="roto"><?= t('contenedores.opt_roto') ?></option>
+                            <option value="desbordado"><?= t('contenedores.opt_desbordado') ?></option>
+                            <option value="inactivo"><?= t('contenedores.opt_inactivo') ?></option>
+                            <option value="en_deposito"><?= t('contenedores.opt_en_deposito') ?></option>
                         </select>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="idTipo">Tipo de Residuo</label>
+                        <label for="idTipo"><?= t('contenedores.field_tiporesiduo') ?></label>
                         <select id="idTipo" class="form-input" required>
-                            <option value="">— Seleccionar —</option>
+                            <option value=""><?= t('crud.seleccionar') ?></option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="idCircuito">ID Circuito</label>
+                        <label for="idCircuito"><?= t('contenedores.field_idcircuito') ?></label>
                         <input type="number" id="idCircuito" class="form-input" placeholder="1" min="1" required>
                     </div>
                 </div>
                 <div class="modal-actions">
-                    <button type="button" class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
-                    <button type="submit" class="btn-primary">Guardar</button>
+                    <button type="button" class="btn-secondary" onclick="cerrarModal()"><?= t('crud.btn_cancelar') ?></button>
+                    <button type="submit" class="btn-primary"><?= t('crud.btn_guardar') ?></button>
                 </div>
             </form>
         </div>
@@ -272,15 +275,15 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
     <div class="modal-overlay" id="modalDelete" style="display:none" onclick="onOverlayClick(event,'modalDelete')">
         <div class="modal modal-sm">
             <div class="modal-header">
-                <h3>Dar de baja</h3>
+                <h3><?= t('contenedores.modal_delete_title') ?></h3>
                 <button class="modal-close" onclick="cerrarModalDelete()">✕</button>
             </div>
             <p class="delete-msg">
-                ¿Confirmás dar de baja el contenedor <strong id="deleteNombre"></strong>?
+                <?= t('contenedores.delete_confirm_before') ?> <strong id="deleteNombre"></strong><?= t('contenedores.delete_confirm_after') ?>
             </p>
             <div class="modal-actions">
-                <button class="btn-secondary" onclick="cerrarModalDelete()">Cancelar</button>
-                <button class="btn-danger" onclick="confirmarDelete()">Dar de Baja</button>
+                <button class="btn-secondary" onclick="cerrarModalDelete()"><?= t('crud.btn_cancelar') ?></button>
+                <button class="btn-danger" onclick="confirmarDelete()"><?= t('camiones.card_baja_btn') ?></button>
             </div>
         </div>
     </div>
@@ -294,22 +297,71 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                     <img src="logoRecolix.png" alt="Recolix" class="footer-logo-img">
                     <span class="footer-logo-name">Recolix</span>
                 </div>
-                <p>Plataforma de gestión de residuos urbanos para Montevideo.</p>
+                <p><?= t('common.footer_desc') ?></p>
             </div>
             <div class="footer-col">
-                <h3>Navegación</h3>
+                <h3><?= t('common.footer_navegacion') ?></h3>
                 <ul>
-                    <li><a href="../../LandingPage/index_LandingPage.html">Página principal</a></li>
-                    <li><a href="../../LandingPage/mapa.html">Mapa público</a></li>
+                    <li><a href="../../LandingPage/index_LandingPage.html"><?= t('backoffice.footer_pagina_principal') ?></a></li>
+                    <li><a href="../../LandingPage/mapa.html"><?= t('backoffice.footer_mapa_publico') ?></a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-hr"></div>
-        <p class="footer-copy">&copy; 2026 Recolix. Todos los derechos reservados.</p>
+        <p class="footer-copy"><?= t('backoffice.footer_copyright') ?></p>
     </footer>
 
     <script>
         const API_BASE = '/recolix/API_Gestion';
+        const I18N = <?= json_encode(t_array([
+            'msgIngresaId' => 'crud.msg_ingresa_id',
+            'msgErrorConectar' => 'crud.msg_error_conectar',
+            'msgSeleccionaFiltro' => 'crud.msg_selecciona_filtro',
+            'msgSeleccionaValorFiltro' => 'crud.msg_selecciona_valor_filtro',
+            'msgSeleccionaCampo' => 'crud.msg_selecciona_campo',
+            'msgIngresaValor' => 'crud.msg_ingresa_valor',
+            'msgErrorGuardar' => 'crud.msg_error_guardar',
+            'msgErrorModificar' => 'crud.msg_error_modificar',
+            'resultadoSingular' => 'crud.resultado_singular',
+            'resultadoPlural' => 'crud.resultado_plural',
+            'filtroPrefijo' => 'crud.filtro_prefijo',
+            'thId' => 'crud.th_id',
+            'thAcciones' => 'crud.th_acciones',
+            'thCalle' => 'contenedores.th_calle',
+            'thNumpuerta' => 'contenedores.th_numpuerta',
+            'thCapacidad' => 'contenedores.th_capacidad',
+            'thTiporesiduo' => 'contenedores.th_tiporesiduo',
+            'thCircuito' => 'contenedores.th_circuito',
+            'thEstado' => 'contenedores.th_estado',
+            'modalAddTitle' => 'contenedores.modal_add_title',
+            'modalEditTitle' => 'contenedores.modal_edit_title',
+            'filtroOptCritico' => 'contenedores.filtro_opt_critico',
+            'filtroOptMunicipio' => 'contenedores.filtro_opt_municipio',
+            'filtroOptTiporesiduo' => 'contenedores.filtro_opt_tiporesiduo',
+            'filtroOptEstado' => 'contenedores.filtro_opt_estado',
+            'filtroPhCalle' => 'contenedores.filtro_ph_calle',
+            'filtroPhNumcalle' => 'contenedores.filtro_ph_numcalle',
+            'filtroPhCapacidad' => 'contenedores.filtro_ph_capacidad',
+            'phIdTiporesiduo' => 'contenedores.ph_id_tiporesiduo',
+            'phIdCircuito' => 'contenedores.ph_id_circuito',
+            'phNuevoValor' => 'contenedores.ph_nuevo_valor',
+            'msgContenedorNoEncontrado' => 'contenedores.msg_contenedor_no_encontrado',
+            'msgErrorActualizarEstado' => 'contenedores.msg_error_actualizar_estado',
+            'msgEstadoActualizado' => 'contenedores.msg_estado_actualizado',
+            'msgContenedorDadoBaja' => 'contenedores.msg_contenedor_dado_baja',
+            'msgErrorDarBaja' => 'contenedores.msg_error_dar_baja',
+            'tableTitleTodos' => 'contenedores.table_title_todos',
+            'tableTitleCriticos' => 'contenedores.table_title_criticos',
+            'tableTitleContenedorId' => 'contenedores.table_title_contenedor_id',
+            'optFuncional' => 'contenedores.opt_funcional',
+            'optRoto' => 'contenedores.opt_roto',
+            'optDesbordado' => 'contenedores.opt_desbordado',
+            'optInactivo' => 'contenedores.opt_inactivo',
+            'optEnDeposito' => 'contenedores.opt_en_deposito',
+            'seleccionarCampoPh' => 'crud.seleccionar_campo_placeholder',
+            'crudTitleEditar' => 'crud.title_editar',
+            'modalDeleteTitle' => 'contenedores.modal_delete_title',
+        ])) ?>;
         let contenedorIdParaEliminar = null;
         let toastTimeout;
         let reglas = {};
@@ -418,12 +470,12 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 const json = await res.json();
                 if (json.status === 'success') {
                     renderTabla(json.data);
-                    setTableTitle('Todos los Contenedores');
+                    setTableTitle(I18N.tableTitleTodos);
                 } else {
                     mostrarToast(json.message, 'error');
                 }
             } catch {
-                mostrarToast('Error al conectar con la API', 'error');
+                mostrarToast(I18N.msgErrorConectar, 'error');
             } finally {
                 setLoading(false);
             }
@@ -438,12 +490,12 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 const json = await res.json();
                 if (json.status === 'success') {
                     renderTabla(json.data);
-                    setTableTitle('Contenedores Críticos');
+                    setTableTitle(I18N.tableTitleCriticos);
                 } else {
                     mostrarToast(json.message, 'error');
                 }
             } catch {
-                mostrarToast('Error al conectar con la API', 'error');
+                mostrarToast(I18N.msgErrorConectar, 'error');
             } finally {
                 setLoading(false);
             }
@@ -459,20 +511,20 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
 
         async function buscarPorId() {
             const id = document.getElementById('buscarId').value.trim();
-            if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
+            if (!id) { mostrarToast(I18N.msgIngresaId, 'warning'); return; }
             setLoading(true);
             try {
                 const res = await fetch(`${API_BASE}/contenedores/${id}`);
                 const json = await res.json();
                 if (json.status === 'success' && json.data) {
                     renderTabla([json.data]);
-                    setTableTitle(`Contenedor #${id}`);
+                    setTableTitle(`${I18N.tableTitleContenedorId}${id}`);
                 } else {
                     renderTabla([]);
-                    mostrarToast(json.message || 'Contenedor no encontrado', 'error');
+                    mostrarToast(json.message || I18N.msgContenedorNoEncontrado, 'error');
                 }
             } catch {
-                mostrarToast('Error al conectar con la API', 'error');
+                mostrarToast(I18N.msgErrorConectar, 'error');
             } finally {
                 setLoading(false);
             }
@@ -506,7 +558,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 select.innerHTML = '<option value="">— Seleccionar —</option>' +
                     ['funcional', 'roto', 'desbordado', 'inactivo', 'en_deposito']
                         .map(v => `<option value="${v}">${formatearEstado(v)}</option>`).join('') +
-                    '<option value="critico">Crítico (roto o desbordado)</option>';
+                    `<option value="critico">${I18N.filtroOptCritico}</option>`;
                 select.style.display = '';
             }
         }
@@ -515,10 +567,10 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             const tipo = document.getElementById('filtroTipo').value;
             const input = document.getElementById('filtroValor');
             const select = document.getElementById('filtroValorSelect');
-            if (!tipo) { mostrarToast('Seleccioná un filtro', 'warning'); return; }
+            if (!tipo) { mostrarToast(I18N.msgSeleccionaFiltro, 'warning'); return; }
 
             const valor = (select.style.display !== 'none' ? select.value : input.value).trim();
-            if (!valor) { mostrarToast('Seleccioná un valor para el filtro', 'warning'); return; }
+            if (!valor) { mostrarToast(I18N.msgSeleccionaValorFiltro, 'warning'); return; }
 
             setLoading(true);
             try {
@@ -530,16 +582,16 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 if (json.status === 'success') {
                     renderTabla(json.data);
                     const labels = {
-                        municipio: `Municipio: ${valor}`,
-                        tipoResiduo: `Tipo de Residuo: ${valor}`,
-                        estado: valor === 'critico' ? 'Crítico (roto o desbordado)' : `Estado: ${valor}`
+                        municipio: `${I18N.filtroOptMunicipio}: ${valor}`,
+                        tipoResiduo: `${I18N.filtroOptTiporesiduo}: ${valor}`,
+                        estado: valor === 'critico' ? I18N.filtroOptCritico : `${I18N.filtroOptEstado}: ${valor}`
                     };
-                    setTableTitle(`Filtro — ${labels[tipo] || tipo}`);
+                    setTableTitle(`${I18N.filtroPrefijo} ${labels[tipo] || tipo}`);
                 } else {
                     mostrarToast(json.message, 'error');
                 }
             } catch {
-                mostrarToast('Error al conectar con la API', 'error');
+                mostrarToast(I18N.msgErrorConectar, 'error');
             } finally {
                 setLoading(false);
             }
@@ -558,7 +610,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
         }
 
         function abrirModalAgregar() {
-            document.getElementById('modalTitle').textContent = 'Agregar Contenedor';
+            document.getElementById('modalTitle').textContent = I18N.modalAddTitle;
             document.getElementById('contenedorId').value = '';
             document.getElementById('contenedorForm').reset();
             poblarSelectTipoResiduo();
@@ -568,7 +620,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             document.getElementById('modalForm').style.display = 'flex';
         }
         function abrirModalEditar(contenedor) {
-            document.getElementById('modalTitle').textContent = 'Editar Contenedor';
+            document.getElementById('modalTitle').textContent = I18N.modalEditTitle;
             document.getElementById('contenedorId').value = contenedor.id_contenedor;
             document.getElementById('calle').value = contenedor.calle;
             document.getElementById('numCalle').value = contenedor.num_calle;
@@ -630,7 +682,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                         return;
                     }
                 } catch {
-                    mostrarToast('Error al actualizar el estado', 'error');
+                    mostrarToast(I18N.msgErrorActualizarEstado, 'error');
                     return;
                 }
             }
@@ -678,7 +730,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                     mostrarToast(json.message, 'error');
                 }
             } catch {
-                mostrarToast('Error al guardar', 'error');
+                mostrarToast(I18N.msgErrorGuardar, 'error');
             }
         }
 
@@ -699,27 +751,27 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 select.style.display = '';
             } else {
                 const placeholders = {
-                    calle: 'ej: Av. 18 de Julio',
-                    numCalle: 'ej: 1234',
-                    capacidad: 'ej: 1100',
-                    idTipo: 'ID del tipo de residuo',
-                    idCircuito: 'ID del circuito'
+                    calle: I18N.filtroPhCalle,
+                    numCalle: I18N.filtroPhNumcalle,
+                    capacidad: I18N.filtroPhCapacidad,
+                    idTipo: I18N.phIdTiporesiduo,
+                    idCircuito: I18N.phIdCircuito
                 };
-                input.placeholder = placeholders[campo] || 'Nuevo valor...';
+                input.placeholder = placeholders[campo] || I18N.phNuevoValor;
                 input.style.display = '';
             }
         }
 
         async function modificarContenedor() {
             const id = document.getElementById('modificarId').value.trim();
-            if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
+            if (!id) { mostrarToast(I18N.msgIngresaId, 'warning'); return; }
             const campo = document.getElementById('modificarCampo').value;
-            if (!campo) { mostrarToast('Seleccioná un campo a modificar', 'warning'); return; }
+            if (!campo) { mostrarToast(I18N.msgSeleccionaCampo, 'warning'); return; }
 
             const input = document.getElementById('modificarValor');
             const select = document.getElementById('modificarValorSelect');
             const valor = (select.style.display !== 'none' ? select : input).value.trim();
-            if (!valor) { mostrarToast('Ingresá el nuevo valor', 'warning'); return; }
+            if (!valor) { mostrarToast(I18N.msgIngresaValor, 'warning'); return; }
 
             if (campo === 'estado') {
                 setLoading(true);
@@ -731,14 +783,14 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                     });
                     const json = await res.json();
                     if (json.status === 'success') {
-                        mostrarToast('Estado actualizado', 'success');
+                        mostrarToast(I18N.msgEstadoActualizado, 'success');
                         ocultarControles();
                         refrescarListado();
                     } else {
                         mostrarToast(json.message, 'error');
                     }
                 } catch {
-                    mostrarToast('Error al modificar', 'error');
+                    mostrarToast(I18N.msgErrorModificar, 'error');
                 } finally {
                     setLoading(false);
                 }
@@ -750,7 +802,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 const res = await fetch(`${API_BASE}/contenedores/${id}`);
                 const json = await res.json();
                 if (json.status !== 'success' || !json.data) {
-                    mostrarToast(json.message || 'Contenedor no encontrado', 'error');
+                    mostrarToast(json.message || I18N.msgContenedorNoEncontrado, 'error');
                     return;
                 }
                 const c = json.data;
@@ -787,7 +839,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                     mostrarToast(putJson.message, 'error');
                 }
             } catch {
-                mostrarToast('Error al modificar', 'error');
+                mostrarToast(I18N.msgErrorModificar, 'error');
             } finally {
                 setLoading(false);
             }
@@ -795,7 +847,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
 
         async function darDeBajaContenedor() {
             const id = document.getElementById('deleteId').value.trim();
-            if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
+            if (!id) { mostrarToast(I18N.msgIngresaId, 'warning'); return; }
             setLoading(true);
             try {
                 const res = await fetch(`${API_BASE}/contenedores/${id}`);
@@ -804,10 +856,10 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                     confirmarBorrar(json.data.id_contenedor, `${json.data.calle} ${json.data.num_calle}`);
                     ocultarControles();
                 } else {
-                    mostrarToast(json.message || 'Contenedor no encontrado', 'error');
+                    mostrarToast(json.message || I18N.msgContenedorNoEncontrado, 'error');
                 }
             } catch {
-                mostrarToast('Error al conectar con la API', 'error');
+                mostrarToast(I18N.msgErrorConectar, 'error');
             } finally {
                 setLoading(false);
             }
@@ -824,14 +876,14 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 const res = await fetch(`${API_BASE}/contenedores/${contenedorIdParaEliminar}`, { method: 'DELETE' });
                 const json = await res.json();
                 if (json.status === 'success') {
-                    mostrarToast('Contenedor dado de baja correctamente', 'success');
+                    mostrarToast(I18N.msgContenedorDadoBaja, 'success');
                     cerrarModalDelete();
                     refrescarListado();
                 } else {
                     mostrarToast(json.message, 'error');
                 }
             } catch {
-                mostrarToast('Error al dar de baja', 'error');
+                mostrarToast(I18N.msgErrorDarBaja, 'error');
             }
         }
 
@@ -856,29 +908,35 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             }
 
             noRes.style.display = 'none';
-            count.textContent = `${contenedoresActuales.length} resultado${contenedoresActuales.length !== 1 ? 's' : ''}`;
+            count.textContent = `${contenedoresActuales.length} ${contenedoresActuales.length !== 1 ? I18N.resultadoPlural : I18N.resultadoSingular}`;
 
             contenedoresActuales.forEach(c => {
                 const tipo = fuenteTipos().find(t => (t.id_tipo ?? t.id) === parseInt(c.id_tipo));
                 const tipoNombre = tipo ? `${tipo.descripcion} (${tipo.color})` : c.id_tipo;
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-    <td class="td-id" data-label="ID">${escapeHtml(c.id_contenedor)}</td>
-    <td data-label="Calle"><strong>${escapeHtml(c.calle)}</strong></td>
-    <td data-label="Nº Puerta">${escapeHtml(c.num_calle)}</td>
-    <td data-label="Capacidad (L)">${Number(c.capacidad).toLocaleString()} L</td>
-    <td data-label="Tipo Residuo">${escapeHtml(tipoNombre)}</td>
-    <td data-label="Circuito">${escapeHtml(c.id_circuito)}</td>
-    <td data-label="Estado"><span class="badge badge-${badgeClass(c.estado)}">${escapeHtml(formatearEstado(c.estado))}</span></td>
-    <td class="td-actions" data-label="Acciones">
-        <button class="btn-action" data-action="editar" data-id="${escapeHtml(c.id_contenedor)}" title="Editar">✏️</button>
-        <button class="btn-action" data-action="baja" data-id="${escapeHtml(c.id_contenedor)}" title="Dar de baja">🗑️</button>
+    <td class="td-id" data-label="${I18N.thId}">${escapeHtml(c.id_contenedor)}</td>
+    <td data-label="${I18N.thCalle}"><strong>${escapeHtml(c.calle)}</strong></td>
+    <td data-label="${I18N.thNumpuerta}">${escapeHtml(c.num_calle)}</td>
+    <td data-label="${I18N.thCapacidad}">${Number(c.capacidad).toLocaleString()} L</td>
+    <td data-label="${I18N.thTiporesiduo}">${escapeHtml(tipoNombre)}</td>
+    <td data-label="${I18N.thCircuito}">${escapeHtml(c.id_circuito)}</td>
+    <td data-label="${I18N.thEstado}"><span class="badge badge-${badgeClass(c.estado)}">${escapeHtml(formatearEstado(c.estado))}</span></td>
+    <td class="td-actions" data-label="${I18N.thAcciones}">
+        <button class="btn-action" data-action="editar" data-id="${escapeHtml(c.id_contenedor)}" title="${I18N.crudTitleEditar}">✏️</button>
+        <button class="btn-action" data-action="baja" data-id="${escapeHtml(c.id_contenedor)}" title="${I18N.modalDeleteTitle}">🗑️</button>
     </td>
 `;
                 tbody.appendChild(tr);
             });
         }
+        const VALORES_ESTADO_TRADUCIDOS = {
+            funcional: 'optFuncional', roto: 'optRoto', desbordado: 'optDesbordado',
+            inactivo: 'optInactivo', en_deposito: 'optEnDeposito'
+        };
         function formatearEstado(estado) {
+            const clave = VALORES_ESTADO_TRADUCIDOS[estado];
+            if (clave) return I18N[clave];
             const texto = estado.replace(/_/g, ' ');
             return texto.charAt(0).toUpperCase() + texto.slice(1);
         }

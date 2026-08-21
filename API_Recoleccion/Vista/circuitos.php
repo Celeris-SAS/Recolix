@@ -1,10 +1,14 @@
-<?php require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php'; ?>
+<?php
+require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
+require_once __DIR__ . '/../../i18n/i18n.php';
+?>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="<?= htmlspecialchars($RECOLIX_IDIOMA) ?>">
 <head>
     <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Circuitos — Recolix</title>
+    <title><?= t('circuitos.title') ?></title>
     <link rel="stylesheet" href="styleRecoleccion.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css">
@@ -40,75 +44,76 @@
 <header class="navbar">
     <div class="nav-inner">
         <div class="nav-left">
-            <div class="brand">
+            <a href="../../Backoffice/indexBackoffice.php" class="brand">
                 <img src="logoRecolix.png" alt="Recolix" class="brand-logo">
                 <span class="brand-name">Recolix</span>
-            </div>
+            </a>
             <nav class="nav-links">
-                <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
-                <a href="camiones.php">Camiones</a>
-                <a href="#" class="nav-active">Circuitos</a>
-                <a href="rutas.php">Rutas</a>
-                <a href="#">Cuadrillas</a>
-                <a href="../../API_Gestion/Vista/contenedores.php">Contenedores</a>
-                <a href="#">Centros de Acopio</a>
-                <a href="../../Backoffice/mapa.php">Mapa</a>
-                <a href="#">Reportes</a>
-                <a href="#">Incidencias</a>
-                <a href="../../API_Usuarios/Vista/usuarios.php">Usuarios</a>
+                <a href="../../Backoffice/indexBackoffice.php"><?= t('backoffice.nav_inicio') ?></a>
+                <a href="camiones.php"><?= t('backoffice.nav_camiones') ?></a>
+                <a href="#" class="nav-active"><?= t('backoffice.nav_circuitos') ?></a>
+                <a href="rutas.php"><?= t('backoffice.nav_rutas') ?></a>
+                <a href="../../API_Usuarios/Vista/cuadrillas.php"><?= t('backoffice.nav_cuadrillas') ?></a>
+                <a href="../../API_Gestion/Vista/contenedores.php"><?= t('backoffice.nav_contenedores') ?></a>
+                <a href="../../API_Gestion/Vista/centrosAcopio.php"><?= t('backoffice.nav_centros_acopio') ?></a>
+                <a href="../../Backoffice/mapa.php"><?= t('backoffice.nav_mapa') ?></a>
+                <a href="#"><?= t('backoffice.nav_reportes') ?></a>
+                <a href="#"><?= t('backoffice.nav_incidencias') ?></a>
+                <a href="../../API_Usuarios/Vista/usuarios.php"><?= t('backoffice.nav_usuarios') ?></a>
             </nav>
         </div>
         <div class="nav-right">
-            <a href="/recolix/API_Usuarios/perfil.php" class="btn-user" title="Perfil de usuario">
+            <?php include __DIR__ . '/../../i18n/switcher.php'; ?>
+            <a href="/recolix/API_Usuarios/perfil.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
                 <img src="img/user.svg" alt="Usuario" class="nav-user-icon">
             </a>
-            <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menú">
+            <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="<?= htmlspecialchars(t('backoffice.nav_menu')) ?>">
                 <span></span><span></span><span></span>
             </button>
         </div>
     </div>
     <nav class="nav-mobile" id="navMobile">
-        <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
-        <a href="camiones.php">Camiones</a>
-        <a href="#" class="nav-active">Circuitos</a>
-        <a href="rutas.php">Rutas</a>
-        <a href="#">Cuadrillas</a>
-        <a href="../../API_Gestion/Vista/contenedores.php">Contenedores</a>
-        <a href="#">Centros de Acopio</a>
-        <a href="../../Backoffice/mapa.php">Mapa</a>
-        <a href="#">Reportes</a>
-        <a href="#">Incidencias</a>
-        <a href="../../API_Usuarios/Vista/usuarios.php">Usuarios</a>
+        <a href="../../Backoffice/indexBackoffice.php"><?= t('backoffice.nav_inicio') ?></a>
+        <a href="camiones.php"><?= t('backoffice.nav_camiones') ?></a>
+        <a href="#" class="nav-active"><?= t('backoffice.nav_circuitos') ?></a>
+        <a href="rutas.php"><?= t('backoffice.nav_rutas') ?></a>
+        <a href="../../API_Usuarios/Vista/cuadrillas.php"><?= t('backoffice.nav_cuadrillas') ?></a>
+        <a href="../../API_Gestion/Vista/contenedores.php"><?= t('backoffice.nav_contenedores') ?></a>
+        <a href="../../API_Gestion/Vista/centrosAcopio.php"><?= t('backoffice.nav_centros_acopio') ?></a>
+        <a href="../../Backoffice/mapa.php"><?= t('backoffice.nav_mapa') ?></a>
+        <a href="#"><?= t('backoffice.nav_reportes') ?></a>
+        <a href="#"><?= t('backoffice.nav_incidencias') ?></a>
+        <a href="../../API_Usuarios/Vista/usuarios.php"><?= t('backoffice.nav_usuarios') ?></a>
     </nav>
     <div class="nav-hr"></div>
 </header>
 
 <section class="hero">
-    <h1 class="hero-title">Circuitos</h1>
-    <p class="hero-sub">Gestioná los circuitos de recolección dentro de cada municipio.</p>
+    <h1 class="hero-title"><?= t('circuitos.hero_title') ?></h1>
+    <p class="hero-sub"><?= t('circuitos.hero_sub') ?></p>
 </section>
 
 <section class="mapa-circuitos-section" id="mapaCircuitosSection">
     <div class="table-header">
-        <h2 class="table-title">Mapa de circuitos</h2>
+        <h2 class="table-title"><?= t('circuitos.mapa_titulo') ?></h2>
     </div>
-    <p class="mapa-hint">Seleccioná un circuito en el mapa o en la tabla (🗺️) para ver sus datos y generar su ruta.</p>
+    <p class="mapa-hint"><?= t('circuitos.mapa_hint') ?></p>
     <div id="mapaCircuitos" class="mapa-circuitos-box"></div>
     <aside class="mapa-panel" id="mapaPanel" style="display:none">
         <h3 id="mapaPanelTitulo"></h3>
         <div class="mapa-modal-actions">
-            <button type="button" class="btn-secondary" onclick="cargarContenedoresEnMapa()">Cargar contenedores</button>
+            <button type="button" class="btn-secondary" onclick="cargarContenedoresEnMapa()"><?= t('circuitos.btn_cargar_contenedores') ?></button>
         </div>
         <div class="mapa-ruta-form">
             <div class="form-group">
-                <label for="rutaNombre">Nombre de la ruta</label>
-                <input type="text" id="rutaNombre" class="form-input" placeholder="Ruta óptima" maxlength="100">
+                <label for="rutaNombre"><?= t('circuitos.field_ruta_nombre') ?></label>
+                <input type="text" id="rutaNombre" class="form-input" placeholder="<?= htmlspecialchars(t('circuitos.field_ruta_nombre_ph')) ?>" maxlength="100">
             </div>
             <div class="form-group">
-                <label for="rutaActividad">Actividad</label>
-                <input type="text" id="rutaActividad" class="form-input" placeholder="Recolección domiciliaria" maxlength="60">
+                <label for="rutaActividad"><?= t('circuitos.field_ruta_actividad') ?></label>
+                <input type="text" id="rutaActividad" class="form-input" placeholder="<?= htmlspecialchars(t('circuitos.field_ruta_actividad_ph')) ?>" maxlength="60">
             </div>
-            <button type="button" class="btn-primary" onclick="generarRutaOptima()">Generar ruta óptima</button>
+            <button type="button" class="btn-primary" onclick="generarRutaOptima()"><?= t('circuitos.btn_generar_ruta_optima') ?></button>
         </div>
         <div id="mapaResultado" class="mapa-resultado"></div>
     </aside>
@@ -120,54 +125,54 @@
         <div class="card-operar" onclick="abrirModalAgregar()">
             <div class="card-content">
                 <div class="card-icon"><img src="img/plus.svg" alt="" class="card-svg-icon"></div>
-                <h3>Agregar Circuito</h3>
-                <p>Registrar un nuevo circuito</p>
-                <button class="card-btn">Agregar</button>
+                <h3><?= t('circuitos.card_agregar_titulo') ?></h3>
+                <p><?= t('circuitos.card_agregar_desc') ?></p>
+                <button class="card-btn"><?= t('crud.btn_agregar') ?></button>
             </div>
         </div>
 
         <div class="card-operar" onclick="toggleFiltros()">
             <div class="card-content">
                 <div class="card-icon"><img src="img/loupe.svg" alt="" class="card-svg-icon"></div>
-                <h3>Filtrar</h3>
-                <p>Buscar por municipio, turno...</p>
-                <button class="card-btn">Filtrar</button>
+                <h3><?= t('crud.btn_filtrar') ?></h3>
+                <p><?= t('circuitos.card_filtrar_desc') ?></p>
+                <button class="card-btn"><?= t('crud.btn_filtrar') ?></button>
             </div>
         </div>
 
         <div class="card-operar" onclick="toggleBusquedaId()">
             <div class="card-content">
                 <div class="card-icon"><img src="img/question.svg" alt="" class="card-svg-icon"></div>
-                <h3>Buscar por ID</h3>
-                <p>Obtener un circuito específico</p>
-                <button class="card-btn">Buscar</button>
+                <h3><?= t('camiones.card_buscarid_titulo') ?></h3>
+                <p><?= t('circuitos.card_buscarid_desc') ?></p>
+                <button class="card-btn"><?= t('crud.btn_buscar') ?></button>
             </div>
         </div>
 
         <div class="card-operar" onclick="toggleModificar()">
             <div class="card-content">
                 <div class="card-icon"><img src="img/refresh.svg" alt="" class="card-svg-icon"></div>
-                <h3>Modificar Circuito</h3>
-                <p>Editar datos de un circuito existente</p>
-                <button class="card-btn">Modificar</button>
+                <h3><?= t('circuitos.card_modificar_titulo') ?></h3>
+                <p><?= t('circuitos.card_modificar_desc') ?></p>
+                <button class="card-btn"><?= t('crud.btn_modificar') ?></button>
             </div>
         </div>
 
         <div class="card-operar" onclick="toggleDarDeBaja()">
             <div class="card-content">
                 <div class="card-icon"><img src="img/minus.svg" alt="" class="card-svg-icon"></div>
-                <h3>Eliminar Circuito</h3>
-                <p>Quitar un circuito del registro</p>
-                <button class="card-btn">Eliminar</button>
+                <h3><?= t('circuitos.card_eliminar_titulo') ?></h3>
+                <p><?= t('circuitos.card_eliminar_desc') ?></p>
+                <button class="card-btn"><?= t('crud.btn_eliminar') ?></button>
             </div>
         </div>
 
         <div class="card-operar" onclick="toggleGenerarRutas()">
             <div class="card-content">
                 <div class="card-icon"><img src="../../Backoffice/img/ruta.svg" alt="" class="card-svg-icon"></div>
-                <h3>Generar Rutas</h3>
-                <p>Filtrar circuitos por día y frecuencia, y generar sus rutas</p>
-                <button class="card-btn">Generar</button>
+                <h3><?= t('circuitos.card_genrutas_titulo') ?></h3>
+                <p><?= t('circuitos.card_genrutas_desc') ?></p>
+                <button class="card-btn"><?= t('circuitos.card_genrutas_btn') ?></button>
             </div>
         </div>
 
@@ -177,86 +182,86 @@
 <section class="control-bar" id="filterBar" style="display:none">
     <div class="control-inner">
         <select id="filtroTipo" class="ctrl-select" onchange="actualizarFiltroValor()">
-            <option value="">— Filtrar por —</option>
-            <option value="municipioId">Municipio</option>
-            <option value="turno">Turno</option>
-            <option value="actividad">Actividad</option>
-            <option value="frecuencia">Frecuencia</option>
-            <option value="dia">Día</option>
+            <option value=""><?= t('crud.filtrar_por') ?></option>
+            <option value="municipioId"><?= t('circuitos.filtro_opt_municipio') ?></option>
+            <option value="turno"><?= t('circuitos.filtro_opt_turno') ?></option>
+            <option value="actividad"><?= t('circuitos.filtro_opt_actividad') ?></option>
+            <option value="frecuencia"><?= t('circuitos.filtro_opt_frecuencia') ?></option>
+            <option value="dia"><?= t('circuitos.filtro_opt_dia') ?></option>
         </select>
-        <input type="text" id="filtroValor" class="ctrl-input" placeholder="Valor del filtro..." style="display:none">
+        <input type="text" id="filtroValor" class="ctrl-input" placeholder="<?= htmlspecialchars(t('crud.valor_filtro_placeholder')) ?>" style="display:none">
         <select id="filtroValorSelect" class="ctrl-select" style="display:none"></select>
-        <button class="btn-primary" onclick="aplicarFiltro()">Aplicar</button>
-        <button class="btn-secondary" onclick="listarCircuitos()">Limpiar</button>
+        <button class="btn-primary" onclick="aplicarFiltro()"><?= t('crud.btn_aplicar') ?></button>
+        <button class="btn-secondary" onclick="listarCircuitos()"><?= t('crud.btn_limpiar') ?></button>
     </div>
 </section>
 
 <section class="control-bar" id="searchBar" style="display:none">
     <div class="control-inner">
         <input type="number" id="buscarId" class="ctrl-input"
-               placeholder="ID del circuito..." min="1" style="max-width:200px">
-        <button class="btn-primary" onclick="buscarPorId()">Buscar</button>
-        <button class="btn-secondary" onclick="listarCircuitos()">Ver Todos</button>
+               placeholder="<?= htmlspecialchars(t('circuitos.searchid_ph')) ?>" min="1" style="max-width:200px">
+        <button class="btn-primary" onclick="buscarPorId()"><?= t('crud.btn_buscar') ?></button>
+        <button class="btn-secondary" onclick="listarCircuitos()"><?= t('crud.btn_vertodos') ?></button>
     </div>
 </section>
 
 <section class="control-bar" id="modificarBar" style="display:none">
     <div class="control-inner">
         <input type="number" id="modificarId" class="ctrl-input"
-               placeholder="ID del circuito..." min="1" style="max-width:120px">
+               placeholder="<?= htmlspecialchars(t('circuitos.modificarid_ph')) ?>" min="1" style="max-width:120px">
         <select id="modificarCampo" class="ctrl-select" onchange="actualizarPlaceholderModificar()">
-            <option value="">— Campo —</option>
-            <option value="municipioId">Municipio</option>
-            <option value="nombre">Nombre</option>
-            <option value="codigo">Código</option>
-            <option value="actividad">Actividad</option>
-            <option value="turno">Turno</option>
-            <option value="frecuencia">Frecuencia</option>
+            <option value=""><?= t('crud.campo') ?></option>
+            <option value="municipioId"><?= t('circuitos.campo_opt_municipio') ?></option>
+            <option value="nombre"><?= t('circuitos.campo_opt_nombre') ?></option>
+            <option value="codigo"><?= t('circuitos.campo_opt_codigo') ?></option>
+            <option value="actividad"><?= t('circuitos.campo_opt_actividad') ?></option>
+            <option value="turno"><?= t('circuitos.campo_opt_turno') ?></option>
+            <option value="frecuencia"><?= t('circuitos.campo_opt_frecuencia') ?></option>
         </select>
-        <input type="text" id="modificarValor" class="ctrl-input" style="display:none" placeholder="Seleccioná un campo...">
+        <input type="text" id="modificarValor" class="ctrl-input" style="display:none" placeholder="<?= htmlspecialchars(t('crud.seleccionar_campo_placeholder')) ?>">
         <select id="modificarValorSelect" class="ctrl-select" style="display:none"></select>
-        <button class="btn-primary" onclick="modificarCircuito()">Modificar</button>
-        <button class="btn-secondary" onclick="ocultarControles()">Cancelar</button>
+        <button class="btn-primary" onclick="modificarCircuito()"><?= t('crud.btn_modificar') ?></button>
+        <button class="btn-secondary" onclick="ocultarControles()"><?= t('crud.btn_cancelar') ?></button>
     </div>
 </section>
 
 <section class="control-bar" id="deleteBar" style="display:none">
     <div class="control-inner">
         <input type="number" id="deleteId" class="ctrl-input"
-               placeholder="ID del circuito a eliminar..." min="1" style="max-width:240px">
-        <button class="btn-danger" onclick="darDeBajaCircuito()">Eliminar</button>
-        <button class="btn-secondary" onclick="ocultarControles()">Cancelar</button>
+               placeholder="<?= htmlspecialchars(t('circuitos.deleteid_ph')) ?>" min="1" style="max-width:240px">
+        <button class="btn-danger" onclick="darDeBajaCircuito()"><?= t('crud.btn_eliminar') ?></button>
+        <button class="btn-secondary" onclick="ocultarControles()"><?= t('crud.btn_cancelar') ?></button>
     </div>
 </section>
 
 <section class="control-bar" id="generarRutasBar" style="display:none">
     <div class="control-inner">
         <select id="generarRutasDia" class="ctrl-select">
-            <option value="">— Día —</option>
-            <option value="domingo">domingo</option>
-            <option value="lunes">lunes</option>
-            <option value="martes">martes</option>
-            <option value="miércoles">miércoles</option>
-            <option value="jueves">jueves</option>
-            <option value="viernes">viernes</option>
-            <option value="sábado">sábado</option>
+            <option value=""><?= t('circuitos.genrutas_dia') ?></option>
+            <option value="domingo"><?= t('circuitos.dia_domingo') ?></option>
+            <option value="lunes"><?= t('circuitos.dia_lunes') ?></option>
+            <option value="martes"><?= t('circuitos.dia_martes') ?></option>
+            <option value="miércoles"><?= t('circuitos.dia_miercoles') ?></option>
+            <option value="jueves"><?= t('circuitos.dia_jueves') ?></option>
+            <option value="viernes"><?= t('circuitos.dia_viernes') ?></option>
+            <option value="sábado"><?= t('circuitos.dia_sabado') ?></option>
         </select>
         <select id="generarRutasTurno" class="ctrl-select">
-            <option value="">— Turno —</option>
-            <option value="mañana">mañana</option>
-            <option value="tarde">tarde</option>
-            <option value="noche">noche</option>
+            <option value=""><?= t('circuitos.genrutas_turno') ?></option>
+            <option value="mañana"><?= t('circuitos.turno_manana') ?></option>
+            <option value="tarde"><?= t('circuitos.turno_tarde') ?></option>
+            <option value="noche"><?= t('circuitos.turno_noche') ?></option>
         </select>
         <select id="generarRutasFrecuencia" class="ctrl-select">
-            <option value="">— Frecuencia —</option>
+            <option value=""><?= t('circuitos.genrutas_frecuencia') ?></option>
         </select>
-        <button class="btn-primary" onclick="buscarCircuitosParaRutas()">Buscar circuitos</button>
-        <button class="btn-secondary" onclick="ocultarControles()">Cancelar</button>
+        <button class="btn-primary" onclick="buscarCircuitosParaRutas()"><?= t('circuitos.btn_buscar_circuitos') ?></button>
+        <button class="btn-secondary" onclick="ocultarControles()"><?= t('crud.btn_cancelar') ?></button>
     </div>
     <div id="generarRutasResultado" class="generar-rutas-resultado" style="display:none">
         <div class="generar-rutas-resumen">
             <span id="generarRutasResumenTexto"></span>
-            <button type="button" class="btn-primary" id="btnGenerarRutasMasivo" onclick="generarRutasParaFiltrados()">Generar rutas para todos</button>
+            <button type="button" class="btn-primary" id="btnGenerarRutasMasivo" onclick="generarRutasParaFiltrados()"><?= t('circuitos.btn_generar_rutas_todos') ?></button>
         </div>
         <ul id="generarRutasLista" class="generar-rutas-lista"></ul>
         <div id="generarRutasLog" class="generar-rutas-log"></div>
@@ -265,30 +270,30 @@
 
 <section class="table-section">
     <div class="table-header">
-        <h2 class="table-title" id="tableTitle">Circuitos</h2>
+        <h2 class="table-title" id="tableTitle"><?= t('circuitos.hero_title') ?></h2>
         <span class="table-count" id="tableCount"></span>
     </div>
     <div class="table-wrapper">
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Municipio</th>
-                    <th>Nombre</th>
-                    <th>Código</th>
-                    <th>Actividad</th>
-                    <th>Turno</th>
-                    <th>Frecuencia</th>
-                    <th>Acciones</th>
+                    <th><?= t('crud.th_id') ?></th>
+                    <th><?= t('circuitos.th_municipio') ?></th>
+                    <th><?= t('circuitos.th_nombre') ?></th>
+                    <th><?= t('circuitos.th_codigo') ?></th>
+                    <th><?= t('circuitos.th_actividad') ?></th>
+                    <th><?= t('circuitos.th_turno') ?></th>
+                    <th><?= t('circuitos.th_frecuencia') ?></th>
+                    <th><?= t('crud.th_acciones') ?></th>
                 </tr>
             </thead>
             <tbody id="circuitosBody"></tbody>
         </table>
         <div id="noResultados" class="empty-state" style="display:none">
-            Sin resultados para mostrar.
+            <?= t('crud.empty_state') ?>
         </div>
         <div id="loadingState" class="loading-state">
-            Cargando...
+            <?= t('crud.loading_state') ?>
         </div>
     </div>
 </section>
@@ -297,61 +302,61 @@
      onclick="onOverlayClick(event,'modalForm')">
     <div class="modal">
         <div class="modal-header">
-            <h3 id="modalTitle">Agregar Circuito</h3>
+            <h3 id="modalTitle"><?= t('circuitos.modal_add_title') ?></h3>
             <button class="modal-close" onclick="cerrarModal()">✕</button>
         </div>
         <form id="circuitoForm" onsubmit="guardarCircuito(event)">
             <input type="hidden" id="circuitoId">
             <div class="form-row">
                 <div class="form-group">
-                    <label for="municipioId">Municipio</label>
+                    <label for="municipioId"><?= t('circuitos.field_municipio') ?></label>
                     <select id="municipioId" class="form-input" required>
-                        <option value="">— Seleccionar —</option>
+                        <option value=""><?= t('crud.seleccionar') ?></option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="nombre">Nombre</label>
+                    <label for="nombre"><?= t('circuitos.field_nombre') ?></label>
                     <input type="text" id="nombre" class="form-input"
-                           placeholder="Circuito Centro" maxlength="100" required>
+                           placeholder="<?= htmlspecialchars(t('circuitos.field_nombre_ph')) ?>" maxlength="100" required>
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group">
-                    <label for="codigo">Código</label>
+                    <label for="codigo"><?= t('circuitos.field_codigo') ?></label>
                     <input type="text" id="codigo" class="form-input"
-                           placeholder="CIR-01" maxlength="20" required>
+                           placeholder="<?= htmlspecialchars(t('circuitos.field_codigo_ph')) ?>" maxlength="20" required>
                 </div>
                 <div class="form-group">
-                    <label for="actividad">Actividad</label>
+                    <label for="actividad"><?= t('circuitos.field_actividad') ?></label>
                     <input type="text" id="actividad" class="form-input"
-                           placeholder="Recolección domiciliaria" maxlength="60" required>
+                           placeholder="<?= htmlspecialchars(t('circuitos.field_actividad_ph')) ?>" maxlength="60" required>
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group">
-                    <label for="turno">Turno</label>
+                    <label for="turno"><?= t('circuitos.field_turno') ?></label>
                     <select id="turno" class="form-input">
-                        <option value="mañana" selected>Mañana</option>
-                        <option value="tarde">Tarde</option>
-                        <option value="noche">Noche</option>
+                        <option value="mañana" selected><?= t('circuitos.opt_turno_manana') ?></option>
+                        <option value="tarde"><?= t('circuitos.opt_turno_tarde') ?></option>
+                        <option value="noche"><?= t('circuitos.opt_turno_noche') ?></option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="frecuencia">Frecuencia</label>
+                    <label for="frecuencia"><?= t('circuitos.field_frecuencia') ?></label>
                     <input type="text" id="frecuencia" class="form-input"
-                           placeholder="Lunes, Miércoles, Viernes" maxlength="40" required>
+                           placeholder="<?= htmlspecialchars(t('circuitos.field_frecuencia_ph')) ?>" maxlength="40" required>
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group" style="grid-column: 1 / -1;">
-                    <label>Área del circuito (opcional)</label>
+                    <label><?= t('circuitos.field_area_label') ?></label>
                     <div id="formMapa" class="mapa-box"></div>
-                    <p class="mapa-hint">Dibujá el polígono con la herramienta de la izquierda del mapa. Podés borrarlo y volver a dibujarlo.</p>
+                    <p class="mapa-hint"><?= t('circuitos.area_hint') ?></p>
                 </div>
             </div>
             <div class="modal-actions">
-                <button type="button" class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
-                <button type="submit" class="btn-primary">Guardar</button>
+                <button type="button" class="btn-secondary" onclick="cerrarModal()"><?= t('crud.btn_cancelar') ?></button>
+                <button type="submit" class="btn-primary"><?= t('crud.btn_guardar') ?></button>
             </div>
         </form>
     </div>
@@ -361,15 +366,15 @@
      onclick="onOverlayClick(event,'modalDelete')">
     <div class="modal modal-sm">
         <div class="modal-header">
-            <h3>Eliminar circuito</h3>
+            <h3><?= t('circuitos.modal_delete_title') ?></h3>
             <button class="modal-close" onclick="cerrarModalDelete()">✕</button>
         </div>
         <p class="delete-msg">
-            ¿Confirmás eliminar el circuito <strong id="deleteNombre"></strong>?
+            <?= t('circuitos.delete_confirm_before') ?> <strong id="deleteNombre"></strong><?= t('circuitos.delete_confirm_after') ?>
         </p>
         <div class="modal-actions">
-            <button class="btn-secondary" onclick="cerrarModalDelete()">Cancelar</button>
-            <button class="btn-danger" onclick="confirmarDelete()">Eliminar</button>
+            <button class="btn-secondary" onclick="cerrarModalDelete()"><?= t('crud.btn_cancelar') ?></button>
+            <button class="btn-danger" onclick="confirmarDelete()"><?= t('crud.btn_eliminar') ?></button>
         </div>
     </div>
 </div>
@@ -383,24 +388,105 @@
                 <img src="logoRecolix.png" alt="Recolix" class="footer-logo-img">
                 <span class="footer-logo-name">Recolix</span>
             </div>
-            <p>Plataforma de gestión de residuos urbanos para Montevideo.</p>
+            <p><?= t('common.footer_desc') ?></p>
         </div>
         <div class="footer-col">
-            <h3>Navegación</h3>
+            <h3><?= t('common.footer_navegacion') ?></h3>
             <ul>
-                <li><a href="../../LandingPage/index_LandingPage.html">Página principal</a></li>
-                <li><a href="../../LandingPage/mapa.html">Mapa público</a></li>
+                <li><a href="../../LandingPage/index_LandingPage.html"><?= t('backoffice.footer_pagina_principal') ?></a></li>
+                <li><a href="../../LandingPage/mapa.html"><?= t('backoffice.footer_mapa_publico') ?></a></li>
             </ul>
         </div>
     </div>
     <div class="footer-hr"></div>
-    <p class="footer-copy">&copy; 2026 Recolix. Todos los derechos reservados.</p>
+    <p class="footer-copy"><?= t('backoffice.footer_copyright') ?></p>
 </footer>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
 <script>
 const API_BASE = '/recolix/API_Recoleccion';
+const I18N = <?= json_encode(t_array([
+    'msgIngresaId' => 'crud.msg_ingresa_id',
+    'msgErrorConectar' => 'crud.msg_error_conectar',
+    'msgSeleccionaFiltro' => 'crud.msg_selecciona_filtro',
+    'msgIngresaValorFiltro' => 'crud.msg_ingresa_valor_filtro',
+    'msgSeleccionaCampo' => 'crud.msg_selecciona_campo',
+    'msgIngresaValor' => 'crud.msg_ingresa_valor',
+    'msgErrorGuardar' => 'crud.msg_error_guardar',
+    'msgErrorModificar' => 'crud.msg_error_modificar',
+    'msgErrorEliminar' => 'crud.msg_error_eliminar',
+    'resultadoSingular' => 'crud.resultado_singular',
+    'resultadoPlural' => 'crud.resultado_plural',
+    'filtroPrefijo' => 'crud.filtro_prefijo',
+    'titleEditar' => 'crud.title_editar',
+    'thId' => 'crud.th_id',
+    'thAcciones' => 'crud.th_acciones',
+    'btnEliminar' => 'crud.btn_eliminar',
+    'thMunicipio' => 'circuitos.th_municipio',
+    'thNombre' => 'circuitos.th_nombre',
+    'thCodigo' => 'circuitos.th_codigo',
+    'thActividad' => 'circuitos.th_actividad',
+    'thTurno' => 'circuitos.th_turno',
+    'thFrecuencia' => 'circuitos.th_frecuencia',
+    'modalAddTitle' => 'circuitos.modal_add_title',
+    'modalEditTitle' => 'circuitos.modal_edit_title',
+    'filtroPhActividad' => 'circuitos.filtro_ph_actividad',
+    'filtroPhFrecuencia' => 'circuitos.filtro_ph_frecuencia',
+    'seleccionarCampoPh' => 'crud.seleccionar_campo_placeholder',
+    'fieldNombrePh' => 'circuitos.field_nombre_ph',
+    'fieldCodigoPh' => 'circuitos.field_codigo_ph',
+    'fieldActividadPh' => 'circuitos.field_actividad_ph',
+    'fieldFrecuenciaPh' => 'circuitos.field_frecuencia_ph',
+    'turnoManana' => 'circuitos.opt_turno_manana',
+    'turnoTarde' => 'circuitos.opt_turno_tarde',
+    'turnoNoche' => 'circuitos.opt_turno_noche',
+    'msgCircuitoNoEncontrado' => 'circuitos.msg_circuito_no_encontrado',
+    'msgCircuitoEliminado' => 'circuitos.msg_circuito_eliminado',
+    'msgSeleccionarDiaTurnoFrec' => 'circuitos.msg_seleccionar_dia_turno_frec',
+    'msgErrorBuscarCircuitos' => 'circuitos.msg_error_buscar_circuitos',
+    'msgNoPudieronCargarContenedores' => 'circuitos.msg_no_pudieron_cargar_contenedores',
+    'msgErrorCargarContenedores' => 'circuitos.msg_error_cargar_contenedores',
+    'msgContenedoresCargados' => 'circuitos.msg_contenedores_cargados',
+    'msgCompletaNombreActividad' => 'circuitos.msg_completa_nombre_actividad',
+    'msgNoPudoGenerarRuta' => 'circuitos.msg_no_pudo_generar_ruta',
+    'msgRutaGeneradaResultado' => 'circuitos.msg_ruta_generada_resultado',
+    'msgRutaOptimaGenerada' => 'circuitos.msg_ruta_optima_generada',
+    'msgErrorGenerarRuta' => 'circuitos.msg_error_generar_ruta',
+    'sinFrecuencia' => 'circuitos.sin_frecuencia',
+    'generandoRutaPara' => 'circuitos.generando_ruta_para',
+    'errorDesconocido' => 'circuitos.error_desconocido',
+    'errorConectarApi' => 'circuitos.error_conectar_api',
+    'circuitoSingular' => 'circuitos.circuito_singular',
+    'circuitoPlural' => 'circuitos.circuito_plural',
+    'encontradoSingular' => 'circuitos.encontrado_singular',
+    'encontradoPlural' => 'circuitos.encontrado_plural',
+    'rutaSingular' => 'circuitos.ruta_singular',
+    'rutaPlural' => 'circuitos.ruta_plural',
+    'generadaSingular' => 'circuitos.generada_singular',
+    'generadaPlural' => 'circuitos.generada_plural',
+    'conErrorSufijo' => 'circuitos.con_error_sufijo',
+    'tituloPanelPrefijo' => 'circuitos.titulo_panel_prefijo',
+    'tituloPanelSinArea' => 'circuitos.titulo_panel_sin_area',
+    'popupContenedores' => 'circuitos.popup_contenedores',
+    'popupLlenado' => 'circuitos.popup_llenado',
+    'popupEstado' => 'circuitos.popup_estado',
+    'rutaPrefijo' => 'circuitos.ruta_prefijo',
+    'kmAprox' => 'circuitos.km_aprox',
+    'tableTitleTodos' => 'circuitos.table_title_todos',
+    'tableTitleCircuitoId' => 'circuitos.table_title_circuito_id',
+    'filtroValorPh' => 'crud.valor_filtro_placeholder',
+    'filtroOptDia' => 'circuitos.filtro_opt_dia',
+    'diaDomingo' => 'circuitos.dia_domingo',
+    'diaLunes' => 'circuitos.dia_lunes',
+    'diaMartes' => 'circuitos.dia_martes',
+    'diaMiercoles' => 'circuitos.dia_miercoles',
+    'diaJueves' => 'circuitos.dia_jueves',
+    'diaViernes' => 'circuitos.dia_viernes',
+    'diaSabado' => 'circuitos.dia_sabado',
+    'titleMapaRuta' => 'circuitos.title_mapa_ruta',
+    'fieldRutaNombrePh' => 'circuitos.field_ruta_nombre_ph',
+])) ?>;
 let circuitoIdParaEliminar = null;
 let toastTimeout;
 let reglas = {};
@@ -470,12 +556,12 @@ async function listarCircuitos() {
         const json = await res.json();
         if (json.status === 'success') {
             renderTabla(json.data);
-            setTableTitle('Todos los Circuitos');
+            setTableTitle(I18N.tableTitleTodos);
         } else {
             mostrarToast(json.message, 'error');
         }
     } catch {
-        mostrarToast('Error al conectar con la API', 'error');
+        mostrarToast(I18N.msgErrorConectar, 'error');
     } finally {
         setLoading(false);
     }
@@ -483,20 +569,20 @@ async function listarCircuitos() {
 
 async function buscarPorId() {
     const id = document.getElementById('buscarId').value.trim();
-    if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
+    if (!id) { mostrarToast(I18N.msgIngresaId, 'warning'); return; }
     setLoading(true);
     try {
         const res  = await fetch(`${API_BASE}/circuitos/${id}`);
         const json = await res.json();
         if (json.status === 'success' && json.data) {
             renderTabla([json.data]);
-            setTableTitle(`Circuito #${id}`);
+            setTableTitle(`${I18N.tableTitleCircuitoId}${id}`);
         } else {
             renderTabla([]);
-            mostrarToast(json.message || 'Circuito no encontrado', 'error');
+            mostrarToast(json.message || I18N.msgCircuitoNoEncontrado, 'error');
         }
     } catch {
-        mostrarToast('Error al conectar con la API', 'error');
+        mostrarToast(I18N.msgErrorConectar, 'error');
     } finally {
         setLoading(false);
     }
@@ -528,14 +614,14 @@ function actualizarFiltroValor() {
 
     if (listas[tipo]) {
         select.innerHTML = '<option value="">— Seleccionar —</option>' +
-            listas[tipo].map(v => `<option value="${v}">${formatearValor(v)}</option>`).join('');
+            listas[tipo].map(v => `<option value="${v}">${valorFormateado(v)}</option>`).join('');
         select.style.display = '';
     } else {
         const placeholders = {
-            actividad:  'ej: Recolección domiciliaria',
-            frecuencia: 'ej: Lunes, Miércoles, Viernes'
+            actividad:  I18N.filtroPhActividad,
+            frecuencia: I18N.filtroPhFrecuencia
         };
-        input.placeholder = placeholders[tipo] || 'Valor del filtro...';
+        input.placeholder = placeholders[tipo] || I18N.filtroValorPh;
         input.style.display = '';
     }
 }
@@ -544,11 +630,11 @@ async function aplicarFiltro() {
     const tipo   = document.getElementById('filtroTipo').value;
     const input  = document.getElementById('filtroValor');
     const select = document.getElementById('filtroValorSelect');
-    if (!tipo) { mostrarToast('Seleccioná un filtro', 'warning'); return; }
+    if (!tipo) { mostrarToast(I18N.msgSeleccionaFiltro, 'warning'); return; }
 
     const valor = (select.style.display !== 'none' ? select.value : input.value).trim();
     if (!valor) {
-        mostrarToast('Ingresá un valor para el filtro', 'warning');
+        mostrarToast(I18N.msgIngresaValorFiltro, 'warning');
         return;
     }
 
@@ -559,16 +645,16 @@ async function aplicarFiltro() {
         if (json.status === 'success') {
             renderTabla(json.data);
             const labels = {
-                municipioId: `Municipio: ${nombreMunicipio(valor)}`, turno: `Turno: ${formatearValor(valor)}`,
-                actividad: `Actividad: ${valor}`, frecuencia: `Frecuencia: ${valor}`,
-                dia: `Día: ${formatearValor(valor)}`
+                municipioId: `${I18N.thMunicipio}: ${nombreMunicipio(valor)}`, turno: `${I18N.thTurno}: ${valorFormateado(valor)}`,
+                actividad: `${I18N.thActividad}: ${valor}`, frecuencia: `${I18N.thFrecuencia}: ${valor}`,
+                dia: `${I18N.filtroOptDia}: ${valorFormateado(valor)}`
             };
-            setTableTitle(`Filtro — ${labels[tipo] || tipo}`);
+            setTableTitle(`${I18N.filtroPrefijo} ${labels[tipo] || tipo}`);
         } else {
             mostrarToast(json.message, 'error');
         }
     } catch {
-        mostrarToast('Error al conectar con la API', 'error');
+        mostrarToast(I18N.msgErrorConectar, 'error');
     } finally {
         setLoading(false);
     }
@@ -623,7 +709,7 @@ function obtenerPoligonoDelFormMap() {
 }
 
 function abrirModalAgregar() {
-    document.getElementById('modalTitle').textContent = 'Agregar Circuito';
+    document.getElementById('modalTitle').textContent = I18N.modalAddTitle;
     document.getElementById('circuitoId').value = '';
     document.getElementById('circuitoForm').reset();
     document.getElementById('modalForm').style.display = 'flex';
@@ -636,7 +722,7 @@ function abrirModalAgregar() {
 }
 
 function abrirModalEditar(circuito) {
-    document.getElementById('modalTitle').textContent = 'Editar Circuito';
+    document.getElementById('modalTitle').textContent = I18N.modalEditTitle;
     document.getElementById('circuitoId').value  = circuito.id_circuito;
     document.getElementById('municipioId').value = circuito.id_municipio;
     document.getElementById('nombre').value       = circuito.nombre;
@@ -722,7 +808,7 @@ async function guardarCircuito(e) {
             mostrarToast(json.message, 'error');
         }
     } catch {
-        mostrarToast('Error al guardar', 'error');
+        mostrarToast(I18N.msgErrorGuardar, 'error');
     }
 }
 
@@ -737,14 +823,14 @@ async function confirmarDelete() {
         const res  = await fetch(`${API_BASE}/circuitos/${circuitoIdParaEliminar}`, { method: 'DELETE' });
         const json = await res.json();
         if (json.status === 'success') {
-            mostrarToast('Circuito eliminado correctamente', 'success');
+            mostrarToast(I18N.msgCircuitoEliminado, 'success');
             cerrarModalDelete();
             listarCircuitos();
         } else {
             mostrarToast(json.message, 'error');
         }
     } catch {
-        mostrarToast('Error al eliminar', 'error');
+        mostrarToast(I18N.msgErrorEliminar, 'error');
     }
 }
 
@@ -772,20 +858,20 @@ function actualizarPlaceholderModificar() {
 
     if (listas[campo]) {
         select.innerHTML = listas[campo].map((v, i) =>
-            `<option value="${v}"${i === 0 ? ' selected' : ''}>${formatearValor(v)}</option>`
+            `<option value="${v}"${i === 0 ? ' selected' : ''}>${valorFormateado(v)}</option>`
         ).join('');
         select.style.display = '';
     } else {
         const placeholders = {
-            nombre:     'Circuito Centro',
-            codigo:     'CIR-01',
-            actividad:  'Recolección domiciliaria',
-            frecuencia: 'Lunes, Miércoles, Viernes'
+            nombre:     I18N.fieldNombrePh,
+            codigo:     I18N.fieldCodigoPh,
+            actividad:  I18N.fieldActividadPh,
+            frecuencia: I18N.fieldFrecuenciaPh
         };
         const maxlengths = {
             nombre: 100, codigo: 20, actividad: 60, frecuencia: 40
         };
-        input.placeholder = placeholders[campo] || 'Seleccioná un campo...';
+        input.placeholder = placeholders[campo] || I18N.seleccionarCampoPh;
         input.maxLength = maxlengths[campo] || '';
         input.style.display = '';
     }
@@ -793,14 +879,14 @@ function actualizarPlaceholderModificar() {
 
 async function modificarCircuito() {
     const id = document.getElementById('modificarId').value.trim();
-    if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
+    if (!id) { mostrarToast(I18N.msgIngresaId, 'warning'); return; }
     const campo = document.getElementById('modificarCampo').value;
-    if (!campo) { mostrarToast('Seleccioná un campo a modificar', 'warning'); return; }
+    if (!campo) { mostrarToast(I18N.msgSeleccionaCampo, 'warning'); return; }
 
     const input = document.getElementById('modificarValor');
     const select = document.getElementById('modificarValorSelect');
     const valor = (select.style.display !== 'none' ? select : input).value.trim();
-    if (!valor) { mostrarToast('Ingresá el nuevo valor', 'warning'); return; }
+    if (!valor) { mostrarToast(I18N.msgIngresaValor, 'warning'); return; }
 
     const regla = reglas[campo];
     if (regla) {
@@ -830,7 +916,7 @@ async function modificarCircuito() {
         const res  = await fetch(`${API_BASE}/circuitos/${id}`);
         const json = await res.json();
         if (json.status !== 'success' || !json.data) {
-            mostrarToast(json.message || 'Circuito no encontrado', 'error');
+            mostrarToast(json.message || I18N.msgCircuitoNoEncontrado, 'error');
             return;
         }
         const circuito = json.data;
@@ -867,7 +953,7 @@ async function modificarCircuito() {
             mostrarToast(putJson.message, 'error');
         }
     } catch {
-        mostrarToast('Error al modificar', 'error');
+        mostrarToast(I18N.msgErrorModificar, 'error');
     } finally {
         setLoading(false);
     }
@@ -875,7 +961,7 @@ async function modificarCircuito() {
 
 async function darDeBajaCircuito() {
     const id = document.getElementById('deleteId').value.trim();
-    if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
+    if (!id) { mostrarToast(I18N.msgIngresaId, 'warning'); return; }
     setLoading(true);
     try {
         const res  = await fetch(`${API_BASE}/circuitos/${id}`);
@@ -884,10 +970,10 @@ async function darDeBajaCircuito() {
             confirmarBorrar(json.data.id_circuito, json.data.nombre);
             ocultarControles();
         } else {
-            mostrarToast(json.message || 'Circuito no encontrado', 'error');
+            mostrarToast(json.message || I18N.msgCircuitoNoEncontrado, 'error');
         }
     } catch {
-        mostrarToast('Error al conectar con la API', 'error');
+        mostrarToast(I18N.msgErrorConectar, 'error');
     } finally {
         setLoading(false);
     }
@@ -908,22 +994,22 @@ function renderTabla(circuitos) {
     }
 
     noRes.style.display = 'none';
-    count.textContent   = `${circuitos.length} resultado${circuitos.length !== 1 ? 's' : ''}`;
+    count.textContent   = `${circuitos.length} ${circuitos.length !== 1 ? I18N.resultadoPlural : I18N.resultadoSingular}`;
 
     circuitos.forEach(c => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td class="td-id" data-label="ID">${c.id_circuito}</td>
-            <td data-label="Municipio">${nombreMunicipio(c.id_municipio)}</td>
-            <td data-label="Nombre"><strong>${c.nombre}</strong></td>
-            <td data-label="Código">${c.codigo ?? ''}</td>
-            <td data-label="Actividad">${c.actividad ?? ''}</td>
-            <td data-label="Turno"><span class="badge badge-${badgeClass(c.turno)}">${formatearValor(c.turno ?? '')}</span></td>
-            <td data-label="Frecuencia">${c.frecuencia ?? ''}</td>
-            <td class="td-actions" data-label="Acciones">
-                <button class="btn-action" onclick='abrirModalEditar(${JSON.stringify(c)})' title="Editar">✏️</button>
-                <button class="btn-action" onclick='seleccionarCircuito(${JSON.stringify(c)})' title="Mapa y ruta óptima">🗺️</button>
-                <button class="btn-action" onclick="confirmarBorrar(${c.id_circuito},'${c.nombre}')" title="Eliminar">🗑️</button>
+            <td class="td-id" data-label="${I18N.thId}">${c.id_circuito}</td>
+            <td data-label="${I18N.thMunicipio}">${nombreMunicipio(c.id_municipio)}</td>
+            <td data-label="${I18N.thNombre}"><strong>${c.nombre}</strong></td>
+            <td data-label="${I18N.thCodigo}">${c.codigo ?? ''}</td>
+            <td data-label="${I18N.thActividad}">${c.actividad ?? ''}</td>
+            <td data-label="${I18N.thTurno}"><span class="badge badge-${badgeClass(c.turno)}">${valorFormateado(c.turno ?? '')}</span></td>
+            <td data-label="${I18N.thFrecuencia}">${c.frecuencia ?? ''}</td>
+            <td class="td-actions" data-label="${I18N.thAcciones}">
+                <button class="btn-action" onclick='abrirModalEditar(${JSON.stringify(c)})' title="${I18N.titleEditar}">✏️</button>
+                <button class="btn-action" onclick='seleccionarCircuito(${JSON.stringify(c)})' title="${I18N.titleMapaRuta}">🗺️</button>
+                <button class="btn-action" onclick="confirmarBorrar(${c.id_circuito},'${c.nombre}')" title="${I18N.btnEliminar}">🗑️</button>
             </td>
         `;
         tbody.appendChild(tr);
@@ -932,8 +1018,15 @@ function renderTabla(circuitos) {
     renderPoligonosCircuitos(circuitos);
 }
 
-function formatearValor(v) {
-    return v.replace(/_/g, ' ');
+const VALORES_TRADUCIDOS = {
+    mañana: 'turnoManana', tarde: 'turnoTarde', noche: 'turnoNoche',
+    domingo: 'diaDomingo', lunes: 'diaLunes', martes: 'diaMartes', 'miércoles': 'diaMiercoles',
+    jueves: 'diaJueves', viernes: 'diaViernes', 'sábado': 'diaSabado'
+};
+
+function valorFormateado(v) {
+    const clave = VALORES_TRADUCIDOS[v];
+    return clave ? I18N[clave] : v.replace(/_/g, ' ');
 }
 
 function badgeClass(turno) {
@@ -1042,7 +1135,7 @@ async function buscarCircuitosParaRutas() {
     const frecuencia = document.getElementById('generarRutasFrecuencia').value;
 
     if (!dia && !turno && !frecuencia) {
-        mostrarToast('Seleccioná al menos un día, turno o frecuencia', 'warning');
+        mostrarToast(I18N.msgSeleccionarDiaTurnoFrec, 'warning');
         return;
     }
 
@@ -1053,7 +1146,7 @@ async function buscarCircuitosParaRutas() {
         const res  = await fetch(`${API_BASE}/circuitos?${param}=${encodeURIComponent(valor)}`);
         const json = await res.json();
         if (json.status !== 'success') {
-            mostrarToast(json.message || 'Error al buscar circuitos', 'error');
+            mostrarToast(json.message || I18N.msgErrorBuscarCircuitos, 'error');
             return;
         }
 
@@ -1064,7 +1157,7 @@ async function buscarCircuitosParaRutas() {
 
         renderResultadoGenerarRutas();
     } catch {
-        mostrarToast('Error al conectar con la API', 'error');
+        mostrarToast(I18N.msgErrorConectar, 'error');
     } finally {
         setLoading(false);
     }
@@ -1079,11 +1172,12 @@ function renderResultadoGenerarRutas() {
 
     log.innerHTML = '';
     resultado.style.display = 'block';
-    resumen.textContent = `${circuitosParaGenerarRutas.length} circuito${circuitosParaGenerarRutas.length !== 1 ? 's' : ''} encontrado${circuitosParaGenerarRutas.length !== 1 ? 's' : ''}`;
+    const n = circuitosParaGenerarRutas.length;
+    resumen.textContent = `${n} ${n !== 1 ? I18N.circuitoPlural : I18N.circuitoSingular} ${n !== 1 ? I18N.encontradoPlural : I18N.encontradoSingular}`;
     boton.disabled = circuitosParaGenerarRutas.length === 0;
 
     lista.innerHTML = circuitosParaGenerarRutas
-        .map(c => `<li>#${c.id_circuito} — ${c.nombre} (${c.frecuencia ?? 'sin frecuencia'})</li>`)
+        .map(c => `<li>#${c.id_circuito} — ${c.nombre} (${c.frecuencia ?? I18N.sinFrecuencia})</li>`)
         .join('');
 }
 
@@ -1100,7 +1194,7 @@ async function generarRutasParaFiltrados() {
 
     for (const circuito of circuitosParaGenerarRutas) {
         const linea = document.createElement('div');
-        linea.textContent = `Generando ruta para #${circuito.id_circuito} — ${circuito.nombre}...`;
+        linea.textContent = `${I18N.generandoRutaPara} #${circuito.id_circuito} — ${circuito.nombre}...`;
         log.appendChild(linea);
 
         try {
@@ -1109,7 +1203,7 @@ async function generarRutasParaFiltrados() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     circuitoId: circuito.id_circuito,
-                    nombre: `Ruta óptima ${circuito.nombre}`,
+                    nombre: `${I18N.rutaPrefijo} ${circuito.nombre}`,
                     actividad: circuito.actividad || 'recolección domiciliaria'
                 })
             });
@@ -1117,21 +1211,23 @@ async function generarRutasParaFiltrados() {
             if (json.status === 'success') {
                 exitosas++;
                 linea.className = 'log-ok';
-                linea.textContent = `✓ #${circuito.id_circuito} — ${circuito.nombre}: ruta #${json.data.ruta.id_ruta} generada (${json.data.distancia_total_km} km)`;
+                linea.textContent = `✓ #${circuito.id_circuito} — ${circuito.nombre}: ${I18N.rutaPrefijo} #${json.data.ruta.id_ruta} ${I18N.msgRutaGeneradaResultado} (${json.data.distancia_total_km} km)`;
             } else {
                 fallidas++;
                 linea.className = 'log-error';
-                linea.textContent = `✗ #${circuito.id_circuito} — ${circuito.nombre}: ${json.message || 'error desconocido'}`;
+                linea.textContent = `✗ #${circuito.id_circuito} — ${circuito.nombre}: ${json.message || I18N.errorDesconocido}`;
             }
         } catch {
             fallidas++;
             linea.className = 'log-error';
-            linea.textContent = `✗ #${circuito.id_circuito} — ${circuito.nombre}: error al conectar con la API`;
+            linea.textContent = `✗ #${circuito.id_circuito} — ${circuito.nombre}: ${I18N.errorConectarApi}`;
         }
     }
 
     boton.disabled = false;
-    mostrarToast(`${exitosas} ruta${exitosas !== 1 ? 's' : ''} generada${exitosas !== 1 ? 's' : ''}${fallidas ? `, ${fallidas} con error` : ''}`, fallidas ? 'warning' : 'success');
+    const rutaLabel = exitosas !== 1 ? I18N.rutaPlural : I18N.rutaSingular;
+    const generadaLabel = exitosas !== 1 ? I18N.generadaPlural : I18N.generadaSingular;
+    mostrarToast(`${exitosas} ${rutaLabel} ${generadaLabel}${fallidas ? `, ${fallidas} ${I18N.conErrorSufijo}` : ''}`, fallidas ? 'warning' : 'success');
 }
 
 function cerrarModal() {
@@ -1197,8 +1293,8 @@ function limpiarCapasMapa() {
 
 function tituloPanel(circuito) {
     return circuito.poligono
-        ? `Circuito — ${circuito.nombre}`
-        : `Circuito — ${circuito.nombre} (sin área dibujada)`;
+        ? `${I18N.tituloPanelPrefijo} ${circuito.nombre}`
+        : `${I18N.tituloPanelPrefijo} ${circuito.nombre} ${I18N.tituloPanelSinArea}`;
 }
 
 function renderPoligonosCircuitos(circuitos) {
@@ -1274,7 +1370,7 @@ function seleccionarCircuito(circuito) {
     }
 
     document.getElementById('mapaPanelTitulo').textContent = tituloPanel(circuito);
-    document.getElementById('rutaNombre').value = `Ruta óptima ${circuito.nombre}`;
+    document.getElementById('rutaNombre').value = `${I18N.fieldRutaNombrePh} ${circuito.nombre}`;
     document.getElementById('rutaActividad').value = circuito.actividad || '';
     document.getElementById('mapaResultado').innerHTML = '';
     const panel = document.getElementById('mapaPanel');
@@ -1288,7 +1384,7 @@ async function cargarContenedoresEnMapa() {
         const res  = await fetch(`${API_BASE}/circuitos/${circuitoActualMapa.id_circuito}/obtenerContenedores`);
         const json = await res.json();
         if (json.status !== 'success') {
-            mostrarToast(json.message || 'No se pudieron cargar los contenedores', 'error');
+            mostrarToast(json.message || I18N.msgNoPudieronCargarContenedores, 'error');
             return;
         }
 
@@ -1304,7 +1400,7 @@ async function cargarContenedoresEnMapa() {
             const marker = L.circleMarker([lat, lon], {
                 radius: 6, color: '#fff', weight: 1.4, opacity: 0.7,
                 fillColor: color, fillOpacity: 0.9
-            }).bindPopup(`<b>#${c.id_contenedor}</b> ${c.calle ?? ''} ${c.num_calle ?? ''}<br>Llenado: ${c.nivel_llenado}%<br>Estado: ${c.estado}`);
+            }).bindPopup(`<b>#${c.id_contenedor}</b> ${c.calle ?? ''} ${c.num_calle ?? ''}<br>${I18N.popupLlenado} ${c.nivel_llenado}%<br>${I18N.popupEstado} ${c.estado}`);
             marker.addTo(mapaCircuitos);
             mapaCircuitosMarkers.push(marker);
             bounds.push([lat, lon]);
@@ -1313,9 +1409,9 @@ async function cargarContenedoresEnMapa() {
         if (bounds.length && !poligonosPorCircuito[circuitoActualMapa.id_circuito]) {
             mapaCircuitos.fitBounds(bounds, { padding: [30, 30] });
         }
-        mostrarToast(`${mapaCircuitosMarkers.length} contenedores cargados`, 'success');
+        mostrarToast(`${mapaCircuitosMarkers.length} ${I18N.popupContenedores}`, 'success');
     } catch {
-        mostrarToast('Error al cargar los contenedores', 'error');
+        mostrarToast(I18N.msgErrorCargarContenedores, 'error');
     }
 }
 
@@ -1324,7 +1420,7 @@ async function generarRutaOptima() {
     const nombre = document.getElementById('rutaNombre').value.trim();
     const actividad = document.getElementById('rutaActividad').value.trim();
     if (!nombre || !actividad) {
-        mostrarToast('Completá nombre y actividad de la ruta', 'warning');
+        mostrarToast(I18N.msgCompletaNombreActividad, 'warning');
         return;
     }
 
@@ -1336,7 +1432,7 @@ async function generarRutaOptima() {
         });
         const json = await res.json();
         if (json.status !== 'success') {
-            mostrarToast(json.message || 'No se pudo generar la ruta', 'error');
+            mostrarToast(json.message || I18N.msgNoPudoGenerarRuta, 'error');
             return;
         }
 
@@ -1353,10 +1449,10 @@ async function generarRutaOptima() {
         }
 
         document.getElementById('mapaResultado').innerHTML =
-            `Ruta <strong>#${ruta.id_ruta}</strong> generada — ${contenedores.length} contenedores, ${distancia_total_km} km aprox.`;
-        mostrarToast('Ruta óptima generada', 'success');
+            `${I18N.rutaPrefijo} <strong>#${ruta.id_ruta}</strong> ${I18N.msgRutaGeneradaResultado} — ${contenedores.length} ${I18N.popupContenedores}, ${distancia_total_km} ${I18N.kmAprox}`;
+        mostrarToast(I18N.msgRutaOptimaGenerada, 'success');
     } catch {
-        mostrarToast('Error al generar la ruta óptima', 'error');
+        mostrarToast(I18N.msgErrorGenerarRuta, 'error');
     }
 }
 

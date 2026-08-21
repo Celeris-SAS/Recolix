@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once __DIR__ . '/../i18n/i18n.php';
 
 if (!isset($_SESSION['usuario'])) {
     header('Location: /recolix/LandingPage/login.html');
@@ -11,26 +12,28 @@ $rol = $_SESSION['usuario']['rol'] ?? '';
 if ($rol === 'vecino' || empty($rol)) {
     http_response_code(403);
     ?><!DOCTYPE html>
-<html lang="es">
+<html lang="<?= htmlspecialchars($RECOLIX_IDIOMA) ?>">
 <head>
     <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acceso no autorizado — Recolix</title>
+    <title><?= t('backoffice.denegado_title') ?></title>
     <link rel="stylesheet" href="/recolix/Backoffice/styleBackoffice.css">
     <link rel="stylesheet" href="/recolix/Backoffice/styleAccesoDenegado.css">
 </head>
 <body>
 <div class="denegado-wrap">
+    <?php include __DIR__ . '/../i18n/switcher.php'; ?>
     <div class="denegado-logo">
         <img src="/recolix/API_Recoleccion/Vista/logoRecolix.png" alt="Recolix">
         <span>Recolix</span>
     </div>
     <div class="denegado-icono">⛔</div>
-    <h1 class="denegado-titulo">Acceso no autorizado</h1>
+    <h1 class="denegado-titulo"><?= t('backoffice.denegado_titulo') ?></h1>
     <p class="denegado-desc">
-        Tu cuenta no tiene permisos para acceder al panel de administración de Recolix.
+        <?= t('backoffice.denegado_desc') ?>
     </p>
-    <a href="/recolix/LandingPage/index_LandingPage.html" class="btn-volver">Volver a la página principal</a>
+    <a href="/recolix/LandingPage/index_LandingPage.html" class="btn-volver"><?= t('backoffice.denegado_volver') ?></a>
 </div>
 </body>
 </html><?php

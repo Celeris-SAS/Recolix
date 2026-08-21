@@ -16,8 +16,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const API = {
     contenedores: '/recolix/API_Gestion/contenedores',
-    centros: '/recolix/API_Gestion/centros-acopio'
+    centros: '/recolix/API_Gestion/centros-acopio',
+    camiones: '/recolix/API_Recoleccion/camiones/obtenerEnOperativa'
   };
+
+  const ICONO_CAMION = L.icon({
+    iconUrl: '/recolix/API_Recoleccion/Vista/img/truck-svgrepo-com.svg',
+    iconSize: [26, 26],
+    iconAnchor: [13, 13],
+    popupAnchor: [0, -13]
+  });
 
   const COLORES_CONTENEDOR = {
     funcional: '#4CAF50',
@@ -34,29 +42,30 @@ document.addEventListener('DOMContentLoaded', function () {
   };
 
   const ETIQUETAS_TIPO = {
-    ecocentro: 'Ecocentro',
-    planta_clasificacion: 'Planta de clasificación',
-    relleno_sanitario: 'Relleno sanitario',
-    vertedero: 'Vertedero'
+    ecocentro: I18N.tipoEcocentro,
+    planta_clasificacion: I18N.tipoPlantaClasificacion,
+    relleno_sanitario: I18N.tipoRellenoSanitario,
+    vertedero: I18N.tipoVertedero
   };
 
   const ETIQUETAS_ESTADO_CONTENEDOR = {
-    funcional: 'Funcional',
-    inactivo: 'Inactivo',
-    desbordado: 'Desbordado',
-    roto: 'Roto',
-    en_deposito: 'En depósito'
+    funcional: I18N.estadoFuncional,
+    inactivo: I18N.estadoInactivo,
+    desbordado: I18N.estadoDesbordado,
+    roto: I18N.estadoRoto,
+    en_deposito: I18N.estadoEnDeposito
   };
 
   const ETIQUETAS_ESTADO_CENTRO = {
-    operativo: 'Operativo',
-    saturado: 'Saturado',
-    cerrado: 'Cerrado'
+    operativo: I18N.estadoOperativo,
+    saturado: I18N.estadoSaturado,
+    cerrado: I18N.estadoCerrado
   };
 
   const counts = {
     contenedores: { funcional: 0, inactivo: 0, desbordado: 0, roto: 0, en_deposito: 0 },
-    centros: { operativo: 0, saturado: 0, cerrado: 0 }
+    centros: { operativo: 0, saturado: 0, cerrado: 0 },
+    camiones: { total: 0, conEta: 0, sinEta: 0 }
   };
 
   const grupo = L.layerGroup().addTo(map);
@@ -71,16 +80,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const filas = [];
     if (vista === 'centros') {
       filas.push(`<b>${info.nombre}</b>`);
-      filas.push(`<b>Tipo:</b> ${etiqueta(ETIQUETAS_TIPO, info.tipo)}`);
-      filas.push(`<b>Estado:</b> ${etiqueta(ETIQUETAS_ESTADO_CENTRO, info.estado)}`);
-      if (info.calle) filas.push(`<b>Dirección:</b> ${info.calle}${info.num_calle ? ' ' + info.num_calle : ''}`);
-      if (info.municipio) filas.push(`<b>Municipio:</b> ${info.municipio}`);
-      if (info.capacidad_total != null) filas.push(`<b>Capacidad:</b> ${Number(info.capacidad_total).toLocaleString()}`);
+      filas.push(`<b>${I18N.popupTipo}</b> ${etiqueta(ETIQUETAS_TIPO, info.tipo)}`);
+      filas.push(`<b>${I18N.popupEstado}</b> ${etiqueta(ETIQUETAS_ESTADO_CENTRO, info.estado)}`);
+      if (info.calle) filas.push(`<b>${I18N.popupDireccion}</b> ${info.calle}${info.num_calle ? ' ' + info.num_calle : ''}`);
+      if (info.municipio) filas.push(`<b>${I18N.popupMunicipio}</b> ${info.municipio}`);
+      if (info.capacidad_total != null) filas.push(`<b>${I18N.popupCapacidad}</b> ${Number(info.capacidad_total).toLocaleString()}`);
     } else {
-      if (info && info.calle) filas.push(`<b>Calle:</b> ${info.calle}${info.num_calle ? ' ' + info.num_calle : ''}`);
-      if (info && info.capacidad) filas.push(`<b>Capacidad:</b> ${info.capacidad} L`);
-      if (info && info.nivel_llenado != null) filas.push(`<b>Nivel de llenado:</b> ${info.nivel_llenado}%`);
-      filas.push(`<b>Estado:</b> ${etiqueta(ETIQUETAS_ESTADO_CONTENEDOR, info.estado)}`);
+      if (info && info.calle) filas.push(`<b>${I18N.popupDireccion}</b> ${info.calle}${info.num_calle ? ' ' + info.num_calle : ''}`);
+      if (info && info.capacidad) filas.push(`<b>${I18N.popupCapacidad}</b> ${info.capacidad} L`);
+      if (info && info.nivel_llenado != null) filas.push(`<b>${I18N.popupNivelLlenado}</b> ${info.nivel_llenado}%`);
+      filas.push(`<b>${I18N.popupEstado}</b> ${etiqueta(ETIQUETAS_ESTADO_CONTENEDOR, info.estado)}`);
     }
     return filas.join('<br>');
   };
@@ -103,20 +112,45 @@ document.addEventListener('DOMContentLoaded', function () {
     marker.bindPopup(buildPopup(info, vista), { maxWidth: 240 });
   };
 
+  const addCamionPoint = (camion) => {
+    const { latitud: lat, longitud: lon } = camion.ubicacion;
+    counts.camiones.total++;
+    if (camion.eta) counts.camiones.conEta++; else counts.camiones.sinEta++;
+
+    const marker = L.marker([lat, lon], { icon: ICONO_CAMION }).addTo(grupo);
+
+    const filas = [`<b>${I18N.popupCamion} ${camion.matricula}</b>`];
+    if (camion.modelo) filas.push(`<b>${I18N.popupModelo}</b> ${camion.modelo}`);
+    filas.push(`<b>${I18N.popupUltimaPosicion}</b> ${camion.ubicacion.calle || I18N.sinDireccion}${camion.ubicacion.num_calle ? ' ' + camion.ubicacion.num_calle : ''}`);
+    if (camion.proxima_parada) {
+      filas.push(`<b>${I18N.popupProximaParada}</b> ${camion.proxima_parada.calle || I18N.sinDireccion}${camion.proxima_parada.num_calle ? ' ' + camion.proxima_parada.num_calle : ''}`);
+      filas.push(`<b>${I18N.popupTiempoProximo}</b> ${camion.eta.texto} (${camion.eta.distancia_km} km a ${camion.eta.velocidad_kmh} km/h)`);
+    } else {
+      filas.push(`<b>${I18N.popupProximaParada}</b> ${I18N.sinPendientes}`);
+    }
+    marker.bindPopup(filas.join('<br>'), { maxWidth: 260 });
+    return [lat, lon];
+  };
+
   const renderSummary = (vista, total) => {
     const c = counts[vista];
     if (vista === 'centros') {
       document.getElementById('countOperativos').textContent = c.operativo;
       document.getElementById('countSaturados').textContent = c.saturado;
       document.getElementById('countCerrados').textContent = c.cerrado;
+    } else if (vista === 'camiones') {
+      document.getElementById('countCamionesTotal').textContent = c.total;
+      document.getElementById('countCamionesConEta').textContent = c.conEta;
+      document.getElementById('countCamionesSinEta').textContent = c.sinEta;
     } else {
       document.getElementById('countActivos').textContent = c.funcional;
       document.getElementById('countInactivos').textContent = c.inactivo;
       document.getElementById('countDesbordados').textContent = c.desbordado;
     }
 
-    const hora = new Date().toLocaleTimeString('es-UY', { hour: '2-digit', minute: '2-digit' });
-    document.getElementById('mapSummaryValue').textContent = `${total} ${vista === 'centros' ? 'centros' : 'puntos'} · ${hora}`;
+    const hora = new Date().toLocaleTimeString(I18N_LOCALE, { hour: '2-digit', minute: '2-digit' });
+    const etiquetaTotal = vista === 'centros' ? I18N.unidadCentros : (vista === 'camiones' ? I18N.unidadCamiones : I18N.unidadPuntos);
+    document.getElementById('mapSummaryValue').textContent = `${total} ${etiquetaTotal} · ${hora}`;
   };
 
   async function cargarVista(vista) {
@@ -128,6 +162,31 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('indicadores-centros').style.display = vista === 'centros' ? '' : 'none';
     document.getElementById('leyenda-contenedores').style.display = vista === 'contenedores' ? '' : 'none';
     document.getElementById('leyenda-centros').style.display = vista === 'centros' ? '' : 'none';
+    const indicadoresCamiones = document.getElementById('indicadores-camiones');
+    const leyendaCamiones = document.getElementById('leyenda-camiones');
+    if (indicadoresCamiones) indicadoresCamiones.style.display = vista === 'camiones' ? '' : 'none';
+    if (leyendaCamiones) leyendaCamiones.style.display = vista === 'camiones' ? '' : 'none';
+
+    if (vista === 'camiones') {
+      let camiones = [];
+      try {
+        const resp = await fetch(API.camiones, { signal: AbortSignal.timeout(5000) });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const json = await resp.json();
+        camiones = Array.isArray(json.data) ? json.data : [];
+      } catch (_) {
+        camiones = [];
+      }
+
+      const bounds = [];
+      for (const camion of camiones) {
+        if (!camion.ubicacion) continue;
+        bounds.push(addCamionPoint(camion));
+      }
+      renderSummary('camiones', bounds.length);
+      if (bounds.length) map.fitBounds(bounds, { padding: [40, 40] });
+      return;
+    }
 
     let puntos = [];
     try {
@@ -135,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       const json = await resp.json();
       puntos = Array.isArray(json) ? json : json && json.data;
-      if (!Array.isArray(puntos)) throw new Error('Respuesta inesperada de la API');
+      if (!Array.isArray(puntos)) throw new Error(I18N.respuestaInesperada);
     } catch (_) {
       puntos = [];
     }

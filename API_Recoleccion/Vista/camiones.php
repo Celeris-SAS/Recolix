@@ -1,10 +1,14 @@
-<?php require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php'; ?>
+<?php
+require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
+require_once __DIR__ . '/../../i18n/i18n.php';
+?>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="<?= htmlspecialchars($RECOLIX_IDIOMA) ?>">
 <head>
     <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Camiones — Recolix</title>
+    <title><?= t('camiones.title') ?></title>
     <link rel="stylesheet" href="styleRecoleccion.css">
 </head>
 <body>
@@ -12,52 +16,53 @@
 <header class="navbar">
     <div class="nav-inner">
         <div class="nav-left">
-            <div class="brand">
+            <a href="../../Backoffice/indexBackoffice.php" class="brand">
                 <img src="logoRecolix.png" alt="Recolix" class="brand-logo">
                 <span class="brand-name">Recolix</span>
-            </div>
+            </a>
             <nav class="nav-links">
-                <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
-                <a href="#" class="nav-active">Camiones</a>
-                <a href="circuitos.php">Circuitos</a>
-                <a href="rutas.php">Rutas</a>
-                <a href="#">Cuadrillas</a>
-                <a href="../../API_Gestion/Vista/contenedores.php">Contenedores</a>
-                <a href="../../API_Gestion/Vista/centrosAcopio.php">Centros de Acopio</a>
-                <a href="../../Backoffice/mapa.php">Mapa</a>
-                <a href="#">Reportes</a>
-                <a href="#">Incidencias</a>
-                <a href="../../API_Usuarios/Vista/usuarios.php">Usuarios</a>
+                <a href="../../Backoffice/indexBackoffice.php"><?= t('backoffice.nav_inicio') ?></a>
+                <a href="#" class="nav-active"><?= t('backoffice.nav_camiones') ?></a>
+                <a href="circuitos.php"><?= t('backoffice.nav_circuitos') ?></a>
+                <a href="rutas.php"><?= t('backoffice.nav_rutas') ?></a>
+                <a href="../../API_Usuarios/Vista/cuadrillas.php"><?= t('backoffice.nav_cuadrillas') ?></a>
+                <a href="../../API_Gestion/Vista/contenedores.php"><?= t('backoffice.nav_contenedores') ?></a>
+                <a href="../../API_Gestion/Vista/centrosAcopio.php"><?= t('backoffice.nav_centros_acopio') ?></a>
+                <a href="../../Backoffice/mapa.php"><?= t('backoffice.nav_mapa') ?></a>
+                <a href="#"><?= t('backoffice.nav_reportes') ?></a>
+                <a href="#"><?= t('backoffice.nav_incidencias') ?></a>
+                <a href="../../API_Usuarios/Vista/usuarios.php"><?= t('backoffice.nav_usuarios') ?></a>
             </nav>
         </div>
         <div class="nav-right">
-            <a href="/recolix/API_Usuarios/perfil.php" class="btn-user" title="Perfil de usuario">
+            <?php include __DIR__ . '/../../i18n/switcher.php'; ?>
+            <a href="/recolix/API_Usuarios/perfil.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
                 <img src="img/user.svg" alt="Usuario" class="nav-user-icon">
             </a>
-            <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menú">
+            <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="<?= htmlspecialchars(t('backoffice.nav_menu')) ?>">
                 <span></span><span></span><span></span>
             </button>
         </div>
     </div>
     <nav class="nav-mobile" id="navMobile">
-        <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
-        <a href="#" class="nav-active">Camiones</a>
-        <a href="circuitos.php">Circuitos</a>
-        <a href="rutas.php">Rutas</a>
-        <a href="#">Cuadrillas</a>
-        <a href="../../API_Gestion/Vista/contenedores.php">Contenedores</a>
-        <a href="../../API_Gestion/Vista/centrosAcopio.php">Centros de Acopio</a>
-        <a href="../../Backoffice/mapa.php">Mapa</a>
-        <a href="#">Reportes</a>
-        <a href="#">Incidencias</a>
-        <a href="../../API_Usuarios/Vista/usuarios.php">Usuarios</a>
+        <a href="../../Backoffice/indexBackoffice.php"><?= t('backoffice.nav_inicio') ?></a>
+        <a href="#" class="nav-active"><?= t('backoffice.nav_camiones') ?></a>
+        <a href="circuitos.php"><?= t('backoffice.nav_circuitos') ?></a>
+        <a href="rutas.php"><?= t('backoffice.nav_rutas') ?></a>
+        <a href="../../API_Usuarios/Vista/cuadrillas.php"><?= t('backoffice.nav_cuadrillas') ?></a>
+        <a href="../../API_Gestion/Vista/contenedores.php"><?= t('backoffice.nav_contenedores') ?></a>
+        <a href="../../API_Gestion/Vista/centrosAcopio.php"><?= t('backoffice.nav_centros_acopio') ?></a>
+        <a href="../../Backoffice/mapa.php"><?= t('backoffice.nav_mapa') ?></a>
+        <a href="#"><?= t('backoffice.nav_reportes') ?></a>
+        <a href="#"><?= t('backoffice.nav_incidencias') ?></a>
+        <a href="../../API_Usuarios/Vista/usuarios.php"><?= t('backoffice.nav_usuarios') ?></a>
     </nav>
     <div class="nav-hr"></div>
 </header>
 
 <section class="hero">
-    <h1 class="hero-title">Camiones</h1>
-    <p class="hero-sub">Gestioná la flota de vehículos de recolección de residuos.</p>
+    <h1 class="hero-title"><?= t('camiones.hero_title') ?></h1>
+    <p class="hero-sub"><?= t('camiones.hero_sub') ?></p>
 </section>
 
 <section class="cards-section">
@@ -66,63 +71,63 @@
         <div class="card-operar" onclick="abrirModalAgregar()">
             <div class="card-content">
                 <div class="card-icon"><img src="img/plus.svg" alt="" class="card-svg-icon"></div>
-                <h3>Agregar Camión</h3>
-                <p>Registrar un nuevo vehículo</p>
-                <button class="card-btn">Agregar</button>
+                <h3><?= t('camiones.card_agregar_titulo') ?></h3>
+                <p><?= t('camiones.card_agregar_desc') ?></p>
+                <button class="card-btn"><?= t('camiones.card_agregar_btn') ?></button>
             </div>
         </div>
 
         <div class="card-operar" onclick="toggleFiltros()">
             <div class="card-content">
                 <div class="card-icon"><img src="img/loupe.svg" alt="" class="card-svg-icon"></div>
-                <h3>Filtrar</h3>
-                <p>Buscar por estado, tipo, modelo...</p>
-                <button class="card-btn">Filtrar</button>
+                <h3><?= t('camiones.card_filtrar_titulo') ?></h3>
+                <p><?= t('camiones.card_filtrar_desc') ?></p>
+                <button class="card-btn"><?= t('camiones.card_filtrar_btn') ?></button>
             </div>
         </div>
 
         <div class="card-operar" onclick="toggleBusquedaId()">
             <div class="card-content">
                 <div class="card-icon"><img src="img/question.svg" alt="" class="card-svg-icon"></div>
-                <h3>Buscar por ID</h3>
-                <p>Obtener un camión específico</p>
-                <button class="card-btn">Buscar</button>
+                <h3><?= t('camiones.card_buscarid_titulo') ?></h3>
+                <p><?= t('camiones.card_buscarid_desc') ?></p>
+                <button class="card-btn"><?= t('camiones.card_buscarid_btn') ?></button>
             </div>
         </div>
 
         <div class="card-operar" onclick="toggleModificar()">
             <div class="card-content">
                 <div class="card-icon"><img src="img/refresh.svg" alt="" class="card-svg-icon"></div>
-                <h3>Modificar Camión</h3>
-                <p>Editar datos de un vehículo existente</p>
-                <button class="card-btn">Modificar</button>
+                <h3><?= t('camiones.card_modificar_titulo') ?></h3>
+                <p><?= t('camiones.card_modificar_desc') ?></p>
+                <button class="card-btn"><?= t('camiones.card_modificar_btn') ?></button>
             </div>
         </div>
 
         <div class="card-operar" onclick="toggleDarDeBaja()">
             <div class="card-content">
                 <div class="card-icon"><img src="img/minus.svg" alt="" class="card-svg-icon"></div>
-                <h3>Dar de Baja</h3>
-                <p>Desactivar un camión del registro</p>
-                <button class="card-btn">Dar de Baja</button>
+                <h3><?= t('camiones.card_baja_titulo') ?></h3>
+                <p><?= t('camiones.card_baja_desc') ?></p>
+                <button class="card-btn"><?= t('camiones.card_baja_btn') ?></button>
             </div>
         </div>
 
         <div class="card-operar" onclick="toggleMantenimientoRegistrar()">
             <div class="card-content">
                 <div class="card-icon"><img src="img/correctivo.svg" alt="" class="card-svg-icon"></div>
-                <h3>Registrar Mantenimiento</h3>
-                <p>Registrar un mantenimiento con fecha y hora</p>
-                <button class="card-btn">Registrar</button>
+                <h3><?= t('camiones.card_regmant_titulo') ?></h3>
+                <p><?= t('camiones.card_regmant_desc') ?></p>
+                <button class="card-btn"><?= t('camiones.card_regmant_btn') ?></button>
             </div>
         </div>
 
         <div class="card-operar" onclick="toggleMantenimientoProgramar()">
             <div class="card-content">
                 <div class="card-icon"><img src="img/preventivo.svg" alt="" class="card-svg-icon"></div>
-                <h3>Programar Mantenimiento</h3>
-                <p>Agendar un mantenimiento con fecha y hora</p>
-                <button class="card-btn">Programar</button>
+                <h3><?= t('camiones.card_progmant_titulo') ?></h3>
+                <p><?= t('camiones.card_progmant_desc') ?></p>
+                <button class="card-btn"><?= t('camiones.card_progmant_btn') ?></button>
             </div>
         </div>
 
@@ -132,123 +137,123 @@
 <section class="control-bar" id="filterBar" style="display:none">
     <div class="control-inner">
         <select id="filtroTipo" class="ctrl-select" onchange="actualizarFiltroValor()">
-            <option value="">— Filtrar por —</option>
-            <option value="estado">Estado</option>
-            <option value="tipoCarga">Tipo de Carga</option>
-            <option value="disponibilidad">Disponibles</option>
-            <option value="mantenimiento">En Mantenimiento</option>
-            <option value="proximosMantenimientos">Mantenimientos Próximos</option>
-            <option value="anio">Año</option>
-            <option value="modelo">Modelo</option>
-            <option value="capacidad">Capacidad mínima (kg)</option>
+            <option value=""><?= t('camiones.filtro_placeholder_select') ?></option>
+            <option value="estado"><?= t('camiones.filtro_opt_estado') ?></option>
+            <option value="tipoCarga"><?= t('camiones.filtro_opt_tipoCarga') ?></option>
+            <option value="disponibilidad"><?= t('camiones.filtro_opt_disponibilidad') ?></option>
+            <option value="mantenimiento"><?= t('camiones.filtro_opt_mantenimiento') ?></option>
+            <option value="proximosMantenimientos"><?= t('camiones.filtro_opt_proximosMantenimientos') ?></option>
+            <option value="anio"><?= t('camiones.filtro_opt_anio') ?></option>
+            <option value="modelo"><?= t('camiones.filtro_opt_modelo') ?></option>
+            <option value="capacidad"><?= t('camiones.filtro_opt_capacidad') ?></option>
         </select>
-        <input type="text" id="filtroValor" class="ctrl-input" placeholder="Valor del filtro..." style="display:none">
+        <input type="text" id="filtroValor" class="ctrl-input" placeholder="<?= htmlspecialchars(t('camiones.filtro_valor_placeholder')) ?>" style="display:none">
         <select id="filtroValorSelect" class="ctrl-select" style="display:none"></select>
-        <button class="btn-primary" onclick="aplicarFiltro()">Aplicar</button>
-        <button class="btn-secondary" onclick="listarCamiones()">Limpiar</button>
+        <button class="btn-primary" onclick="aplicarFiltro()"><?= t('camiones.btn_aplicar') ?></button>
+        <button class="btn-secondary" onclick="listarCamiones()"><?= t('camiones.btn_limpiar') ?></button>
     </div>
 </section>
 
 <section class="control-bar" id="searchBar" style="display:none">
     <div class="control-inner">
         <input type="number" id="buscarId" class="ctrl-input"
-               placeholder="ID del camión..." min="1" style="max-width:200px">
-        <button class="btn-primary" onclick="buscarPorId()">Buscar</button>
-        <button class="btn-secondary" onclick="listarCamiones()">Ver Todos</button>
+               placeholder="<?= htmlspecialchars(t('camiones.buscarid_placeholder')) ?>" min="1" style="max-width:200px">
+        <button class="btn-primary" onclick="buscarPorId()"><?= t('camiones.btn_buscar') ?></button>
+        <button class="btn-secondary" onclick="listarCamiones()"><?= t('camiones.btn_vertodos') ?></button>
     </div>
 </section>
 
 <section class="control-bar" id="modificarBar" style="display:none">
     <div class="control-inner">
         <input type="number" id="modificarId" class="ctrl-input"
-               placeholder="ID del camión..." min="1" style="max-width:120px">
+               placeholder="<?= htmlspecialchars(t('camiones.modificarid_placeholder')) ?>" min="1" style="max-width:120px">
         <select id="modificarCampo" class="ctrl-select" onchange="actualizarPlaceholderModificar()">
-            <option value="">— Campo —</option>
-            <option value="matricula">Matrícula</option>
-            <option value="tipoCarga">Tipo de Carga</option>
-            <option value="capacidad">Capacidad (kg)</option>
-            <option value="anio">Año</option>
-            <option value="modelo">Modelo</option>
-            <option value="estado">Estado</option>
+            <option value=""><?= t('camiones.campo_placeholder_select') ?></option>
+            <option value="matricula"><?= t('camiones.campo_opt_matricula') ?></option>
+            <option value="tipoCarga"><?= t('camiones.campo_opt_tipoCarga') ?></option>
+            <option value="capacidad"><?= t('camiones.campo_opt_capacidad') ?></option>
+            <option value="anio"><?= t('camiones.campo_opt_anio') ?></option>
+            <option value="modelo"><?= t('camiones.campo_opt_modelo') ?></option>
+            <option value="estado"><?= t('camiones.campo_opt_estado') ?></option>
         </select>
-        <input type="text" id="modificarValor" class="ctrl-input" style="display:none" placeholder="Seleccioná un campo...">
+        <input type="text" id="modificarValor" class="ctrl-input" style="display:none" placeholder="<?= htmlspecialchars(t('camiones.valor_placeholder_seleccionacampo')) ?>">
         <select id="modificarValorSelect" class="ctrl-select" style="display:none"></select>
-        <button class="btn-primary" onclick="modificarCamion()">Modificar</button>
-        <button class="btn-secondary" onclick="ocultarControles()">Cancelar</button>
+        <button class="btn-primary" onclick="modificarCamion()"><?= t('camiones.btn_modificar') ?></button>
+        <button class="btn-secondary" onclick="ocultarControles()"><?= t('camiones.btn_cancelar') ?></button>
     </div>
 </section>
 
 <section class="control-bar" id="deleteBar" style="display:none">
     <div class="control-inner">
         <input type="number" id="deleteId" class="ctrl-input"
-               placeholder="ID del camión a dar de baja..." min="1" style="max-width:240px">
-        <button class="btn-danger" onclick="darDeBajaCamion()">Dar de Baja</button>
-        <button class="btn-secondary" onclick="ocultarControles()">Cancelar</button>
+               placeholder="<?= htmlspecialchars(t('camiones.deleteid_placeholder')) ?>" min="1" style="max-width:240px">
+        <button class="btn-danger" onclick="darDeBajaCamion()"><?= t('camiones.btn_dardebaja') ?></button>
+        <button class="btn-secondary" onclick="ocultarControles()"><?= t('camiones.btn_cancelar') ?></button>
     </div>
 </section>
 
 <section class="control-bar" id="mantenimientoRegistrarBar" style="display:none">
     <div class="control-inner">
         <input type="number" id="regMantId" class="ctrl-input"
-               placeholder="ID del camión..." min="1" style="max-width:130px">
+               placeholder="<?= htmlspecialchars(t('camiones.mant_id_placeholder')) ?>" min="1" style="max-width:130px">
         <select id="regMantTipo" class="ctrl-select">
-            <option value="preventivo">Preventivo</option>
-            <option value="correctivo">Correctivo</option>
+            <option value="preventivo"><?= t('camiones.mant_tipo_preventivo') ?></option>
+            <option value="correctivo"><?= t('camiones.mant_tipo_correctivo') ?></option>
         </select>
         <input type="datetime-local" id="regMantFecha" class="ctrl-input" style="max-width:220px">
         <input type="datetime-local" id="regMantFechaFin" class="ctrl-input" style="max-width:220px">
         <input type="text" id="regMantDescripcion" class="ctrl-input"
-               placeholder="Descripción..." style="max-width:240px">
+               placeholder="<?= htmlspecialchars(t('camiones.mant_descripcion_placeholder')) ?>" style="max-width:240px">
         <input type="number" id="regMantCosto" class="ctrl-input"
-               placeholder="Costo ($)..." min="0" step="0.01" style="max-width:120px">
-        <button class="btn-primary" onclick="registrarMantenimiento()">Registrar</button>
-        <button class="btn-secondary" onclick="ocultarControles()">Cancelar</button>
+               placeholder="<?= htmlspecialchars(t('camiones.mant_costo_placeholder')) ?>" min="0" step="0.01" style="max-width:120px">
+        <button class="btn-primary" onclick="registrarMantenimiento()"><?= t('camiones.btn_registrar') ?></button>
+        <button class="btn-secondary" onclick="ocultarControles()"><?= t('camiones.btn_cancelar') ?></button>
     </div>
 </section>
 
 <section class="control-bar" id="mantenimientoProgramarBar" style="display:none">
     <div class="control-inner">
         <input type="number" id="progMantId" class="ctrl-input"
-               placeholder="ID del camión..." min="1" style="max-width:130px">
+               placeholder="<?= htmlspecialchars(t('camiones.mant_id_placeholder')) ?>" min="1" style="max-width:130px">
         <select id="progMantTipo" class="ctrl-select">
-            <option value="preventivo">Preventivo</option>
-            <option value="correctivo">Correctivo</option>
+            <option value="preventivo"><?= t('camiones.mant_tipo_preventivo') ?></option>
+            <option value="correctivo"><?= t('camiones.mant_tipo_correctivo') ?></option>
         </select>
         <input type="datetime-local" id="progMantFecha" class="ctrl-input" style="max-width:220px">
         <input type="datetime-local" id="progMantFechaFin" class="ctrl-input" style="max-width:220px">
         <input type="text" id="progMantDescripcion" class="ctrl-input"
-               placeholder="Descripción..." style="max-width:240px">
-        <button class="btn-primary" onclick="programarMantenimiento()">Programar</button>
-        <button class="btn-secondary" onclick="ocultarControles()">Cancelar</button>
+               placeholder="<?= htmlspecialchars(t('camiones.mant_descripcion_placeholder')) ?>" style="max-width:240px">
+        <button class="btn-primary" onclick="programarMantenimiento()"><?= t('camiones.btn_programar') ?></button>
+        <button class="btn-secondary" onclick="ocultarControles()"><?= t('camiones.btn_cancelar') ?></button>
     </div>
 </section>
 
 <section class="table-section">
     <div class="table-header">
-        <h2 class="table-title" id="tableTitle">Camiones</h2>
+        <h2 class="table-title" id="tableTitle"><?= t('camiones.hero_title') ?></h2>
         <span class="table-count" id="tableCount"></span>
     </div>
     <div class="table-wrapper">
         <table id="tablaPrincipal">
             <thead>
                 <tr id="tablaHeaders">
-                    <th>ID</th>
-                    <th>Matrícula</th>
-                    <th>Tipo de Carga</th>
-                    <th>Capacidad (kg)</th>
-                    <th>Año</th>
-                    <th>Modelo</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
+                    <th><?= t('camiones.th_id') ?></th>
+                    <th><?= t('camiones.th_matricula') ?></th>
+                    <th><?= t('camiones.th_tipocarga') ?></th>
+                    <th><?= t('camiones.th_capacidad') ?></th>
+                    <th><?= t('camiones.th_anio') ?></th>
+                    <th><?= t('camiones.th_modelo') ?></th>
+                    <th><?= t('camiones.th_estado') ?></th>
+                    <th><?= t('camiones.th_acciones') ?></th>
                 </tr>
             </thead>
             <tbody id="camionesBody"></tbody>
         </table>
         <div id="noResultados" class="empty-state" style="display:none">
-            Sin resultados para mostrar.
+            <?= t('camiones.empty_state') ?>
         </div>
         <div id="loadingState" class="loading-state">
-            Cargando...
+            <?= t('camiones.loading_state') ?>
         </div>
     </div>
 </section>
@@ -257,59 +262,59 @@
      onclick="onOverlayClick(event,'modalForm')">
     <div class="modal">
         <div class="modal-header">
-            <h3 id="modalTitle">Agregar Camión</h3>
+            <h3 id="modalTitle"><?= t('camiones.modal_add_title') ?></h3>
             <button class="modal-close" onclick="cerrarModal()">✕</button>
         </div>
         <form id="camionForm" onsubmit="guardarCamion(event)">
             <input type="hidden" id="camionId">
             <div class="form-row">
                 <div class="form-group">
-                    <label for="matricula">Matrícula</label>
+                    <label for="matricula"><?= t('camiones.field_matricula') ?></label>
                     <input type="text" id="matricula" class="form-input"
-                           placeholder="ABC1234" maxlength="7" required
+                           placeholder="<?= htmlspecialchars(t('camiones.field_matricula_placeholder')) ?>" maxlength="7" required
                            oninput="this.setCustomValidity('')">
                 </div>
                 <div class="form-group">
-                    <label for="tipoCarga">Tipo de Carga</label>
+                    <label for="tipoCarga"><?= t('camiones.field_tipocarga') ?></label>
                     <select id="tipoCarga" class="form-input">
-                        <option value="carga_lateral" selected>Carga lateral</option>
-                        <option value="carga_trasera">Carga trasera</option>
-                        <option value="puerta_a_puerta">Puerta a puerta</option>
+                        <option value="carga_lateral" selected><?= t('camiones.opt_carga_lateral') ?></option>
+                        <option value="carga_trasera"><?= t('camiones.opt_carga_trasera') ?></option>
+                        <option value="puerta_a_puerta"><?= t('camiones.opt_puerta_a_puerta') ?></option>
                     </select>
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group">
-                    <label for="capacidad">Capacidad (kg)</label>
+                    <label for="capacidad"><?= t('camiones.field_capacidad') ?></label>
                     <input type="number" id="capacidad" class="form-input"
-                           placeholder="5000" min="0" required>
+                           placeholder="<?= htmlspecialchars(t('camiones.field_capacidad_placeholder')) ?>" min="0" required>
                 </div>
                 <div class="form-group">
-                    <label for="anio">Año</label>
+                    <label for="anio"><?= t('camiones.field_anio') ?></label>
                     <input type="number" id="anio" class="form-input"
-                           placeholder="2020" min="1990" max="2030" required>
+                           placeholder="<?= htmlspecialchars(t('camiones.field_anio_placeholder')) ?>" min="1990" max="2030" required>
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group">
-                    <label for="modelo">Modelo</label>
+                    <label for="modelo"><?= t('camiones.field_modelo') ?></label>
                     <input type="text" id="modelo" class="form-input"
-                           placeholder="Ford F-550" required>
+                           placeholder="<?= htmlspecialchars(t('camiones.field_modelo_placeholder')) ?>" required>
                 </div>
                 <div class="form-group">
-                    <label for="estado">Estado</label>
+                    <label for="estado"><?= t('camiones.field_estado') ?></label>
                     <select id="estado" class="form-input">
-                        <option value="disponible">Disponible</option>
-                        <option value="en_ruta">En ruta</option>
-                        <option value="en_mantenimiento">En mantenimiento</option>
-                        <option value="de_baja">De baja</option>
-                        <option value="en_deposito">En depósito</option>
+                        <option value="disponible"><?= t('camiones.opt_estado_disponible') ?></option>
+                        <option value="en_ruta"><?= t('camiones.opt_estado_en_ruta') ?></option>
+                        <option value="en_mantenimiento"><?= t('camiones.opt_estado_en_mantenimiento') ?></option>
+                        <option value="de_baja"><?= t('camiones.opt_estado_de_baja') ?></option>
+                        <option value="en_deposito"><?= t('camiones.opt_estado_en_deposito') ?></option>
                     </select>
                 </div>
             </div>
             <div class="modal-actions">
-                <button type="button" class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
-                <button type="submit" class="btn-primary">Guardar</button>
+                <button type="button" class="btn-secondary" onclick="cerrarModal()"><?= t('camiones.btn_cancelar') ?></button>
+                <button type="submit" class="btn-primary"><?= t('camiones.btn_guardar') ?></button>
             </div>
         </form>
     </div>
@@ -319,15 +324,15 @@
      onclick="onOverlayClick(event,'modalDelete')">
     <div class="modal modal-sm">
         <div class="modal-header">
-            <h3>Dar de baja</h3>
+            <h3><?= t('camiones.modal_delete_title') ?></h3>
             <button class="modal-close" onclick="cerrarModalDelete()">✕</button>
         </div>
         <p class="delete-msg">
-            ¿Confirmás dar de baja el camión <strong id="deleteNombre"></strong>?
+            <?= t('camiones.delete_confirm_before') ?> <strong id="deleteNombre"></strong><?= t('camiones.delete_confirm_after') ?>
         </p>
         <div class="modal-actions">
-            <button class="btn-secondary" onclick="cerrarModalDelete()">Cancelar</button>
-            <button class="btn-danger" onclick="confirmarDelete()">Eliminar</button>
+            <button class="btn-secondary" onclick="cerrarModalDelete()"><?= t('camiones.btn_cancelar') ?></button>
+            <button class="btn-danger" onclick="confirmarDelete()"><?= t('camiones.btn_eliminar') ?></button>
         </div>
     </div>
 </div>
@@ -341,22 +346,97 @@
                 <img src="logoRecolix.png" alt="Recolix" class="footer-logo-img">
                 <span class="footer-logo-name">Recolix</span>
             </div>
-            <p>Plataforma de gestión de residuos urbanos para Montevideo.</p>
+            <p><?= t('common.footer_desc') ?></p>
         </div>
         <div class="footer-col">
-            <h3>Navegación</h3>
+            <h3><?= t('common.footer_navegacion') ?></h3>
             <ul>
-                <li><a href="../../LandingPage/index_LandingPage.html">Página principal</a></li>
-                <li><a href="../../LandingPage/mapa.html">Mapa público</a></li>
+                <li><a href="../../LandingPage/index_LandingPage.html"><?= t('backoffice.footer_pagina_principal') ?></a></li>
+                <li><a href="../../LandingPage/mapa.html"><?= t('backoffice.footer_mapa_publico') ?></a></li>
             </ul>
         </div>
     </div>
     <div class="footer-hr"></div>
-    <p class="footer-copy">&copy; 2026 Recolix. Todos los derechos reservados.</p>
+    <p class="footer-copy"><?= t('backoffice.footer_copyright') ?></p>
 </footer>
 
 <script>
 const API_BASE = '/recolix/API_Recoleccion';
+const I18N = <?= json_encode(t_array([
+    'msgIngresaId' => 'camiones.msg_ingresa_id',
+    'msgCamionNoEncontrado' => 'camiones.msg_camion_no_encontrado',
+    'msgErrorConectar' => 'camiones.msg_error_conectar',
+    'msgSeleccionaFiltro' => 'camiones.msg_selecciona_filtro',
+    'msgSeleccionaValorFiltro' => 'camiones.msg_selecciona_valor_filtro',
+    'msgSeleccionaCampo' => 'camiones.msg_selecciona_campo',
+    'msgIngresaValor' => 'camiones.msg_ingresa_valor',
+    'msgErrorGuardar' => 'camiones.msg_error_guardar',
+    'msgErrorModificar' => 'camiones.msg_error_modificar',
+    'msgErrorEliminar' => 'camiones.msg_error_eliminar',
+    'msgErrorVerificarDisp' => 'camiones.msg_error_verificar_disp',
+    'msgCamionDadoBaja' => 'camiones.msg_camion_dado_baja',
+    'msgDisponibleSi' => 'camiones.msg_disponible_si',
+    'msgDisponibleNo' => 'camiones.msg_disponible_no',
+    'msgMatFormato' => 'camiones.msg_mat_formato',
+    'msgMatLetras' => 'camiones.msg_mat_letras',
+    'msgMatNumeros' => 'camiones.msg_mat_numeros',
+    'msgIngresaFechaInicio' => 'camiones.msg_ingresa_fecha_inicio',
+    'msgIngresaFechaFin' => 'camiones.msg_ingresa_fecha_fin',
+    'msgFechaFinAnterior' => 'camiones.msg_fecha_fin_anterior',
+    'msgIngresaIdCamion' => 'camiones.msg_ingresa_id_camion',
+    'msgMantRegistrado' => 'camiones.msg_mant_registrado',
+    'msgMantProgramado' => 'camiones.msg_mant_programado',
+    'sinDescripcion' => 'camiones.sin_descripcion',
+    'thId' => 'camiones.th_id',
+    'thMatricula' => 'camiones.th_matricula',
+    'thTipocarga' => 'camiones.th_tipocarga',
+    'thCapacidad' => 'camiones.th_capacidad',
+    'thAnio' => 'camiones.th_anio',
+    'thModelo' => 'camiones.th_modelo',
+    'thEstado' => 'camiones.th_estado',
+    'thAcciones' => 'camiones.th_acciones',
+    'thHasta' => 'camiones.th_hasta',
+    'thCamion' => 'camiones.th_camion',
+    'thTipo' => 'camiones.th_tipo',
+    'thDescripcion' => 'camiones.th_descripcion',
+    'thFechaprog' => 'camiones.th_fechaprog',
+    'thCosto' => 'camiones.th_costo',
+    'modalAddTitle' => 'camiones.modal_add_title',
+    'modalEditTitle' => 'camiones.modal_edit_title',
+    'valDisponible' => 'camiones.val_disponible',
+    'valEnRuta' => 'camiones.val_en_ruta',
+    'valEnMantenimiento' => 'camiones.val_en_mantenimiento',
+    'valDeBaja' => 'camiones.val_de_baja',
+    'valEnDeposito' => 'camiones.val_en_deposito',
+    'valCargaLateral' => 'camiones.val_carga_lateral',
+    'valCargaTrasera' => 'camiones.val_carga_trasera',
+    'valPuertaAPuerta' => 'camiones.val_puerta_a_puerta',
+    'valPreventivo' => 'camiones.val_preventivo',
+    'valCorrectivo' => 'camiones.val_correctivo',
+    'filtroTituloEstado' => 'camiones.filtro_titulo_estado',
+    'filtroTituloTipo' => 'camiones.filtro_titulo_tipo',
+    'filtroTituloDisponibles' => 'camiones.filtro_titulo_disponibles',
+    'filtroTituloEnmantenimiento' => 'camiones.filtro_titulo_enmantenimiento',
+    'filtroTituloMantprox' => 'camiones.filtro_titulo_mantprox',
+    'filtroTituloAnio' => 'camiones.filtro_titulo_anio',
+    'filtroTituloModelo' => 'camiones.filtro_titulo_modelo',
+    'filtroTituloCapacidad' => 'camiones.filtro_titulo_capacidad',
+    'filtroTituloCapacidadSuf' => 'camiones.filtro_titulo_capacidad_suf',
+    'filtroTituloPrefijo' => 'camiones.filtro_titulo_prefijo',
+    'tableTitleTodos' => 'camiones.table_title_todos',
+    'tableTitleCamionId' => 'camiones.table_title_camion_id',
+    'resultadoSingular' => 'camiones.resultado_singular',
+    'resultadoPlural' => 'camiones.resultado_plural',
+    'filtroPhAnio' => 'camiones.filtro_ph_anio',
+    'filtroPhModelo' => 'camiones.filtro_ph_modelo',
+    'filtroPhCapacidad' => 'camiones.filtro_ph_capacidad',
+    'fieldMatriculaPh' => 'camiones.field_matricula_placeholder',
+    'valorPhSeleccionaCampo' => 'camiones.valor_placeholder_seleccionacampo',
+    'filtroValorPh' => 'camiones.filtro_valor_placeholder',
+    'btnModificar' => 'camiones.btn_modificar',
+    'btnEliminar' => 'camiones.btn_eliminar',
+])) ?>;
+const I18N_LOCALE = <?= json_encode(t_locale()) ?>;
 let camionIdParaEliminar = null;
 let toastTimeout;
 let reglas = {};
@@ -403,12 +483,12 @@ async function listarCamiones() {
         const json = await res.json();
         if (json.status === 'success') {
             renderTabla(json.data);
-            setTableTitle('Todos los Camiones');
+            setTableTitle(I18N.tableTitleTodos);
         } else {
             mostrarToast(json.message, 'error');
         }
     } catch {
-        mostrarToast('Error al conectar con la API', 'error');
+        mostrarToast(I18N.msgErrorConectar, 'error');
     } finally {
         setLoading(false);
     }
@@ -416,7 +496,7 @@ async function listarCamiones() {
 
 async function buscarPorId() {
     const id = document.getElementById('buscarId').value.trim();
-    if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
+    if (!id) { mostrarToast(I18N.msgIngresaId, 'warning'); return; }
     setLoading(true);
     vistaActual = { url: `${API_BASE}/camiones/${id}`, render: 'tabla' };
     try {
@@ -424,13 +504,13 @@ async function buscarPorId() {
         const json = await res.json();
         if (json.status === 'success' && json.data) {
             renderTabla([json.data]);
-            setTableTitle(`Camión #${id}`);
+            setTableTitle(`${I18N.tableTitleCamionId}${id}`);
         } else {
             renderTabla([]);
-            mostrarToast(json.message || 'Camión no encontrado', 'error');
+            mostrarToast(json.message || I18N.msgCamionNoEncontrado, 'error');
         }
     } catch {
-        mostrarToast('Error al conectar con la API', 'error');
+        mostrarToast(I18N.msgErrorConectar, 'error');
     } finally {
         setLoading(false);
     }
@@ -457,11 +537,11 @@ function actualizarFiltroValor() {
 
     if (listas[tipo]) {
         select.innerHTML = '<option value="">— Seleccionar —</option>' +
-            listas[tipo].map(v => `<option value="${v}">${formatearValor(v)}</option>`).join('');
+            listas[tipo].map(v => `<option value="${v}">${valorFormateado(v)}</option>`).join('');
         select.style.display = '';
     } else {
-        const placeholders = { anio: 'ej: 2020', modelo: 'ej: Ford F-550', capacidad: 'kg (ej: 5000)' };
-        input.placeholder = placeholders[tipo] || 'Valor del filtro...';
+        const placeholders = { anio: I18N.filtroPhAnio, modelo: I18N.filtroPhModelo, capacidad: I18N.filtroPhCapacidad };
+        input.placeholder = placeholders[tipo] || I18N.filtroValorPh;
         input.style.display = '';
     }
 }
@@ -470,14 +550,14 @@ async function aplicarFiltro() {
     const tipo   = document.getElementById('filtroTipo').value;
     const input  = document.getElementById('filtroValor');
     const select = document.getElementById('filtroValorSelect');
-    if (!tipo) { mostrarToast('Seleccioná un filtro', 'warning'); return; }
+    if (!tipo) { mostrarToast(I18N.msgSeleccionaFiltro, 'warning'); return; }
 
     const sinValor = ['disponibilidad', 'mantenimiento'];
     const valor = sinValor.includes(tipo) ? '' :
         (select.style.display !== 'none' ? select.value : input.value).trim();
 
     if (!sinValor.includes(tipo) && !valor) {
-        mostrarToast('Seleccioná un valor para el filtro', 'warning');
+        mostrarToast(I18N.msgSeleccionaValorFiltro, 'warning');
         return;
     }
 
@@ -505,32 +585,32 @@ async function aplicarFiltro() {
                 renderTabla(json.data);
             }
             const labels = {
-                estado: `Estado: ${formatearValor(valor)}`, tipoCarga: `Tipo: ${formatearValor(valor)}`,
-                disponibilidad: 'Disponibles', mantenimiento: 'En Mantenimiento',
-                proximosMantenimientos: `Mantenimientos Próximos — ${formatearValor(valor)}`,
-                anio: `Año: ${valor}`, modelo: `Modelo: ${valor}`,
-                capacidad: `Capacidad ≥ ${valor} kg`
+                estado: `${I18N.filtroTituloEstado} ${valorFormateado(valor)}`, tipoCarga: `${I18N.filtroTituloTipo} ${valorFormateado(valor)}`,
+                disponibilidad: I18N.filtroTituloDisponibles, mantenimiento: I18N.filtroTituloEnmantenimiento,
+                proximosMantenimientos: `${I18N.filtroTituloMantprox} ${valorFormateado(valor)}`,
+                anio: `${I18N.filtroTituloAnio} ${valor}`, modelo: `${I18N.filtroTituloModelo} ${valor}`,
+                capacidad: `${I18N.filtroTituloCapacidad} ${valor} ${I18N.filtroTituloCapacidadSuf}`
             };
-            setTableTitle(`Filtro — ${labels[tipo] || tipo}`);
+            setTableTitle(`${I18N.filtroTituloPrefijo} ${labels[tipo] || tipo}`);
         } else {
             mostrarToast(json.message, 'error');
         }
     } catch {
-        mostrarToast('Error al conectar con la API', 'error');
+        mostrarToast(I18N.msgErrorConectar, 'error');
     } finally {
         setLoading(false);
     }
 }
 
 function abrirModalAgregar() {
-    document.getElementById('modalTitle').textContent = 'Agregar Camión';
+    document.getElementById('modalTitle').textContent = I18N.modalAddTitle;
     document.getElementById('camionId').value = '';
     document.getElementById('camionForm').reset();
     document.getElementById('modalForm').style.display = 'flex';
 }
 
 function abrirModalEditar(camion) {
-    document.getElementById('modalTitle').textContent = 'Editar Camión';
+    document.getElementById('modalTitle').textContent = I18N.modalEditTitle;
     document.getElementById('camionId').value  = camion.id_camion;
     document.getElementById('matricula').value = camion.matricula;
     document.getElementById('capacidad').value = camion.capacidad;
@@ -556,20 +636,20 @@ async function guardarCamion(e) {
     const matricula = matInput.value.toUpperCase();
     matInput.setCustomValidity('');
     if (matricula.length !== 7) {
-        matInput.setCustomValidity('Debe tener 3 letras seguidas de 4 números (ej: ABC1234)');
+        matInput.setCustomValidity(I18N.msgMatFormato);
         matInput.reportValidity();
         return;
     }
     for (let i = 0; i < 3; i++) {
         if (matricula[i] < 'A' || matricula[i] > 'Z') {
-            matInput.setCustomValidity('Los primeros 3 caracteres deben ser letras (ej: ABC1234)');
+            matInput.setCustomValidity(I18N.msgMatLetras);
             matInput.reportValidity();
             return;
         }
     }
     for (let i = 3; i < 7; i++) {
         if (matricula[i] < '0' || matricula[i] > '9') {
-            matInput.setCustomValidity('Los últimos 4 caracteres deben ser números (ej: ABC1234)');
+            matInput.setCustomValidity(I18N.msgMatNumeros);
             matInput.reportValidity();
             return;
         }
@@ -642,7 +722,7 @@ async function guardarCamion(e) {
             mostrarToast(json.message, 'error');
         }
     } catch {
-        mostrarToast('Error al guardar', 'error');
+        mostrarToast(I18N.msgErrorGuardar, 'error');
     }
 }
 
@@ -657,14 +737,14 @@ async function confirmarDelete() {
         const res  = await fetch(`${API_BASE}/camiones/${camionIdParaEliminar}`, { method: 'DELETE' });
         const json = await res.json();
         if (json.status === 'success') {
-            mostrarToast('Camión dado de baja correctamente', 'success');
+            mostrarToast(I18N.msgCamionDadoBaja, 'success');
             cerrarModalDelete();
             listarCamiones();
         } else {
             mostrarToast(json.message, 'error');
         }
     } catch {
-        mostrarToast('Error al eliminar', 'error');
+        mostrarToast(I18N.msgErrorEliminar, 'error');
     }
 }
 
@@ -674,14 +754,14 @@ async function verificarDisponibilidad(id, matricula) {
         const json = await res.json();
         if (json.status === 'success') {
             mostrarToast(
-                json.data ? `${matricula} está disponible ✓` : `${matricula} no está disponible`,
+                (json.data ? I18N.msgDisponibleSi : I18N.msgDisponibleNo).replace('{m}', matricula),
                 json.data ? 'success' : 'warning'
             );
         } else {
-            mostrarToast(json.message || 'Error al verificar disponibilidad', 'error');
+            mostrarToast(json.message || I18N.msgErrorVerificarDisp, 'error');
         }
     } catch {
-        mostrarToast('Error al verificar disponibilidad', 'error');
+        mostrarToast(I18N.msgErrorVerificarDisp, 'error');
     }
 }
 
@@ -702,15 +782,15 @@ function actualizarPlaceholderModificar() {
 
     if (listas[campo]) {
         select.innerHTML = listas[campo].map((v, i) =>
-            `<option value="${v}"${i === 0 ? ' selected' : ''}>${formatearValor(v)}</option>`
+            `<option value="${v}"${i === 0 ? ' selected' : ''}>${valorFormateado(v)}</option>`
         ).join('');
         select.style.display = '';
     } else {
         const placeholders = {
-            matricula: 'ABC1234',
-            capacidad: 'kg (ej: 5000)',
-            anio:      'ej: 2020',
-            modelo:    'ej: Ford F-550'
+            matricula: I18N.fieldMatriculaPh,
+            capacidad: I18N.filtroPhCapacidad,
+            anio:      I18N.filtroPhAnio,
+            modelo:    I18N.filtroPhModelo
         };
         const maxlengths = {
             matricula: 7,
@@ -718,7 +798,7 @@ function actualizarPlaceholderModificar() {
             anio:      4,
             modelo:    100
         };
-        input.placeholder = placeholders[campo] || 'Seleccioná un campo...';
+        input.placeholder = placeholders[campo] || I18N.valorPhSeleccionaCampo;
         input.maxLength = maxlengths[campo] || '';
         input.style.display = '';
     }
@@ -726,14 +806,14 @@ function actualizarPlaceholderModificar() {
 
 async function modificarCamion() {
     const id = document.getElementById('modificarId').value.trim();
-    if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
+    if (!id) { mostrarToast(I18N.msgIngresaId, 'warning'); return; }
     const campo = document.getElementById('modificarCampo').value;
-    if (!campo) { mostrarToast('Seleccioná un campo a modificar', 'warning'); return; }
+    if (!campo) { mostrarToast(I18N.msgSeleccionaCampo, 'warning'); return; }
 
     const input = document.getElementById('modificarValor');
     const select = document.getElementById('modificarValorSelect');
     const valor = (select.style.display !== 'none' ? select : input).value.trim();
-    if (!valor) { mostrarToast('Ingresá el nuevo valor', 'warning'); return; }
+    if (!valor) { mostrarToast(I18N.msgIngresaValor, 'warning'); return; }
 
     const regla = reglas[campo];
     if (regla) {
@@ -771,7 +851,7 @@ async function modificarCamion() {
         const res  = await fetch(`${API_BASE}/camiones/${id}`);
         const json = await res.json();
         if (json.status !== 'success' || !json.data) {
-            mostrarToast(json.message || 'Camión no encontrado', 'error');
+            mostrarToast(json.message || I18N.msgCamionNoEncontrado, 'error');
             return;
         }
         const camion = json.data;
@@ -808,7 +888,7 @@ async function modificarCamion() {
             mostrarToast(putJson.message, 'error');
         }
     } catch {
-        mostrarToast('Error al modificar', 'error');
+        mostrarToast(I18N.msgErrorModificar, 'error');
     } finally {
         setLoading(false);
     }
@@ -816,7 +896,7 @@ async function modificarCamion() {
 
 async function darDeBajaCamion() {
     const id = document.getElementById('deleteId').value.trim();
-    if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
+    if (!id) { mostrarToast(I18N.msgIngresaId, 'warning'); return; }
     setLoading(true);
     try {
         const res  = await fetch(`${API_BASE}/camiones/${id}`);
@@ -825,10 +905,10 @@ async function darDeBajaCamion() {
             confirmarBorrar(json.data.id_camion, json.data.matricula);
             ocultarControles();
         } else {
-            mostrarToast(json.message || 'Camión no encontrado', 'error');
+            mostrarToast(json.message || I18N.msgCamionNoEncontrado, 'error');
         }
     } catch {
-        mostrarToast('Error al conectar con la API', 'error');
+        mostrarToast(I18N.msgErrorConectar, 'error');
     } finally {
         setLoading(false);
     }
@@ -836,14 +916,14 @@ async function darDeBajaCamion() {
 
 function restaurarHeadersCamiones() {
     document.getElementById('tablaHeaders').innerHTML = `
-        <th>ID</th>
-        <th>Matrícula</th>
-        <th>Tipo de Carga</th>
-        <th>Capacidad (kg)</th>
-        <th>Año</th>
-        <th>Modelo</th>
-        <th>Estado</th>
-        <th>Acciones</th>`;
+        <th>${I18N.thId}</th>
+        <th>${I18N.thMatricula}</th>
+        <th>${I18N.thTipocarga}</th>
+        <th>${I18N.thCapacidad}</th>
+        <th>${I18N.thAnio}</th>
+        <th>${I18N.thModelo}</th>
+        <th>${I18N.thEstado}</th>
+        <th>${I18N.thAcciones}</th>`;
 }
 
 function renderTabla(camiones) {
@@ -861,22 +941,22 @@ function renderTabla(camiones) {
     }
 
     noRes.style.display = 'none';
-    count.textContent   = `${camiones.length} resultado${camiones.length !== 1 ? 's' : ''}`;
+    count.textContent   = `${camiones.length} ${camiones.length !== 1 ? I18N.resultadoPlural : I18N.resultadoSingular}`;
 
     camiones.forEach(c => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td class="td-id" data-label="ID">${c.id_camion}</td>
-            <td data-label="Matrícula"><strong>${c.matricula}</strong></td>
-            <td data-label="Tipo de Carga">${formatearValor(c.tipo_carga)}</td>
-            <td data-label="Capacidad (kg)">${Number(c.capacidad).toLocaleString()}</td>
-            <td data-label="Año">${c.anio}</td>
-            <td data-label="Modelo">${c.modelo}</td>
-            <td data-label="Estado"><span class="badge badge-${badgeClass(c.estado)}">${formatearValor(c.estado)}</span></td>
-            <td class="td-actions" data-label="Acciones">
-                <button class="btn-action" onclick='abrirModalEditar(${JSON.stringify(c)})' title="Editar">✏️</button>
-                <button class="btn-action" onclick="verificarDisponibilidad(${c.id_camion},'${c.matricula}')" title="Verificar disponibilidad">✅</button>
-                <button class="btn-action" onclick="confirmarBorrar(${c.id_camion},'${c.matricula}')" title="Eliminar">🗑️</button>
+            <td class="td-id" data-label="${I18N.thId}">${c.id_camion}</td>
+            <td data-label="${I18N.thMatricula}"><strong>${c.matricula}</strong></td>
+            <td data-label="${I18N.thTipocarga}">${valorFormateado(c.tipo_carga)}</td>
+            <td data-label="${I18N.thCapacidad}">${Number(c.capacidad).toLocaleString()}</td>
+            <td data-label="${I18N.thAnio}">${c.anio}</td>
+            <td data-label="${I18N.thModelo}">${c.modelo}</td>
+            <td data-label="${I18N.thEstado}"><span class="badge badge-${badgeClass(c.estado)}">${valorFormateado(c.estado)}</span></td>
+            <td class="td-actions" data-label="${I18N.thAcciones}">
+                <button class="btn-action" onclick='abrirModalEditar(${JSON.stringify(c)})' title="${I18N.btnModificar}">✏️</button>
+                <button class="btn-action" onclick="verificarDisponibilidad(${c.id_camion},'${c.matricula}')" title="${I18N.msgErrorVerificarDisp}">✅</button>
+                <button class="btn-action" onclick="confirmarBorrar(${c.id_camion},'${c.matricula}')" title="${I18N.btnEliminar}">🗑️</button>
             </td>
         `;
         tbody.appendChild(tr);
@@ -887,7 +967,7 @@ function formatearFecha(fechaStr) {
     if (!fechaStr) return '—';
     const d = new Date(fechaStr.replace(' ', 'T'));
     if (isNaN(d.getTime())) return fechaStr;
-    return d.toLocaleString('es-UY', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    return d.toLocaleString(I18N_LOCALE, { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
 function renderTablaEnMantenimiento(camiones) {
@@ -896,14 +976,14 @@ function renderTablaEnMantenimiento(camiones) {
     const count = document.getElementById('tableCount');
 
     document.getElementById('tablaHeaders').innerHTML = `
-        <th>ID</th>
-        <th>Matrícula</th>
-        <th>Tipo de Carga</th>
-        <th>Capacidad (kg)</th>
-        <th>Año</th>
-        <th>Modelo</th>
-        <th>Hasta</th>
-        <th>Acciones</th>`;
+        <th>${I18N.thId}</th>
+        <th>${I18N.thMatricula}</th>
+        <th>${I18N.thTipocarga}</th>
+        <th>${I18N.thCapacidad}</th>
+        <th>${I18N.thAnio}</th>
+        <th>${I18N.thModelo}</th>
+        <th>${I18N.thHasta}</th>
+        <th>${I18N.thAcciones}</th>`;
 
     tbody.innerHTML = '';
 
@@ -914,22 +994,22 @@ function renderTablaEnMantenimiento(camiones) {
     }
 
     noRes.style.display = 'none';
-    count.textContent   = `${camiones.length} resultado${camiones.length !== 1 ? 's' : ''}`;
+    count.textContent   = `${camiones.length} ${camiones.length !== 1 ? I18N.resultadoPlural : I18N.resultadoSingular}`;
 
     camiones.forEach(c => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td class="td-id" data-label="ID">${c.id_camion}</td>
-            <td data-label="Matrícula"><strong>${c.matricula}</strong></td>
-            <td data-label="Tipo de Carga">${formatearValor(c.tipo_carga)}</td>
-            <td data-label="Capacidad (kg)">${Number(c.capacidad).toLocaleString()}</td>
-            <td data-label="Año">${c.anio}</td>
-            <td data-label="Modelo">${c.modelo}</td>
-            <td data-label="Hasta"><span class="badge badge-warning">${formatearFecha(c.fecha_fin_mantenimiento)}</span></td>
-            <td class="td-actions" data-label="Acciones">
-                <button class="btn-action" onclick='abrirModalEditar(${JSON.stringify(c)})' title="Editar">✏️</button>
-                <button class="btn-action" onclick="verificarDisponibilidad(${c.id_camion},'${c.matricula}')" title="Verificar disponibilidad">✅</button>
-                <button class="btn-action" onclick="confirmarBorrar(${c.id_camion},'${c.matricula}')" title="Eliminar">🗑️</button>
+            <td class="td-id" data-label="${I18N.thId}">${c.id_camion}</td>
+            <td data-label="${I18N.thMatricula}"><strong>${c.matricula}</strong></td>
+            <td data-label="${I18N.thTipocarga}">${valorFormateado(c.tipo_carga)}</td>
+            <td data-label="${I18N.thCapacidad}">${Number(c.capacidad).toLocaleString()}</td>
+            <td data-label="${I18N.thAnio}">${c.anio}</td>
+            <td data-label="${I18N.thModelo}">${c.modelo}</td>
+            <td data-label="${I18N.thHasta}"><span class="badge badge-warning">${formatearFecha(c.fecha_fin_mantenimiento)}</span></td>
+            <td class="td-actions" data-label="${I18N.thAcciones}">
+                <button class="btn-action" onclick='abrirModalEditar(${JSON.stringify(c)})' title="${I18N.btnModificar}">✏️</button>
+                <button class="btn-action" onclick="verificarDisponibilidad(${c.id_camion},'${c.matricula}')" title="${I18N.msgErrorVerificarDisp}">✅</button>
+                <button class="btn-action" onclick="confirmarBorrar(${c.id_camion},'${c.matricula}')" title="${I18N.btnEliminar}">🗑️</button>
             </td>
         `;
         tbody.appendChild(tr);
@@ -942,12 +1022,12 @@ function renderTablaMantenimientos(mantenimientos) {
     const count = document.getElementById('tableCount');
 
     document.getElementById('tablaHeaders').innerHTML = `
-        <th>ID</th>
-        <th>Camion</th>
-        <th>Tipo</th>
-        <th>Descripcion</th>
-        <th>Fecha Programada</th>
-        <th>Costo</th>`;
+        <th>${I18N.thId}</th>
+        <th>${I18N.thCamion}</th>
+        <th>${I18N.thTipo}</th>
+        <th>${I18N.thDescripcion}</th>
+        <th>${I18N.thFechaprog}</th>
+        <th>${I18N.thCosto}</th>`;
 
     tbody.innerHTML = '';
 
@@ -958,24 +1038,32 @@ function renderTablaMantenimientos(mantenimientos) {
     }
 
     noRes.style.display = 'none';
-    count.textContent   = `${mantenimientos.length} resultado${mantenimientos.length !== 1 ? 's' : ''}`;
+    count.textContent   = `${mantenimientos.length} ${mantenimientos.length !== 1 ? I18N.resultadoPlural : I18N.resultadoSingular}`;
 
     mantenimientos.forEach(m => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td class="td-id" data-label="ID">${m.id_mantenimiento}</td>
-            <td data-label="Camion">${m.id_camion}</td>
-            <td data-label="Tipo"><span class="badge badge-${m.tipo === 'correctivo' ? 'danger' : 'info'}">${formatearValor(m.tipo)}</span></td>
-            <td data-label="Descripcion">${m.descripcion || '—'}</td>
-            <td data-label="Fecha Programada">${formatearFecha(m.fecha_inicio)}</td>
-            <td data-label="Costo">${m.costo != null ? '$ ' + Number(m.costo).toLocaleString() : '—'}</td>
+            <td class="td-id" data-label="${I18N.thId}">${m.id_mantenimiento}</td>
+            <td data-label="${I18N.thCamion}">${m.id_camion}</td>
+            <td data-label="${I18N.thTipo}"><span class="badge badge-${m.tipo === 'correctivo' ? 'danger' : 'info'}">${valorFormateado(m.tipo)}</span></td>
+            <td data-label="${I18N.thDescripcion}">${m.descripcion || '—'}</td>
+            <td data-label="${I18N.thFechaprog}">${formatearFecha(m.fecha_inicio)}</td>
+            <td data-label="${I18N.thCosto}">${m.costo != null ? '$ ' + Number(m.costo).toLocaleString() : '—'}</td>
         `;
         tbody.appendChild(tr);
     });
 }
 
-function formatearValor(v) {
-    return v.replace(/_/g, ' ');
+const VALORES_TRADUCIDOS = {
+    disponible: 'valDisponible', en_ruta: 'valEnRuta', en_mantenimiento: 'valEnMantenimiento',
+    de_baja: 'valDeBaja', en_deposito: 'valEnDeposito', carga_lateral: 'valCargaLateral',
+    carga_trasera: 'valCargaTrasera', puerta_a_puerta: 'valPuertaAPuerta',
+    preventivo: 'valPreventivo', correctivo: 'valCorrectivo'
+};
+
+function valorFormateado(v) {
+    const clave = VALORES_TRADUCIDOS[v];
+    return clave ? I18N[clave] : v.replace(/_/g, ' ');
 }
 
 function badgeClass(estado) {
@@ -1063,10 +1151,10 @@ async function registrarMantenimiento() {
     const descripcion = document.getElementById('regMantDescripcion').value.trim();
     const costo = document.getElementById('regMantCosto').value.trim();
 
-    if (!id) { mostrarToast('Ingresá el ID del camión', 'warning'); return; }
-    if (!fechaInicio) { mostrarToast('Ingresá la fecha y hora de inicio', 'warning'); return; }
-    if (!fechaFin) { mostrarToast('Ingresá la fecha y hora de fin', 'warning'); return; }
-    if (fechaFin < fechaInicio) { mostrarToast('La fecha de fin no puede ser anterior a la de inicio', 'warning'); return; }
+    if (!id) { mostrarToast(I18N.msgIngresaIdCamion, 'warning'); return; }
+    if (!fechaInicio) { mostrarToast(I18N.msgIngresaFechaInicio, 'warning'); return; }
+    if (!fechaFin) { mostrarToast(I18N.msgIngresaFechaFin, 'warning'); return; }
+    if (fechaFin < fechaInicio) { mostrarToast(I18N.msgFechaFinAnterior, 'warning'); return; }
 
     setLoading(true);
     try {
@@ -1076,7 +1164,7 @@ async function registrarMantenimiento() {
             body: JSON.stringify({
                 camionId: parseInt(id),
                 tipo,
-                descripcion: descripcion || 'Sin descripción',
+                descripcion: descripcion || I18N.sinDescripcion,
                 fechaInicio: fechaInicio.replace('T', ' '),
                 fechaFin: fechaFin.replace('T', ' '),
                 costo: costo ? parseFloat(costo) : 0
@@ -1084,13 +1172,13 @@ async function registrarMantenimiento() {
         });
         const json = await res.json();
         if (json.status === 'success') {
-            mostrarToast('Mantenimiento registrado correctamente', 'success');
+            mostrarToast(I18N.msgMantRegistrado, 'success');
             listarCamiones();
         } else {
             mostrarToast(json.message, 'error');
         }
     } catch {
-        mostrarToast('Error al conectar con la API', 'error');
+        mostrarToast(I18N.msgErrorConectar, 'error');
     } finally {
         setLoading(false);
     }
@@ -1103,10 +1191,10 @@ async function programarMantenimiento() {
     const fechaFin = document.getElementById('progMantFechaFin').value;
     const descripcion = document.getElementById('progMantDescripcion').value.trim();
 
-    if (!id) { mostrarToast('Ingresá el ID del camión', 'warning'); return; }
-    if (!fechaInicio) { mostrarToast('Ingresá la fecha y hora de inicio', 'warning'); return; }
-    if (!fechaFin) { mostrarToast('Ingresá la fecha y hora de fin', 'warning'); return; }
-    if (fechaFin < fechaInicio) { mostrarToast('La fecha de fin no puede ser anterior a la de inicio', 'warning'); return; }
+    if (!id) { mostrarToast(I18N.msgIngresaIdCamion, 'warning'); return; }
+    if (!fechaInicio) { mostrarToast(I18N.msgIngresaFechaInicio, 'warning'); return; }
+    if (!fechaFin) { mostrarToast(I18N.msgIngresaFechaFin, 'warning'); return; }
+    if (fechaFin < fechaInicio) { mostrarToast(I18N.msgFechaFinAnterior, 'warning'); return; }
 
     setLoading(true);
     try {
@@ -1116,20 +1204,20 @@ async function programarMantenimiento() {
             body: JSON.stringify({
                 camionId: parseInt(id),
                 tipo,
-                descripcion: descripcion || 'Sin descripción',
+                descripcion: descripcion || I18N.sinDescripcion,
                 fechaInicio: fechaInicio.replace('T', ' '),
                 fechaFin: fechaFin.replace('T', ' ')
             })
         });
         const json = await res.json();
         if (json.status === 'success') {
-            mostrarToast('Mantenimiento programado correctamente', 'success');
+            mostrarToast(I18N.msgMantProgramado, 'success');
             listarCamiones();
         } else {
             mostrarToast(json.message, 'error');
         }
     } catch {
-        mostrarToast('Error al conectar con la API', 'error');
+        mostrarToast(I18N.msgErrorConectar, 'error');
     } finally {
         setLoading(false);
     }

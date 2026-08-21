@@ -26,7 +26,8 @@ $config = [
                 'filtrarAnio',
                 'filtrarModelo',
                 'filtrarCapacidad',
-                'obtenerHistorial'
+                'obtenerHistorial',
+                'obtenerEnOperativa'
             ],
             'filters' => [
                 'estado' => 'filtrarEstado',

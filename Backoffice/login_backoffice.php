@@ -1,7 +1,7 @@
 <?php
 session_start();
+require_once __DIR__ . '/../i18n/i18n.php';
 
- 
     if (isset($_SESSION['usuario']) && !empty($_SESSION['usuario']['rol']) && $_SESSION['usuario']['rol'] !== 'vecino') {
     header('Location: indexBackoffice.php');
     exit;
@@ -16,9 +16,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $contrasenia = $_POST['contrasenia'] ?? '';
 
     if (!preg_match('/^\d{6,8}$/', $ci)) {
-        $_SESSION['login_error'] = 'Ingresá tu cédula sin puntos ni guiones (6 a 8 dígitos).';
+        $_SESSION['login_error'] = t('backoffice.login_error_ci');
     } elseif (empty($contrasenia)) {
-        $_SESSION['login_error'] = 'Ingresá tu contraseña.';
+        $_SESSION['login_error'] = t('backoffice.login_error_contrasenia');
     } else {
         try {
             require_once __DIR__ . '/../conexion.php';
@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             }
         } catch (Exception $e) {
-            $_SESSION['login_error'] = 'Error al conectar con el servidor. Intentá de nuevo más tarde.';
+            $_SESSION['login_error'] = t('backoffice.login_error_conexion');
         }
     }
     header('Location: login_backoffice.php');
@@ -44,11 +44,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="<?= htmlspecialchars($RECOLIX_IDIOMA) ?>">
 <head>
     <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal de Empleados — Recolix</title>
+    <title><?= t('backoffice.login_title') ?></title>
     <link rel="stylesheet" href="styleBackoffice.css">
     <link rel="stylesheet" href="styleLogin.css">
 </head>
@@ -56,13 +57,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="login-wrap">
     <div class="login-card">
 
+        <?php include __DIR__ . '/../i18n/switcher.php'; ?>
+
         <div class="login-logo">
             <img src="../API_Recoleccion/Vista/logoRecolix.png" alt="Recolix">
             <span>Recolix</span>
         </div>
 
-        <h1>Portal de Empleados</h1>
-        <p class="login-subtitulo">Ingresá con tu cédula y contraseña.</p>
+        <h1><?= t('backoffice.login_titulo') ?></h1>
+        <p class="login-subtitulo"><?= t('backoffice.login_subtitulo') ?></p>
 
         <?php if ($error): ?>
             <div class="login-error"><?= htmlspecialchars($error) ?></div>
@@ -70,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <form method="post" novalidate>
             <div class="form-row">
-                <label for="ci">Cédula de identidad</label>
+                <label for="ci"><?= t('backoffice.login_cedula') ?></label>
                 <input
                     type="text"
                     id="ci"
@@ -81,14 +84,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 >
             </div>
             <div class="form-row">
-                <label for="contrasenia">Contraseña</label>
-                <input type="password" id="contrasenia" name="contrasenia" placeholder="Tu contraseña" required>
+                <label for="contrasenia"><?= t('backoffice.login_contrasenia') ?></label>
+                <input type="password" id="contrasenia" name="contrasenia" placeholder="<?= htmlspecialchars(t('backoffice.login_contrasenia_placeholder')) ?>" required>
             </div>
-            <button type="submit" class="btn-ingresar">Ingresar</button>
+            <button type="submit" class="btn-ingresar"><?= t('backoffice.login_ingresar') ?></button>
         </form>
 
         <p style="text-align:center; margin-top:1.25rem; font-size:0.88rem;">
-            <a href="/recolix/LandingPage/index_LandingPage.html" style="color:var(--moss); text-decoration:none;">← Volver a la página principal</a>
+            <a href="/recolix/LandingPage/index_LandingPage.html" style="color:var(--moss); text-decoration:none;"><?= t('backoffice.login_volver') ?></a>
         </p>
 
     </div>
