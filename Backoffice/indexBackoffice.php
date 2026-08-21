@@ -33,7 +33,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
                 <a href="../API_Gestion/Vista/centrosAcopio.php">Centros de Acopio</a>
                 <a href="mapa.php">Mapa</a>
                 <a href="#">Reportes</a>
-                <a href="#">Incidencias</a>
+                <a href="../API_Gestion/Vista/incidencias.php">Incidencias</a>
                 <a href="../API_Usuarios/Vista/usuarios.php">Usuarios</a>
             </nav>
         </div>
@@ -56,7 +56,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
         <a href="../API_Gestion/Vista/centrosAcopio.php">Centros de Acopio</a>
         <a href="mapa.php">Mapa</a>
         <a href="#">Reportes</a>
-        <a href="#">Incidencias</a>
+        <a href="../API_Gestion/Vista/incidencias.php">Incidencias</a>
         <a href="../API_Usuarios/Vista/usuarios.php">Usuarios</a>
     </nav>
     <div class="nav-hr"></div>
@@ -75,7 +75,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
         <span class="novedades-count" id="novedadesCount"></span>
     </div>
     <div class="novedades-grid" id="novedadesGrid">
-        <a href="#" class="novedad-card">
+        <a href="../API_Gestion/Vista/incidencias.php?vista=abiertas" class="novedad-card">
             <div class="novedad-icon novedad-icon-incidencias">
                 <img src="img/exclamacion.png" alt="" class="card-svg-icon">
             </div>
@@ -152,7 +152,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
             </div>
         </a>
 
-        <a href="../API_Gestion/Vista/incidencias.html" class="card-operar">
+        <a href="../API_Gestion/Vista/incidencias.php" class="card-operar">
             <div class="card-content">
                 <div class="card-icon"><img src="img/exclamacion.png" alt="" class="card-svg-icon"></div>
                 <h3>Incidencias</h3>
@@ -231,7 +231,7 @@ async function cargarNovedades() {
     let total = 0;
 
     try {
-        const res  = await fetch(`${API_GESTION}/incidencias?estado=Abierta`);
+        const res  = await fetch(`${API_GESTION}/incidencias?estado=abierta`);
         const json = await res.json();
         if (json.status === 'success' && Array.isArray(json.data)) {
             badges.incidencias.textContent = json.data.length;

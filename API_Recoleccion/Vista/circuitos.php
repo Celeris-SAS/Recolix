@@ -54,7 +54,7 @@
                 <a href="#">Centros de Acopio</a>
                 <a href="../../Backoffice/mapa.php">Mapa</a>
                 <a href="#">Reportes</a>
-                <a href="#">Incidencias</a>
+                <a href="../../API_Gestion/Vista/incidencias.php">Incidencias</a>
                 <a href="../../API_Usuarios/Vista/usuarios.php">Usuarios</a>
             </nav>
         </div>
@@ -77,7 +77,7 @@
         <a href="#">Centros de Acopio</a>
         <a href="../../Backoffice/mapa.php">Mapa</a>
         <a href="#">Reportes</a>
-        <a href="#">Incidencias</a>
+        <a href="../../API_Gestion/Vista/incidencias.php">Incidencias</a>
         <a href="../../API_Usuarios/Vista/usuarios.php">Usuarios</a>
     </nav>
     <div class="nav-hr"></div>

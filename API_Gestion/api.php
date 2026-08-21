@@ -93,6 +93,31 @@ $config = [
                 'estado'    => 'filtrarEstado'
             ]
         ],
+        'incidencias' => [
+            'singular'    => 'Incidencia',
+            'controller'  => 'IncidenciaController',
+            'file'        => 'Controlador/incidenciaController.php',
+            'getAllMethod' => 'getAllIncidencias',
+            'getMethod'   => 'getIncidencia',
+            'insertMethod' => null,
+            'updateMethod' => null,
+            'deleteMethod' => null,
+            'actions' => [
+                'reglasValidacion',
+                'listarUrgentes',
+                'getContenedoresVinculados',
+                'asignarCuadrilla',
+                'cerrar',
+                'filtrarEstado',
+                'filtrarTipo',
+                'filtrarPrioridad'
+            ],
+            'filters' => [
+                'estado'    => 'filtrarEstado',
+                'tipo'      => 'filtrarTipo',
+                'prioridad' => 'filtrarPrioridad'
+            ]
+        ],
         'maquinaria' => [
             'singular'    => 'Maquinaria',
             'controller'  => 'MaquinariaController',

@@ -31,7 +31,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                     <a href="#" class="nav-active">Centros de Acopio</a>
                     <a href="../../Backoffice/mapa.php">Mapa</a>
                     <a href="#">Reportes</a>
-                    <a href="#">Incidencias</a>
+                    <a href="incidencias.php">Incidencias</a>
                     <a href="../../API_Usuarios/Vista/usuarios.php">Usuarios</a>
                 </nav>
             </div>
@@ -54,7 +54,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             <a href="#" class="nav-active">Centros de Acopio</a>
             <a href="../../Backoffice/mapa.php">Mapa</a>
             <a href="#">Reportes</a>
-            <a href="#">Incidencias</a>
+            <a href="incidencias.php">Incidencias</a>
             <a href="../../API_Usuarios/Vista/usuarios.php">Usuarios</a>
         </nav>
         <div class="nav-hr"></div>
