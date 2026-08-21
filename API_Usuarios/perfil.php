@@ -47,7 +47,7 @@ if (!in_array($rol, $rolesPermitidos)) {
                     <a href="../API_Recoleccion/Vista/camiones.php"><?= t('backoffice.nav_camiones') ?></a>
                     <a href="../API_Recoleccion/Vista/circuitos.php"><?= t('backoffice.nav_circuitos') ?></a>
                     <a href="../API_Recoleccion/Vista/rutas.php"><?= t('backoffice.nav_rutas') ?></a>
-                    <a href="#"><?= t('backoffice.nav_cuadrillas') ?></a>
+                    <a href="Vista/cuadrillas.php"><?= t('backoffice.nav_cuadrillas') ?></a>
                     <a href="../API_Gestion/Vista/contenedores.php"><?= t('backoffice.nav_contenedores') ?></a>
                     <a href="../API_Gestion/Vista/centrosAcopio.php"><?= t('backoffice.nav_centros_acopio') ?></a>
                     <a href="../Backoffice/mapa.php"><?= t('backoffice.nav_mapa') ?></a>
@@ -71,7 +71,7 @@ if (!in_array($rol, $rolesPermitidos)) {
             <a href="../API_Recoleccion/Vista/camiones.php"><?= t('backoffice.nav_camiones') ?></a>
             <a href="../API_Recoleccion/Vista/circuitos.php"><?= t('backoffice.nav_circuitos') ?></a>
             <a href="../API_Recoleccion/Vista/rutas.php"><?= t('backoffice.nav_rutas') ?></a>
-            <a href="#"><?= t('backoffice.nav_cuadrillas') ?></a>
+            <a href="Vista/cuadrillas.php"><?= t('backoffice.nav_cuadrillas') ?></a>
             <a href="../API_Gestion/Vista/contenedores.php"><?= t('backoffice.nav_contenedores') ?></a>
             <a href="../API_Gestion/Vista/centrosAcopio.php"><?= t('backoffice.nav_centros_acopio') ?></a>
             <a href="../Backoffice/mapa.php"><?= t('backoffice.nav_mapa') ?></a>
