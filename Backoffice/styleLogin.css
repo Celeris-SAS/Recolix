@@ -18,6 +18,11 @@ body { align-items: center; justify-content: center; }
     box-shadow: 0 4px 24px rgba(28,33,23,0.08);
 }
 
+.login-card > .lang-switcher {
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
 .login-logo {
     display: flex;
     align-items: center;

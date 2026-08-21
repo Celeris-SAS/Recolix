@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once __DIR__ . '/../i18n/i18n.php';
 
 $ci  = $_SESSION['usuario']['ci_usuario'] ?? null;
 $rol = $_SESSION['usuario']['rol'] ?? null;
@@ -16,12 +17,13 @@ if (!in_array($rol, $rolesPermitidos)) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="<?= htmlspecialchars($RECOLIX_IDIOMA) ?>">
 
 <head>
     <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recolix — Mi panel</title>
+    <title><?= t('perfil.title') ?></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -36,45 +38,46 @@ if (!in_array($rol, $rolesPermitidos)) {
     <header class="navbar">
         <div class="nav-inner">
             <div class="nav-left">
-                <div class="brand">
+                <a href="../Backoffice/indexBackoffice.php" class="brand">
                     <img src="../API_Recoleccion/Vista/logoRecolix.png" alt="Recolix" class="brand-logo">
                     <span class="brand-name">Recolix</span>
-                </div>
+                </a>
                 <nav class="nav-links">
-                    <a href="../Backoffice/indexBackoffice.php">Inicio</a>
-                    <a href="../API_Recoleccion/Vista/camiones.php">Camiones</a>
-                    <a href="../API_Recoleccion/Vista/circuitos.php">Circuitos</a>
-                    <a href="../API_Recoleccion/Vista/rutas.php">Rutas</a>
-                    <a href="#">Cuadrillas</a>
-                    <a href="../API_Gestion/Vista/contenedores.php">Contenedores</a>
-                    <a href="../API_Gestion/Vista/centrosAcopio.php">Centros de Acopio</a>
-                    <a href="../Backoffice/mapa.php">Mapa</a>
-                    <a href="#">Reportes</a>
-                    <a href="#">Incidencias</a>
-                    <a href="Vista/usuarios.php">Usuarios</a>
+                    <a href="../Backoffice/indexBackoffice.php"><?= t('backoffice.nav_inicio') ?></a>
+                    <a href="../API_Recoleccion/Vista/camiones.php"><?= t('backoffice.nav_camiones') ?></a>
+                    <a href="../API_Recoleccion/Vista/circuitos.php"><?= t('backoffice.nav_circuitos') ?></a>
+                    <a href="../API_Recoleccion/Vista/rutas.php"><?= t('backoffice.nav_rutas') ?></a>
+                    <a href="#"><?= t('backoffice.nav_cuadrillas') ?></a>
+                    <a href="../API_Gestion/Vista/contenedores.php"><?= t('backoffice.nav_contenedores') ?></a>
+                    <a href="../API_Gestion/Vista/centrosAcopio.php"><?= t('backoffice.nav_centros_acopio') ?></a>
+                    <a href="../Backoffice/mapa.php"><?= t('backoffice.nav_mapa') ?></a>
+                    <a href="#"><?= t('backoffice.nav_reportes') ?></a>
+                    <a href="#"><?= t('backoffice.nav_incidencias') ?></a>
+                    <a href="Vista/usuarios.php"><?= t('backoffice.nav_usuarios') ?></a>
                 </nav>
             </div>
             <div class="nav-right">
-                <a href="perfil.php" class="btn-user" title="Perfil de usuario">
+                <?php include __DIR__ . '/../i18n/switcher.php'; ?>
+                <a href="perfil.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
                     <img src="../API_Recoleccion/Vista/img/user.svg" alt="Usuario" class="nav-user-icon">
                 </a>
-                <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menú">
+                <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="<?= htmlspecialchars(t('backoffice.nav_menu')) ?>">
                     <span></span><span></span><span></span>
                 </button>
             </div>
         </div>
         <nav class="nav-mobile" id="navMobile">
-            <a href="../Backoffice/indexBackoffice.php">Inicio</a>
-            <a href="../API_Recoleccion/Vista/camiones.php">Camiones</a>
-            <a href="../API_Recoleccion/Vista/circuitos.php">Circuitos</a>
-            <a href="../API_Recoleccion/Vista/rutas.php">Rutas</a>
-            <a href="#">Cuadrillas</a>
-            <a href="../API_Gestion/Vista/contenedores.php">Contenedores</a>
-            <a href="../API_Gestion/Vista/centrosAcopio.php">Centros de Acopio</a>
-            <a href="../Backoffice/mapa.php">Mapa</a>
-            <a href="#">Reportes</a>
-            <a href="#">Incidencias</a>
-            <a href="Vista/usuarios.php">Usuarios</a>
+            <a href="../Backoffice/indexBackoffice.php"><?= t('backoffice.nav_inicio') ?></a>
+            <a href="../API_Recoleccion/Vista/camiones.php"><?= t('backoffice.nav_camiones') ?></a>
+            <a href="../API_Recoleccion/Vista/circuitos.php"><?= t('backoffice.nav_circuitos') ?></a>
+            <a href="../API_Recoleccion/Vista/rutas.php"><?= t('backoffice.nav_rutas') ?></a>
+            <a href="#"><?= t('backoffice.nav_cuadrillas') ?></a>
+            <a href="../API_Gestion/Vista/contenedores.php"><?= t('backoffice.nav_contenedores') ?></a>
+            <a href="../API_Gestion/Vista/centrosAcopio.php"><?= t('backoffice.nav_centros_acopio') ?></a>
+            <a href="../Backoffice/mapa.php"><?= t('backoffice.nav_mapa') ?></a>
+            <a href="#"><?= t('backoffice.nav_reportes') ?></a>
+            <a href="#"><?= t('backoffice.nav_incidencias') ?></a>
+            <a href="Vista/usuarios.php"><?= t('backoffice.nav_usuarios') ?></a>
         </nav>
         <div class="nav-hr"></div>
     </header>
@@ -83,77 +86,75 @@ if (!in_array($rol, $rolesPermitidos)) {
         <section class="dash-section" id="seccionPerfil">
             <div class="section-header">
                 <div>
-                    <p class="section-eyebrow">Mi cuenta</p>
-                    <h2>Mis datos</h2>
+                    <p class="section-eyebrow"><?= t('perfil.eyebrow') ?></p>
+                    <h2><?= t('perfil.titulo') ?></h2>
                 </div>
-                <button class="btn btn-outline btn-sm" id="editarPerfilBtn">Editar datos</button>
+                <button class="btn btn-outline btn-sm" id="editarPerfilBtn"><?= t('perfil.btn_editar') ?></button>
             </div>
 
             <div class="panel-card" id="perfilVista">
                 <div class="perfil-grid">
                     <div class="perfil-campo">
-                        <p class="campo-label">Nombre completo</p>
+                        <p class="campo-label"><?= t('perfil.label_nombre_completo') ?></p>
                         <p class="campo-valor" id="perfilNombre">—</p>
                     </div>
                     <div class="perfil-campo">
-                        <p class="campo-label">Cédula de identidad</p>
+                        <p class="campo-label"><?= t('perfil.label_cedula') ?></p>
                         <p class="campo-valor" id="perfilCI">—</p>
                     </div>
                     <div class="perfil-campo">
-                        <p class="campo-label">Correo electrónico</p>
+                        <p class="campo-label"><?= t('perfil.label_email') ?></p>
                         <p class="campo-valor" id="perfilEmail">—</p>
                     </div>
                     <div class="perfil-campo">
-                        <p class="campo-label">Teléfono</p>
+                        <p class="campo-label"><?= t('perfil.label_telefono') ?></p>
                         <p class="campo-valor" id="perfilTel">—</p>
                     </div>
                 </div>
-                <button class="btn btn-outline btn-sm" id="cambiarContraseniaBtn" style="margin-top:20px;">Cambiar
-                    contraseña</button>
+                <button class="btn btn-outline btn-sm" id="cambiarContraseniaBtn" style="margin-top:20px;"><?= t('perfil.btn_cambiar_contrasenia') ?></button>
             </div>
 
             <div class="panel-card" id="perfilForm" hidden>
-                <h3>Editar datos de contacto</h3>
-                <p class="form-nota">Solo podés modificar tu correo y teléfono. Para otros cambios contactá al
-                    administrador.</p>
+                <h3><?= t('perfil.titulo_editar') ?></h3>
+                <p class="form-nota"><?= t('perfil.nota_editar') ?></p>
                 <div class="form-row">
-                    <label for="editEmail">Correo electrónico</label>
-                    <input type="email" id="editEmail" name="email" placeholder="nombre@correo.com">
+                    <label for="editEmail"><?= t('perfil.field_email') ?></label>
+                    <input type="email" id="editEmail" name="email" placeholder="<?= htmlspecialchars(t('perfil.field_email_ph')) ?>">
                     <p class="error-msg" id="editEmailError"></p>
                 </div>
                 <div class="form-row">
-                    <label for="editTel">Teléfono</label>
-                    <input type="tel" id="editTel" name="tel" placeholder="Ej: 099123456">
+                    <label for="editTel"><?= t('perfil.field_tel') ?></label>
+                    <input type="tel" id="editTel" name="tel" placeholder="<?= htmlspecialchars(t('perfil.field_tel_ph')) ?>">
                     <p class="error-msg" id="editTelError"></p>
                 </div>
                 <div class="form-actions">
-                    <button class="btn btn-primary" id="guardarPerfilBtn">Guardar cambios</button>
-                    <button class="btn btn-outline btn-sm" id="cancelarPerfilBtn">Cancelar</button>
+                    <button class="btn btn-primary" id="guardarPerfilBtn"><?= t('perfil.btn_guardar_cambios') ?></button>
+                    <button class="btn btn-outline btn-sm" id="cancelarPerfilBtn"><?= t('perfil.btn_cancelar') ?></button>
                 </div>
                 <p class="form-feedback" id="perfilFeedback"></p>
             </div>
 
             <div class="panel-card" id="contraseniaForm" hidden>
-                <h3>Cambiar contraseña</h3>
+                <h3><?= t('perfil.titulo_cambiar_contrasenia') ?></h3>
                 <div class="form-row">
-                    <label for="contraActual">Contraseña actual</label>
-                    <input type="password" id="contraActual" placeholder="Tu contraseña actual">
+                    <label for="contraActual"><?= t('perfil.field_contra_actual') ?></label>
+                    <input type="password" id="contraActual" placeholder="<?= htmlspecialchars(t('perfil.field_contra_actual_ph')) ?>">
                     <p class="error-msg" id="contraActualError"></p>
                 </div>
                 <div class="form-row">
-                    <label for="contraNueva">Nueva contraseña</label>
-                    <input type="password" id="contraNueva" placeholder="Mínimo 8 caracteres">
+                    <label for="contraNueva"><?= t('perfil.field_contra_nueva') ?></label>
+                    <input type="password" id="contraNueva" placeholder="<?= htmlspecialchars(t('perfil.field_contra_nueva_ph')) ?>">
                     <p class="error-msg" id="contraNuevaError"></p>
                 </div>
                 <div class="form-actions">
-                    <button class="btn btn-primary" id="guardarContraBtn">Cambiar contraseña</button>
-                    <button class="btn btn-outline btn-sm" id="cancelarContraBtn">Cancelar</button>
+                    <button class="btn btn-primary" id="guardarContraBtn"><?= t('perfil.btn_cambiar_contrasenia') ?></button>
+                    <button class="btn btn-outline btn-sm" id="cancelarContraBtn"><?= t('perfil.btn_cancelar') ?></button>
                 </div>
                 <p class="form-feedback" id="contraFeedback"></p>
             </div>
 
             <div class="logout">
-                <button class="btn btn-outline btn-sm" id="logoutBtn">Cerrar sesión</button>
+                <button class="btn btn-outline btn-sm" id="logoutBtn"><?= t('perfil.btn_cerrar_sesion') ?></button>
             </div>
         </section>
     </main>
@@ -164,21 +165,33 @@ if (!in_array($rol, $rolesPermitidos)) {
                 <img src="../API_Recoleccion/Vista/logoRecolix.png" alt="Recolix" class="footer-logo-img">
                 <span class="footer-logo-name">Recolix</span>
             </div>
-            <p>Plataforma de gestión de residuos urbanos para Montevideo.</p>
+            <p><?= t('common.footer_desc') ?></p>
         </div>
         <div class="footer-col">
-            <h3>Navegación</h3>
+            <h3><?= t('common.footer_navegacion') ?></h3>
             <ul>
-                <li><a href="../LandingPage/index_LandingPage.html">Página principal</a></li>
-                <li><a href="../LandingPage/mapa.html">Mapa público</a></li>
+                <li><a href="../LandingPage/index_LandingPage.html"><?= t('backoffice.footer_pagina_principal') ?></a></li>
+                <li><a href="../LandingPage/mapa.html"><?= t('backoffice.footer_mapa_publico') ?></a></li>
             </ul>
         </div>
     </div>
     <div class="footer-hr"></div>
-    <p class="footer-copy">&copy; 2026 Recolix. Todos los derechos reservados.</p>
-</footer>   
+    <p class="footer-copy"><?= t('backoffice.footer_copyright') ?></p>
+</footer>
 
-    <script>const CI = <?= json_encode($ci) ?>;</script>
+    <script>
+        const CI = <?= json_encode($ci) ?>;
+        const I18N = <?= json_encode(t_array([
+            'msgEmailInvalido' => 'perfil.msg_email_invalido',
+            'msgTelInvalido' => 'perfil.msg_tel_invalido',
+            'msgNoPudoGuardar' => 'perfil.msg_no_pudo_guardar',
+            'msgDatosActualizados' => 'perfil.msg_datos_actualizados',
+            'msgContraActualRequerida' => 'perfil.msg_contra_actual_requerida',
+            'msgContraNuevaMin' => 'perfil.msg_contra_nueva_min',
+            'msgNoPudoCambiarContra' => 'perfil.msg_no_pudo_cambiar_contra',
+            'msgContraActualizada' => 'perfil.msg_contra_actualizada',
+        ])) ?>;
+    </script>
     <script src="perfil.js"></script>
     <script>
 function toggleMobileMenu() {

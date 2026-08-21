@@ -14,7 +14,7 @@ async function cargarSolicitudes() {
     const json = await resp.json();
 
     if (json.status !== 'success') {
-      contenedor.innerHTML = '<p class="estado-carga">No se pudieron cargar las solicitudes.</p>';
+      contenedor.innerHTML = `<p class="estado-carga">${I18N.errorCargar}</p>`;
       return;
     }
 
@@ -23,7 +23,7 @@ async function cargarSolicitudes() {
     if (!lista.length) {
       contenedor.innerHTML = `
         <div class="estado-vacio">
-          <strong>No hay solicitudes pendientes</strong>
+          <strong>${I18N.noHay}</strong>
         </div>`;
       return;
     }
@@ -32,12 +32,12 @@ async function cargarSolicitudes() {
       <table class="tabla-solicitudes">
         <thead>
           <tr>
-            <th>Cédula</th>
-            <th>Nombre</th>
-            <th>Apellido</th>
-            <th>Email</th>
-            <th>Teléfono</th>
-            <th>Acciones</th>
+            <th>${I18N.colCedula}</th>
+            <th>${I18N.colNombre}</th>
+            <th>${I18N.colApellido}</th>
+            <th>${I18N.colEmail}</th>
+            <th>${I18N.colTelefono}</th>
+            <th>${I18N.colAcciones}</th>
           </tr>
         </thead>
         <tbody id="tablaCuerpo"></tbody>
@@ -46,28 +46,28 @@ async function cargarSolicitudes() {
     const tbody = document.getElementById('tablaCuerpo');
     tbody.innerHTML = lista.map(s => `
       <tr id="fila-${s.ci_usuario}">
-        <td data-label="Cédula">${s.ci_usuario}</td>
-        <td data-label="Nombre">${s.primer_nombre}</td>
-        <td data-label="Apellido">${s.p_apellido}</td>
-        <td data-label="Email">${s.email}</td>
-        <td data-label="Teléfono">${s.tel}</td>
-        <td data-label="Acciones">
+        <td data-label="${I18N.colCedula}">${s.ci_usuario}</td>
+        <td data-label="${I18N.colNombre}">${s.primer_nombre}</td>
+        <td data-label="${I18N.colApellido}">${s.p_apellido}</td>
+        <td data-label="${I18N.colEmail}">${s.email}</td>
+        <td data-label="${I18N.colTelefono}">${s.tel}</td>
+        <td data-label="${I18N.colAcciones}">
           <div class="col-acciones">
-            <button class="btn-aprobar" onclick="aprobar(${s.ci_usuario})">Aprobar</button>
-            <button class="btn-rechazar" onclick="rechazar(${s.ci_usuario})">Rechazar</button>
+            <button class="btn-aprobar" onclick="aprobar(${s.ci_usuario})">${I18N.aprobar}</button>
+            <button class="btn-rechazar" onclick="rechazar(${s.ci_usuario})">${I18N.rechazar}</button>
           </div>
         </td>
       </tr>
     `).join('');
 
   } catch (e) {
-    contenedor.innerHTML = '<p class="estado-carga">No se pudo conectar con el servidor.</p>';
+    contenedor.innerHTML = `<p class="estado-carga">${I18N.errorConexion}</p>`;
   }
 }
 
 
 async function aprobar(ci) {
-  if (!confirm('¿Confirmás que querés aprobar esta solicitud?')) return;
+  if (!confirm(I18N.confirmarAprobar)) return;
 
   try {
     const resp = await fetch(`${API}/solicitudes/aprobar`, {
@@ -78,21 +78,21 @@ async function aprobar(ci) {
     const json = await resp.json();
 
     if (json.status !== 'success') {
-      mostrarFeedback(json.message || 'No se pudo aprobar la solicitud.', false);
+      mostrarFeedback(json.message || I18N.errorAprobar, false);
       return;
     }
 
     eliminarFila(ci);
-    mostrarFeedback('Solicitud aprobada correctamente.', true);
+    mostrarFeedback(I18N.aprobadaOk, true);
 
   } catch (e) {
-    mostrarFeedback('No se pudo conectar con el servidor.', false);
+    mostrarFeedback(I18N.errorConexion, false);
   }
 }
 
 
 async function rechazar(ci) {
-  if (!confirm('¿Confirmás que querés rechazar esta solicitud?')) return;
+  if (!confirm(I18N.confirmarRechazar)) return;
 
   try {
     const resp = await fetch(`${API}/solicitudes/rechazar`, {
@@ -103,15 +103,15 @@ async function rechazar(ci) {
     const json = await resp.json();
 
     if (json.status !== 'success') {
-      mostrarFeedback(json.message || 'No se pudo rechazar la solicitud.', false);
+      mostrarFeedback(json.message || I18N.errorRechazar, false);
       return;
     }
 
     eliminarFila(ci);
-    mostrarFeedback('Solicitud rechazada.', true);
+    mostrarFeedback(I18N.rechazadaOk, true);
 
   } catch (e) {
-    mostrarFeedback('No se pudo conectar con el servidor.', false);
+    mostrarFeedback(I18N.errorConexion, false);
   }
 }
 
@@ -124,8 +124,8 @@ function eliminarFila(ci) {
   if (tbody && tbody.children.length === 0) {
     document.getElementById('solicitudesContenedor').innerHTML = `
       <div class="estado-vacio">
-        <strong>No hay solicitudes pendientes</strong>
-        <p>Cuando un vecino se registre desde la landing page, aparecerá acá.</p>
+        <strong>${I18N.noHay}</strong>
+        <p>${I18N.noHayDesc}</p>
       </div>`;
   }
 }

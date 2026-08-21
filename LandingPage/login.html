@@ -1,11 +1,13 @@
+<?php require_once __DIR__ . '/../i18n/i18n.php'; ?>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="<?= htmlspecialchars($RECOLIX_IDIOMA) ?>">
 
 <head>
   <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recolix - Iniciar sesión</title>
-  <meta name="description" content="Inicia sesión en Recolix para gestionar incidencias y seguir el estado de tus reportes.">
+  <title><?= t('login.title') ?></title>
+  <meta name="description" content="<?= htmlspecialchars(t('login.meta_description')) ?>">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,19 +21,20 @@
 <body>
   <header class="site-header" id="siteHeader">
     <div class="container header-inner">
-      <a href="login.html" class="logo">
+      <a href="index_LandingPage.html" class="logo">
         <img src="img/Logo.png" alt="Logo Recolix" class="logo-image" />
         <div class="logo-text">Recolix</div>
       </a>
       <nav class="main-nav" id="mainNav">
         <ul>
-          <li><a href="index_LandingPage.html">Inicio</a></li>
-          <li><a href="mapa.html">Mapa</a></li>
+          <li><a href="index_LandingPage.html"><?= t('common.nav_inicio') ?></a></li>
+          <li><a href="mapa.html"><?= t('common.nav_mapa') ?></a></li>
         </ul>
       </nav>
       <div class="header-actions">
-        <a href="login.html" id="loginNavLink" class="btn btn-outline btn-sm">Iniciar Sesión</a>
-        <button class="hamburger" id="hamburgerBtn" aria-label="Abrir menú" aria-expanded="false">☰</button>
+        <?php include __DIR__ . '/../i18n/switcher.php'; ?>
+        <a href="login.html" id="loginNavLink" class="btn btn-outline btn-sm"><?= t('common.nav_iniciar_sesion') ?></a>
+        <button class="hamburger" id="hamburgerBtn" aria-label="<?= htmlspecialchars(t('common.nav_abrir_menu')) ?>" aria-expanded="false">☰</button>
       </div>
     </div>
   </header>
@@ -40,30 +43,30 @@
     <section class="login-section">
       <div class="container login-container">
         <div class="login-card">
-          <p class="section-eyebrow">Bienvenido de nuevo</p>
-          <h1>Iniciar sesión</h1>
-          <p class="login-desc">Accedé con tu cédula y contraseña.</p>
+          <p class="section-eyebrow"><?= t('login.eyebrow') ?></p>
+          <h1><?= t('login.titulo') ?></h1>
+          <p class="login-desc"><?= t('login.desc') ?></p>
 
           <form id="loginForm" method="post" action="#" novalidate>
             <div class="form-row">
-              <label for="ci">Cédula de identidad</label>
-              <input type="text" id="ci" name="ci" placeholder="41235468" required>
+              <label for="ci"><?= t('login.cedula') ?></label>
+              <input type="text" id="ci" name="ci" placeholder="<?= htmlspecialchars(t('login.cedula_placeholder')) ?>" required>
               <p class="error-msg" id="ciError"></p>
             </div>
 
             <div class="form-row">
-              <label for="password">Contraseña</label>
-              <input type="password" id="password" name="password" placeholder="Tu contraseña" required>
+              <label for="password"><?= t('login.contrasenia') ?></label>
+              <input type="password" id="password" name="password" placeholder="<?= htmlspecialchars(t('login.contrasenia_placeholder')) ?>" required>
               <p class="error-msg" id="passwordError"></p>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-block" id="loginSubmitBtn">Iniciar sesión</button>
+            <button type="submit" class="btn btn-primary btn-block" id="loginSubmitBtn"><?= t('login.submit') ?></button>
             <p class="form-feedback" id="formFeedback" role="alert"></p>
           </form>
 
           <div class="register-banner">
-            <p>¿Todavía no tenés cuenta?</p>
-            <a href="index_LandingPage.html#registro" class="link-register">Crear cuenta →</a>
+            <p><?= t('login.no_tenes_cuenta') ?></p>
+            <a href="index_LandingPage.html#registro" class="link-register"><?= t('login.crear_cuenta') ?></a>
           </div>
         </div>
       </div>
@@ -74,25 +77,25 @@
     <div class="container">
       <div class="footer-grid">
         <div class="footer-brand">
-          <a href="login.html" class="logo">
+          <a href="index_LandingPage.html" class="logo">
             <img src="img/LogoBlanco.png" alt="Logo Recolix" class="logo-imageBlanco" />
             <div class="logo-text">Recolix</div>
           </a>
-          <p>Plataforma de gestión de residuos urbanos para Montevideo.</p>
+          <p><?= t('common.footer_desc') ?></p>
         </div>
         <div class="footer-col">
-          <h3>Navegación</h3>
+          <h3><?= t('common.footer_navegacion') ?></h3>
           <ul>
-            <li><a href="index_LandingPage.html">Inicio</a></li>
-            <li><a href="mapa.html">Mapa</a></li>
-            <li><a href="../Backoffice/login_backoffice.php">Portal de empleados</a></li>
+            <li><a href="index_LandingPage.html"><?= t('common.footer_inicio') ?></a></li>
+            <li><a href="mapa.html"><?= t('common.footer_mapa') ?></a></li>
+            <li><a href="../Backoffice/login_backoffice.php"><?= t('common.footer_portal_empleados') ?></a></li>
           </ul>
         </div>
         <div class="footer-col">
-          <h3>Canales de la Intendencia</h3>
+          <h3><?= t('common.footer_canales') ?></h3>
           <ul>
-            <li>Línea 1950 3000</li>
-            <li>Whatsapp: 092 250 260</li>
+            <li><?= t('common.footer_linea') ?></li>
+            <li><?= t('common.footer_whatsapp') ?></li>
           </ul>
         </div>
       </div>
@@ -101,6 +104,14 @@
 
   <script>
     const API_USUARIOS = '/recolix/API_Usuarios';
+    const I18N = <?= json_encode(t_array([
+      'ciInvalid' => 'login.validation_ci',
+      'passwordShort' => 'login.validation_contrasenia',
+      'revisarDatos' => 'login.feedback_revisar_datos',
+      'credencialesInvalidas' => 'login.feedback_credenciales_invalidas',
+      'loginCorrecto' => 'login.feedback_login_correcto',
+      'errorConexion' => 'login.feedback_error_conexion',
+    ])) ?>;
 
     document.addEventListener('DOMContentLoaded', function () {
 
@@ -125,14 +136,14 @@
         let esValido = true;
 
         if (!/^\d{7,8}$/.test(ci)) {
-          ciError.textContent = 'Ingresá tu cédula sin puntos ni guiones (7 a 8 números).';
+          ciError.textContent = I18N.ciInvalid;
           esValido = false;
         } else {
           ciError.textContent = '';
         }
 
         if (password.length < 4) {
-          passwordError.textContent = 'La contraseña debe tener al menos 4 caracteres.';
+          passwordError.textContent = I18N.passwordShort;
           esValido = false;
         } else {
           passwordError.textContent = '';
@@ -141,7 +152,7 @@
         if (!esValido) {
           feedback.style.display = 'block';
           feedback.className = 'form-feedback is-error';
-          feedback.textContent = 'Revisá los datos ingresados.';
+          feedback.textContent = I18N.revisarDatos;
           return;
         }
 
@@ -157,20 +168,20 @@
           if (!data.success) {
             feedback.style.display = 'block';
             feedback.className = 'form-feedback is-error';
-            feedback.textContent = data.error || 'Credenciales inválidas.';
+            feedback.textContent = data.error || I18N.credencialesInvalidas;
             return;
           }
 
           feedback.style.display = 'block';
           feedback.className = 'form-feedback is-success';
-          feedback.textContent = 'Inicio de sesión correcto. Redirigiendo...';
+          feedback.textContent = I18N.loginCorrecto;
 
           window.location.href = `${API_USUARIOS}/vecino.php`;
         } catch (err) {
           console.error(err);
           feedback.style.display = 'block';
           feedback.className = 'form-feedback is-error';
-          feedback.textContent = 'Error al conectar con el servidor.';
+          feedback.textContent = I18N.errorConexion;
         }
       });
     });
