@@ -1,0 +1,495 @@
+/* ==========================================================================
+   Recolix — Vista Cuadrilla
+   Complementa a styleBackoffice.css + styles_vecino.css (navbar, footer,
+   botones, tarjetas y variables ya vienen de ahí). Acá solo va lo específico
+   de esta página: formulario de levante, rutas asignadas, camión asignado,
+   lista de urgentes, modales y el toast.
+   ========================================================================== */
+
+.page-title h1 {
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--moss);
+}
+
+.page-title p {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+/* ==========================================================================
+   Alerta del sistema (RF52 — levante no completado)
+   ========================================================================== */
+
+.alert-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-radius: var(--radius-sm);
+  background-color: #fff8e1;
+  border: 1px solid var(--status-warn);
+  color: #7a5600;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.alert-banner-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   Encabezado de cada tarjeta (ícono + título + subtítulo)
+   ========================================================================== */
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background-color: rgba(139, 189, 63, 0.14);
+  color: var(--leaf);
+}
+
+.card-header h2 {
+  margin: 0 0 2px;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--ink);
+}
+
+.card-header p {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--ink-soft);
+}
+
+/* ==========================================================================
+   Formulario — Registrar levante
+   ========================================================================== */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.form-group select,
+.form-group textarea {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--ink);
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--paper);
+}
+
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: 2px solid var(--moss);
+  border-color: var(--moss);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 46px;
+}
+
+.form-group-full,
+.form-actions {
+  grid-column: 1 / -1;
+}
+
+.form-grid-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 24px;
+}
+
+.info-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 14px;
+  border-radius: var(--radius-sm);
+  background-color: #eef6ea;
+  color: var(--ink-soft);
+  font-size: 0.88rem;
+  min-height: 44px;
+}
+
+.info-box .info-icon {
+  flex-shrink: 0;
+  color: var(--leaf);
+  display: flex;
+}
+
+.info-box--activo {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* RF71 — ¿Se recolectó el contenedor? */
+
+.radio-toggle {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.radio-option input[type="radio"] {
+  width: auto;
+  padding: 0;
+  border: none;
+  background: none;
+  accent-color: var(--moss);
+}
+
+/* ==========================================================================
+   Rutas asignadas + camión (RF35, RF36)
+   ========================================================================== */
+
+.routes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.route-row {
+  padding: 16px 20px;
+  background-color: #eef6ea;
+  border-radius: var(--radius-md);
+}
+
+.route-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 20px;
+}
+
+.route-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+.route-item strong {
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.route-item svg {
+  color: var(--leaf);
+  flex-shrink: 0;
+}
+
+.camion-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border);
+}
+
+.camion-matricula {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.86rem;
+  color: var(--ink);
+}
+
+.camion-matricula svg {
+  color: var(--leaf);
+  flex-shrink: 0;
+}
+
+.camion-estado {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  padding: 8px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--white);
+  color: var(--ink);
+}
+
+/* ==========================================================================
+   Botones
+   ========================================================================== */
+
+.btn-full {
+  width: 100%;
+}
+
+/* ==========================================================================
+   Tabla — Lista de urgentes
+   ========================================================================== */
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.table th {
+  text-align: left;
+  padding: 10px 12px;
+  color: var(--ink-soft);
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  color: var(--ink);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background-color: var(--paper);
+}
+
+.contenedor-id {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.alert-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--white);
+  flex-shrink: 0;
+}
+
+.alert-critical {
+  background-color: var(--status-crit);
+}
+
+.alert-warning {
+  background-color: var(--status-warn);
+}
+
+.badge-danger {
+  background-color: #fbe9e7;
+  color: #7a2418;
+}
+
+.badge-warning {
+  background-color: #fff8e1;
+  color: #7a5600;
+}
+
+.badge-ok {
+  background-color: #e8f5e9;
+  color: #2c4022;
+}
+
+.badge-info {
+  background-color: #e3f2fd;
+  color: #0d47a1;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 24px 12px;
+  color: var(--ink-soft);
+  white-space: normal;
+}
+
+/* ==========================================================================
+   Modales de confirmación
+   ========================================================================== */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background-color: rgba(28, 33, 23, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  z-index: 50;
+}
+
+.modal-overlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal {
+  width: 100%;
+  max-width: 380px;
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 26px;
+  box-shadow: 0 10px 30px rgba(28, 33, 23, 0.2);
+  transform: translateY(6px);
+  transition: transform 0.15s ease;
+}
+
+.modal-overlay.is-open .modal {
+  transform: translateY(0);
+}
+
+.modal h3 {
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+
+.modal p {
+  margin: 0 0 18px;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+.modal p strong {
+  color: var(--ink);
+  font-family: var(--font-mono);
+}
+
+.modal .form-row {
+  margin-bottom: 4px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+/* ==========================================================================
+   Toast
+   ========================================================================== */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%) translateY(16px);
+  background-color: var(--moss);
+  color: var(--white);
+  padding: 13px 22px;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 500;
+  box-shadow: 0 8px 20px rgba(28, 33, 23, 0.22);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 60;
+  max-width: 90vw;
+}
+
+.toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.toast.toast-warning {
+  background-color: var(--status-warn);
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .form-grid,
+  .form-grid-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .route-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .camion-info {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 320px) {
+  .card-header p {
+    display: none;
+  }
+
+  .modal {
+    padding: 20px;
+  }
+}

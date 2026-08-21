@@ -1,0 +1,318 @@
+/* ==========================================================================
+   Recolix — Vista Operario de centro de acopio
+   Complementa a styleBackoffice.css + styles_vecino.css + navExtras.css
+   (navbar, footer, botones, tarjetas, centrado y variables ya vienen de ahí).
+   Acá solo va lo específico de esta página: centro asignado, ocupación,
+   registro de ingreso y maquinaria.
+   ========================================================================== */
+
+.page-title h1 {
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--moss);
+}
+
+.page-title p {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+/* ==========================================================================
+   Encabezado de cada tarjeta (ícono + título + subtítulo)
+   ========================================================================== */
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background-color: rgba(139, 189, 63, 0.14);
+  color: var(--leaf);
+}
+
+.card-header h2 {
+  margin: 0 0 2px;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--ink);
+}
+
+.card-header p {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--ink-soft);
+}
+
+/* ==========================================================================
+   RF77 — Mi centro de acopio
+   ========================================================================== */
+
+.centro-row {
+  padding: 18px 20px;
+  background-color: #eef6ea;
+  border-radius: var(--radius-md);
+  margin-bottom: 16px;
+}
+
+.centro-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.centro-titulo h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--ink);
+}
+
+.centro-datos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+}
+
+.centro-item {
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+}
+
+.centro-item strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   RF78 — Ocupación del centro
+   ========================================================================== */
+
+.ocupacion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ocupacion-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ocupacion-item-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 0.88rem;
+}
+
+.ocupacion-item-header .tipo-nombre {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.ocupacion-item-header .tipo-valores {
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+}
+
+.progreso-track {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background-color: var(--border);
+  overflow: hidden;
+}
+
+.progreso-fill {
+  height: 100%;
+  border-radius: 999px;
+  background-color: var(--status-ok);
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.progreso-fill.nivel-warning {
+  background-color: var(--status-warn);
+}
+
+.progreso-fill.nivel-danger {
+  background-color: var(--status-crit);
+}
+
+/* ==========================================================================
+   Registro de ingreso de residuos (función del operario según 2.3;
+   no tiene RF numerado propio, ver aclaración en el chat)
+   ========================================================================== */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.form-group select {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--ink);
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--paper);
+}
+
+.form-group select:focus {
+  outline: 2px solid var(--moss);
+  border-color: var(--moss);
+}
+
+.form-actions {
+  grid-column: 1 / -1;
+}
+
+/* ==========================================================================
+   RF80 — Maquinaria del centro
+   ========================================================================== */
+
+.maquinaria-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.maquinaria-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.maquinaria-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.maquinaria-nombre {
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--ink);
+}
+
+.maquinaria-meta {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+.maquinaria-estado {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.badge-neutral {
+  background-color: #ece9df;
+  color: var(--ink-soft);
+}
+
+.badge-ok {
+  background-color: #e8f5e9;
+  color: #2c4022;
+}
+
+.badge-warning {
+  background-color: #fff8e1;
+  color: #7a5600;
+}
+
+.badge-danger {
+  background-color: #fbe9e7;
+  color: #7a2418;
+}
+
+/* ==========================================================================
+   Toast
+   ========================================================================== */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%) translateY(16px);
+  background-color: var(--moss);
+  color: var(--white);
+  padding: 13px 22px;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 500;
+  box-shadow: 0 8px 20px rgba(28, 33, 23, 0.22);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 60;
+  max-width: 90vw;
+}
+
+.toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.toast.toast-warning {
+  background-color: var(--status-warn);
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .maquinaria-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 320px) {
+  .card-header p {
+    display: none;
+  }
+}
