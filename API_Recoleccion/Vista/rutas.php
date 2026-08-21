@@ -85,10 +85,10 @@ require_once __DIR__ . '/../../i18n/i18n.php';
 <header class="navbar">
     <div class="nav-inner">
         <div class="nav-left">
-            <div class="brand">
+            <a href="../../Backoffice/indexBackoffice.php" class="brand">
                 <img src="logoRecolix.png" alt="Recolix" class="brand-logo">
                 <span class="brand-name">Recolix</span>
-            </div>
+            </a>
             <nav class="nav-links">
                 <a href="../../Backoffice/indexBackoffice.php"><?= t('backoffice.nav_inicio') ?></a>
                 <a href="camiones.php"><?= t('backoffice.nav_camiones') ?></a>

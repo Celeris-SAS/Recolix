@@ -21,10 +21,10 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
 <header class="navbar">
     <div class="nav-inner">
         <div class="nav-left">
-            <div class="brand">
+            <a href="indexBackoffice.php" class="brand">
                 <img src="../API_Recoleccion/Vista/logoRecolix.png" alt="Recolix" class="brand-logo">
                 <span class="brand-name">Recolix</span>
-            </div>
+            </a>
             <nav class="nav-links">
                 <a href="#" class="nav-active"><?= t('backoffice.nav_inicio') ?></a>
                 <a href="../API_Recoleccion/Vista/camiones.php"><?= t('backoffice.nav_camiones') ?></a>

@@ -38,10 +38,10 @@ if (!in_array($rol, $rolesPermitidos)) {
     <header class="navbar">
         <div class="nav-inner">
             <div class="nav-left">
-                <div class="brand">
+                <a href="../Backoffice/indexBackoffice.php" class="brand">
                     <img src="../API_Recoleccion/Vista/logoRecolix.png" alt="Recolix" class="brand-logo">
                     <span class="brand-name">Recolix</span>
-                </div>
+                </a>
                 <nav class="nav-links">
                     <a href="../Backoffice/indexBackoffice.php"><?= t('backoffice.nav_inicio') ?></a>
                     <a href="../API_Recoleccion/Vista/camiones.php"><?= t('backoffice.nav_camiones') ?></a>
