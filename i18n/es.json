@@ -78,7 +78,36 @@
     "feedback_revisar_campos": "Revisá los campos marcados antes de continuar.",
     "feedback_solicitud_enviada": "Solicitud enviada exitosamente. Te avisaremos cuando esté aprobada.",
     "feedback_error_conexion": "No se pudo conectar con el servidor. Intentá de nuevo.",
-    "feedback_error_enviar": "No se pudo enviar la solicitud."
+    "feedback_error_enviar": "No se pudo enviar la solicitud.",
+
+    "reportar_titulo": "Reportar una incidencia",
+    "reportar_tipo": "Tipo de incidencia",
+    "reportar_tipo_rotura": "Rotura",
+    "reportar_tipo_desborde": "Desborde",
+    "reportar_tipo_falta_recoleccion": "Falta de recolección",
+    "reportar_tipo_vandalismo": "Vandalismo",
+    "reportar_tipo_otro": "Otro",
+    "reportar_contenedor": "ID del contenedor",
+    "reportar_contenedor_placeholder": "Ej: 206",
+    "reportar_contenedor_ayuda": "Podés ver el ID de cada contenedor en el mapa.",
+    "reportar_detectando_ubicacion": "Detectando tu ubicación...",
+    "reportar_ubicacion_detectada": "Preseleccionamos el contenedor más cercano — tocá otro en el mapa si no es el correcto.",
+    "reportar_ubicacion_denegada": "No pudimos acceder a tu ubicación. Tocá el contenedor en el mapa.",
+    "reportar_ubicacion_no_disponible": "Tu dispositivo no permite compartir la ubicación. Tocá el contenedor en el mapa.",
+    "reportar_cargando_contenedores": "Cargando contenedores...",
+    "reportar_contenedor_seleccionado": "Elegiste",
+    "reportar_tu_ubicacion": "Tu ubicación",
+    "reportar_descripcion": "Descripción (opcional)",
+    "reportar_descripcion_placeholder": "Contanos qué pasó...",
+    "reportar_foto": "Foto (opcional)",
+    "reportar_foto_ayuda": "JPG o PNG, hasta 5 MB.",
+    "reportar_foto_tipo_invalido": "La foto debe ser un archivo JPG o PNG.",
+    "reportar_foto_tamano_invalido": "La foto no puede superar los 5 MB.",
+    "reportar_submit": "Enviar reporte",
+    "reportar_validation_contenedor": "Ingresá el ID de un contenedor válido.",
+    "reportar_feedback_enviado": "¡Gracias! Tu reporte fue enviado.",
+    "reportar_feedback_error_enviar": "No se pudo enviar el reporte.",
+    "reportar_feedback_error_conexion": "No se pudo conectar con el servidor. Intentá de nuevo."
   },
 
   "login": {
@@ -846,6 +875,14 @@
     "municipio_prefijo": "Municipio"
   },
 
+  "incidencias": {
+    "title": "Incidencias — Recolix"
+  },
+
+  "cuadrillas": {
+    "title": "Cuadrillas — Recolix"
+  },
+
   "usuarios": {
     "title": "Usuarios — Recolix",
     "hero_title": "Usuarios",
@@ -983,6 +1020,7 @@
   },
 
   "vecino": {
+    "btn_volver_inicio": "← Volver al inicio",
     "label_municipio": "Municipio",
     "sin_asignar": "Sin asignar",
     "btn_agregar_municipio": "Agregar municipio",
@@ -1001,6 +1039,33 @@
     "btn_nueva_incidencia": "+ Nueva incidencia",
     "cargando_incidencias": "Cargando tus incidencias...",
     "sin_incidencias": "Todavía no reportaste ninguna incidencia.",
+
+    "nueva_incidencia_titulo": "Reportar una incidencia",
+    "nueva_incidencia_tipo": "Tipo de incidencia",
+    "nueva_incidencia_tipo_rotura": "Rotura",
+    "nueva_incidencia_tipo_desborde": "Desborde",
+    "nueva_incidencia_tipo_falta_recoleccion": "Falta de recolección",
+    "nueva_incidencia_tipo_vandalismo": "Vandalismo",
+    "nueva_incidencia_tipo_otro": "Otro",
+    "nueva_incidencia_contenedor": "ID del contenedor",
+    "nueva_incidencia_contenedor_placeholder": "Ej: 206",
+    "nueva_incidencia_contenedor_ayuda": "Podés ver el ID de cada contenedor en el mapa.",
+    "nueva_incidencia_detectando_ubicacion": "Detectando tu ubicación...",
+    "nueva_incidencia_ubicacion_detectada": "Preseleccionamos el contenedor más cercano — tocá otro en el mapa si no es el correcto.",
+    "nueva_incidencia_ubicacion_denegada": "No pudimos acceder a tu ubicación. Tocá el contenedor en el mapa.",
+    "nueva_incidencia_ubicacion_no_disponible": "Tu dispositivo no permite compartir la ubicación. Tocá el contenedor en el mapa.",
+    "nueva_incidencia_contenedor_seleccionado": "Elegiste",
+    "nueva_incidencia_tu_ubicacion": "Tu ubicación",
+    "nueva_incidencia_descripcion": "Descripción (opcional)",
+    "nueva_incidencia_descripcion_placeholder": "Contanos qué pasó...",
+    "nueva_incidencia_foto": "Foto (opcional)",
+    "nueva_incidencia_foto_ayuda": "JPG o PNG, hasta 5 MB.",
+    "btn_reportar_incidencia": "Enviar reporte",
+    "msg_contenedor_invalido": "Ingresá el ID de un contenedor válido.",
+    "msg_incidencia_reportada": "¡Gracias! Tu reporte fue enviado.",
+    "msg_error_reportar_incidencia": "No se pudo enviar el reporte.",
+    "msg_foto_tipo_invalido": "La foto debe ser un archivo JPG o PNG.",
+    "msg_foto_tamano_invalido": "La foto no puede superar los 5 MB.",
 
     "eyebrow_notificaciones": "Alertas",
     "titulo_notificaciones": "Notificaciones",

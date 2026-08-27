@@ -8,6 +8,35 @@ class IncidenciaModel {
         $this->conn = new conexion();
     }
 
+    // RF03/RF04: registro de una incidencia por un usuario autenticado.
+    // RF07: url_imagen queda null cuando el reporte no adjunta foto.
+    public function crearIncidencia($ciUsuario, $tipo, $descripcion, $urlImagen = null) {
+        $stmt = mysqli_prepare($this->conn->getConexion(),
+            "INSERT INTO INCIDENCIA (ci_usuario, tipo, descripcion, url_imagen) VALUES (?, ?, ?, ?)");
+        mysqli_stmt_bind_param($stmt, "isss", $ciUsuario, $tipo, $descripcion, $urlImagen);
+        mysqli_stmt_execute($stmt);
+        $idIncidencia = mysqli_insert_id($this->conn->getConexion());
+        mysqli_stmt_close($stmt);
+        return $idIncidencia;
+    }
+
+    public function vincularContenedor($idIncidencia, $idContenedor) {
+        $stmt = mysqli_prepare($this->conn->getConexion(),
+            "INSERT INTO INCIDENCIA_CONTENEDOR (id_incidencia, id_contenedor) VALUES (?, ?)");
+        mysqli_stmt_bind_param($stmt, "ii", $idIncidencia, $idContenedor);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+    }
+
+    public function usuarioExiste($ciUsuario) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT 1 FROM USUARIO WHERE ci_usuario = ?");
+        mysqli_stmt_bind_param($stmt, "i", $ciUsuario);
+        mysqli_stmt_execute($stmt);
+        $existe = mysqli_stmt_get_result($stmt)->fetch_assoc() !== null;
+        mysqli_stmt_close($stmt);
+        return $existe;
+    }
+
     public function getAllIncidencias() {
         $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM INCIDENCIA ORDER BY fecha_apertura DESC");
         mysqli_stmt_execute($stmt);

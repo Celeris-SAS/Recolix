@@ -1,6 +1,7 @@
 
 
 const API = '/recolix/API_Usuarios';
+const API_GESTION = '/recolix/API_Gestion';
 
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -202,8 +203,182 @@ if (json.status !== 'success') {
 }
 
 
+    // RF05/RF06 — mapa interactivo: muestra la ubicación del usuario y permite elegir el
+    // contenedor de la incidencia tocándolo directamente en el mapa. Los contenedores y sus
+    // colores salen de cargarContenedoresEnMapa() (mapaContenedoresBase.js), la misma fuente
+    // que usan la Landing Page y el mapa público.
+    let incMapa = null;
+    let incMapaMarcadores = null;
+    let incMarcadorUsuario = null;
+    let incMarcadorSeleccionado = null;
+
+    function distanciaKm(lat1, lon1, lat2, lon2) {
+        const R = 6371;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat / 2) ** 2 +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    function seleccionarIncContenedorEnMapa(marker, c) {
+        document.getElementById('incContenedor').value = c.id_contenedor;
+        document.getElementById('incContenedorError').textContent = '';
+        const seleccionado = document.getElementById('incContenedorSeleccionado');
+        seleccionado.style.display = '';
+        seleccionado.textContent = `${I18N.contenedorSeleccionado}: #${c.id_contenedor} — ${c.calle} ${c.num_calle}`;
+
+        if (incMarcadorSeleccionado) incMarcadorSeleccionado.setStyle({ weight: 1.5, radius: 7 });
+        marker.setStyle({ weight: 3, radius: 10 });
+        incMarcadorSeleccionado = marker;
+    }
+
+    // Si el usuario no toca ningún contenedor en el mapa, se preselecciona el más cercano
+    // a su ubicación detectada — nunca queda sin elegir uno.
+    function incPreseleccionarMasCercano(latitude, longitude) {
+        if (!incMapaMarcadores || !incMapaMarcadores.length) return;
+        let masCercano = null;
+        let distanciaMin = Infinity;
+        incMapaMarcadores.forEach((m) => {
+            const c = m.contenedor;
+            const d = distanciaKm(latitude, longitude, parseFloat(c.latitud), parseFloat(c.longitud));
+            if (d < distanciaMin) {
+                distanciaMin = d;
+                masCercano = m;
+            }
+        });
+        if (masCercano) seleccionarIncContenedorEnMapa(masCercano, masCercano.contenedor);
+    }
+
+    async function iniciarIncMapaReportar() {
+        const status = document.getElementById('incUbicacionStatus');
+        status.style.display = '';
+        status.textContent = I18N.detectandoUbicacion;
+        document.getElementById('incContenedorSeleccionado').style.display = 'none';
+        incMarcadorSeleccionado = null;
+
+        if (!incMapa) {
+            incMapa = L.map('incMapaContenedor', { zoomControl: true }).setView([-34.901, -56.165], 12);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(incMapa);
+
+            incMapaMarcadores = await cargarContenedoresEnMapa(incMapa, {
+                apiBase: API_GESTION,
+                radius: 7,
+                tooltip: (c) => `#${c.id_contenedor} — ${c.calle} ${c.num_calle}`,
+                onClick: seleccionarIncContenedorEnMapa
+            });
+        }
+        setTimeout(() => incMapa.invalidateSize(), 200);
+
+        if (!navigator.geolocation) {
+            status.textContent = I18N.ubicacionNoDisponible;
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const { latitude, longitude } = pos.coords;
+                status.textContent = I18N.ubicacionDetectada;
+                if (incMarcadorUsuario) incMapa.removeLayer(incMarcadorUsuario);
+                const icono = L.divIcon({
+                    className: 'mapa-marcador-usuario-wrap',
+                    html: '<span class="mapa-marcador-usuario"></span>',
+                    iconSize: [22, 22],
+                    iconAnchor: [11, 22]
+                });
+                incMarcadorUsuario = L.marker([latitude, longitude], { icon: icono })
+                    .addTo(incMapa)
+                    .bindTooltip(I18N.tuUbicacion);
+                incMapa.setView([latitude, longitude], 15);
+                incPreseleccionarMasCercano(latitude, longitude);
+            },
+            () => {
+                status.textContent = I18N.ubicacionDenegada;
+            },
+            { timeout: 8000 }
+        );
+    }
+
+    // RF04 — registro de incidencia desde el perfil del vecino.
     document.getElementById('nuevaIncidenciaBtn').addEventListener('click', () => {
-        window.location.href = '#';
+        const form = document.getElementById('nuevaIncidenciaForm');
+        form.hidden = !form.hidden;
+        if (!form.hidden) {
+            document.getElementById('incTipo').value = 'rotura';
+            document.getElementById('incContenedor').value = '';
+            document.getElementById('incDescripcion').value = '';
+            document.getElementById('incFoto').value = '';
+            document.getElementById('incContenedorError').textContent = '';
+            document.getElementById('incFotoError').textContent = '';
+            limpiarFeedback('incidenciaFeedback');
+            iniciarIncMapaReportar();
+        }
+    });
+
+    document.getElementById('cancelarIncidenciaBtn').addEventListener('click', () => {
+        document.getElementById('nuevaIncidenciaForm').hidden = true;
+    });
+
+    // RF07: adjunto de foto (JPG/PNG, máx 5 MB) — se manda como data URL base64 dentro
+    // del mismo JSON del reporte, ya que el endpoint de incidencias solo acepta JSON.
+    const MAX_FOTO_BYTES = 5 * 1024 * 1024;
+    function leerFotoComoBase64(input, errorEl) {
+        errorEl.textContent = '';
+        const file = input.files && input.files[0];
+        if (!file) return Promise.resolve(null);
+        if (!['image/jpeg', 'image/png'].includes(file.type)) {
+            errorEl.textContent = I18N.msgFotoTipoInvalido;
+            return Promise.reject(new Error('tipo'));
+        }
+        if (file.size > MAX_FOTO_BYTES) {
+            errorEl.textContent = I18N.msgFotoTamanoInvalido;
+            return Promise.reject(new Error('tamano'));
+        }
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+    document.getElementById('guardarIncidenciaBtn').addEventListener('click', async () => {
+        const idContenedor = parseInt(document.getElementById('incContenedor').value, 10);
+        const tipo = document.getElementById('incTipo').value;
+        const descripcion = document.getElementById('incDescripcion').value.trim();
+        const contenedorError = document.getElementById('incContenedorError');
+
+        if (!idContenedor || idContenedor < 1) {
+            contenedorError.textContent = I18N.msgContenedorInvalido;
+            return;
+        }
+        contenedorError.textContent = '';
+
+        let imagen;
+        try {
+            imagen = await leerFotoComoBase64(document.getElementById('incFoto'), document.getElementById('incFotoError'));
+        } catch {
+            return;
+        }
+
+        // La identidad del usuario la resuelve el servidor a partir de la sesión.
+        const resp = await fetch(`${API_GESTION}/incidencias`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idContenedor, tipo, descripcion: descripcion || null, imagen })
+        });
+        const json = await resp.json();
+
+        if (json.status !== 'success') {
+            mostrarFeedback('incidenciaFeedback', json.message || I18N.msgErrorReportarIncidencia, false);
+            return;
+        }
+
+        mostrarFeedback('incidenciaFeedback', I18N.msgIncidenciaReportada, true);
+        await cargarIncidencias();
+        setTimeout(() => {
+            document.getElementById('nuevaIncidenciaForm').hidden = true;
+        }, 1500);
     });
 
 

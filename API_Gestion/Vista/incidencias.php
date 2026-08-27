@@ -1,13 +1,15 @@
 <?php
 require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
+require_once __DIR__ . '/../../i18n/i18n.php';
 ?>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="<?= htmlspecialchars($RECOLIX_IDIOMA) ?>">
 
 <head>
     <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Incidencias — Recolix</title>
+    <title><?= t('incidencias.title') ?></title>
     <link rel="stylesheet" href="styleContenedores.css">
 </head>
 
@@ -16,45 +18,46 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
     <header class="navbar">
         <div class="nav-inner">
             <div class="nav-left">
-                <div class="brand">
+                <a href="../../Backoffice/indexBackoffice.php" class="brand">
                     <img src="logoRecolix.png" alt="Recolix" class="brand-logo">
                     <span class="brand-name">Recolix</span>
-                </div>
+                </a>
                 <nav class="nav-links">
-                    <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
-                    <a href="../../API_Recoleccion/Vista/camiones.php">Camiones</a>
-                    <a href="../../API_Recoleccion/Vista/circuitos.php">Circuitos</a>
-                    <a href="../../API_Recoleccion/Vista/rutas.php">Rutas</a>
-                    <a href="#">Cuadrillas</a>
-                    <a href="contenedores.php">Contenedores</a>
-                    <a href="centrosAcopio.php">Centros de Acopio</a>
-                    <a href="../../Backoffice/mapa.php">Mapa</a>
-                    <a href="#">Reportes</a>
-                    <a href="#" class="nav-active">Incidencias</a>
-                    <a href="../../API_Usuarios/Vista/usuarios.php">Usuarios</a>
+                    <a href="../../Backoffice/indexBackoffice.php"><?= t('backoffice.nav_inicio') ?></a>
+                    <a href="../../API_Recoleccion/Vista/camiones.php"><?= t('backoffice.nav_camiones') ?></a>
+                    <a href="../../API_Recoleccion/Vista/circuitos.php"><?= t('backoffice.nav_circuitos') ?></a>
+                    <a href="../../API_Recoleccion/Vista/rutas.php"><?= t('backoffice.nav_rutas') ?></a>
+                    <a href="../../API_Usuarios/Vista/cuadrillas.php"><?= t('backoffice.nav_cuadrillas') ?></a>
+                    <a href="contenedores.php"><?= t('backoffice.nav_contenedores') ?></a>
+                    <a href="centrosAcopio.php"><?= t('backoffice.nav_centros_acopio') ?></a>
+                    <a href="../../Backoffice/mapa.php"><?= t('backoffice.nav_mapa') ?></a>
+                    <a href="#"><?= t('backoffice.nav_reportes') ?></a>
+                    <a href="incidencias.php" class="nav-active"><?= t('backoffice.nav_incidencias') ?></a>
+                    <a href="../../API_Usuarios/Vista/usuarios.php"><?= t('backoffice.nav_usuarios') ?></a>
                 </nav>
             </div>
             <div class="nav-right">
-                <a href="/recolix/API_Usuarios/perfil.php" class="btn-user" title="Perfil de usuario">
+                <?php include __DIR__ . '/../../i18n/switcher.php'; ?>
+                <a href="/recolix/API_Usuarios/perfil.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
                     <img src="user.svg" alt="Usuario" class="nav-user-icon">
                 </a>
-                <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menú">
+                <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="<?= htmlspecialchars(t('backoffice.nav_menu')) ?>">
                     <span></span><span></span><span></span>
                 </button>
             </div>
         </div>
         <nav class="nav-mobile" id="navMobile">
-            <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
-            <a href="../../API_Recoleccion/Vista/camiones.php">Camiones</a>
-            <a href="../../API_Recoleccion/Vista/circuitos.php">Circuitos</a>
-            <a href="../../API_Recoleccion/Vista/rutas.php">Rutas</a>
-            <a href="#">Cuadrillas</a>
-            <a href="contenedores.php">Contenedores</a>
-            <a href="centrosAcopio.php">Centros de Acopio</a>
-            <a href="../../Backoffice/mapa.php">Mapa</a>
-            <a href="#">Reportes</a>
-            <a href="#" class="nav-active">Incidencias</a>
-            <a href="../../API_Usuarios/Vista/usuarios.php">Usuarios</a>
+            <a href="../../Backoffice/indexBackoffice.php"><?= t('backoffice.nav_inicio') ?></a>
+            <a href="../../API_Recoleccion/Vista/camiones.php"><?= t('backoffice.nav_camiones') ?></a>
+            <a href="../../API_Recoleccion/Vista/circuitos.php"><?= t('backoffice.nav_circuitos') ?></a>
+            <a href="../../API_Recoleccion/Vista/rutas.php"><?= t('backoffice.nav_rutas') ?></a>
+            <a href="../../API_Usuarios/Vista/cuadrillas.php"><?= t('backoffice.nav_cuadrillas') ?></a>
+            <a href="contenedores.php"><?= t('backoffice.nav_contenedores') ?></a>
+            <a href="centrosAcopio.php"><?= t('backoffice.nav_centros_acopio') ?></a>
+            <a href="../../Backoffice/mapa.php"><?= t('backoffice.nav_mapa') ?></a>
+            <a href="#"><?= t('backoffice.nav_reportes') ?></a>
+            <a href="incidencias.php" class="nav-active"><?= t('backoffice.nav_incidencias') ?></a>
+            <a href="../../API_Usuarios/Vista/usuarios.php"><?= t('backoffice.nav_usuarios') ?></a>
         </nav>
         <div class="nav-hr"></div>
     </header>
@@ -152,6 +155,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                     <tr>
                         <th>ID</th>
                         <th>Tipo</th>
+                        <th>Foto</th>
                         <th>Prioridad</th>
                         <th>Urgente</th>
                         <th>Estado</th>
@@ -235,6 +239,19 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
         </div>
     </div>
 
+    <div class="modal-overlay" id="modalFoto" style="display:none" onclick="onOverlayClick(event,'modalFoto')">
+        <div class="modal modal-sm">
+            <div class="modal-header">
+                <h3>Foto — Incidencia <span id="fotoIncidenciaId"></span></h3>
+                <button class="modal-close" onclick="cerrarModalFoto()">✕</button>
+            </div>
+            <img id="fotoIncidenciaImg" src="" alt="Foto de la incidencia" class="modal-foto-img">
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="cerrarModalFoto()">Volver</button>
+            </div>
+        </div>
+    </div>
+
     <div id="toast" class="toast"></div>
 
     <footer class="footer">
@@ -304,6 +321,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 if (btn.dataset.action === 'asignar') abrirModalAsignar(inc);
                 if (btn.dataset.action === 'cerrar') abrirModalCerrar(inc.id_incidencia);
                 if (btn.dataset.action === 'contenedores') abrirModalContenedores(inc.id_incidencia);
+                if (btn.dataset.action === 'foto') abrirModalFoto(inc);
             });
             const params = new URLSearchParams(window.location.search);
             if (params.get('vista') === 'abiertas') {
@@ -495,6 +513,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 tr.innerHTML = `
     <td class="td-id" data-label="ID">${escapeHtml(inc.id_incidencia)}</td>
     <td data-label="Tipo">${escapeHtml(LABELS_TIPO[inc.tipo] || inc.tipo)}</td>
+    <td data-label="Foto">${inc.url_imagen ? `<button type="button" class="td-thumb-btn" data-action="foto" data-id="${inc.id_incidencia}" title="Ver foto"><img src="${escapeHtml(inc.url_imagen)}" alt="Foto de la incidencia" class="td-thumb"></button>` : '—'}</td>
     <td data-label="Prioridad"><span class="badge badge-${badgePrioridad(inc.prioridad)}">${escapeHtml(LABELS_PRIORIDAD[inc.prioridad] || inc.prioridad)}</span></td>
     <td data-label="Urgente">${Number(inc.urgencia) === 1 ? 'Sí' : 'No'}</td>
     <td data-label="Estado"><span class="badge badge-${badgeEstado(inc.estado)}">${escapeHtml(LABELS_ESTADO[inc.estado] || inc.estado)}</span></td>
@@ -607,6 +626,17 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
 
         function cerrarModalContenedores() {
             document.getElementById('modalContenedores').style.display = 'none';
+        }
+
+        function abrirModalFoto(inc) {
+            document.getElementById('fotoIncidenciaId').textContent = `#${inc.id_incidencia}`;
+            document.getElementById('fotoIncidenciaImg').src = inc.url_imagen;
+            document.getElementById('modalFoto').style.display = 'flex';
+        }
+
+        function cerrarModalFoto() {
+            document.getElementById('modalFoto').style.display = 'none';
+            document.getElementById('fotoIncidenciaImg').src = '';
         }
 
         function ocultarControles() {

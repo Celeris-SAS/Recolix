@@ -6,10 +6,16 @@ class IncidenciaController {
     private $tiposValidos = ['rotura', 'desborde', 'falta_recoleccion', 'vandalismo', 'otro'];
     private $prioridadesValidas = ['baja', 'media', 'alta', 'critica'];
     private $estadosValidos = ['abierta', 'asignada', 'en_curso', 'resuelta'];
+    private $mimesImagenValidos = ['jpeg' => 'jpg', 'jpg' => 'jpg', 'png' => 'png'];
+    private $tamanoMaxImagen = 5242880; // RF07: 5 MB
+
+    private $contenedorModel;
 
     public function __construct() {
         require_once __DIR__ . '/../Modelo/incidenciaModel.php';
+        require_once __DIR__ . '/../Modelo/contenedorModel.php';
         $this->incidenciaModel = new IncidenciaModel();
+        $this->contenedorModel = new ContenedorModel();
     }
 
     private function validarId($valor, $nombre = 'ID') {
@@ -48,13 +54,87 @@ class IncidenciaController {
         return $incidencia;
     }
 
+    private function validarDescripcion($descripcion) {
+        if ($descripcion === null) {
+            return null;
+        }
+        $descripcion = trim((string) $descripcion);
+        if ($descripcion === '') {
+            return null;
+        }
+        if (strlen($descripcion) > 500) {
+            throw new InvalidArgumentException("La descripción no puede superar los 500 caracteres.");
+        }
+        return $descripcion;
+    }
+
+    // RF07: recibe la foto como data URL base64 ("data:image/jpeg;base64,...."), formato en el que
+    // la envían tanto la Landing Page como el perfil del vecino junto al resto del JSON del reporte.
+    // Devuelve los bytes decodificados y la extensión, o null si no se adjuntó imagen.
+    private function validarImagen($imagenBase64) {
+        if ($imagenBase64 === null || $imagenBase64 === '') {
+            return null;
+        }
+        if (!preg_match('/^data:image\/(jpe?g|png);base64,(.+)$/i', $imagenBase64, $match)) {
+            throw new InvalidArgumentException("La imagen debe ser un archivo JPG o PNG.");
+        }
+        $extension = $this->mimesImagenValidos[strtolower($match[1])];
+        $datos = base64_decode($match[2], true);
+        if ($datos === false) {
+            throw new InvalidArgumentException("La imagen adjunta está corrupta o mal codificada.");
+        }
+        if (strlen($datos) > $this->tamanoMaxImagen) {
+            throw new InvalidArgumentException("La imagen no puede superar los 5 MB.");
+        }
+        return ['datos' => $datos, 'extension' => $extension];
+    }
+
+    private function guardarImagen($datos, $extension) {
+        $directorio = __DIR__ . '/../Vista/uploads/incidencias';
+        if (!is_dir($directorio)) {
+            mkdir($directorio, 0755, true);
+        }
+        $nombreArchivo = 'inc_' . uniqid() . '.' . $extension;
+        file_put_contents($directorio . '/' . $nombreArchivo, $datos);
+        return 'uploads/incidencias/' . $nombreArchivo;
+    }
+
     public function reglasValidacion() {
         return [
-            'idCuadrilla' => ['tipo' => 'entero', 'min' => 1, 'label' => 'Cuadrilla'],
-            'tipo'        => ['valores' => $this->tiposValidos, 'label' => 'Tipo'],
-            'prioridad'   => ['valores' => $this->prioridadesValidas, 'label' => 'Prioridad'],
-            'estado'      => ['valores' => $this->estadosValidos, 'label' => 'Estado']
+            'idCuadrilla'  => ['tipo' => 'entero', 'min' => 1, 'label' => 'Cuadrilla'],
+            'idContenedor' => ['tipo' => 'entero', 'min' => 1, 'label' => 'Contenedor'],
+            'tipo'         => ['valores' => $this->tiposValidos, 'label' => 'Tipo'],
+            'prioridad'    => ['valores' => $this->prioridadesValidas, 'label' => 'Prioridad'],
+            'estado'       => ['valores' => $this->estadosValidos, 'label' => 'Estado'],
+            'descripcion'  => ['tipo' => 'texto', 'max' => 500, 'label' => 'Descripción']
         ];
+    }
+
+    // RF03/RF04: registro de una incidencia por un usuario autenticado.
+    // La identidad se toma de la sesión del servidor, nunca de lo que mande el cliente,
+    // para que una incidencia no pueda crearse a nombre de otro usuario.
+    public function crearIncidencia($idContenedor, $tipo, $descripcion = null, $imagen = null) {
+        if (empty($_SESSION['ci_usuario'])) {
+            throw new InvalidArgumentException("Debe iniciar sesión para reportar una incidencia.");
+        }
+        $ciUsuario    = $this->validarId($_SESSION['ci_usuario'], 'Usuario');
+        $idContenedor = $this->validarId($idContenedor, 'Contenedor');
+        $tipo         = $this->validarTipo($tipo);
+        $descripcion  = $this->validarDescripcion($descripcion);
+        $imagenValida = $this->validarImagen($imagen);
+
+        if (!$this->incidenciaModel->usuarioExiste($ciUsuario)) {
+            throw new InvalidArgumentException("No existe un usuario con la cédula $ciUsuario.");
+        }
+        if (!$this->contenedorModel->getContenedor($idContenedor)) {
+            throw new InvalidArgumentException("No existe un contenedor con el ID $idContenedor.");
+        }
+
+        $urlImagen = $imagenValida ? $this->guardarImagen($imagenValida['datos'], $imagenValida['extension']) : null;
+
+        $idIncidencia = $this->incidenciaModel->crearIncidencia($ciUsuario, $tipo, $descripcion, $urlImagen);
+        $this->incidenciaModel->vincularContenedor($idIncidencia, $idContenedor);
+        return $this->incidenciaModel->getIncidencia($idIncidencia);
     }
 
     public function getAllIncidencias() {
