@@ -1007,5 +1007,63 @@
     "cargando_notificaciones": "Cargando notificaciones...",
     "sin_notificaciones": "No tenés notificaciones por el momento.",
     "btn_marcar_leida": "Marcar leída"
+  },
+
+  "reportes": {
+    "title": "Reportes — Recolix",
+    "hero_title": "Reportes",
+    "hero_sub": "Estadísticas y métricas clave de la operación de recolección.",
+
+    "kpi_contenedores_recolectados": "Contenedores Recolectados",
+    "kpi_usuarios_registrados": "Usuarios Registrados",
+    "kpi_residuos_recolectados": "Residuos Recolectados (kg)",
+
+    "chart_llenado_title": "Distribución del Nivel de Llenado",
+    "chart_llenado_eje_x": "Nivel de llenado (%)",
+    "chart_llenado_eje_y": "Cantidad de contenedores",
+
+    "gauge_contenedores_funcionales": "Contenedores Funcionales",
+    "gauge_contenedores_sin_recolectar": "Contenedores sin Recolectar",
+    "gauge_incidencias_resueltas": "Incidencias Resueltas",
+    "gauge_levantes_completados": "Levantes Completados",
+
+    "hub_title": "Explorar reportes",
+    "hub_sub": "Elegí una categoría para ver el detalle.",
+
+    "card_zonas_criticas_titulo": "Zonas Urbanas Críticas",
+    "card_zonas_criticas_desc": "Municipios con mayor concentración de contenedores críticos",
+    "card_volumen_titulo": "Volumen de Residuos",
+    "card_volumen_desc": "Cantidad de residuos recolectados por tipo y período",
+    "card_incidencias_titulo": "Tiempos de Resolución de Incidencias",
+    "card_incidencias_desc": "Duración promedio entre apertura y cierre de incidencias",
+    "card_frecuencia_titulo": "Frecuencia de Recolección",
+    "card_frecuencia_desc": "Regularidad de la recolección domiciliaria por circuito",
+    "card_vertederos_titulo": "Capacidad de los Vertederos",
+    "card_vertederos_desc": "Ocupación de los centros de disposición final",
+    "card_clasificacion_titulo": "Clasificación de los Residuos",
+    "card_clasificacion_desc": "Distribución de contenedores por tipo de residuo",
+    "card_reciclaje_titulo": "Información de Reciclaje",
+    "card_reciclaje_desc": "Proporción de residuos reciclables recolectados",
+    "card_usuarios_titulo": "Usuarios Registrados y Conectados",
+    "card_usuarios_desc": "Evolución del padrón de usuarios de la plataforma",
+
+    "detalle_btn_exportar": "Exportar",
+    "detalle_exportando": "Generando archivo…",
+    "detalle_volver": "Volver a Reportes",
+    "detalle_proximamente_titulo": "Reporte en construcción",
+    "detalle_proximamente_desc": "Este reporte todavía no está disponible. Estamos trabajando para traerlo pronto.",
+
+    "zonas_th_municipio": "Municipio",
+    "zonas_th_departamento": "Departamento",
+    "zonas_th_incidencias": "Incidencias (últ. mes)",
+    "zonas_th_total": "Total Contenedores",
+    "zonas_th_desbordados": "Contenedores Desbordados",
+    "zonas_th_porcentaje": "% Desbordado",
+    "zonas_th_motivo": "Motivo",
+    "zonas_motivo_incidencias": "Incidencias",
+    "zonas_motivo_desbordados": "Desbordados",
+    "zonas_motivo_ambos": "Ambos",
+    "zonas_hero_sub": "Municipios con más de 10 incidencias en el último mes o más del 20% de sus contenedores desbordados.",
+    "zonas_empty": "No hay zonas urbanas críticas en este momento."
   }
 }

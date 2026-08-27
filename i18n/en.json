@@ -1007,5 +1007,63 @@
     "cargando_notificaciones": "Loading notifications...",
     "sin_notificaciones": "You don't have any notifications right now.",
     "btn_marcar_leida": "Mark as read"
+  },
+
+  "reportes": {
+    "title": "Reports — Recolix",
+    "hero_title": "Reports",
+    "hero_sub": "Key statistics and metrics for the collection operation.",
+
+    "kpi_contenedores_recolectados": "Containers Collected",
+    "kpi_usuarios_registrados": "Registered Users",
+    "kpi_residuos_recolectados": "Waste Collected (kg)",
+
+    "chart_llenado_title": "Fill Level Distribution",
+    "chart_llenado_eje_x": "Fill level (%)",
+    "chart_llenado_eje_y": "Number of containers",
+
+    "gauge_contenedores_funcionales": "Functional Containers",
+    "gauge_contenedores_sin_recolectar": "Uncollected Containers",
+    "gauge_incidencias_resueltas": "Resolved Incidents",
+    "gauge_levantes_completados": "Completed Pickups",
+
+    "hub_title": "Explore reports",
+    "hub_sub": "Choose a category to see the detail.",
+
+    "card_zonas_criticas_titulo": "Critical Urban Zones",
+    "card_zonas_criticas_desc": "Municipalities with the highest concentration of critical containers",
+    "card_volumen_titulo": "Waste Volume",
+    "card_volumen_desc": "Amount of waste collected by type and period",
+    "card_incidencias_titulo": "Incident Resolution Times",
+    "card_incidencias_desc": "Average time between an incident opening and closing",
+    "card_frecuencia_titulo": "Collection Frequency",
+    "card_frecuencia_desc": "Regularity of household waste collection by circuit",
+    "card_vertederos_titulo": "Landfill Capacity",
+    "card_vertederos_desc": "Occupancy of final disposal sites",
+    "card_clasificacion_titulo": "Waste Classification",
+    "card_clasificacion_desc": "Distribution of containers by waste type",
+    "card_reciclaje_titulo": "Recycling Information",
+    "card_reciclaje_desc": "Proportion of recyclable waste collected",
+    "card_usuarios_titulo": "Registered and Connected Users",
+    "card_usuarios_desc": "Evolution of the platform's user base",
+
+    "detalle_btn_exportar": "Export",
+    "detalle_exportando": "Generating file…",
+    "detalle_volver": "Back to Reports",
+    "detalle_proximamente_titulo": "Report under construction",
+    "detalle_proximamente_desc": "This report isn't available yet. We're working on bringing it soon.",
+
+    "zonas_th_municipio": "Municipality",
+    "zonas_th_departamento": "Department",
+    "zonas_th_incidencias": "Incidents (last month)",
+    "zonas_th_total": "Total Containers",
+    "zonas_th_desbordados": "Overflowing Containers",
+    "zonas_th_porcentaje": "% Overflowing",
+    "zonas_th_motivo": "Reason",
+    "zonas_motivo_incidencias": "Incidents",
+    "zonas_motivo_desbordados": "Overflowing",
+    "zonas_motivo_ambos": "Both",
+    "zonas_hero_sub": "Municipalities with more than 10 incidents in the last month or more than 20% of their containers overflowing.",
+    "zonas_empty": "No critical urban zones right now."
   }
 }

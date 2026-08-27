@@ -93,6 +93,23 @@ $config = [
                 'estado'    => 'filtrarEstado'
             ]
         ],
+        'reportes' => [
+            'singular'    => 'Reporte',
+            'controller'  => 'ReporteController',
+            'file'        => 'Controlador/reporteController.php',
+            'getAllMethod' => 'getResumenGeneral',
+            'getMethod'   => null,
+            'insertMethod' => null,
+            'updateMethod' => null,
+            'deleteMethod' => null,
+            'actions' => [
+                'getResumenGeneral',
+                'getDistribucionLlenado',
+                'getIndicadores',
+                'getZonasCriticas'
+            ],
+            'filters' => []
+        ],
         'maquinaria' => [
             'singular'    => 'Maquinaria',
             'controller'  => 'MaquinariaController',
