@@ -309,7 +309,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
     </footer>
 
     <script>
-        const API_BASE = '/recolix/API_Usuarios';
+        const API_BASE = '/Recolix/API_Usuarios';
         const I18N = <?= json_encode(t_array([
             'msgIngresaCedula' => 'usuarios.msg_ingresa_cedula',
             'msgUsuarioNoEncontrado' => 'usuarios.msg_usuario_no_encontrado',

@@ -1,6 +1,6 @@
 
 
-const API = '/recolix/API_Usuarios';
+const API = '/Recolix/API_Usuarios';
 document.addEventListener('DOMContentLoaded', function () {
   cargarSolicitudes();
 });

@@ -288,8 +288,8 @@
       apenas tengas el endpoint, o cargalos manualmente acá.
 */
 
-const API_BASE       = '/recolix/API_Usuarios';
-const MUNICIPIOS_API = '/recolix/API_Gestion';
+const API_BASE       = '/Recolix/API_Usuarios';
+const MUNICIPIOS_API = '/Recolix/API_Gestion';
 
 let cuadrillaIdParaEliminar = null;
 let toastTimeout;

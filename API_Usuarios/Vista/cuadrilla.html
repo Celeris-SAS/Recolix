@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Recolix — Cuadrilla</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../Backoffice/styleBackoffice.css">
-<link rel="stylesheet" href="styles_vecino.css">
-<link rel="stylesheet" href="navExtras.css">
-<link rel="stylesheet" href="cuadrilla.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recolix — Cuadrilla</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../../Backoffice/styleBackoffice.css">
+    <link rel="stylesheet" href="styles_vecino.css">
+    <link rel="stylesheet" href="navExtras.css">
+    <link rel="stylesheet" href="cuadrilla.css">
 </head>
 
 <body>
@@ -61,7 +64,13 @@
             <div class="panel-card">
                 <div class="card-header">
                     <span class="card-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17h4V5H2v12h3"/><path d="M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M10 17h4V5H2v12h3" />
+                            <path d="M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5" />
+                            <circle cx="7.5" cy="17.5" r="2.5" />
+                            <circle cx="17.5" cy="17.5" r="2.5" />
+                        </svg>
                     </span>
                     <div>
                         <h2>Registrar Levante</h2>
@@ -72,7 +81,8 @@
                 <form id="form-levante" class="form-grid">
                     <div class="form-group">
                         <label for="contenedor-id">ID del contenedor</label>
-                        <input type="text" id="contenedor-id" name="contenedor-id" list="lista-contenedores" placeholder="Ingresá el ID del contenedor" autocomplete="off">
+                        <input type="text" id="contenedor-id" name="contenedor-id" list="lista-contenedores"
+                            placeholder="Ingresá el ID del contenedor" autocomplete="off">
                         <datalist id="lista-contenedores">
                             <option value="CT-4587">
                             <option value="CT-6123">
@@ -84,7 +94,11 @@
                         <label for="contenedor-info">Contenedor</label>
                         <div id="contenedor-info" class="info-box">
                             <span class="info-icon">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                                    <circle cx="12" cy="10" r="3" />
+                                </svg>
                             </span>
                             <span>Seleccioná un contenedor para ver la información</span>
                         </div>
@@ -121,32 +135,33 @@
                             </div>
                             <div class="form-group">
                                 <label for="motivo">Motivo</label>
-                                <input type="text" id="motivo" name="motivo" maxlength="150" placeholder="Ej: acceso bloqueado por obra en la calle">
+                                <input type="text" id="motivo" name="motivo" maxlength="150"
+                                    placeholder="Ej: acceso bloqueado por obra en la calle">
                                 <p class="error-msg" id="motivo-error"></p>
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="nivel-llenado">Peso</label>
-                        <select id="nivel-llenado" name="nivel-llenado">
-                            <option value="">Seleccionar peso</option>
-                            <option value="25">25 kg</option>
-                            <option value="50">50 kg</option>
-                            <option value="75">75 kg</option>
-                            <option value="90">90 kg</option>
-                            <option value="100">100 kg</option>
-                        </select>
+                        <label for="ingreso-peso">Peso ingresado</label>
+                        <input type="number" id="ingreso-peso" name="peso" min="1" placeholder="Ej: 350">
                     </div>
 
                     <div class="form-group">
                         <label for="observaciones">Observaciones (opcional)</label>
-                        <textarea id="observaciones" name="observaciones" placeholder="Escribí observaciones..."></textarea>
+                        <textarea id="observaciones" name="observaciones"
+                            placeholder="Escribí observaciones..."></textarea>
                     </div>
 
                     <div class="form-actions">
                         <button type="submit" class="btn btn-primary btn-full">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17h4V5H2v12h3"/><path d="M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M10 17h4V5H2v12h3" />
+                                <path d="M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5" />
+                                <circle cx="7.5" cy="17.5" r="2.5" />
+                                <circle cx="17.5" cy="17.5" r="2.5" />
+                            </svg>
                             Registrar levante
                         </button>
                     </div>
@@ -159,7 +174,12 @@
             <div class="panel-card">
                 <div class="card-header">
                     <span class="card-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M12 19H8.5a2.5 2.5 0 0 1 0-5h7a2.5 2.5 0 0 0 0-5H6"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="6" cy="19" r="2" />
+                            <circle cx="18" cy="5" r="2" />
+                            <path d="M12 19H8.5a2.5 2.5 0 0 1 0-5h7a2.5 2.5 0 0 0 0-5H6" />
+                        </svg>
                     </span>
                     <div>
                         <h2>Rutas Asignadas</h2>
@@ -171,7 +191,12 @@
                     <div class="route-row">
                         <div class="route-info">
                             <span class="route-item">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M12 19H8.5a2.5 2.5 0 0 1 0-5h7a2.5 2.5 0 0 0 0-5H6"/></svg>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="6" cy="19" r="2" />
+                                    <circle cx="18" cy="5" r="2" />
+                                    <path d="M12 19H8.5a2.5 2.5 0 0 1 0-5h7a2.5 2.5 0 0 0 0-5H6" />
+                                </svg>
                                 Ruta asignada: <strong>Circuito 24</strong>
                             </span>
                             <span class="route-item">Turno: <strong>Matutino</strong></span>
@@ -180,7 +205,13 @@
                         </div>
                         <div class="camion-info">
                             <span class="camion-matricula">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17h4V5H2v12h3"/><path d="M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M10 17h4V5H2v12h3" />
+                                    <path d="M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5" />
+                                    <circle cx="7.5" cy="17.5" r="2.5" />
+                                    <circle cx="17.5" cy="17.5" r="2.5" />
+                                </svg>
                                 SBC 1234
                             </span>
                             <select class="camion-estado" data-camion="SBC 1234">
@@ -189,14 +220,20 @@
                                 <option value="en_mantenimiento">En mantenimiento</option>
                                 <option value="de_baja">De baja</option>
                             </select>
-                            <button type="button" class="btn btn-sm btn-outline btn-desperfecto" data-camion="SBC 1234">Reportar desperfecto</button>
+                            <button type="button" class="btn btn-sm btn-outline btn-desperfecto"
+                                data-camion="SBC 1234">Reportar desperfecto</button>
                         </div>
                     </div>
 
                     <div class="route-row">
                         <div class="route-info">
                             <span class="route-item">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M12 19H8.5a2.5 2.5 0 0 1 0-5h7a2.5 2.5 0 0 0 0-5H6"/></svg>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="6" cy="19" r="2" />
+                                    <circle cx="18" cy="5" r="2" />
+                                    <path d="M12 19H8.5a2.5 2.5 0 0 1 0-5h7a2.5 2.5 0 0 0 0-5H6" />
+                                </svg>
                                 Ruta asignada: <strong>Circuito 31</strong>
                             </span>
                             <span class="route-item">Turno: <strong>Matutino</strong></span>
@@ -205,7 +242,13 @@
                         </div>
                         <div class="camion-info">
                             <span class="camion-matricula">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17h4V5H2v12h3"/><path d="M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M10 17h4V5H2v12h3" />
+                                    <path d="M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5" />
+                                    <circle cx="7.5" cy="17.5" r="2.5" />
+                                    <circle cx="17.5" cy="17.5" r="2.5" />
+                                </svg>
                                 STY 5678
                             </span>
                             <select class="camion-estado" data-camion="STY 5678">
@@ -214,13 +257,19 @@
                                 <option value="en_mantenimiento">En mantenimiento</option>
                                 <option value="de_baja">De baja</option>
                             </select>
-                            <button type="button" class="btn btn-sm btn-outline btn-desperfecto" data-camion="STY 5678">Reportar desperfecto</button>
+                            <button type="button" class="btn btn-sm btn-outline btn-desperfecto"
+                                data-camion="STY 5678">Reportar desperfecto</button>
                         </div>
                     </div>
                 </div>
 
                 <a class="btn btn-outline btn-full" href="#">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6v15l6-3 6 3 6-3V3l-6 3-6-3-6 3Z"/><path d="M9 3v15"/><path d="M15 6v15"/></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 6v15l6-3 6 3 6-3V3l-6 3-6-3-6 3Z" />
+                        <path d="M9 3v15" />
+                        <path d="M15 6v15" />
+                    </svg>
                     Ver en mapa
                 </a>
             </div>
@@ -231,7 +280,11 @@
             <div class="panel-card">
                 <div class="card-header">
                     <span class="card-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+                        </svg>
                     </span>
                     <div>
                         <h2>Lista de Urgentes</h2>
@@ -253,28 +306,34 @@
                         </thead>
                         <tbody>
                             <tr data-id="CT-4587">
-                                <td><span class="contenedor-id"><span class="alert-icon alert-critical">!</span> CT-4587</span></td>
+                                <td><span class="contenedor-id"><span class="alert-icon alert-critical">!</span>
+                                        CT-4587</span></td>
                                 <td>Av. Italia 1234</td>
                                 <td>Orgánico</td>
                                 <td><span class="badge badge-danger">3 días</span></td>
                                 <td><span class="badge badge-danger">100%</span></td>
-                                <td><button type="button" class="btn btn-sm btn-outline btn-registrar">Registrar</button></td>
+                                <td><button type="button"
+                                        class="btn btn-sm btn-outline btn-registrar">Registrar</button></td>
                             </tr>
                             <tr data-id="CT-6123">
-                                <td><span class="contenedor-id"><span class="alert-icon alert-critical">!</span> CT-6123</span></td>
+                                <td><span class="contenedor-id"><span class="alert-icon alert-critical">!</span>
+                                        CT-6123</span></td>
                                 <td>Bvr. Artigas 789</td>
                                 <td>Plástico</td>
                                 <td><span class="badge badge-warning">2 días</span></td>
                                 <td><span class="badge badge-warning">90%</span></td>
-                                <td><button type="button" class="btn btn-sm btn-outline btn-registrar">Registrar</button></td>
+                                <td><button type="button"
+                                        class="btn btn-sm btn-outline btn-registrar">Registrar</button></td>
                             </tr>
                             <tr data-id="CT-7790">
-                                <td><span class="contenedor-id"><span class="alert-icon alert-warning">!</span> CT-7790</span></td>
+                                <td><span class="contenedor-id"><span class="alert-icon alert-warning">!</span>
+                                        CT-7790</span></td>
                                 <td>Cno. Maldonado 456</td>
                                 <td>Mixto</td>
                                 <td><span class="badge badge-warning">2 días</span></td>
                                 <td><span class="badge badge-warning">85%</span></td>
-                                <td><button type="button" class="btn btn-sm btn-outline btn-registrar">Registrar</button></td>
+                                <td><button type="button"
+                                        class="btn btn-sm btn-outline btn-registrar">Registrar</button></td>
                             </tr>
                         </tbody>
                     </table>
@@ -324,7 +383,8 @@
             <p>Camión <strong id="desperfecto-matricula"></strong></p>
             <div class="form-row">
                 <label for="desperfecto-descripcion">Descripción del problema</label>
-                <textarea id="desperfecto-descripcion" rows="3" placeholder="Ej: pierde aceite del motor, falla el freno trasero..."></textarea>
+                <textarea id="desperfecto-descripcion" rows="3"
+                    placeholder="Ej: pierde aceite del motor, falla el freno trasero..."></textarea>
                 <p class="error-msg" id="desperfecto-error"></p>
             </div>
             <div class="modal-actions">
@@ -588,4 +648,5 @@
     </script>
 
 </body>
+
 </html>
