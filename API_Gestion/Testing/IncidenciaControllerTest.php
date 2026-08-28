@@ -163,6 +163,28 @@ final class IncidenciaControllerTest extends GestionTestCase
         $controller->crearIncidencia(1, 'rotura', null, 'no-es-una-imagen');
     }
 
+    // No se puede ser "pesado": si el usuario ya tiene una incidencia suya sin
+    // resolver sobre este mismo contenedor, se rechaza antes de crear nada nuevo.
+    public function testCrearIncidenciaRechazaSegundoReporteDelMismoUsuarioSobreElMismoContenedor(): void
+    {
+        $_SESSION['ci_usuario'] = 12345678;
+        $controller = $this->controller();
+
+        $incidenciaModelStub = new class {
+            public function usuarioExiste($ci) { return true; }
+            public function usuarioTieneIncidenciaAbiertaEnContenedor($ci, $idContenedor) { return true; }
+        };
+        $contenedorModelStub = new class {
+            public function getContenedor($id) { return ['id_contenedor' => $id, 'estado' => 'funcional']; }
+        };
+        $this->setPrivateProperty($controller, 'incidenciaModel', $incidenciaModelStub);
+        $this->setPrivateProperty($controller, 'contenedorModel', $contenedorModelStub);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Ya tenés un reporte');
+        $controller->crearIncidencia(1, 'rotura');
+    }
+
     /**
      * RF09: la urgencia se calcula a partir del estado del contenedor, no la
      * decide el cliente. Se inyectan dobles de Model/Contenedor para llegar
@@ -178,7 +200,9 @@ final class IncidenciaControllerTest extends GestionTestCase
         $incidenciaModelStub = new class {
             public $urgenciaRecibida = null;
             public function usuarioExiste($ci) { return true; }
-            public function crearIncidencia($ci, $tipo, $descripcion, $urlImagen, $urgencia) {
+            public function usuarioTieneIncidenciaAbiertaEnContenedor($ci, $idContenedor) { return false; }
+            public function contarIncidenciasAbiertasPorContenedor($idContenedor) { return 0; }
+            public function crearIncidencia($ci, $tipo, $descripcion, $urlImagen, $urgencia, $prioridad) {
                 $this->urgenciaRecibida = $urgencia;
                 return 99;
             }
@@ -208,6 +232,58 @@ final class IncidenciaControllerTest extends GestionTestCase
             'funcional no es urgente' => ['funcional', 0],
             'en_deposito no es urgente' => ['en_deposito', 0],
         ];
+    }
+
+    // --- Prioridad escalonada: no la elige el usuario, depende de cuántas
+    // incidencias no resueltas ya tiene el contenedor (contando la nueva). ---
+
+    /** @dataProvider cantidadesYPrioridadEsperada */
+    public function testCalcularPrioridadEscalaSegunCantidad(int $cantidad, string $esperado): void
+    {
+        $controller = $this->controller();
+        $this->assertSame($esperado, $this->callPrivate($controller, 'calcularPrioridad', [$cantidad]));
+    }
+
+    public static function cantidadesYPrioridadEsperada(): array
+    {
+        return [
+            'una sola incidencia' => [1, 'baja'],
+            'dos incidencias' => [2, 'media'],
+            'justo antes del escalón a alta' => [4, 'media'],
+            'cinco incidencias' => [5, 'alta'],
+            'justo antes del escalón a critica' => [9, 'alta'],
+            'diez incidencias' => [10, 'critica'],
+            'muy por encima de diez' => [25, 'critica'],
+        ];
+    }
+
+    public function testCrearIncidenciaCuentaLaPropiaIncidenciaAlEscalarLaPrioridad(): void
+    {
+        $_SESSION['ci_usuario'] = 12345678;
+        $controller = $this->controller();
+
+        $incidenciaModelStub = new class {
+            public $prioridadRecibida = null;
+            public function usuarioExiste($ci) { return true; }
+            public function usuarioTieneIncidenciaAbiertaEnContenedor($ci, $idContenedor) { return false; }
+            // El contenedor ya tiene 4 incidencias no resueltas: esta sería la 5ta -> 'alta'.
+            public function contarIncidenciasAbiertasPorContenedor($idContenedor) { return 4; }
+            public function crearIncidencia($ci, $tipo, $descripcion, $urlImagen, $urgencia, $prioridad) {
+                $this->prioridadRecibida = $prioridad;
+                return 99;
+            }
+            public function vincularContenedor($idIncidencia, $idContenedor) {}
+            public function getIncidencia($id) { return ['id_incidencia' => $id]; }
+        };
+        $contenedorModelStub = new class {
+            public function getContenedor($id) { return ['id_contenedor' => $id, 'estado' => 'funcional']; }
+        };
+        $this->setPrivateProperty($controller, 'incidenciaModel', $incidenciaModelStub);
+        $this->setPrivateProperty($controller, 'contenedorModel', $contenedorModelStub);
+
+        $controller->crearIncidencia(1, 'rotura');
+
+        $this->assertSame('alta', $incidenciaModelStub->prioridadRecibida);
     }
 
     // --- asignarCuadrilla (RF10) ---
