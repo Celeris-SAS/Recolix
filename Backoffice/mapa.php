@@ -184,6 +184,7 @@ require_once __DIR__ . '/../i18n/i18n.php';
     ])) ?>;
     const I18N_LOCALE = <?= json_encode(t_locale()) ?>;
 </script>
+<script src="../LandingPage/mapaContenedoresBase.js"></script>
 <script src="../LandingPage/mapa.js"></script>
 <script>
 function toggleMobileMenu() {
