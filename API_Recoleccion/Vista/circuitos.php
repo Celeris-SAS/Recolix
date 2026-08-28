@@ -28,6 +28,9 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             .mapa-circuitos-section { padding-left: 20px; padding-right: 20px; }
             .mapa-circuitos-box { height: 320px; }
         }
+        @media (max-width: 768px) {
+            .mapa-box { height: 220px; }
+        }
 
         .generar-rutas-resultado { width: 100%; margin-top: 14px; }
         .generar-rutas-resumen { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }

@@ -321,7 +321,7 @@ tbody td { padding: 12px 16px; color: var(--text); }
 .nav-mobile.nav-mobile-open { display: flex; }
 
 
-@media (max-width: 1400px) {
+@media (max-width: 1439px) {
     .nav-links { display: none; }
     .nav-hamburger { display: flex; }
 }
