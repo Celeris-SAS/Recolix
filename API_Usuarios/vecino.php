@@ -20,6 +20,7 @@ if (!isset($_SESSION['ci_usuario'])) {
         href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="Vista/styles_vecino.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 <body>
     <header class="site-header" id="siteHeader">
@@ -46,6 +47,8 @@ if (!isset($_SESSION['ci_usuario'])) {
         </div>
     </header>
      <main class="container dash-main">
+
+        <a href="../LandingPage/index_LandingPage.html" class="btn btn-outline btn-sm btn-volver-inicio"><?= t('vecino.btn_volver_inicio') ?></a>
 
         <section class="dash-section" id="seccionPerfil">
             <div class="section-header">
@@ -159,6 +162,44 @@ if (!isset($_SESSION['ci_usuario'])) {
                 <button class="btn btn-primary btn-sm" id="nuevaIncidenciaBtn"><?= t('vecino.btn_nueva_incidencia') ?></button>
             </div>
 
+            <div class="panel-card" id="nuevaIncidenciaForm" hidden>
+                <h3><?= t('vecino.nueva_incidencia_titulo') ?></h3>
+                <div class="form-row">
+                    <label for="incTipo"><?= t('vecino.nueva_incidencia_tipo') ?></label>
+                    <select id="incTipo">
+                        <option value="rotura"><?= t('vecino.nueva_incidencia_tipo_rotura') ?></option>
+                        <option value="desborde"><?= t('vecino.nueva_incidencia_tipo_desborde') ?></option>
+                        <option value="falta_recoleccion"><?= t('vecino.nueva_incidencia_tipo_falta_recoleccion') ?></option>
+                        <option value="vandalismo"><?= t('vecino.nueva_incidencia_tipo_vandalismo') ?></option>
+                        <option value="otro"><?= t('vecino.nueva_incidencia_tipo_otro') ?></option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="incContenedor"><?= t('vecino.nueva_incidencia_contenedor') ?></label>
+                    <p class="form-nota" id="incUbicacionStatus"><?= t('vecino.nueva_incidencia_detectando_ubicacion') ?></p>
+                    <div id="incMapaContenedor" class="modal-map"></div>
+                    <p class="form-nota" id="incContenedorSeleccionado" style="display:none"></p>
+                    <input type="hidden" id="incContenedor">
+                    <p class="form-nota"><?= t('vecino.nueva_incidencia_contenedor_ayuda') ?></p>
+                    <p class="error-msg" id="incContenedorError"></p>
+                </div>
+                <div class="form-row">
+                    <label for="incDescripcion"><?= t('vecino.nueva_incidencia_descripcion') ?></label>
+                    <textarea id="incDescripcion" rows="3" maxlength="500" placeholder="<?= htmlspecialchars(t('vecino.nueva_incidencia_descripcion_placeholder')) ?>"></textarea>
+                </div>
+                <div class="form-row">
+                    <label for="incFoto"><?= t('vecino.nueva_incidencia_foto') ?></label>
+                    <input type="file" id="incFoto" accept="image/jpeg,image/png">
+                    <p class="form-nota"><?= t('vecino.nueva_incidencia_foto_ayuda') ?></p>
+                    <p class="error-msg" id="incFotoError"></p>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" id="guardarIncidenciaBtn"><?= t('vecino.btn_reportar_incidencia') ?></button>
+                    <button class="btn btn-outline btn-sm" id="cancelarIncidenciaBtn"><?= t('perfil.btn_cancelar') ?></button>
+                </div>
+                <p class="form-feedback" id="incidenciaFeedback"></p>
+            </div>
+
             <div id="incidenciasLista">
                 <p class="estado-carga"><?= t('vecino.cargando_incidencias') ?></p>
             </div>
@@ -231,11 +272,26 @@ if (!isset($_SESSION['ci_usuario'])) {
             'msgMunicipioActualizado' => 'vecino.msg_municipio_actualizado',
             'msgMunicipioAsignado' => 'vecino.msg_municipio_asignado',
             'sinIncidencias' => 'vecino.sin_incidencias',
+            'msgContenedorInvalido' => 'vecino.msg_contenedor_invalido',
+            'msgIncidenciaReportada' => 'vecino.msg_incidencia_reportada',
+            'msgErrorReportarIncidencia' => 'vecino.msg_error_reportar_incidencia',
+            'detectandoUbicacion' => 'vecino.nueva_incidencia_detectando_ubicacion',
+            'ubicacionDetectada' => 'vecino.nueva_incidencia_ubicacion_detectada',
+            'ubicacionDenegada' => 'vecino.nueva_incidencia_ubicacion_denegada',
+            'ubicacionNoDisponible' => 'vecino.nueva_incidencia_ubicacion_no_disponible',
+            'contenedorSeleccionado' => 'vecino.nueva_incidencia_contenedor_seleccionado',
+            'tuUbicacion' => 'vecino.nueva_incidencia_tu_ubicacion',
             'sinNotificaciones' => 'vecino.sin_notificaciones',
             'btnMarcarLeida' => 'vecino.btn_marcar_leida',
+            'msgFotoTipoInvalido' => 'vecino.msg_foto_tipo_invalido',
+            'msgFotoTamanoInvalido' => 'vecino.msg_foto_tamano_invalido',
         ])) ?>;
         const LOCALE = <?= json_encode(t_locale()) ?>;
     </script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Mismo helper que usa la Landing Page: garantiza que ambos formularios de "reportar
+         incidencia" (y el mapa público) muestren siempre los mismos contenedores. -->
+    <script src="../LandingPage/mapaContenedoresBase.js"></script>
     <script src="Vista/vecino.js"></script>
 </body>
 

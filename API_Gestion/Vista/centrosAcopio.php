@@ -30,10 +30,10 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                     <a href="../../API_Recoleccion/Vista/rutas.php"><?= t('backoffice.nav_rutas') ?></a>
                     <a href="../../API_Usuarios/Vista/cuadrillas.php"><?= t('backoffice.nav_cuadrillas') ?></a>
                     <a href="contenedores.php"><?= t('backoffice.nav_contenedores') ?></a>
-                    <a href="#" class="nav-active"><?= t('backoffice.nav_centros_acopio') ?></a>
+                    <a href="centrosAcopio.php" class="nav-active"><?= t('backoffice.nav_centros_acopio') ?></a>
                     <a href="../../Backoffice/mapa.php"><?= t('backoffice.nav_mapa') ?></a>
-                    <a href="#"><?= t('backoffice.nav_reportes') ?></a>
-                    <a href="#"><?= t('backoffice.nav_incidencias') ?></a>
+                    <a href="reportes.php"><?= t('backoffice.nav_reportes') ?></a>
+                    <a href="incidencias.php"><?= t('backoffice.nav_incidencias') ?></a>
                     <a href="../../API_Usuarios/Vista/usuarios.php"><?= t('backoffice.nav_usuarios') ?></a>
                 </nav>
             </div>
@@ -54,10 +54,10 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             <a href="../../API_Recoleccion/Vista/rutas.php"><?= t('backoffice.nav_rutas') ?></a>
             <a href="../../API_Usuarios/Vista/cuadrillas.php"><?= t('backoffice.nav_cuadrillas') ?></a>
             <a href="contenedores.php"><?= t('backoffice.nav_contenedores') ?></a>
-            <a href="#" class="nav-active"><?= t('backoffice.nav_centros_acopio') ?></a>
+            <a href="centrosAcopio.php" class="nav-active"><?= t('backoffice.nav_centros_acopio') ?></a>
             <a href="../../Backoffice/mapa.php"><?= t('backoffice.nav_mapa') ?></a>
-            <a href="#"><?= t('backoffice.nav_reportes') ?></a>
-            <a href="#"><?= t('backoffice.nav_incidencias') ?></a>
+            <a href="reportes.php"><?= t('backoffice.nav_reportes') ?></a>
+            <a href="incidencias.php"><?= t('backoffice.nav_incidencias') ?></a>
             <a href="../../API_Usuarios/Vista/usuarios.php"><?= t('backoffice.nav_usuarios') ?></a>
         </nav>
         <div class="nav-hr"></div>
@@ -310,7 +310,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                         <label for="maqFecha"><?= t('centrosAcopio.maq_field_fecha') ?></label>
                         <input type="date" id="maqFecha" class="form-input" required>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" id="maqEstadoGroup">
                         <label for="maqEstado"><?= t('centrosAcopio.maq_field_estado') ?></label>
                         <select id="maqEstado" class="form-input" required>
                             <option value="operativa"><?= t('centrosAcopio.opt_maq_operativa') ?></option>
@@ -367,8 +367,6 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             'msgMaquinariaModificada' => 'centrosAcopio.msg_maquinaria_modificada',
             'msgMaquinariaAgregada' => 'centrosAcopio.msg_maquinaria_agregada',
             'msgErrorGuardarMaquinaria' => 'centrosAcopio.msg_error_guardar_maquinaria',
-            'msgEstadoMaquinariaActualizado' => 'centrosAcopio.msg_estado_maquinaria_actualizado',
-            'msgErrorCambiarEstado' => 'centrosAcopio.msg_error_cambiar_estado',
             'sinDatos' => 'centrosAcopio.sin_datos',
             'municipioPrefijo' => 'centrosAcopio.municipio_prefijo',
             'modalAddTitle' => 'centrosAcopio.modal_add_title',
@@ -376,10 +374,6 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             'titleVerMaquinaria' => 'centrosAcopio.title_ver_maquinaria',
             'crudTitleEditar' => 'crud.title_editar',
             'modalDeleteTitle' => 'centrosAcopio.modal_delete_title',
-            'optCambiarEstado' => 'centrosAcopio.opt_cambiar_estado',
-            'optMaqOperativa' => 'centrosAcopio.opt_maq_operativa',
-            'optMaqEnMantenimiento' => 'centrosAcopio.opt_maq_en_mantenimiento',
-            'optMaqFueraServicio' => 'centrosAcopio.opt_maq_fuera_servicio',
             'btnGuardarCambios' => 'centrosAcopio.btn_guardar_cambios',
             'btnAgregarMaquinaria' => 'centrosAcopio.btn_agregar_maquinaria',
         ])) ?>;
@@ -740,14 +734,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                         <td>${LABELS_TIPO_MAQUINARIA_I18N[m.tipo] ?? m.tipo}</td>
                         <td>${m.fecha_adquisicion}</td>
                         <td><span class="badge ${badgeClaseEstado(m.estado)}">${LABELS_ESTADO_MAQUINARIA_I18N[m.estado] ?? m.estado}</span></td>
-                        <td class="td-actions" style="flex-wrap:wrap">
-                            <select class="ctrl-select" style="font-size:0.78rem;padding:4px 6px;max-width:130px"
-                                onchange="cambiarEstadoMaquinaria(${m.id_maquinaria}, this.value, ${idCentro})">
-                                <option value="">${I18N.optCambiarEstado}</option>
-                                <option value="operativa">${I18N.optMaqOperativa}</option>
-                                <option value="en_mantenimiento">${I18N.optMaqEnMantenimiento}</option>
-                                <option value="fuera_servicio">${I18N.optMaqFueraServicio}</option>
-                            </select>
+                        <td class="td-actions">
                             <button type="button" class="btn-action" onclick="abrirEdicionMaquinaria(${m.id_maquinaria})" title="${I18N.crudTitleEditar}">✎</button>
                         </td>
                     </tr>
@@ -765,6 +752,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             document.getElementById('maqTipo').value = m.tipo;
             document.getElementById('maqFecha').value = m.fecha_adquisicion;
             document.getElementById('maqEstado').value = m.estado;
+            document.getElementById('maqEstadoGroup').style.display = 'none';
             document.getElementById('maquinariaSubmitBtn').textContent = I18N.btnGuardarCambios;
             document.getElementById('maquinariaCancelarBtn').style.display = 'inline-block';
         }
@@ -772,6 +760,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
         function cancelarEdicionMaquinaria() {
             document.getElementById('maquinariaForm').reset();
             document.getElementById('maquinariaId').value = '';
+            document.getElementById('maqEstadoGroup').style.display = '';
             document.getElementById('maquinariaSubmitBtn').textContent = I18N.btnAgregarMaquinaria;
             document.getElementById('maquinariaCancelarBtn').style.display = 'none';
         }
@@ -811,27 +800,6 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 mostrarToast(I18N.msgErrorConexionApi, 'error');
             }
         }
-
-        async function cambiarEstadoMaquinaria(idMaquinaria, nuevoEstado, idCentro) {
-            if (!nuevoEstado) return;
-            try {
-                const res = await fetch(`${API_BASE}/maquinaria/cambiarEstado/${idMaquinaria}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nuevoEstado })
-                });
-                const json = await res.json();
-                if (json.status === 'success') {
-                    mostrarToast(I18N.msgEstadoMaquinariaActualizado);
-                    cargarMaquinariaDeCentro(idCentro);
-                } else {
-                    mostrarToast(json.message || I18N.msgErrorCambiarEstado, 'error');
-                }
-            } catch {
-                mostrarToast(I18N.msgErrorConexionApi, 'error');
-            }
-        }
-
 
         function ocultarControles() {
             ['filterBar', 'searchBar', 'deleteBar'].forEach(id => {

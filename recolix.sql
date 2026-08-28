@@ -106,6 +106,7 @@ INSERT INTO `camion` (`id_camion`, `matricula`, `modelo`, `anio`, `capacidad`, `
 --
 
 CREATE TABLE `camion_centro` (
+  `id` int(11) NOT NULL,
   `id_camion` int(11) NOT NULL,
   `id_centro` int(11) NOT NULL,
   `fecha_ingreso` date DEFAULT NULL,
@@ -165,6 +166,17 @@ CREATE TABLE `centro_residuo` (
   `ocupacion_actual` int(11) DEFAULT 0,
   `capacidad` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `centro_residuo`
+--
+
+INSERT INTO `centro_residuo` (`id_centro`, `id_residuo`, `ocupacion_actual`, `capacidad`) VALUES
+(1, 1, 4200, 6000),
+(1, 2, 1800, 3000),
+(2, 4, 2500, 4000),
+(3, 5, 1600, 3000),
+(4, 6, 900, 2000);
 
 -- --------------------------------------------------------
 
@@ -528,7 +540,12 @@ CREATE TABLE `contenedor_levante` (
 --
 
 INSERT INTO `contenedor_levante` (`id_levante`, `id_contenedor`, `estado_encontrado`, `motivo`, `hora_vaciado`, `peso`) VALUES
-(3, 253, 'todo_ok', NULL, NULL, NULL);
+(3, 253, 'todo_ok', NULL, NULL, NULL),
+(4, 248, 'todo_ok', NULL, '2026-08-28 07:20:00', 220),
+(5, 253, 'sobrepeso', 'Contenedor con exceso de residuos', '2026-08-27 08:05:00', 310),
+(6, 208, 'todo_ok', NULL, '2026-08-20 07:10:00', 180),
+(6, 362, 'todo_ok', NULL, '2026-08-20 07:40:00', 150),
+(7, 224, 'acceso_bloqueado', 'Vehículo estacionado bloqueando el acceso', '2026-08-28 08:30:00', NULL);
 
 -- --------------------------------------------------------
 
@@ -562,12 +579,23 @@ CREATE TABLE `incidencia` (
   `tipo` enum('rotura','desborde','falta_recoleccion','vandalismo','otro') NOT NULL,
   `descripcion` text DEFAULT NULL,
   `prioridad` enum('baja','media','alta','critica') NOT NULL DEFAULT 'baja',
-  `estado` enum('abierta','asignada','resuelta') NOT NULL DEFAULT 'abierta',
+  `estado` enum('abierta','asignada','en_curso','resuelta') NOT NULL DEFAULT 'abierta',
   `urgencia` tinyint(1) DEFAULT 0,
   `url_imagen` varchar(255) DEFAULT NULL,
   `fecha_apertura` datetime NOT NULL DEFAULT current_timestamp(),
   `fecha_cierre` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `incidencia`
+--
+
+INSERT INTO `incidencia` (`id_incidencia`, `ci_usuario`, `id_cuadrilla`, `tipo`, `descripcion`, `prioridad`, `estado`, `urgencia`, `url_imagen`, `fecha_apertura`, `fecha_cierre`) VALUES
+(1, 22222222, 1, 'desborde', 'Contenedor completamente desbordado en la vía pública', 'alta', 'resuelta', 0, NULL, '2026-08-28 08:15:00', '2026-08-28 14:00:00'),
+(2, 33333333, NULL, 'rotura', 'Tapa del contenedor rota', 'media', 'abierta', 0, NULL, '2026-08-27 10:00:00', NULL),
+(3, 66666666, 1, 'falta_recoleccion', 'No se recolectó en la fecha programada', 'alta', 'resuelta', 1, NULL, '2026-08-20 09:30:00', '2026-08-21 16:45:00'),
+(4, 22222222, NULL, 'vandalismo', 'Contenedor con pintura y daños', 'baja', 'asignada', 0, NULL, '2026-08-15 12:00:00', NULL),
+(5, 33333333, 1, 'otro', 'Olores fuertes en la zona del contenedor', 'critica', 'resuelta', 1, NULL, '2026-06-01 07:00:00', '2026-06-02 09:00:00');
 
 -- --------------------------------------------------------
 
@@ -579,6 +607,17 @@ CREATE TABLE `incidencia_contenedor` (
   `id_incidencia` int(11) NOT NULL,
   `id_contenedor` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `incidencia_contenedor`
+--
+
+INSERT INTO `incidencia_contenedor` (`id_incidencia`, `id_contenedor`) VALUES
+(1, 254),
+(2, 248),
+(3, 208),
+(4, 224),
+(5, 253);
 
 -- --------------------------------------------------------
 
@@ -603,7 +642,12 @@ CREATE TABLE `levante` (
 --
 
 INSERT INTO `levante` (`id_levante`, `id_camion`, `id_cuadrilla`, `id_ruta`, `hora_salida`, `hora_llegada`, `total_recolectado`, `hora_levante`, `estado`) VALUES
-(3, 3, 1, 2, '2026-07-31 18:34:00', NULL, 0.00, '2026-07-31', 'pendiente');
+(3, 3, 1, 2, '2026-07-31 18:34:00', NULL, 0.00, '2026-07-31', 'pendiente'),
+(4, 3, 1, 1, '2026-08-28 07:00:00', '2026-08-28 11:30:00', 850.50, '2026-08-28', 'completado'),
+(5, 7, 1, 2, '2026-08-27 07:15:00', '2026-08-27 12:00:00', 620.00, '2026-08-27', 'completado'),
+(6, 12, 1, 12, '2026-08-20 06:45:00', '2026-08-20 11:00:00', 940.25, '2026-08-20', 'completado'),
+(7, 19, 1, 52, '2026-08-28 08:00:00', NULL, 0.00, '2026-08-28', 'en_curso'),
+(8, 25, 1, 59, '2026-08-15 07:30:00', '2026-08-15 09:10:00', 300.00, '2026-08-15', 'cancelado');
 
 -- --------------------------------------------------------
 
@@ -715,6 +759,17 @@ CREATE TABLE `reporte` (
   `formato` varchar(20) DEFAULT 'PDF',
   `fecha_generacion` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `reporte`
+--
+
+INSERT INTO `reporte` (`id_reporte`, `ci_usuario`, `tipo`, `descripcion`, `formato`, `fecha_generacion`) VALUES
+(1, 11111111, 'csv', 'Exportación de zonas urbanas críticas', 'CSV', '2026-08-28 09:00:00'),
+(2, 11111111, 'csv', 'Exportación de volumen de residuos por tipo', 'CSV', '2026-08-27 15:30:00'),
+(3, 11111111, 'pdf', 'Reporte de incidencias del mes', 'PDF', '2026-08-20 11:00:00'),
+(4, 11111111, 'pantalla', 'Consulta en pantalla de frecuencia de recolección', 'PDF', '2026-08-15 10:00:00'),
+(5, 11111111, 'csv', 'Exportación de usuarios registrados', 'CSV', '2026-08-10 08:45:00');
 
 -- --------------------------------------------------------
 
@@ -830,7 +885,12 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`ci_usuario`, `id_municipio`, `primer_nombre`, `p_apellido`, `email`, `tel`, `contrasenia`, `rol`, `acceso`, `fecha_registro`) VALUES
-(11111111, 1, 'Admin', 'Test', 'admin@recolix.uy', NULL, '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'administrador', 'habilitado', '2026-07-31 13:52:50');
+(11111111, 1, 'Admin', 'Test', 'admin@recolix.uy', NULL, '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'administrador', 'habilitado', '2026-07-31 13:52:50'),
+(22222222, 1, 'Juan', 'Pérez', 'juan.perez@recolix.uy', '099111222', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'vecino', 'habilitado', '2026-08-28 08:00:00'),
+(33333333, 2, 'María', 'Gómez', 'maria.gomez@recolix.uy', '099222333', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'vecino', 'habilitado', '2026-08-25 10:15:00'),
+(44444444, 3, 'Lucía', 'Fernández', 'lucia.fernandez@recolix.uy', '099333444', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'operario', 'habilitado', '2026-08-10 09:30:00'),
+(55555555, 1, 'Diego', 'Rodríguez', 'diego.rodriguez@recolix.uy', '099444555', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'cuadrilla', 'habilitado', '2026-07-15 07:45:00'),
+(66666666, 4, 'Sofía', 'Martínez', 'sofia.martinez@recolix.uy', '099555666', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'vecino', 'habilitado', '2026-06-01 12:20:00');
 
 --
 -- Indexes for dumped tables
@@ -841,6 +901,12 @@ INSERT INTO `usuario` (`ci_usuario`, `id_municipio`, `primer_nombre`, `p_apellid
 --
 ALTER TABLE `camion`
   ADD PRIMARY KEY (`id_camion`);
+
+--
+-- Indexes for table `camion_centro`
+--
+ALTER TABLE `camion_centro`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `centro_acopio`
@@ -1014,6 +1080,12 @@ ALTER TABLE `camion`
   MODIFY `id_camion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
+-- AUTO_INCREMENT for table `camion_centro`
+--
+ALTER TABLE `camion_centro`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `centro_acopio`
 --
 ALTER TABLE `centro_acopio`
@@ -1047,7 +1119,7 @@ ALTER TABLE `incidencia`
 -- AUTO_INCREMENT for table `levante`
 --
 ALTER TABLE `levante`
-  MODIFY `id_levante` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_levante` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `mantenimiento`

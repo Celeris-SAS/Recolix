@@ -1,10 +1,14 @@
-<?php require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php'; ?>
+<?php
+require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
+require_once __DIR__ . '/../../i18n/i18n.php';
+?>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="<?= htmlspecialchars($RECOLIX_IDIOMA) ?>">
 <head>
     <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cuadrillas — Recolix</title>
+    <title><?= t('cuadrillas.title') ?></title>
     <link rel="stylesheet" href="styleCuadrillas.css">
     <link rel="stylesheet" href="../../Backoffice/styleBackoffice.css">
 </head>
@@ -19,40 +23,41 @@
                 <span class="brand-name">Recolix</span>
             </a>
             <nav class="nav-links">
-                <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
-                <a href="../../API_Recoleccion/Vista/camiones.php">Camiones</a>
-                <a href="../../API_Recoleccion/Vista/circuitos.php">Circuitos</a>
-                <a href="../../API_Recoleccion/Vista/rutas.php">Rutas</a>
-                <a href="#" class="nav-active">Cuadrillas</a>
-                <a href="../../API_Gestion/Vista/contenedores.php">Contenedores</a>
-                <a href="../../API_Gestion/Vista/centrosAcopio.php">Centros de Acopio</a>
-                <a href="../../Backoffice/mapa.php">Mapa</a>
-                <a href="#">Reportes</a>
-                <a href="#">Incidencias</a>
-                <a href="usuarios.php">Usuarios</a>
+                <a href="../../Backoffice/indexBackoffice.php"><?= t('backoffice.nav_inicio') ?></a>
+                <a href="../../API_Recoleccion/Vista/camiones.php"><?= t('backoffice.nav_camiones') ?></a>
+                <a href="../../API_Recoleccion/Vista/circuitos.php"><?= t('backoffice.nav_circuitos') ?></a>
+                <a href="../../API_Recoleccion/Vista/rutas.php"><?= t('backoffice.nav_rutas') ?></a>
+                <a href="cuadrillas.php" class="nav-active"><?= t('backoffice.nav_cuadrillas') ?></a>
+                <a href="../../API_Gestion/Vista/contenedores.php"><?= t('backoffice.nav_contenedores') ?></a>
+                <a href="../../API_Gestion/Vista/centrosAcopio.php"><?= t('backoffice.nav_centros_acopio') ?></a>
+                <a href="../../Backoffice/mapa.php"><?= t('backoffice.nav_mapa') ?></a>
+                <a href="#"><?= t('backoffice.nav_reportes') ?></a>
+                <a href="../../API_Gestion/Vista/incidencias.php"><?= t('backoffice.nav_incidencias') ?></a>
+                <a href="usuarios.php"><?= t('backoffice.nav_usuarios') ?></a>
             </nav>
         </div>
         <div class="nav-right">
-            <a href="../perfil.php" class="btn-user" title="Perfil de usuario">
+            <?php include __DIR__ . '/../../i18n/switcher.php'; ?>
+            <a href="../perfil.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
                 <img src="../../API_Recoleccion/Vista/img/user.svg" alt="Usuario" class="nav-user-icon">
             </a>
-            <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menú">
+            <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="<?= htmlspecialchars(t('backoffice.nav_menu')) ?>">
                 <span></span><span></span><span></span>
             </button>
         </div>
     </div>
     <nav class="nav-mobile" id="navMobile">
-        <a href="../../Backoffice/indexBackoffice.php">Inicio</a>
-        <a href="../../API_Recoleccion/Vista/camiones.php">Camiones</a>
-        <a href="../../API_Recoleccion/Vista/circuitos.php">Circuitos</a>
-        <a href="../../API_Recoleccion/Vista/rutas.php">Rutas</a>
-        <a href="#" class="nav-active">Cuadrillas</a>
-        <a href="../../API_Gestion/Vista/contenedores.php">Contenedores</a>
-        <a href="../../API_Gestion/Vista/centrosAcopio.php">Centros de Acopio</a>
-        <a href="../../Backoffice/mapa.php">Mapa</a>
-        <a href="#">Reportes</a>
-        <a href="#">Incidencias</a>
-        <a href="usuarios.php">Usuarios</a>
+        <a href="../../Backoffice/indexBackoffice.php"><?= t('backoffice.nav_inicio') ?></a>
+        <a href="../../API_Recoleccion/Vista/camiones.php"><?= t('backoffice.nav_camiones') ?></a>
+        <a href="../../API_Recoleccion/Vista/circuitos.php"><?= t('backoffice.nav_circuitos') ?></a>
+        <a href="../../API_Recoleccion/Vista/rutas.php"><?= t('backoffice.nav_rutas') ?></a>
+        <a href="cuadrillas.php" class="nav-active"><?= t('backoffice.nav_cuadrillas') ?></a>
+        <a href="../../API_Gestion/Vista/contenedores.php"><?= t('backoffice.nav_contenedores') ?></a>
+        <a href="../../API_Gestion/Vista/centrosAcopio.php"><?= t('backoffice.nav_centros_acopio') ?></a>
+        <a href="../../Backoffice/mapa.php"><?= t('backoffice.nav_mapa') ?></a>
+        <a href="#"><?= t('backoffice.nav_reportes') ?></a>
+        <a href="../../API_Gestion/Vista/incidencias.php"><?= t('backoffice.nav_incidencias') ?></a>
+        <a href="usuarios.php"><?= t('backoffice.nav_usuarios') ?></a>
     </nav>
     <div class="nav-hr"></div>
 </header>

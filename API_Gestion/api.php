@@ -1,4 +1,5 @@
 <?php
+session_start();
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
@@ -92,6 +93,54 @@ $config = [
                 'tipo'      => 'filtrarTipo',
                 'estado'    => 'filtrarEstado'
             ]
+        ],
+        'incidencias' => [
+            'singular'    => 'Incidencia',
+            'controller'  => 'IncidenciaController',
+            'file'        => 'Controlador/incidenciaController.php',
+            'getAllMethod' => 'getAllIncidencias',
+            'getMethod'   => 'getIncidencia',
+            'insertMethod' => 'crearIncidencia',
+            'updateMethod' => null,
+            'deleteMethod' => null,
+            'actions' => [
+                'reglasValidacion',
+                'listarUrgentes',
+                'getContenedoresVinculados',
+                'asignarCuadrilla',
+                'cerrar',
+                'filtrarEstado',
+                'filtrarTipo',
+                'filtrarPrioridad'
+            ],
+            'filters' => [
+                'estado'    => 'filtrarEstado',
+                'tipo'      => 'filtrarTipo',
+                'prioridad' => 'filtrarPrioridad'
+            ]
+        ],
+        'reportes' => [
+            'singular'    => 'Reporte',
+            'controller'  => 'ReporteController',
+            'file'        => 'Controlador/reporteController.php',
+            'getAllMethod' => 'getResumenGeneral',
+            'getMethod'   => null,
+            'insertMethod' => null,
+            'updateMethod' => null,
+            'deleteMethod' => null,
+            'actions' => [
+                'getResumenGeneral',
+                'getDistribucionLlenado',
+                'getIndicadores',
+                'getZonasCriticas',
+                'getVolumenPorTipoYPeriodo',
+                'getIncidenciasDetalle',
+                'getFrecuenciaRecoleccion',
+                'getCapacidadVertederos',
+                'getClasificacionResiduos',
+                'getEvolucionUsuarios'
+            ],
+            'filters' => []
         ],
         'maquinaria' => [
             'singular'    => 'Maquinaria',
