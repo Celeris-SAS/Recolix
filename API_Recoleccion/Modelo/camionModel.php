@@ -254,7 +254,7 @@ class CamionModel
         }
         mysqli_stmt_close($stmt);
 
-        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT 'traslado' AS tipo_evento, CONCAT('Ingreso a centro, peso: ', peso, ' kg') AS descripcion, fecha_ingreso AS fecha FROM traslado_residuo WHERE id_camion = ?");
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT 'traslado' AS tipo_evento, CONCAT('Ingreso a centro, peso: ', peso, ' kg') AS descripcion, fecha_ingreso AS fecha FROM camion_centro WHERE id_camion = ?");
         mysqli_stmt_bind_param($stmt, "i", $id);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);

@@ -32,7 +32,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                     <a href="contenedores.php"><?= t('backoffice.nav_contenedores') ?></a>
                     <a href="centrosAcopio.php" class="nav-active"><?= t('backoffice.nav_centros_acopio') ?></a>
                     <a href="../../Backoffice/mapa.php"><?= t('backoffice.nav_mapa') ?></a>
-                    <a href="#"><?= t('backoffice.nav_reportes') ?></a>
+                    <a href="reportes.php"><?= t('backoffice.nav_reportes') ?></a>
                     <a href="incidencias.php"><?= t('backoffice.nav_incidencias') ?></a>
                     <a href="../../API_Usuarios/Vista/usuarios.php"><?= t('backoffice.nav_usuarios') ?></a>
                 </nav>
@@ -56,7 +56,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             <a href="contenedores.php"><?= t('backoffice.nav_contenedores') ?></a>
             <a href="centrosAcopio.php" class="nav-active"><?= t('backoffice.nav_centros_acopio') ?></a>
             <a href="../../Backoffice/mapa.php"><?= t('backoffice.nav_mapa') ?></a>
-            <a href="#"><?= t('backoffice.nav_reportes') ?></a>
+            <a href="reportes.php"><?= t('backoffice.nav_reportes') ?></a>
             <a href="incidencias.php"><?= t('backoffice.nav_incidencias') ?></a>
             <a href="../../API_Usuarios/Vista/usuarios.php"><?= t('backoffice.nav_usuarios') ?></a>
         </nav>
