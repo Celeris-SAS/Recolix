@@ -666,10 +666,14 @@ tbody td { padding: 12px 16px; color: var(--text); }
 @media (max-width: 1024px) {
     .nav-inner { padding: 0 20px; }
     .nav-left  { gap: 20px; }
-    .nav-links { gap: 16px; }
     .hero, .cards-section, .table-section { padding-left: 20px; padding-right: 20px; }
     .control-bar { padding-left: 20px; padding-right: 20px; }
     .footer { padding-left: 20px; padding-right: 20px; }
+}
+
+@media (max-width: 1439px) {
+    .nav-links { display: none; }
+    .nav-hamburger { display: flex; }
 }
 
 @media (max-width: 768px) {
@@ -681,9 +685,6 @@ tbody td { padding: 12px 16px; color: var(--text); }
 }
 
 @media (max-width: 1024px) {
-    .nav-links { display: none; }
-    .nav-hamburger { display: flex; }
-
     .hero { padding: 24px 16px 12px; }
     .hero-title { font-size: 1.5rem; }
 
