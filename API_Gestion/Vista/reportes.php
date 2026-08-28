@@ -65,6 +65,12 @@ require_once __DIR__ . '/../../i18n/i18n.php';
     <section class="hero">
         <h1 class="hero-title"><?= t('reportes.hero_title') ?></h1>
         <p class="hero-sub"><?= t('reportes.hero_sub') ?></p>
+        <div class="filtro-rango" id="filtroRangoDashboard">
+            <button type="button" class="filtro-btn filtro-btn-active" data-rango="hoy"><?= t('reportes.filtro_hoy') ?></button>
+            <button type="button" class="filtro-btn" data-rango="semana"><?= t('reportes.filtro_semana') ?></button>
+            <button type="button" class="filtro-btn" data-rango="mes"><?= t('reportes.filtro_mes') ?></button>
+            <button type="button" class="filtro-btn" data-rango="siempre"><?= t('reportes.filtro_siempre') ?></button>
+        </div>
     </section>
 
     <section class="reportes-top">
@@ -179,14 +185,6 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 </div>
             </a>
 
-            <a href="reporteDetalle.php?tipo=reciclaje" class="card-operar">
-                <div class="card-content">
-                    <div class="card-icon"><img src="../../Backoffice/img/centroAcopio.png" alt="" class="card-svg-icon"></div>
-                    <h3><?= t('reportes.card_reciclaje_titulo') ?></h3>
-                    <p><?= t('reportes.card_reciclaje_desc') ?></p>
-                </div>
-            </a>
-
             <a href="reporteDetalle.php?tipo=usuarios" class="card-operar">
                 <div class="card-content">
                     <div class="card-icon"><img src="user.svg" alt="" class="card-svg-icon"></div>
@@ -230,9 +228,16 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             return new Intl.NumberFormat('es-UY').format(Math.round(valor));
         }
 
+        let currentRango = 'hoy';
+
+        function destruirChart(canvasId) {
+            const existente = Chart.getChart(canvasId);
+            if (existente) existente.destroy();
+        }
+
         async function cargarResumen() {
             try {
-                const res  = await fetch(`${API_BASE}/reportes/getResumenGeneral`);
+                const res  = await fetch(`${API_BASE}/reportes/getResumenGeneral?rango=${currentRango}`);
                 const json = await res.json();
                 if (json.status !== 'success') return;
                 document.getElementById('statContenedores').textContent = formatearNumero(json.data.contenedoresRecolectados);
@@ -246,6 +251,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
         }
 
         function crearGauge(canvasId, valorId, porcentaje) {
+            destruirChart(canvasId);
             const ctx = document.getElementById(canvasId);
             document.getElementById(valorId).textContent = `${porcentaje}%`;
             new Chart(ctx, {
@@ -268,7 +274,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
 
         async function cargarIndicadores() {
             try {
-                const res  = await fetch(`${API_BASE}/reportes/getIndicadores`);
+                const res  = await fetch(`${API_BASE}/reportes/getIndicadores?rango=${currentRango}`);
                 const json = await res.json();
                 const data = json.status === 'success' ? json.data : {};
                 crearGauge('gaugeFuncionales', 'valFuncionales', data.contenedoresFuncionales ?? 0);
@@ -287,7 +293,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             let etiquetas = [];
             let valores   = [];
             try {
-                const res  = await fetch(`${API_BASE}/reportes/getDistribucionLlenado`);
+                const res  = await fetch(`${API_BASE}/reportes/getDistribucionLlenado?rango=${currentRango}`);
                 const json = await res.json();
                 if (json.status === 'success') {
                     etiquetas = json.data.etiquetas;
@@ -295,6 +301,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 }
             } catch {}
 
+            destruirChart('chartLlenado');
             new Chart(document.getElementById('chartLlenado'), {
                 type: 'bar',
                 data: {
@@ -318,10 +325,23 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             });
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        function cargarDashboard() {
             cargarResumen();
             cargarIndicadores();
             cargarDistribucionLlenado();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarDashboard();
+            document.querySelectorAll('#filtroRangoDashboard .filtro-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (btn.classList.contains('filtro-btn-active')) return;
+                    document.querySelectorAll('#filtroRangoDashboard .filtro-btn').forEach(b => b.classList.remove('filtro-btn-active'));
+                    btn.classList.add('filtro-btn-active');
+                    currentRango = btn.dataset.rango;
+                    cargarDashboard();
+                });
+            });
         });
 
         function toggleMobileMenu() {

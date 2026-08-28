@@ -121,6 +121,33 @@ a { text-decoration: none; color: inherit; }
     gap: 16px;
 }
 
+.lang-switcher {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.lang-switcher-item {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    padding: 4px 7px;
+    border-radius: 6px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+}
+
+.lang-switcher-item:hover {
+    color: var(--text);
+    background: var(--bg2);
+}
+
+.lang-switcher-item.is-active {
+    color: var(--text);
+    background: var(--bg2);
+}
+
 .btn-user {
     display: flex;
     align-items: center;
@@ -150,6 +177,31 @@ a { text-decoration: none; color: inherit; }
 }
 
 .hero-sub { color: var(--muted); font-size: 0.95rem; }
+
+.filtro-rango {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+}
+.filtro-btn {
+    background: #fff;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 7px 16px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.filtro-btn:hover { background: var(--bg2); color: var(--text); }
+.filtro-btn-active {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+}
+.filtro-btn-active:hover { background: var(--green); color: #fff; }
 
 
 .cards-section { padding: 20px 32px 32px; }

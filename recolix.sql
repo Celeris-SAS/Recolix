@@ -106,6 +106,7 @@ INSERT INTO `camion` (`id_camion`, `matricula`, `modelo`, `anio`, `capacidad`, `
 --
 
 CREATE TABLE `camion_centro` (
+  `id` int(11) NOT NULL,
   `id_camion` int(11) NOT NULL,
   `id_centro` int(11) NOT NULL,
   `fecha_ingreso` date DEFAULT NULL,
@@ -843,6 +844,12 @@ ALTER TABLE `camion`
   ADD PRIMARY KEY (`id_camion`);
 
 --
+-- Indexes for table `camion_centro`
+--
+ALTER TABLE `camion_centro`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `centro_acopio`
 --
 ALTER TABLE `centro_acopio`
@@ -1012,6 +1019,12 @@ ALTER TABLE `usuario`
 --
 ALTER TABLE `camion`
   MODIFY `id_camion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
+
+--
+-- AUTO_INCREMENT for table `camion_centro`
+--
+ALTER TABLE `camion_centro`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `centro_acopio`

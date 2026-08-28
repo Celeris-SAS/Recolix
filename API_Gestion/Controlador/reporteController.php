@@ -9,16 +9,16 @@ class reporteController {
         $this->reporteModel = new ReporteModel();
     }
 
-    public function getResumenGeneral() {
+    public function getResumenGeneral($rango = 'hoy') {
         return [
-            'contenedoresRecolectados' => $this->reporteModel->getContenedoresRecolectados(),
-            'usuariosRegistrados'      => $this->reporteModel->getUsuariosRegistrados(),
-            'residuosRecolectados'     => $this->reporteModel->getResiduosRecolectados(),
+            'contenedoresRecolectados' => $this->reporteModel->getContenedoresRecolectados($rango),
+            'usuariosRegistrados'      => $this->reporteModel->getUsuariosRegistrados($rango),
+            'residuosRecolectados'     => $this->reporteModel->getResiduosRecolectados($rango),
         ];
     }
 
-    public function getDistribucionLlenado() {
-        $niveles = $this->reporteModel->getNivelesLlenado();
+    public function getDistribucionLlenado($rango = 'hoy') {
+        $niveles = $this->reporteModel->getNivelesLlenado($rango);
         $buckets = array_fill(0, 10, 0);
 
         foreach ($niveles as $nivel) {
@@ -35,16 +35,40 @@ class reporteController {
         return ['etiquetas' => $etiquetas, 'valores' => array_values($buckets)];
     }
 
-    public function getIndicadores() {
+    public function getIndicadores($rango = 'hoy') {
         return [
-            'contenedoresFuncionales'    => $this->reporteModel->getPorcentajeContenedoresFuncionales(),
-            'contenedoresSinRecolectar'  => $this->reporteModel->getPorcentajeContenedoresSinRecolectar(),
-            'incidenciasResueltas'       => $this->reporteModel->getPorcentajeIncidenciasResueltas(),
-            'levantesCompletados'        => $this->reporteModel->getPorcentajeLevantesCompletados(),
+            'contenedoresFuncionales'    => $this->reporteModel->getPorcentajeContenedoresFuncionales($rango),
+            'contenedoresSinRecolectar'  => $this->reporteModel->getPorcentajeContenedoresSinRecolectar($rango),
+            'incidenciasResueltas'       => $this->reporteModel->getPorcentajeIncidenciasResueltas($rango),
+            'levantesCompletados'        => $this->reporteModel->getPorcentajeLevantesCompletados($rango),
         ];
     }
 
     public function getZonasCriticas() {
         return $this->reporteModel->getZonasCriticas();
+    }
+
+    public function getVolumenPorTipoYPeriodo($rango = 'siempre') {
+        return $this->reporteModel->getVolumenPorTipoYPeriodo($rango);
+    }
+
+    public function getIncidenciasDetalle($rango = 'siempre') {
+        return $this->reporteModel->getIncidenciasDetalle($rango);
+    }
+
+    public function getFrecuenciaRecoleccion($turno = null, $dia = null) {
+        return $this->reporteModel->getFrecuenciaRecoleccion($turno, $dia);
+    }
+
+    public function getCapacidadVertederos() {
+        return $this->reporteModel->getCapacidadVertederos();
+    }
+
+    public function getClasificacionResiduos() {
+        return $this->reporteModel->getClasificacionResiduos();
+    }
+
+    public function getEvolucionUsuarios($rango = 'siempre') {
+        return $this->reporteModel->getEvolucionUsuarios($rango);
     }
 }

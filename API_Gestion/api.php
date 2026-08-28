@@ -106,7 +106,13 @@ $config = [
                 'getResumenGeneral',
                 'getDistribucionLlenado',
                 'getIndicadores',
-                'getZonasCriticas'
+                'getZonasCriticas',
+                'getVolumenPorTipoYPeriodo',
+                'getIncidenciasDetalle',
+                'getFrecuenciaRecoleccion',
+                'getCapacidadVertederos',
+                'getClasificacionResiduos',
+                'getEvolucionUsuarios'
             ],
             'filters' => []
         ],
