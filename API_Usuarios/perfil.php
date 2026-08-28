@@ -52,7 +52,7 @@ if (!in_array($rol, $rolesPermitidos)) {
                     <a href="../API_Gestion/Vista/centrosAcopio.php"><?= t('backoffice.nav_centros_acopio') ?></a>
                     <a href="../Backoffice/mapa.php"><?= t('backoffice.nav_mapa') ?></a>
                     <a href="../API_Gestion/Vista/reportes.php"><?= t('backoffice.nav_reportes') ?></a>
-                    <a href="#"><?= t('backoffice.nav_incidencias') ?></a>
+                    <a href="../API_Gestion/Vista/incidencias.php"><?= t('backoffice.nav_incidencias') ?></a>
                     <a href="Vista/usuarios.php"><?= t('backoffice.nav_usuarios') ?></a>
                 </nav>
             </div>
@@ -76,7 +76,7 @@ if (!in_array($rol, $rolesPermitidos)) {
             <a href="../API_Gestion/Vista/centrosAcopio.php"><?= t('backoffice.nav_centros_acopio') ?></a>
             <a href="../Backoffice/mapa.php"><?= t('backoffice.nav_mapa') ?></a>
             <a href="../API_Gestion/Vista/reportes.php"><?= t('backoffice.nav_reportes') ?></a>
-            <a href="#"><?= t('backoffice.nav_incidencias') ?></a>
+            <a href="../API_Gestion/Vista/incidencias.php"><?= t('backoffice.nav_incidencias') ?></a>
             <a href="Vista/usuarios.php"><?= t('backoffice.nav_usuarios') ?></a>
         </nav>
         <div class="nav-hr"></div>

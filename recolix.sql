@@ -579,7 +579,7 @@ CREATE TABLE `incidencia` (
   `tipo` enum('rotura','desborde','falta_recoleccion','vandalismo','otro') NOT NULL,
   `descripcion` text DEFAULT NULL,
   `prioridad` enum('baja','media','alta','critica') NOT NULL DEFAULT 'baja',
-  `estado` enum('abierta','asignada','resuelta') NOT NULL DEFAULT 'abierta',
+  `estado` enum('abierta','asignada','en_curso','resuelta') NOT NULL DEFAULT 'abierta',
   `urgencia` tinyint(1) DEFAULT 0,
   `url_imagen` varchar(255) DEFAULT NULL,
   `fecha_apertura` datetime NOT NULL DEFAULT current_timestamp(),

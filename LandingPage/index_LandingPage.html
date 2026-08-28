@@ -71,7 +71,7 @@
             <?= t('landing.hero_desc') ?>
           </p>
           <div class="hero-actions">
-            <a href="#" class="btn btn-primary"><?= t('landing.hero_reportar_incidencia') ?></a>
+            <a href="#" class="btn btn-primary" id="btnReportarIncidencia"><?= t('landing.hero_reportar_incidencia') ?></a>
             <a href="index_LandingPage.html#registro" class="btn btn-outline"><?= t('landing.hero_crear_cuenta') ?></a>
           </div>
         </div>
@@ -243,6 +243,48 @@
     </div>
   </main>
 
+  <div class="modal-overlay" id="modalReportar" style="display:none" onclick="onOverlayClickReportar(event)">
+    <div class="modal-box">
+      <div class="modal-box-header">
+        <h3><?= t('landing.reportar_titulo') ?></h3>
+        <button type="button" class="modal-close" onclick="cerrarModalReportar()">✕</button>
+      </div>
+      <form id="reportarForm" novalidate>
+        <div class="form-row">
+          <label for="repTipo"><?= t('landing.reportar_tipo') ?></label>
+          <select id="repTipo" name="tipo" required>
+            <option value="rotura"><?= t('landing.reportar_tipo_rotura') ?></option>
+            <option value="desborde"><?= t('landing.reportar_tipo_desborde') ?></option>
+            <option value="falta_recoleccion"><?= t('landing.reportar_tipo_falta_recoleccion') ?></option>
+            <option value="vandalismo"><?= t('landing.reportar_tipo_vandalismo') ?></option>
+            <option value="otro"><?= t('landing.reportar_tipo_otro') ?></option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="repContenedor"><?= t('landing.reportar_contenedor') ?></label>
+          <p class="field-hint" id="repUbicacionStatus"><?= t('landing.reportar_detectando_ubicacion') ?></p>
+          <div id="repMapaContenedor" class="modal-map"></div>
+          <p class="field-hint" id="repContenedorSeleccionado" style="display:none"></p>
+          <input type="hidden" id="repContenedor" name="idContenedor">
+          <p class="field-hint"><?= t('landing.reportar_contenedor_ayuda') ?></p>
+          <p class="error-msg" id="repContenedorError"></p>
+        </div>
+        <div class="form-row">
+          <label for="repDescripcion"><?= t('landing.reportar_descripcion') ?></label>
+          <textarea id="repDescripcion" name="descripcion" rows="3" maxlength="500" placeholder="<?= htmlspecialchars(t('landing.reportar_descripcion_placeholder')) ?>"></textarea>
+        </div>
+        <div class="form-row">
+          <label for="repFoto"><?= t('landing.reportar_foto') ?></label>
+          <input type="file" id="repFoto" name="imagen" accept="image/jpeg,image/png">
+          <p class="field-hint"><?= t('landing.reportar_foto_ayuda') ?></p>
+          <p class="error-msg" id="repFotoError"></p>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" id="reportarSubmitBtn"><?= t('landing.reportar_submit') ?></button>
+        <p class="form-feedback" id="reportarFeedback"></p>
+      </form>
+    </div>
+  </div>
+
   <footer class="site-footer">
     <div class="container">
       <div class="footer-grid">
@@ -273,6 +315,7 @@
   </footer>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="mapaContenedoresBase.js"></script>
 
   <script>
     const API_USUARIOS = '/recolix/API_Usuarios';
@@ -288,6 +331,18 @@
       'solicitudEnviada' => 'landing.feedback_solicitud_enviada',
       'errorConexion' => 'landing.feedback_error_conexion',
       'errorEnviar' => 'landing.feedback_error_enviar',
+      'reportarValidationContenedor' => 'landing.reportar_validation_contenedor',
+      'reportarEnviado' => 'landing.reportar_feedback_enviado',
+      'reportarErrorEnviar' => 'landing.reportar_feedback_error_enviar',
+      'reportarErrorConexion' => 'landing.reportar_feedback_error_conexion',
+      'detectandoUbicacion' => 'landing.reportar_detectando_ubicacion',
+      'ubicacionDetectada' => 'landing.reportar_ubicacion_detectada',
+      'ubicacionDenegada' => 'landing.reportar_ubicacion_denegada',
+      'ubicacionNoDisponible' => 'landing.reportar_ubicacion_no_disponible',
+      'contenedorSeleccionado' => 'landing.reportar_contenedor_seleccionado',
+      'tuUbicacion' => 'landing.reportar_tu_ubicacion',
+      'reportarFotoTipoInvalido' => 'landing.reportar_foto_tipo_invalido',
+      'reportarFotoTamanoInvalido' => 'landing.reportar_foto_tamano_invalido',
     ])) ?>;
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -303,38 +358,8 @@
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(heroMap);
 
-        const COLORES = {
-          funcional: '#4CAF50',
-          inactivo: '#e3b23c',
-          desbordado: '#c0392b',
-          roto: '#2b2b2b',
-          en_deposito: '#4a5568'
-        };
-
-        const addPoint = (lat, lon, estado) => {
-          if (!estado || !COLORES[estado]) estado = 'funcional';
-          L.circleMarker([lat, lon], {
-            radius: 4, color: '#fff', opacity: 0.6,
-            weight: 1.5, fillColor: COLORES[estado], fillOpacity: 0.85
-          }).addTo(heroMap);
-        };
-
-        try {
-          const resp = await fetch(`${API_GESTION}/contenedores`, {
-            signal: AbortSignal.timeout(5000)
-          });
-          const json = await resp.json();
-          const puntos = Array.isArray(json) ? json : json && json.data;
-
-          if (Array.isArray(puntos)) {
-            for (const p of puntos) {
-              const lat = parseFloat(p.latitud);
-              const lon = parseFloat(p.longitud);
-              if (Number.isNaN(lat) || Number.isNaN(lon)) continue;
-              addPoint(lat, lon, p.estado);
-            }
-          }
-        } catch (_) { }
+        // Misma fuente de contenedores y colores que el mapa público y los mapas de reportar incidencia.
+        await cargarContenedoresEnMapa(heroMap, { apiBase: API_GESTION, radius: 4 });
 
         setTimeout(() => heroMap.invalidateSize(), 250);
       })();
@@ -422,6 +447,215 @@
         } catch (e) {
           feedback.className = 'form-feedback is-error';
           feedback.textContent = I18N.errorConexion;
+        }
+      });
+
+
+      // RF03: reportar incidencia (usuario autenticado) desde la Landing Page
+      const reportarForm = document.getElementById('reportarForm');
+      const btnReportar = document.getElementById('btnReportarIncidencia');
+
+      btnReportar.addEventListener('click', async (e) => {
+        e.preventDefault();
+        try {
+          const resp = await fetch(`${API_USUARIOS}/sesion.php`);
+          const data = await resp.json();
+          if (!data.loggedIn) {
+            window.location.href = 'login.html';
+            return;
+          }
+          abrirModalReportar();
+        } catch (e) {
+          window.location.href = 'login.html';
+        }
+      });
+
+      // RF05/RF06: mapa interactivo — muestra la ubicación del usuario y permite elegir el
+      // contenedor de la incidencia tocándolo directamente en el mapa. Los contenedores y sus
+      // colores salen de cargarContenedoresEnMapa() (mapaContenedoresBase.js), la misma fuente
+      // que usan el mini-mapa del hero y el mapa público.
+      let repMapa = null;
+      let repMapaMarcadores = null;
+      let repMarcadorUsuario = null;
+      let repMarcadorSeleccionado = null;
+
+      function distanciaKm(lat1, lon1, lat2, lon2) {
+        const R = 6371;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat / 2) ** 2 +
+          Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      }
+
+      function seleccionarContenedorEnMapa(marker, c) {
+        document.getElementById('repContenedor').value = c.id_contenedor;
+        document.getElementById('repContenedorError').textContent = '';
+        const seleccionado = document.getElementById('repContenedorSeleccionado');
+        seleccionado.style.display = '';
+        seleccionado.textContent = `${I18N.contenedorSeleccionado}: #${c.id_contenedor} — ${c.calle} ${c.num_calle}`;
+
+        if (repMarcadorSeleccionado) repMarcadorSeleccionado.setStyle({ weight: 1.5, radius: 7 });
+        marker.setStyle({ weight: 3, radius: 10 });
+        repMarcadorSeleccionado = marker;
+      }
+
+      // Si el usuario no toca ningún contenedor en el mapa, se preselecciona el más cercano
+      // a su ubicación detectada — nunca queda sin elegir uno.
+      function preseleccionarMasCercano(latitude, longitude) {
+        if (!repMapaMarcadores || !repMapaMarcadores.length) return;
+        let masCercano = null;
+        let distanciaMin = Infinity;
+        repMapaMarcadores.forEach((m) => {
+          const c = m.contenedor;
+          const d = distanciaKm(latitude, longitude, parseFloat(c.latitud), parseFloat(c.longitud));
+          if (d < distanciaMin) {
+            distanciaMin = d;
+            masCercano = m;
+          }
+        });
+        if (masCercano) seleccionarContenedorEnMapa(masCercano, masCercano.contenedor);
+      }
+
+      // RF07: adjunto de foto (JPG/PNG, máx 5 MB) — se valida en el cliente y se manda como
+      // data URL base64 dentro del mismo JSON del reporte, ya que el endpoint solo acepta JSON.
+      const MAX_FOTO_BYTES = 5 * 1024 * 1024;
+      function leerFotoComoBase64(input, errorEl) {
+        errorEl.textContent = '';
+        const file = input.files && input.files[0];
+        if (!file) return Promise.resolve(null);
+        if (!['image/jpeg', 'image/png'].includes(file.type)) {
+          errorEl.textContent = I18N.reportarFotoTipoInvalido;
+          return Promise.reject(new Error('tipo'));
+        }
+        if (file.size > MAX_FOTO_BYTES) {
+          errorEl.textContent = I18N.reportarFotoTamanoInvalido;
+          return Promise.reject(new Error('tamano'));
+        }
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      }
+
+      async function iniciarMapaReportar() {
+        const status = document.getElementById('repUbicacionStatus');
+        status.style.display = '';
+        status.textContent = I18N.detectandoUbicacion;
+        document.getElementById('repContenedorSeleccionado').style.display = 'none';
+        repMarcadorSeleccionado = null;
+
+        if (!repMapa) {
+          repMapa = L.map('repMapaContenedor', { zoomControl: true }).setView([-34.901, -56.165], 12);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(repMapa);
+
+          repMapaMarcadores = await cargarContenedoresEnMapa(repMapa, {
+            apiBase: API_GESTION,
+            radius: 7,
+            tooltip: (c) => `#${c.id_contenedor} — ${c.calle} ${c.num_calle}`,
+            onClick: seleccionarContenedorEnMapa
+          });
+        }
+        setTimeout(() => repMapa.invalidateSize(), 200);
+
+        if (!navigator.geolocation) {
+          status.textContent = I18N.ubicacionNoDisponible;
+          return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const { latitude, longitude } = pos.coords;
+            status.textContent = I18N.ubicacionDetectada;
+            if (repMarcadorUsuario) repMapa.removeLayer(repMarcadorUsuario);
+            const icono = L.divIcon({
+              className: 'mapa-marcador-usuario-wrap',
+              html: '<span class="mapa-marcador-usuario"></span>',
+              iconSize: [22, 22],
+              iconAnchor: [11, 22]
+            });
+            repMarcadorUsuario = L.marker([latitude, longitude], { icon: icono })
+              .addTo(repMapa)
+              .bindTooltip(I18N.tuUbicacion);
+            repMapa.setView([latitude, longitude], 15);
+            preseleccionarMasCercano(latitude, longitude);
+          },
+          () => {
+            status.textContent = I18N.ubicacionDenegada;
+          },
+          { timeout: 8000 }
+        );
+      }
+
+      window.abrirModalReportar = function () {
+        reportarForm.reset();
+        document.getElementById('reportarFeedback').style.display = 'none';
+        document.getElementById('repContenedorError').textContent = '';
+        document.getElementById('repFotoError').textContent = '';
+        document.getElementById('modalReportar').style.display = 'flex';
+        iniciarMapaReportar();
+      };
+
+      window.cerrarModalReportar = function () {
+        document.getElementById('modalReportar').style.display = 'none';
+      };
+
+      window.onOverlayClickReportar = function (e) {
+        if (e.target.id === 'modalReportar') cerrarModalReportar();
+      };
+
+      reportarForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const feedback = document.getElementById('reportarFeedback');
+        const contenedorError = document.getElementById('repContenedorError');
+        contenedorError.textContent = '';
+        feedback.style.display = 'none';
+
+        const idContenedor = parseInt(document.getElementById('repContenedor').value, 10);
+        const tipo = document.getElementById('repTipo').value;
+        const descripcion = document.getElementById('repDescripcion').value.trim();
+
+        if (!idContenedor || idContenedor < 1) {
+          contenedorError.textContent = I18N.reportarValidationContenedor;
+          return;
+        }
+
+        let imagen;
+        try {
+          imagen = await leerFotoComoBase64(document.getElementById('repFoto'), document.getElementById('repFotoError'));
+        } catch {
+          return;
+        }
+
+        try {
+          // Orden posicional: coincide con crearIncidencia($idContenedor, $tipo, $descripcion, $imagen).
+          // La identidad del usuario la resuelve el servidor a partir de la sesión, no se manda acá.
+          const resp = await fetch(`${API_GESTION}/incidencias`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idContenedor, tipo, descripcion: descripcion || null, imagen })
+          });
+          const json = await resp.json();
+
+          if (json.status !== 'success') {
+            feedback.className = 'form-feedback is-error';
+            feedback.style.display = 'block';
+            feedback.textContent = json.message || I18N.reportarErrorEnviar;
+            return;
+          }
+
+          feedback.className = 'form-feedback is-success';
+          feedback.style.display = 'block';
+          feedback.textContent = I18N.reportarEnviado;
+          reportarForm.reset();
+          setTimeout(cerrarModalReportar, 1800);
+
+        } catch (err) {
+          feedback.className = 'form-feedback is-error';
+          feedback.style.display = 'block';
+          feedback.textContent = I18N.reportarErrorConexion;
         }
       });
     });

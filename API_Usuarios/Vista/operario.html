@@ -205,42 +205,8 @@
                     </div>
                 </div>
 
-                <div class="maquinaria-list">
-                    <div class="maquinaria-row">
-                        <div class="maquinaria-info">
-                            <span class="maquinaria-nombre">Compactadora Norte</span>
-                            <span class="maquinaria-meta">Compactadora — adquirida 03/2022</span>
-                        </div>
-                        <select class="maquinaria-estado badge-ok" data-maquinaria="Compactadora Norte">
-                            <option value="operativa" selected>Operativa</option>
-                            <option value="en_mantenimiento">En mantenimiento</option>
-                            <option value="fuera_servicio">Fuera de servicio</option>
-                        </select>
-                    </div>
-
-                    <div class="maquinaria-row">
-                        <div class="maquinaria-info">
-                            <span class="maquinaria-nombre">Báscula Digital</span>
-                            <span class="maquinaria-meta">Báscula — adquirida 11/2023</span>
-                        </div>
-                        <select class="maquinaria-estado badge-ok" data-maquinaria="Báscula Digital">
-                            <option value="operativa" selected>Operativa</option>
-                            <option value="en_mantenimiento">En mantenimiento</option>
-                            <option value="fuera_servicio">Fuera de servicio</option>
-                        </select>
-                    </div>
-
-                    <div class="maquinaria-row">
-                        <div class="maquinaria-info">
-                            <span class="maquinaria-nombre">Cinta Transportadora 1</span>
-                            <span class="maquinaria-meta">Cinta — adquirida 06/2021</span>
-                        </div>
-                        <select class="maquinaria-estado badge-warning" data-maquinaria="Cinta Transportadora 1">
-                            <option value="operativa">Operativa</option>
-                            <option value="en_mantenimiento" selected>En mantenimiento</option>
-                            <option value="fuera_servicio">Fuera de servicio</option>
-                        </select>
-                    </div>
+                <div class="maquinaria-list" id="maquinaria-list">
+                    <p class="maquinaria-meta" id="maquinaria-cargando">Cargando maquinaria...</p>
                 </div>
             </div>
         </section>
@@ -343,22 +309,97 @@
         });
 
         // RF80 — Actualización del estado de la maquinaria
-        document.querySelectorAll('.maquinaria-estado').forEach(function (select) {
-            select.addEventListener('change', function () {
-                select.classList.remove('badge-ok', 'badge-warning', 'badge-danger', 'badge-neutral');
-                if (select.value === 'operativa') {
-                    select.classList.add('badge-ok');
-                } else if (select.value === 'en_mantenimiento') {
-                    select.classList.add('badge-warning');
-                } else {
-                    select.classList.add('badge-danger');
-                }
+        const API_BASE_GESTION = '/recolix/API_Gestion';
+        // TODO: reemplazar por el centro real asignado al operario cuando la página tenga sesión propia.
+        const ID_CENTRO = parseInt(new URLSearchParams(window.location.search).get('centro'), 10) || 1;
 
-                const nombre = select.getAttribute('data-maquinaria');
-                const estadoTexto = select.options[select.selectedIndex].text;
-                mostrarToast('Maquinaria "' + nombre + '" actualizada a estado "' + estadoTexto + '".');
-            });
-        });
+        const LABELS_TIPO_MAQUINARIA = {
+            compactadora: 'Compactadora',
+            cinta: 'Cinta',
+            pala: 'Pala',
+            bascula: 'Báscula',
+            herramienta: 'Herramienta',
+            otro: 'Otro'
+        };
+        const LABELS_ESTADO_MAQUINARIA = {
+            operativa: 'Operativa',
+            en_mantenimiento: 'En mantenimiento',
+            fuera_servicio: 'Fuera de servicio'
+        };
+        const BADGE_ESTADO_MAQUINARIA = {
+            operativa: 'badge-ok',
+            en_mantenimiento: 'badge-warning',
+            fuera_servicio: 'badge-danger'
+        };
+
+        const maquinariaList = document.getElementById('maquinaria-list');
+
+        function filaMaquinaria(m) {
+            const badge = BADGE_ESTADO_MAQUINARIA[m.estado] || 'badge-neutral';
+            const row = document.createElement('div');
+            row.className = 'maquinaria-row';
+            row.innerHTML = `
+                <div class="maquinaria-info">
+                    <span class="maquinaria-nombre">${m.nombre}</span>
+                    <span class="maquinaria-meta">${LABELS_TIPO_MAQUINARIA[m.tipo] || m.tipo} — adquirida ${m.fecha_adquisicion}</span>
+                </div>
+                <select class="maquinaria-estado ${badge}" data-id="${m.id_maquinaria}" data-maquinaria="${m.nombre}">
+                    <option value="operativa"${m.estado === 'operativa' ? ' selected' : ''}>Operativa</option>
+                    <option value="en_mantenimiento"${m.estado === 'en_mantenimiento' ? ' selected' : ''}>En mantenimiento</option>
+                    <option value="fuera_servicio"${m.estado === 'fuera_servicio' ? ' selected' : ''}>Fuera de servicio</option>
+                </select>
+            `;
+            row.querySelector('.maquinaria-estado').addEventListener('change', onCambiarEstadoMaquinaria);
+            return row;
+        }
+
+        async function cargarMaquinaria() {
+            maquinariaList.innerHTML = '<p class="maquinaria-meta">Cargando maquinaria...</p>';
+            try {
+                const res = await fetch(`${API_BASE_GESTION}/maquinaria/obtenerPorCentro/${ID_CENTRO}`);
+                const json = await res.json();
+                const maquinas = json.status === 'success' ? json.data : [];
+                maquinariaList.innerHTML = '';
+                if (!maquinas.length) {
+                    maquinariaList.innerHTML = '<p class="maquinaria-meta">Este centro todavía no tiene maquinaria registrada.</p>';
+                    return;
+                }
+                maquinas.forEach(m => maquinariaList.appendChild(filaMaquinaria(m)));
+            } catch {
+                maquinariaList.innerHTML = '<p class="maquinaria-meta">No se pudo cargar la maquinaria.</p>';
+            }
+        }
+
+        async function onCambiarEstadoMaquinaria(e) {
+            const select = e.target;
+            const idMaquinaria = select.getAttribute('data-id');
+            const nombre = select.getAttribute('data-maquinaria');
+            const nuevoEstado = select.value;
+            const estadoAnterior = select.dataset.estadoAnterior || nuevoEstado;
+
+            try {
+                const res = await fetch(`${API_BASE_GESTION}/maquinaria/cambiarEstado/${idMaquinaria}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nuevoEstado })
+                });
+                const json = await res.json();
+                if (json.status === 'success') {
+                    select.classList.remove('badge-ok', 'badge-warning', 'badge-danger', 'badge-neutral');
+                    select.classList.add(BADGE_ESTADO_MAQUINARIA[nuevoEstado] || 'badge-neutral');
+                    select.dataset.estadoAnterior = nuevoEstado;
+                    mostrarToast('Maquinaria "' + nombre + '" actualizada a estado "' + LABELS_ESTADO_MAQUINARIA[nuevoEstado] + '".');
+                } else {
+                    select.value = estadoAnterior;
+                    mostrarToast(json.message || 'No se pudo actualizar el estado.', 'warning');
+                }
+            } catch {
+                select.value = estadoAnterior;
+                mostrarToast('Error al conectar con la API.', 'warning');
+            }
+        }
+
+        cargarMaquinaria();
 
         function toggleMobileMenu() {
             document.getElementById('navMobile').classList.toggle('nav-mobile-open');

@@ -1,4 +1,5 @@
 <?php
+session_start();
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
@@ -91,6 +92,31 @@ $config = [
                 'municipio' => 'filtrarMunicipio',
                 'tipo'      => 'filtrarTipo',
                 'estado'    => 'filtrarEstado'
+            ]
+        ],
+        'incidencias' => [
+            'singular'    => 'Incidencia',
+            'controller'  => 'IncidenciaController',
+            'file'        => 'Controlador/incidenciaController.php',
+            'getAllMethod' => 'getAllIncidencias',
+            'getMethod'   => 'getIncidencia',
+            'insertMethod' => 'crearIncidencia',
+            'updateMethod' => null,
+            'deleteMethod' => null,
+            'actions' => [
+                'reglasValidacion',
+                'listarUrgentes',
+                'getContenedoresVinculados',
+                'asignarCuadrilla',
+                'cerrar',
+                'filtrarEstado',
+                'filtrarTipo',
+                'filtrarPrioridad'
+            ],
+            'filters' => [
+                'estado'    => 'filtrarEstado',
+                'tipo'      => 'filtrarTipo',
+                'prioridad' => 'filtrarPrioridad'
             ]
         ],
         'reportes' => [

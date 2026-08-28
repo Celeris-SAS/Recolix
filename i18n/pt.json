@@ -78,7 +78,36 @@
     "feedback_revisar_campos": "Revise os campos destacados antes de continuar.",
     "feedback_solicitud_enviada": "Solicitação enviada com sucesso. Avisaremos quando for aprovada.",
     "feedback_error_conexion": "Não foi possível conectar ao servidor. Tente novamente.",
-    "feedback_error_enviar": "Não foi possível enviar a solicitação."
+    "feedback_error_enviar": "Não foi possível enviar a solicitação.",
+
+    "reportar_titulo": "Reportar uma ocorrência",
+    "reportar_tipo": "Tipo de ocorrência",
+    "reportar_tipo_rotura": "Quebra",
+    "reportar_tipo_desborde": "Transbordamento",
+    "reportar_tipo_falta_recoleccion": "Falta de coleta",
+    "reportar_tipo_vandalismo": "Vandalismo",
+    "reportar_tipo_otro": "Outro",
+    "reportar_contenedor": "ID do contêiner",
+    "reportar_contenedor_placeholder": "Ex: 206",
+    "reportar_contenedor_ayuda": "Você pode ver o ID de cada contêiner no mapa.",
+    "reportar_detectando_ubicacion": "Detectando sua localização...",
+    "reportar_ubicacion_detectada": "Pré-selecionamos o contêiner mais próximo — toque em outro no mapa se não for o correto.",
+    "reportar_ubicacion_denegada": "Não conseguimos acessar sua localização. Toque no contêiner no mapa.",
+    "reportar_ubicacion_no_disponible": "Seu dispositivo não permite compartilhar a localização. Toque no contêiner no mapa.",
+    "reportar_cargando_contenedores": "Carregando contêineres...",
+    "reportar_contenedor_seleccionado": "Você selecionou",
+    "reportar_tu_ubicacion": "Sua localização",
+    "reportar_descripcion": "Descrição (opcional)",
+    "reportar_descripcion_placeholder": "Conte o que aconteceu...",
+    "reportar_foto": "Foto (opcional)",
+    "reportar_foto_ayuda": "JPG ou PNG, até 5 MB.",
+    "reportar_foto_tipo_invalido": "A foto deve ser um arquivo JPG ou PNG.",
+    "reportar_foto_tamano_invalido": "A foto não pode superar os 5 MB.",
+    "reportar_submit": "Enviar relato",
+    "reportar_validation_contenedor": "Informe o ID de um contêiner válido.",
+    "reportar_feedback_enviado": "Obrigado! Seu relato foi enviado.",
+    "reportar_feedback_error_enviar": "Não foi possível enviar o relato.",
+    "reportar_feedback_error_conexion": "Não foi possível conectar ao servidor. Tente novamente."
   },
 
   "login": {
@@ -846,6 +875,14 @@
     "municipio_prefijo": "Município"
   },
 
+  "incidencias": {
+    "title": "Ocorrências — Recolix"
+  },
+
+  "cuadrillas": {
+    "title": "Equipes — Recolix"
+  },
+
   "usuarios": {
     "title": "Usuários — Recolix",
     "hero_title": "Usuários",
@@ -983,6 +1020,7 @@
   },
 
   "vecino": {
+    "btn_volver_inicio": "← Voltar ao início",
     "label_municipio": "Município",
     "sin_asignar": "Não atribuído",
     "btn_agregar_municipio": "Adicionar município",
@@ -1001,6 +1039,33 @@
     "btn_nueva_incidencia": "+ Nova ocorrência",
     "cargando_incidencias": "Carregando suas ocorrências...",
     "sin_incidencias": "Você ainda não relatou nenhuma ocorrência.",
+
+    "nueva_incidencia_titulo": "Reportar uma ocorrência",
+    "nueva_incidencia_tipo": "Tipo de ocorrência",
+    "nueva_incidencia_tipo_rotura": "Quebra",
+    "nueva_incidencia_tipo_desborde": "Transbordamento",
+    "nueva_incidencia_tipo_falta_recoleccion": "Falta de coleta",
+    "nueva_incidencia_tipo_vandalismo": "Vandalismo",
+    "nueva_incidencia_tipo_otro": "Outro",
+    "nueva_incidencia_contenedor": "ID do contêiner",
+    "nueva_incidencia_contenedor_placeholder": "Ex: 206",
+    "nueva_incidencia_contenedor_ayuda": "Você pode ver o ID de cada contêiner no mapa.",
+    "nueva_incidencia_detectando_ubicacion": "Detectando sua localização...",
+    "nueva_incidencia_ubicacion_detectada": "Pré-selecionamos o contêiner mais próximo — toque em outro no mapa se não for o correto.",
+    "nueva_incidencia_ubicacion_denegada": "Não conseguimos acessar sua localização. Toque no contêiner no mapa.",
+    "nueva_incidencia_ubicacion_no_disponible": "Seu dispositivo não permite compartilhar a localização. Toque no contêiner no mapa.",
+    "nueva_incidencia_contenedor_seleccionado": "Você selecionou",
+    "nueva_incidencia_tu_ubicacion": "Sua localização",
+    "nueva_incidencia_descripcion": "Descrição (opcional)",
+    "nueva_incidencia_descripcion_placeholder": "Conte o que aconteceu...",
+    "nueva_incidencia_foto": "Foto (opcional)",
+    "nueva_incidencia_foto_ayuda": "JPG ou PNG, até 5 MB.",
+    "btn_reportar_incidencia": "Enviar relato",
+    "msg_contenedor_invalido": "Informe o ID de um contêiner válido.",
+    "msg_incidencia_reportada": "Obrigado! Seu relato foi enviado.",
+    "msg_error_reportar_incidencia": "Não foi possível enviar o relato.",
+    "msg_foto_tipo_invalido": "A foto deve ser um arquivo JPG ou PNG.",
+    "msg_foto_tamano_invalido": "A foto não pode superar os 5 MB.",
 
     "eyebrow_notificaciones": "Alertas",
     "titulo_notificaciones": "Notificações",

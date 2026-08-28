@@ -369,6 +369,10 @@ h3 {
     color: var(--white);
     font-size: 20px;
   }
+
+  .site-header.is-scrolled .main-nav a {
+    color: var(--white);
+  }
 }
 
 
@@ -690,15 +694,25 @@ h3 {
   }
 }
 
-input {
+input,
+select,
+textarea {
+  font: inherit;
+  width: 100%;
   padding: 12px 14px;
   border: 1.5px solid #d8d6cb;
   border-radius: var(--radius-sm);
 }
 
-input:focus {
+input:focus,
+select:focus,
+textarea:focus {
   outline: 2px solid var(--moss);
   border-color: var(--moss);
+}
+
+textarea {
+  resize: vertical;
 }
 
 .error-msg {
@@ -706,6 +720,56 @@ input:focus {
   font-size: 13px;
   min-height: 1.1em;
   margin: 0;
+}
+
+.field-hint {
+  color: var(--ink-soft);
+  font-size: 13px;
+  margin: 0;
+}
+
+.modal-map {
+  height: 260px;
+  width: 100%;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid #d8d6cb;
+  margin-bottom: 4px;
+  z-index: 0;
+}
+
+/* Pin en forma de gota (estilo Google Maps), distinto de los círculos de los contenedores.
+   Leaflet posiciona el ícono con su propio transform (translate), por eso la rotación va en un
+   span interno (.mapa-marcador-usuario) y no en el div que Leaflet mueve (.mapa-marcador-usuario-wrap). */
+.mapa-marcador-usuario-wrap {
+  background: transparent !important;
+  border: none !important;
+}
+
+.mapa-marcador-usuario {
+  display: block;
+  width: 22px;
+  height: 22px;
+  background: #e03131;
+  border: 2.5px solid #fff;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+}
+
+.link-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--moss);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.link-toggle:hover {
+  color: var(--moss-dark);
 }
 
 .form-feedback {
@@ -723,6 +787,51 @@ input:focus {
 .form-feedback.is-error {
   background: #fbe9e7;
   color: #7a2418;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(28, 33, 23, 0.55);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-box {
+  background: var(--white);
+  color: var(--ink);
+  width: 100%;
+  max-width: 460px;
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--shadow-card);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-box-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.modal-box-header h3 {
+  font-family: var(--font-display);
+  font-size: 20px;
+}
+
+.modal-close {
+  font-size: 18px;
+  line-height: 1;
+  color: var(--ink-soft);
+}
+
+.modal-close:hover {
+  color: var(--ink);
 }
 
 
