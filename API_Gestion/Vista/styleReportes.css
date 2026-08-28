@@ -399,7 +399,7 @@ a { text-decoration: none; color: inherit; }
 .nav-mobile.nav-mobile-open { display: flex; }
 
 
-@media (max-width: 1400px) {
+@media (max-width: 1439px) {
     .nav-links { display: none; }
     .nav-hamburger { display: flex; }
 }
@@ -521,8 +521,6 @@ a { text-decoration: none; color: inherit; }
 @media (max-width: 1024px) {
     .nav-inner { padding: 0 20px; }
     .nav-left  { gap: 20px; }
-    .nav-links { gap: 16px; display: none; }
-    .nav-hamburger { display: flex; }
     .hero, .cards-section, .hub-section { padding-left: 20px; padding-right: 20px; }
     .reportes-top { padding-left: 20px; padding-right: 20px; grid-template-columns: 1fr; }
     .gauges-card { margin-left: 20px; margin-right: 20px; }
