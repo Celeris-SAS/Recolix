@@ -27,13 +27,8 @@ document.addEventListener('DOMContentLoaded', function () {
     popupAnchor: [0, -13]
   });
 
-  const COLORES_CONTENEDOR = {
-    funcional: '#4CAF50',
-    inactivo: '#e3b23c',
-    desbordado: '#c0392b',
-    roto: '#2b2b2b',
-    en_deposito: '#4a5568'
-  };
+  // COLORES_CONTENEDOR viene de mapaContenedoresBase.js (fuente única, compartida
+  // también con el hero-mapa y los mapas de selección al reportar una incidencia).
 
   const COLORES_CENTRO = {
     operativo: '#9b59b6',

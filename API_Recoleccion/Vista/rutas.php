@@ -93,7 +93,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 <a href="../../Backoffice/indexBackoffice.php"><?= t('backoffice.nav_inicio') ?></a>
                 <a href="camiones.php"><?= t('backoffice.nav_camiones') ?></a>
                 <a href="circuitos.php"><?= t('backoffice.nav_circuitos') ?></a>
-                <a href="#" class="nav-active"><?= t('backoffice.nav_rutas') ?></a>
+                <a href="rutas.php" class="nav-active"><?= t('backoffice.nav_rutas') ?></a>
                 <a href="../../API_Usuarios/Vista/cuadrillas.php"><?= t('backoffice.nav_cuadrillas') ?></a>
                 <a href="../../API_Gestion/Vista/contenedores.php"><?= t('backoffice.nav_contenedores') ?></a>
                 <a href="../../API_Gestion/Vista/centrosAcopio.php"><?= t('backoffice.nav_centros_acopio') ?></a>
@@ -117,7 +117,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
         <a href="../../Backoffice/indexBackoffice.php"><?= t('backoffice.nav_inicio') ?></a>
         <a href="camiones.php"><?= t('backoffice.nav_camiones') ?></a>
         <a href="circuitos.php"><?= t('backoffice.nav_circuitos') ?></a>
-        <a href="#" class="nav-active"><?= t('backoffice.nav_rutas') ?></a>
+        <a href="rutas.php" class="nav-active"><?= t('backoffice.nav_rutas') ?></a>
         <a href="../../API_Usuarios/Vista/cuadrillas.php"><?= t('backoffice.nav_cuadrillas') ?></a>
         <a href="../../API_Gestion/Vista/contenedores.php"><?= t('backoffice.nav_contenedores') ?></a>
         <a href="../../API_Gestion/Vista/centrosAcopio.php"><?= t('backoffice.nav_centros_acopio') ?></a>

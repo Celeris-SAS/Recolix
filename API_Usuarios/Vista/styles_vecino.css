@@ -168,42 +168,31 @@ h3 {
     flex: 1;
     display: flex;
     justify-content: center;
+    position: fixed;
+    inset: 0;
+    background: var(--moss-dark);
+    padding: 96px 20px 20px;
+    transform: translateX(100%);
+    transition: transform 320ms ease;
+    z-index: 90;
+    overflow-y: auto;
+}
+
+.main-nav.is-open {
+    transform: translateX(0);
 }
 
 .main-nav ul {
     display: flex;
-    align-items: center;
-    gap: 24px;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 30px;
 }
 
 .main-nav a {
     font-weight: 500;
-    color: var(--ink);
-    padding-bottom: 2px;
-    border-bottom: 2px solid transparent;
-    transition: border-color 150ms ease;
-}
-
-.main-nav a:hover,
-.main-nav a:focus-visible {
-    border-color: var(--leaf);
-}
-
-.main-nav {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-}
-
-.main-nav ul {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-}
-
-.main-nav a {
-    font-weight: 500;
-    color: var(--ink);
+    color: var(--white);
+    font-size: 20px;
     padding-bottom: 2px;
     border-bottom: 2px solid transparent;
     transition: border-color 150ms ease;
@@ -250,7 +239,7 @@ h3 {
 }
 
 .hamburger {
-    display: none;
+    display: block;
     font-size: 24px;
     line-height: 1;
     color: var(--ink);
@@ -342,7 +331,7 @@ h3 {
 
 
 .hamburger {
-    display: none;
+    display: block;
     font-size: 24px;
     line-height: 1;
     color: var(--ink);
@@ -386,6 +375,10 @@ h3 {
     display: flex;
     flex-direction: column;
     gap: 36px;
+}
+
+.btn-volver-inicio {
+    align-self: flex-start;
 }
 
 
@@ -465,6 +458,51 @@ h3 {
     font-size: 13px;
     color: var(--ink-soft);
     margin-bottom: 20px;
+}
+
+.modal-map {
+    height: 260px;
+    width: 100%;
+    border-radius: var(--radius-sm, 8px);
+    border: 1.5px solid var(--border, #d8d6cb);
+    margin-bottom: 8px;
+    z-index: 0;
+}
+
+/* Pin en forma de gota (estilo Google Maps), distinto de los círculos de los contenedores.
+   Leaflet posiciona el ícono con su propio transform (translate), por eso la rotación va en un
+   span interno (.mapa-marcador-usuario) y no en el div que Leaflet mueve (.mapa-marcador-usuario-wrap). */
+.mapa-marcador-usuario-wrap {
+    background: transparent !important;
+    border: none !important;
+}
+
+.mapa-marcador-usuario {
+    display: block;
+    width: 22px;
+    height: 22px;
+    background: #e03131;
+    border: 2.5px solid #fff;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+}
+
+.link-toggle {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--moss);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: underline;
+    cursor: pointer;
+    width: fit-content;
+    margin-bottom: 8px;
+}
+
+.link-toggle:hover {
+    color: var(--moss-dark);
 }
 
 

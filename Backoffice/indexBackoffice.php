@@ -26,7 +26,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
                 <span class="brand-name">Recolix</span>
             </a>
             <nav class="nav-links">
-                <a href="#" class="nav-active"><?= t('backoffice.nav_inicio') ?></a>
+                <a href="indexBackoffice.php" class="nav-active"><?= t('backoffice.nav_inicio') ?></a>
                 <a href="../API_Recoleccion/Vista/camiones.php"><?= t('backoffice.nav_camiones') ?></a>
                 <a href="../API_Recoleccion/Vista/circuitos.php"><?= t('backoffice.nav_circuitos') ?></a>
                 <a href="../API_Recoleccion/Vista/rutas.php"><?= t('backoffice.nav_rutas') ?></a>
@@ -50,7 +50,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
         </div>
     </div>
     <nav class="nav-mobile" id="navMobile">
-        <a href="#" class="nav-active"><?= t('backoffice.nav_inicio') ?></a>
+        <a href="indexBackoffice.php" class="nav-active"><?= t('backoffice.nav_inicio') ?></a>
         <a href="../API_Recoleccion/Vista/camiones.php"><?= t('backoffice.nav_camiones') ?></a>
         <a href="../API_Recoleccion/Vista/circuitos.php"><?= t('backoffice.nav_circuitos') ?></a>
         <a href="../API_Recoleccion/Vista/rutas.php"><?= t('backoffice.nav_rutas') ?></a>
@@ -147,7 +147,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
             </div>
         </a>
 
-        <a href="../API_Gestion/Vista/reportes.html" class="card-operar">
+        <a href="#" class="card-operar">
             <div class="card-content">
                 <div class="card-icon"><img src="img/reportes.png" alt="" class="card-svg-icon"></div>
                 <h3><?= t('backoffice.index_card_reportes_titulo') ?></h3>
@@ -163,7 +163,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
             </div>
         </a>
 
-        <a href="#" class="card-operar">
+        <a href="../API_Usuarios/Vista/cuadrillas.php" class="card-operar">
             <div class="card-content">
                 <div class="card-icon"><img src="img/cuadrilla.svg" alt="" class="card-svg-icon"></div>
                 <h3><?= t('backoffice.index_card_cuadrillas_titulo') ?></h3>
