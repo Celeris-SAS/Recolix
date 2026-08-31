@@ -4,9 +4,11 @@
 
 <head>
   <meta charset="UTF-8">
-    <meta name="google" content="notranslate">
+  <meta name="google" content="notranslate">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><?= t('login.title') ?></title>
+  <title>
+    <?= t('login.title') ?>
+  </title>
   <meta name="description" content="<?= htmlspecialchars(t('login.meta_description')) ?>">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,14 +29,21 @@
       </a>
       <nav class="main-nav" id="mainNav">
         <ul>
-          <li><a href="index_LandingPage.html"><?= t('common.nav_inicio') ?></a></li>
-          <li><a href="mapa.html"><?= t('common.nav_mapa') ?></a></li>
+          <li><a href="index_LandingPage.html">
+              <?= t('common.nav_inicio') ?>
+            </a></li>
+          <li><a href="mapa.html">
+              <?= t('common.nav_mapa') ?>
+            </a></li>
         </ul>
       </nav>
       <div class="header-actions">
         <?php include __DIR__ . '/../i18n/switcher.php'; ?>
-        <a href="login.html" id="loginNavLink" class="btn btn-outline btn-sm"><?= t('common.nav_iniciar_sesion') ?></a>
-        <button class="hamburger" id="hamburgerBtn" aria-label="<?= htmlspecialchars(t('common.nav_abrir_menu')) ?>" aria-expanded="false">☰</button>
+        <a href="login.html" id="loginNavLink" class="btn btn-outline btn-sm">
+          <?= t('common.nav_iniciar_sesion') ?>
+        </a>
+        <button class="hamburger" id="hamburgerBtn" aria-label="<?= htmlspecialchars(t('common.nav_abrir_menu')) ?>"
+          aria-expanded="false">☰</button>
       </div>
     </div>
   </header>
@@ -43,30 +52,48 @@
     <section class="login-section">
       <div class="container login-container">
         <div class="login-card">
-          <p class="section-eyebrow"><?= t('login.eyebrow') ?></p>
-          <h1><?= t('login.titulo') ?></h1>
-          <p class="login-desc"><?= t('login.desc') ?></p>
+          <p class="section-eyebrow">
+            <?= t('login.eyebrow') ?>
+          </p>
+          <h1>
+            <?= t('login.titulo') ?>
+          </h1>
+          <p class="login-desc">
+            <?= t('login.desc') ?>
+          </p>
 
           <form id="loginForm" method="post" action="#" novalidate>
             <div class="form-row">
-              <label for="ci"><?= t('login.cedula') ?></label>
-              <input type="text" id="ci" name="ci" placeholder="<?= htmlspecialchars(t('login.cedula_placeholder')) ?>" required>
+              <label for="ci">
+                <?= t('login.cedula') ?>
+              </label>
+              <input type="text" id="ci" name="ci" placeholder="<?= htmlspecialchars(t('login.cedula_placeholder')) ?>"
+                required>
               <p class="error-msg" id="ciError"></p>
             </div>
 
             <div class="form-row">
-              <label for="password"><?= t('login.contrasenia') ?></label>
-              <input type="password" id="password" name="password" placeholder="<?= htmlspecialchars(t('login.contrasenia_placeholder')) ?>" required>
+              <label for="password">
+                <?= t('login.contrasenia') ?>
+              </label>
+              <input type="password" id="password" name="password"
+                placeholder="<?= htmlspecialchars(t('login.contrasenia_placeholder')) ?>" required>
               <p class="error-msg" id="passwordError"></p>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-block" id="loginSubmitBtn"><?= t('login.submit') ?></button>
+            <button type="submit" class="btn btn-primary btn-block" id="loginSubmitBtn">
+              <?= t('login.submit') ?>
+            </button>
             <p class="form-feedback" id="formFeedback" role="alert"></p>
           </form>
 
           <div class="register-banner">
-            <p><?= t('login.no_tenes_cuenta') ?></p>
-            <a href="index_LandingPage.html#registro" class="link-register"><?= t('login.crear_cuenta') ?></a>
+            <p>
+              <?= t('login.no_tenes_cuenta') ?>
+            </p>
+            <a href="index_LandingPage.html#registro" class="link-register">
+              <?= t('login.crear_cuenta') ?>
+            </a>
           </div>
         </div>
       </div>
@@ -81,21 +108,37 @@
             <img src="img/LogoBlanco.png" alt="Logo Recolix" class="logo-imageBlanco" />
             <div class="logo-text">Recolix</div>
           </a>
-          <p><?= t('common.footer_desc') ?></p>
+          <p>
+            <?= t('common.footer_desc') ?>
+          </p>
         </div>
         <div class="footer-col">
-          <h3><?= t('common.footer_navegacion') ?></h3>
+          <h3>
+            <?= t('common.footer_navegacion') ?>
+          </h3>
           <ul>
-            <li><a href="index_LandingPage.html"><?= t('common.footer_inicio') ?></a></li>
-            <li><a href="mapa.html"><?= t('common.footer_mapa') ?></a></li>
-            <li><a href="../Backoffice/login_backoffice.php"><?= t('common.footer_portal_empleados') ?></a></li>
+            <li><a href="index_LandingPage.html">
+                <?= t('common.footer_inicio') ?>
+              </a></li>
+            <li><a href="mapa.html">
+                <?= t('common.footer_mapa') ?>
+              </a></li>
+            <li><a href="../Backoffice/login_backoffice.php">
+                <?= t('common.footer_portal_empleados') ?>
+              </a></li>
           </ul>
         </div>
         <div class="footer-col">
-          <h3><?= t('common.footer_canales') ?></h3>
+          <h3>
+            <?= t('common.footer_canales') ?>
+          </h3>
           <ul>
-            <li><?= t('common.footer_linea') ?></li>
-            <li><?= t('common.footer_whatsapp') ?></li>
+            <li>
+              <?= t('common.footer_linea') ?>
+            </li>
+            <li>
+              <?= t('common.footer_whatsapp') ?>
+            </li>
           </ul>
         </div>
       </div>
@@ -103,14 +146,14 @@
   </footer>
 
   <script>
-    const API_USUARIOS = '/recolix/API_Usuarios';
+    const API_USUARIOS = '/recolix/API_Usuarios/api.php';
     const I18N = <?= json_encode(t_array([
       'ciInvalid' => 'login.validation_ci',
-      'passwordShort' => 'login.validation_contrasenia',
-      'revisarDatos' => 'login.feedback_revisar_datos',
-      'credencialesInvalidas' => 'login.feedback_credenciales_invalidas',
-      'loginCorrecto' => 'login.feedback_login_correcto',
-      'errorConexion' => 'login.feedback_error_conexion',
+        'passwordShort' => 'login.validation_contrasenia',
+          'revisarDatos' => 'login.feedback_revisar_datos',
+            'credencialesInvalidas' => 'login.feedback_credenciales_invalidas',
+              'loginCorrecto' => 'login.feedback_login_correcto',
+                'errorConexion' => 'login.feedback_error_conexion',
     ])) ?>;
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -129,7 +172,7 @@
       const feedback = document.getElementById('formFeedback');
 
       form.addEventListener('submit', async (e) => {
-        e.preventDefault(); 
+        e.preventDefault();
 
         const ci = form.elements.ci.value.trim();
         const password = form.elements.password.value.trim();
@@ -158,25 +201,41 @@
 
 
         try {
-          const response = await fetch(`${API_USUARIOS}/login.php`, {
+          const response = await fetch(`${API_USUARIOS}/usuarios/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ci, contrasenia: password })
           });
           const data = await response.json();
 
-          if (!data.success) {
+          if (data.status !== 'success') {
             feedback.style.display = 'block';
             feedback.className = 'form-feedback is-error';
-            feedback.textContent = data.error || I18N.credencialesInvalidas;
+            feedback.textContent = data.message || I18N.credencialesInvalidas;
             return;
           }
 
           feedback.style.display = 'block';
           feedback.className = 'form-feedback is-success';
           feedback.textContent = I18N.loginCorrecto;
+          const usuario = data.data;
 
-          window.location.href = `${API_USUARIOS}/vecino.php`;
+          switch (usuario.rol) {
+            
+            case 'administrador':
+              window.location.href = '/recolix/API_Usuarios/vecino.php';
+              break;
+            case 'cuadrilla':
+              window.location.href = '/recolix/API_Usuarios/vecino.php';
+              break;
+            case 'operario':
+                window.location.href = '/recolix/API_Usuarios/Vista/vecino.php';
+              break;
+            case 'vecino':
+            default:
+              window.location.href = '/recolix/API_Usuarios/vecino.php';
+              break;
+          }
         } catch (err) {
           console.error(err);
           feedback.style.display = 'block';
@@ -185,7 +244,9 @@
         }
       });
     });
+    
   </script>
   <script src="sesionNav.js"></script>
 </body>
+
 </html>

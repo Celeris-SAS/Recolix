@@ -293,8 +293,8 @@ require_once __DIR__ . '/../../i18n/i18n.php';
       apenas tengas el endpoint, o cargalos manualmente acá.
 */
 
-const API_BASE       = '/Recolix/API_Usuarios';
-const MUNICIPIOS_API = '/Recolix/API_Gestion';
+const API_BASE       = '/recolix/API_Usuarios/api.php';
+const MUNICIPIOS_API = '/recolix/API_Gestion/api.php';
 
 let cuadrillaIdParaEliminar = null;
 let toastTimeout;

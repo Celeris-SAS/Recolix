@@ -46,7 +46,7 @@ require_once __DIR__ . '/../i18n/i18n.php';
         </div>
         <div class="nav-right">
             <?php include __DIR__ . '/../i18n/switcher.php'; ?>
-            <a href="/Recolix/API_Usuarios/perfil.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
+            <a href="/recolix/API_Usuarios/perfil.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
                 <img src="../API_Recoleccion/Vista/img/user.svg" alt="Usuario" class="nav-user-icon">
             </a>
             <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="<?= htmlspecialchars(t('backoffice.nav_menu')) ?>">

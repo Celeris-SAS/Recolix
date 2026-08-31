@@ -6,8 +6,7 @@ header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('Access-Control-Allow-Headers: Content-Type');
 
 $config = [
-'base_path' => '/Recolix/API_Usuarios/',
-    'resources' => [
+'base_path' => '/recolix/API_Usuarios/api.php/',    'resources' => [
 
 
         'solicitudes' => [
@@ -76,7 +75,23 @@ $config = [
 $method = $_SERVER['REQUEST_METHOD'];
 $uri    = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); 
 
-$basePath = rtrim($config['base_path'], '/'); 
+$basePath = $config['base_path']; 
+
+// DEBUG TEMPORAL - borrar después
+if (isset($_GET['debug'])) {
+    $relativePath = (strpos($uri, $basePath) === 0) ? substr($uri, strlen($basePath)) : 'NO COINCIDE';
+    $uriSegments = explode('/', trim($relativePath, '/'));
+    echo json_encode([
+        'uri_recibida' => $uri,
+        'base_path_esperado' => $basePath,
+        'coincide' => (strpos($uri, $basePath) === 0),
+        'relativePath' => $relativePath,
+        'uriSegments' => $uriSegments,
+        'method' => $method,
+        'resources_disponibles' => array_keys($config['resources'])
+    ]);
+    exit;
+}
 
 if (strpos($uri, $basePath) === 0) { 
     $relativePath = substr($uri, strlen($basePath));
@@ -124,12 +139,15 @@ if (strpos($uri, $basePath) === 0) {
         $callParams = [];
         if ($id !== null) $callParams[] = $id;
         
+        // Leer el body una sola vez
+        $bodyRaw = file_get_contents('php://input');
+        
         if ($method === 'GET') {
             $query = $_GET;
             unset($query['action']);
             if (!empty($query)) $callParams = array_merge($callParams, array_values($query));
         } else {
-            $body = json_decode(file_get_contents('php://input'), true);
+            $body = json_decode($bodyRaw, true);
             if (is_array($body) && !empty($body)) {
                 $callParams = array_merge($callParams, array_values($body));
             } else {
@@ -137,6 +155,20 @@ if (strpos($uri, $basePath) === 0) {
                 unset($query['action']);
                 if (!empty($query)) $callParams = array_merge($callParams, array_values($query));
             }
+        }
+        
+        // Debug de acción
+        if (isset($_GET['debug'])) {
+            echo json_encode([
+                'action' => $action,
+                'method' => $method,
+                'callParams' => $callParams,
+                'body_raw' => $bodyRaw,
+                'body_parsed' => json_decode($bodyRaw, true),
+                'inArray' => in_array($action, $resourceConfig['actions']),
+                'methodExists' => method_exists($controller, $action)
+            ]);
+            exit;
         }
 
         try {
@@ -147,6 +179,19 @@ if (strpos($uri, $basePath) === 0) {
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
         exit;
+    } else {
+        // Debug cuando acción no es válida
+        if (isset($_GET['debug'])) {
+            echo json_encode([
+                'accion_no_valida' => true,
+                'action' => $action,
+                'resource' => $resource,
+                'inArray' => $action ? in_array($action, $resourceConfig['actions']) : 'no hay action',
+                'methodExists' => $action ? method_exists($controller, $action) : 'no hay action',
+                'resourceConfig_actions' => $resourceConfig['actions'] ?? 'no actions'
+            ]);
+            exit;
+        }
     }
 
     switch ($method) {

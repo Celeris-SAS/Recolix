@@ -132,9 +132,12 @@ class UsuarioController {
             throw new InvalidArgumentException('Tu solicitud está pendiente de aprobación por un administrador.');
         }
 
+        $_SESSION['ci_usuario'] = $usuario['ci_usuario'];
+        $_SESSION['usuario'] = $usuario;
 
         return $usuario;
     }
+    
 
 
     public function logout() {
