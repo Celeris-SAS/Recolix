@@ -5,6 +5,7 @@
     "nav_iniciar_sesion": "Iniciar Sesión",
     "nav_mi_perfil": "Mi perfil",
     "nav_abrir_menu": "Abrir menú",
+    "nav_volver_sitio": "Volver al sitio",
     "nav_portal_empleados": "Portal de empleados",
     "footer_desc": "Plataforma de gestión de residuos urbanos para Montevideo.",
     "footer_navegacion": "Navegación",
@@ -18,7 +19,6 @@
     "lang_en": "English",
     "lang_pt": "Português"
   },
-
   "landing": {
     "title": "Recolix",
     "meta_description": "Recolix es la plataforma de gestión de residuos urbanos de Montevideo.",
@@ -32,17 +32,14 @@
     "legend_desbordado": "Desbordado",
     "legend_roto": "Roto",
     "ver_mapa_completo": "Ver mapa interactivo completo →",
-
     "stats_eyebrow": "Datos abiertos",
     "stats_title": "Recolix en números",
     "stats_contenedores": "Contenedores registrados",
     "stats_incidencias": "Incidencias reportadas hoy",
     "stats_volumen": "Toneladas recolectadas este mes",
-
     "about_eyebrow": "Qué es Recolix",
     "about_title": "Una sola plataforma para toda la operativa",
     "about_desc": "Centraliza la gestión municipal de residuos urbanos y el seguimiento de incidencias ciudadanas.",
-
     "feature_mapa_titulo": "Mapa en tiempo real",
     "feature_mapa_desc": "Visualizá el estado de los contenedores y detectá zonas críticas al instante.",
     "feature_incidencias_titulo": "Reporte de incidencias",
@@ -51,7 +48,6 @@
     "feature_reportes_desc": "Indicadores de volumen y zonas críticas exportables en PDF y CSV.",
     "feature_notificaciones_titulo": "Notificaciones",
     "feature_notificaciones_desc": "Alertas automáticas cuando tu reporte cambia de estado.",
-
     "register_eyebrow": "Cuenta de vecino",
     "register_titulo": "Sumate como vecino",
     "register_paso1": "Completá el formulario.",
@@ -68,7 +64,6 @@
     "register_contrasenia": "Contraseña",
     "register_contrasenia_placeholder": "Mínimo 8 caracteres",
     "register_submit": "Enviar solicitud",
-
     "validation_ci": "Ingresá tu cédula sin puntos ni guiones (7-8 números).",
     "validation_nombre": "El nombre solo puede contener letras.",
     "validation_apellido": "El apellido solo puede contener letras.",
@@ -79,7 +74,6 @@
     "feedback_solicitud_enviada": "Solicitud enviada exitosamente. Te avisaremos cuando esté aprobada.",
     "feedback_error_conexion": "No se pudo conectar con el servidor. Intentá de nuevo.",
     "feedback_error_enviar": "No se pudo enviar la solicitud.",
-
     "reportar_titulo": "Reportar una incidencia",
     "reportar_tipo": "Tipo de incidencia",
     "reportar_tipo_rotura": "Rotura",
@@ -109,7 +103,6 @@
     "reportar_feedback_error_enviar": "No se pudo enviar el reporte.",
     "reportar_feedback_error_conexion": "No se pudo conectar con el servidor. Intentá de nuevo."
   },
-
   "login": {
     "title": "Recolix - Iniciar sesión",
     "meta_description": "Inicia sesión en Recolix para gestionar incidencias y seguir el estado de tus reportes.",
@@ -123,7 +116,6 @@
     "submit": "Iniciar sesión",
     "no_tenes_cuenta": "¿Todavía no tenés cuenta?",
     "crear_cuenta": "Crear cuenta →",
-
     "validation_ci": "Ingresá tu cédula sin puntos ni guiones (7 a 8 números).",
     "validation_contrasenia": "La contraseña debe tener al menos 4 caracteres.",
     "feedback_revisar_datos": "Revisá los datos ingresados.",
@@ -131,7 +123,6 @@
     "feedback_login_correcto": "Inicio de sesión correcto. Redirigiendo...",
     "feedback_error_conexion": "Error al conectar con el servidor."
   },
-
   "mapa": {
     "title": "Mapa Recolix",
     "meta_description": "Mapa interactivo de contenedores y zonas de recolección de Recolix.",
@@ -143,7 +134,6 @@
     "desc": "Seguimiento geográfico de contenedores, incidencias y centros de la red de Recolix para la operación municipal.",
     "ultima_actualizacion": "Última actualización",
     "summary_note": "El color del punto indica el estado de cada elemento.",
-
     "indicadores": "Indicadores",
     "contenedores_activos": "Contenedores activos",
     "inactivos": "Inactivos",
@@ -154,12 +144,10 @@
     "camiones_en_operativa": "Camiones en operativa",
     "con_tiempo_estimado": "Con tiempo estimado",
     "sin_proxima_parada": "Sin próxima parada",
-
     "referencia_visual": "Referencia visual",
     "estado_contenedores": "Estado de los contenedores",
     "estado_centros": "Estado de los centros",
     "camion_en_ruta": "Camión en ruta",
-
     "js_tipo_ecocentro": "Ecocentro",
     "js_tipo_planta_clasificacion": "Planta de clasificación",
     "js_tipo_relleno_sanitario": "Relleno sanitario",
@@ -191,7 +179,6 @@
     "js_respuesta_inesperada": "Respuesta inesperada de la API",
     "js_locale": "es-UY"
   },
-
   "backoffice": {
     "nav_inicio": "Inicio",
     "nav_camiones": "Camiones",
@@ -206,11 +193,9 @@
     "nav_usuarios": "Usuarios",
     "nav_perfil_usuario": "Perfil de usuario",
     "nav_menu": "Menú",
-
     "footer_pagina_principal": "Página principal",
     "footer_mapa_publico": "Mapa público",
     "footer_copyright": "© 2026 Recolix. Todos los derechos reservados.",
-
     "index_title": "Backoffice — Recolix",
     "index_bienvenido": "Bienvenido,",
     "index_panel": "Panel de administración",
@@ -243,7 +228,6 @@
     "index_card_usuarios_desc": "Administrar usuarios del sistema",
     "index_js_pendiente_singular": "pendiente",
     "index_js_pendiente_plural": "pendientes",
-
     "solicitudes_title": "Recolix — Solicitudes de registro",
     "solicitudes_eyebrow": "Administración",
     "solicitudes_titulo": "Solicitudes de registro",
@@ -268,7 +252,6 @@
     "solicitudes_js_aprobada_ok": "Solicitud aprobada correctamente.",
     "solicitudes_js_error_rechazar": "No se pudo rechazar la solicitud.",
     "solicitudes_js_rechazada_ok": "Solicitud rechazada.",
-
     "login_title": "Portal de Empleados — Recolix",
     "login_titulo": "Portal de Empleados",
     "login_subtitulo": "Ingresá con tu cédula y contraseña.",
@@ -280,22 +263,21 @@
     "login_error_ci": "Ingresá tu cédula sin puntos ni guiones (6 a 8 dígitos).",
     "login_error_contrasenia": "Ingresá tu contraseña.",
     "login_error_conexion": "Error al conectar con el servidor. Intentá de nuevo más tarde.",
-
+    "login_error_credenciales": "Cédula o contraseña incorrectos.",
+    "login_error_acceso_no_habilitado": "Tu acceso aún no está habilitado. Contactá al administrador.",
+    "login_error_no_autorizado": "No tenés permiso para acceder al panel de administración.",
     "mapa_title": "Mapa — Recolix",
     "mapa_titulo": "Mapa operativo",
     "mapa_sub": "Visualizá el estado de contenedores y centros de acopio en Montevideo.",
-
     "denegado_title": "Acceso no autorizado — Recolix",
     "denegado_titulo": "Acceso no autorizado",
     "denegado_desc": "Tu cuenta no tiene permisos para acceder al panel de administración de Recolix.",
     "denegado_volver": "Volver a la página principal"
   },
-
   "camiones": {
     "title": "Camiones — Recolix",
     "hero_title": "Camiones",
     "hero_sub": "Gestioná la flota de vehículos de recolección de residuos.",
-
     "card_agregar_titulo": "Agregar Camión",
     "card_agregar_desc": "Registrar un nuevo vehículo",
     "card_agregar_btn": "Agregar",
@@ -317,7 +299,6 @@
     "card_progmant_titulo": "Programar Mantenimiento",
     "card_progmant_desc": "Agendar un mantenimiento con fecha y hora",
     "card_progmant_btn": "Programar",
-
     "filtro_placeholder_select": "— Filtrar por —",
     "filtro_opt_estado": "Estado",
     "filtro_opt_tipoCarga": "Tipo de Carga",
@@ -330,11 +311,9 @@
     "filtro_valor_placeholder": "Valor del filtro...",
     "btn_aplicar": "Aplicar",
     "btn_limpiar": "Limpiar",
-
     "buscarid_placeholder": "ID del camión...",
     "btn_buscar": "Buscar",
     "btn_vertodos": "Ver Todos",
-
     "modificarid_placeholder": "ID del camión...",
     "campo_placeholder_select": "— Campo —",
     "campo_opt_matricula": "Matrícula",
@@ -346,10 +325,8 @@
     "valor_placeholder_seleccionacampo": "Seleccioná un campo...",
     "btn_modificar": "Modificar",
     "btn_cancelar": "Cancelar",
-
     "deleteid_placeholder": "ID del camión a dar de baja...",
     "btn_dardebaja": "Dar de Baja",
-
     "mant_id_placeholder": "ID del camión...",
     "mant_tipo_preventivo": "Preventivo",
     "mant_tipo_correctivo": "Correctivo",
@@ -357,7 +334,6 @@
     "mant_costo_placeholder": "Costo ($)...",
     "btn_registrar": "Registrar",
     "btn_programar": "Programar",
-
     "th_id": "ID",
     "th_matricula": "Matrícula",
     "th_tipocarga": "Tipo de Carga",
@@ -374,7 +350,6 @@
     "th_costo": "Costo",
     "empty_state": "Sin resultados para mostrar.",
     "loading_state": "Cargando...",
-
     "modal_add_title": "Agregar Camión",
     "modal_edit_title": "Editar Camión",
     "field_matricula": "Matrícula",
@@ -396,12 +371,10 @@
     "opt_estado_de_baja": "De baja",
     "opt_estado_en_deposito": "En depósito",
     "btn_guardar": "Guardar",
-
     "modal_delete_title": "Dar de baja",
     "delete_confirm_before": "¿Confirmás dar de baja el camión",
     "delete_confirm_after": "?",
     "btn_eliminar": "Eliminar",
-
     "msg_ingresa_id": "Ingresá un ID",
     "msg_camion_no_encontrado": "Camión no encontrado",
     "msg_error_conectar": "Error al conectar con la API",
@@ -426,7 +399,6 @@
     "msg_mant_registrado": "Mantenimiento registrado correctamente",
     "msg_mant_programado": "Mantenimiento programado correctamente",
     "sin_descripcion": "Sin descripción",
-
     "val_disponible": "Disponible",
     "val_en_ruta": "En ruta",
     "val_en_mantenimiento": "En mantenimiento",
@@ -437,7 +409,6 @@
     "val_puerta_a_puerta": "Puerta a puerta",
     "val_preventivo": "Preventivo",
     "val_correctivo": "Correctivo",
-
     "filtro_titulo_estado": "Estado:",
     "filtro_titulo_tipo": "Tipo:",
     "filtro_titulo_disponibles": "Disponibles",
@@ -456,7 +427,6 @@
     "filtro_ph_modelo": "ej: Ford F-550",
     "filtro_ph_capacidad": "kg (ej: 5000)"
   },
-
   "crud": {
     "filtrar_por": "— Filtrar por —",
     "campo": "— Campo —",
@@ -492,12 +462,10 @@
     "filtro_prefijo": "Filtro —",
     "title_editar": "Editar"
   },
-
   "circuitos": {
     "title": "Circuitos — Recolix",
     "hero_title": "Circuitos",
     "hero_sub": "Gestioná los circuitos de recolección dentro de cada municipio.",
-
     "mapa_titulo": "Mapa de circuitos",
     "mapa_hint": "Seleccioná un circuito en el mapa o en la tabla (🗺️) para ver sus datos y generar su ruta.",
     "btn_cargar_contenedores": "Cargar contenedores",
@@ -506,7 +474,6 @@
     "field_ruta_actividad": "Actividad",
     "field_ruta_actividad_ph": "Recolección domiciliaria",
     "btn_generar_ruta_optima": "Generar ruta óptima",
-
     "card_agregar_titulo": "Agregar Circuito",
     "card_agregar_desc": "Registrar un nuevo circuito",
     "card_filtrar_desc": "Buscar por municipio, turno...",
@@ -518,7 +485,6 @@
     "card_genrutas_titulo": "Generar Rutas",
     "card_genrutas_desc": "Filtrar circuitos por día y frecuencia, y generar sus rutas",
     "card_genrutas_btn": "Generar",
-
     "filtro_opt_municipio": "Municipio",
     "filtro_opt_turno": "Turno",
     "filtro_opt_actividad": "Actividad",
@@ -526,7 +492,6 @@
     "filtro_opt_dia": "Día",
     "filtro_ph_actividad": "ej: Recolección domiciliaria",
     "filtro_ph_frecuencia": "ej: Lunes, Miércoles, Viernes",
-
     "searchid_ph": "ID del circuito...",
     "modificarid_ph": "ID del circuito...",
     "campo_opt_municipio": "Municipio",
@@ -536,23 +501,27 @@
     "campo_opt_turno": "Turno",
     "campo_opt_frecuencia": "Frecuencia",
     "deleteid_ph": "ID del circuito a eliminar...",
-
     "genrutas_dia": "— Día —",
     "genrutas_turno": "— Turno —",
     "genrutas_frecuencia": "— Frecuencia —",
-    "dia_domingo": "domingo", "dia_lunes": "lunes", "dia_martes": "martes",
-    "dia_miercoles": "miércoles", "dia_jueves": "jueves", "dia_viernes": "viernes", "dia_sabado": "sábado",
-    "turno_manana": "mañana", "turno_tarde": "tarde", "turno_noche": "noche",
+    "dia_domingo": "domingo",
+    "dia_lunes": "lunes",
+    "dia_martes": "martes",
+    "dia_miercoles": "miércoles",
+    "dia_jueves": "jueves",
+    "dia_viernes": "viernes",
+    "dia_sabado": "sábado",
+    "turno_manana": "mañana",
+    "turno_tarde": "tarde",
+    "turno_noche": "noche",
     "btn_buscar_circuitos": "Buscar circuitos",
     "btn_generar_rutas_todos": "Generar rutas para todos",
-
     "th_municipio": "Municipio",
     "th_nombre": "Nombre",
     "th_codigo": "Código",
     "th_actividad": "Actividad",
     "th_turno": "Turno",
     "th_frecuencia": "Frecuencia",
-
     "modal_add_title": "Agregar Circuito",
     "modal_edit_title": "Editar Circuito",
     "field_municipio": "Municipio",
@@ -570,11 +539,9 @@
     "field_frecuencia_ph": "Lunes, Miércoles, Viernes",
     "field_area_label": "Área del circuito (opcional)",
     "area_hint": "Dibujá el polígono con la herramienta de la izquierda del mapa. Podés borrarlo y volver a dibujarlo.",
-
     "modal_delete_title": "Eliminar circuito",
     "delete_confirm_before": "¿Confirmás eliminar el circuito",
     "delete_confirm_after": "?",
-
     "msg_circuito_no_encontrado": "Circuito no encontrado",
     "msg_circuito_eliminado": "Circuito eliminado correctamente",
     "msg_seleccionar_dia_turno_frec": "Seleccioná al menos un día, turno o frecuencia",
@@ -611,12 +578,10 @@
     "table_title_circuito_id": "Circuito #",
     "title_mapa_ruta": "Mapa y ruta óptima"
   },
-
   "rutas": {
     "title": "Rutas — Recolix",
     "hero_title": "Rutas",
     "hero_sub": "Las rutas se generan automáticamente desde cada circuito según el nivel de llenado de sus contenedores.",
-
     "resumen_activas": "Rutas activas",
     "resumen_pendientes": "Rutas pendientes",
     "resumen_prioritarias": "Rutas prioritarias",
@@ -625,12 +590,10 @@
     "resumen_circuito_prefijo": "Circuito",
     "resumen_contenedor_singular": "contenedor",
     "resumen_contenedor_plural": "contenedores",
-
     "card_filtrar_desc": "Buscar por circuito, nombre...",
     "card_buscarid_desc": "Obtener una ruta específica",
     "card_eliminar_titulo": "Eliminar Ruta",
     "card_eliminar_desc": "Quitar una ruta del registro",
-
     "filtro_opt_circuito": "Circuito (ID)",
     "filtro_opt_actividad": "Actividad",
     "filtro_opt_nombre": "Nombre",
@@ -638,17 +601,14 @@
     "filtro_ph_circuito": "ej: 1",
     "filtro_ph_actividad": "ej: Recolección domiciliaria",
     "filtro_ph_nombre": "ej: Ruta Norte",
-
     "searchid_ph": "ID de la ruta...",
     "deleteid_ph": "ID de la ruta a eliminar...",
-
     "th_circuito": "Circuito",
     "th_nombre": "Nombre",
     "th_actividad": "Actividad",
     "th_turno": "Turno",
     "th_levante": "Levante",
     "th_llenado_prom": "Llenado prom.",
-
     "modal_levante_titulo": "Planificar levante —",
     "field_camion_disp": "Camion disponible",
     "field_cuadrilla": "Cuadrilla asignada",
@@ -667,24 +627,20 @@
     "salida_prefijo": "salida",
     "btn_cancelar_levante": "Cancelar",
     "title_planificar_levante": "Planificar levante",
-
     "modal_delete_title": "Eliminar ruta",
     "delete_confirm_before": "¿Confirmás eliminar la ruta",
     "delete_confirm_after": "?",
-
     "estado_sin_levante": "Sin levante (pendiente de planificar)",
     "estado_pendiente": "Asignada (levante pendiente)",
     "estado_en_curso": "En curso",
     "estado_completado": "Completada",
     "estado_cancelado": "Cancelada",
-
     "badge_sin_asignar": "Sin asignar",
     "badge_asignada": "Asignada",
     "badge_en_curso": "En curso",
     "badge_completada": "Completada",
     "badge_cancelada": "Cancelada",
     "badge_asignado": "Asignado",
-
     "msg_ruta_no_encontrada": "Ruta no encontrada",
     "msg_levante_cancelado": "Levante cancelado correctamente",
     "msg_error_cancelar_levante": "Error al cancelar el levante",
@@ -692,17 +648,14 @@
     "msg_ingresa_fecha_levante": "Ingresá la fecha del levante",
     "msg_levante_planificado": "Levante planificado correctamente",
     "msg_ruta_eliminada": "Ruta eliminada correctamente",
-
     "table_title_todas": "Todas las Rutas",
     "table_title_ruta_id": "Ruta #",
     "filtro_estado_levante_prefijo": "Filtro — Estado del levante:"
   },
-
   "contenedores": {
     "title": "Contenedores — Recolix",
     "hero_title": "Contenedores",
     "hero_sub": "Gestioná el inventario de contenedores de residuos urbanos.",
-
     "card_agregar_titulo": "Agregar Contenedor",
     "card_agregar_desc": "Registrar un nuevo contenedor",
     "card_filtrar_desc": "Buscar por municipio, tipo o estado...",
@@ -710,12 +663,10 @@
     "card_modificar_titulo": "Modificar Contenedor",
     "card_modificar_desc": "Editar datos de un contenedor existente",
     "card_baja_desc": "Desactivar un contenedor del registro",
-
     "filtro_opt_municipio": "Municipio",
     "filtro_opt_tiporesiduo": "Tipo de Residuo",
     "filtro_opt_estado": "Estado",
     "filtro_opt_critico": "Crítico (roto o desbordado)",
-
     "searchid_ph": "ID del contenedor...",
     "modificarid_ph": "ID del contenedor...",
     "campo_opt_calle": "Calle",
@@ -725,7 +676,6 @@
     "campo_opt_idtipo": "Tipo de Residuo (ID)",
     "campo_opt_idcircuito": "Circuito (ID)",
     "deleteid_ph": "ID del contenedor a dar de baja...",
-
     "th_id": "ID",
     "th_calle": "Calle",
     "th_numpuerta": "Nº Puerta",
@@ -735,7 +685,6 @@
     "th_estado": "Estado",
     "th_acciones": "Acciones",
     "btn_mostrar_todos": "Mostrar Todos",
-
     "modal_add_title": "Agregar Contenedor",
     "modal_edit_title": "Editar Contenedor",
     "field_calle": "Calle",
@@ -754,46 +703,38 @@
     "opt_en_deposito": "En depósito",
     "field_tiporesiduo": "Tipo de Residuo",
     "field_idcircuito": "ID Circuito",
-
     "modal_delete_title": "Dar de baja",
     "delete_confirm_before": "¿Confirmás dar de baja el contenedor",
     "delete_confirm_after": "?",
-
     "msg_contenedor_no_encontrado": "Contenedor no encontrado",
     "msg_error_actualizar_estado": "Error al actualizar el estado",
     "msg_estado_actualizado": "Estado actualizado",
     "msg_contenedor_dado_baja": "Contenedor dado de baja correctamente",
     "msg_error_dar_baja": "Error al dar de baja",
-
     "filtro_ph_calle": "ej: Av. 18 de Julio",
     "filtro_ph_numcalle": "ej: 1234",
     "filtro_ph_capacidad": "ej: 1100",
     "ph_id_tiporesiduo": "ID del tipo de residuo",
     "ph_id_circuito": "ID del circuito",
     "ph_nuevo_valor": "Nuevo valor...",
-
     "table_title_todos": "Todos los Contenedores",
     "table_title_criticos": "Contenedores Críticos",
     "table_title_contenedor_id": "Contenedor #"
   },
-
   "centrosAcopio": {
     "title": "Centros de Acopio — Recolix",
     "hero_title": "Centros de Acopio",
     "hero_sub": "Gestioná ecocentros, plantas de clasificación, rellenos sanitarios y vertederos.",
-
     "card_agregar_titulo": "Agregar Centro",
     "card_agregar_desc": "Registrar un nuevo centro de acopio",
     "card_filtrar_desc": "Buscar por municipio, tipo o estado...",
     "card_buscarid_desc": "Obtener un centro específico",
     "card_baja_desc": "Cerrar un centro de acopio",
-
     "filtro_opt_municipio": "Municipio",
     "filtro_opt_tipo": "Tipo",
     "filtro_opt_estado": "Estado",
     "searchid_ph": "ID del centro...",
     "deleteid_ph": "ID del centro a dar de baja...",
-
     "th_id": "ID",
     "th_nombre": "Nombre",
     "th_tipo": "Tipo",
@@ -802,7 +743,6 @@
     "th_estado": "Estado",
     "th_acciones": "Acciones",
     "btn_mostrar_todos": "Mostrar Todos",
-
     "modal_add_title": "Agregar Centro",
     "modal_edit_title": "Modificar Centro",
     "field_municipio": "Municipio",
@@ -825,11 +765,9 @@
     "field_longitud": "Longitud",
     "field_capacidad_total": "Capacidad total",
     "field_capacidad_total_ph": "5000",
-
     "modal_delete_title": "Dar de baja",
     "delete_confirm_before": "¿Confirmás cerrar el centro",
     "delete_confirm_after": "?",
-
     "maquinaria_titulo_prefijo": "Maquinaria de",
     "maq_th_nombre": "Nombre",
     "maq_th_tipo": "Tipo",
@@ -855,7 +793,6 @@
     "btn_guardar_cambios": "Guardar cambios",
     "opt_cambiar_estado": "Cambiar estado...",
     "title_ver_maquinaria": "Ver maquinaria",
-
     "msg_no_conectar_api": "No se pudo conectar con la API",
     "msg_error_buscar_centro": "Error al buscar el centro",
     "msg_error_filtrar": "Error al filtrar",
@@ -874,20 +811,98 @@
     "sin_datos": "Sin datos",
     "municipio_prefijo": "Municipio"
   },
-
   "incidencias": {
     "title": "Incidencias — Recolix"
   },
-
   "cuadrillas": {
     "title": "Cuadrillas — Recolix"
   },
+     "cuadrilla": {
+    "title": "Recolix — Cuadrilla",
+    "nav_inicio": "Inicio",
+    "nav_mapa": "Mapa",
+    "page_titulo": "Cuadrilla",
+    "page_sub": "Gestioná tus tareas diarias de recolección",
+    "levante_titulo": "Registrar Levante",
+    "levante_sub": "Registrá el contenedor levantado en la ruta actual",
+    "levante_id_label": "ID del contenedor",
+    "levante_id_ph": "Ingresá el ID del contenedor",
+    "levante_contenedor_label": "Contenedor",
+    "levante_seleccionar_placeholder": "Seleccioná un contenedor para ver la información",
+    "contenedor_sin_datos": "sin datos adicionales cargados",
+    "levante_pregunta_recolectado": "¿Se recolectó el contenedor?",
+    "levante_opt_si": "Sí, se recolectó",
+    "levante_opt_no": "No se pudo recolectar",
+    "levante_estado_encontrado_label": "Estado encontrado (si no se pudo recolectar)",
+    "levante_estado_seleccionar": "Seleccionar estado",
+    "estado_sobrepeso": "Sobrepeso",
+    "estado_riesgo_incendio": "Riesgo de incendio",
+    "estado_acceso_bloqueado": "Acceso bloqueado",
+    "estado_contenedor_ausente": "Contenedor ausente",
+    "estado_otro": "Otro",
+    "levante_motivo_label": "Motivo",
+    "levante_motivo_ph": "Ej: acceso bloqueado por obra en la calle",
+    "levante_peso_label": "Peso ingresado",
+    "levante_peso_ph": "Ej: 350",
+    "levante_observaciones_label": "Observaciones (opcional)",
+    "levante_observaciones_ph": "Escribí observaciones...",
+    "btn_registrar_levante": "Registrar levante",
+    "rutas_titulo": "Rutas Asignadas",
+    "rutas_sub": "Consultá los contenedores y el recorrido asignado para hoy",
+    "ruta_asignada": "Ruta asignada:",
+    "turno": "Turno:",
+    "turno_matutino": "Matutino",
+    "inicio": "Inicio:",
+    "badge_levante_completado": "Levante completado",
+    "badge_levante_en_curso": "Levante en curso",
+    "camion_disponible": "Disponible",
+    "camion_en_ruta": "En ruta",
+    "camion_en_mantenimiento": "En mantenimiento",
+    "camion_de_baja": "De baja",
+    "btn_reportar_desperfecto": "Reportar desperfecto",
+    "btn_ver_mapa": "Ver en mapa",
+    "urgentes_titulo": "Lista de Urgentes",
+    "urgentes_sub": "Contenedores que requieren atención inmediata",
+    "th_contenedor": "Contenedor",
+    "th_ubicacion": "Ubicación",
+    "th_tipo": "Tipo",
+    "th_dias_sin_recoleccion": "Días sin recolección",
+    "th_nivel": "Nivel",
+    "th_accion": "Acción",
+    "dias": "días",
+    "btn_registrar": "Registrar",
+    "modal_confirmar_titulo": "Confirmar levante",
+    "modal_confirmar_texto": "¿Confirmás el levante del contenedor",
+    "modal_desperfecto_titulo": "Reportar desperfecto mecánico",
+    "modal_desperfecto_camion": "Camión",
+    "modal_desperfecto_desc_label": "Descripción del problema",
+    "modal_desperfecto_desc_ph": "Ej: pierde aceite del motor, falla el freno trasero...",
+    "btn_enviar_notificacion": "Enviar notificación",
+    "sin_contenedores_urgentes": "No hay contenedores urgentes pendientes.",
+    "msg_ingresa_id": "Ingresá un ID de contenedor antes de registrar el levante.",
+    "msg_selecciona_estado": "Seleccioná el estado encontrado.",
+    "msg_ingresa_motivo": "Ingresá el motivo por el que no se recolectó.",
+    "msg_no_recolectado": "Contenedor",
+    "msg_motivo_registrado": "Motivo registrado.",
+    "msg_levante_registrado": "Levante registrado para el contenedor",
+    "msg_camion_actualizado": "Camión actualizado a estado",
+    "msg_describi_desperfecto": "Describí el desperfecto detectado.",
+    "msg_desperfecto_notificado": "Se notificó el desperfecto del camión",
+    "alerta_levante_sigue": "El levante del",
+    "alerta_turno_finalizo": "y el turno ya finalizó.",
+    "estado_pendiente_texto": "pendiente",
+    "estado_en_curso_texto": "en curso"
+  },
 
+  "operario": {
+    "title": "Recolix — Operario",
+    "nav_inicio": "Inicio",
+    "nav_mapa": "Mapa"
+  },
   "usuarios": {
     "title": "Usuarios — Recolix",
     "hero_title": "Usuarios",
     "hero_sub": "Administrá las cuentas de vecinos, cuadrillas y administradores del sistema.",
-
     "card_agregar_titulo": "Agregar Usuario",
     "card_agregar_desc": "Crear una cuenta nueva directamente",
     "card_solicitudes_titulo": "Solicitudes Pendientes",
@@ -900,7 +915,6 @@
     "card_estado_titulo": "Habilitar / Deshabilitar",
     "card_estado_desc": "Bloquear o restaurar el acceso de un usuario",
     "btn_cambiar_estado": "Cambiar Estado",
-
     "filtro_opt_rol": "Rol",
     "filtro_opt_acceso": "Acceso",
     "searchid_ph": "Cédula del usuario...",
@@ -910,7 +924,6 @@
     "campo_opt_tel": "Teléfono",
     "estadoid_ph": "Cédula del usuario...",
     "btn_continuar": "Continuar",
-
     "th_cedula": "Cédula",
     "th_nombre": "Nombre",
     "th_apellido": "Apellido",
@@ -919,7 +932,6 @@
     "th_rol": "Rol",
     "th_acceso": "Acceso",
     "th_acciones": "Acciones",
-
     "modal_add_title": "Agregar Usuario",
     "modal_edit_title": "Editar Usuario",
     "field_cedula": "Cédula",
@@ -939,10 +951,8 @@
     "opt_administrador": "Administrador",
     "field_contrasenia": "Contraseña",
     "field_contrasenia_ph": "Mínimo 8 caracteres",
-
     "modal_estado_title": "Cambiar estado",
     "btn_confirmar": "Confirmar",
-
     "msg_ingresa_cedula": "Ingresá una cédula",
     "msg_usuario_no_encontrado": "Usuario no encontrado",
     "msg_usuario_actualizado": "Usuario actualizado",
@@ -953,16 +963,13 @@
     "msg_contrasenia_min": "La contraseña debe tener al menos 8 caracteres",
     "msg_rol_actualizado": "Rol actualizado",
     "msg_error_cambiar_estado": "Error al cambiar el estado",
-
     "confirm_estado_before": "¿Confirmás que querés",
     "confirm_estado_habilitar": "habilitar",
     "confirm_estado_deshabilitar": "deshabilitar",
     "confirm_estado_middle": "al usuario",
     "confirm_estado_after": "?",
-
     "usuario_habilitado_ok": "Usuario habilitado correctamente",
     "usuario_deshabilitado_ok": "Usuario deshabilitado correctamente",
-
     "val_habilitado": "Habilitado",
     "val_pendiente": "Pendiente",
     "val_deshabilitado": "Deshabilitado",
@@ -970,18 +977,14 @@
     "val_cuadrilla": "Cuadrilla",
     "val_operario": "Operario",
     "val_administrador": "Administrador",
-
     "title_deshabilitar": "Deshabilitar",
     "title_habilitar": "Habilitar",
-
     "filtro_ph_email": "ej: vecino@correo.com",
     "filtro_ph_tel": "ej: 099123456",
     "ph_nuevo_valor": "Nuevo valor...",
-
     "table_title_todos": "Todos los Usuarios",
     "table_title_usuario_id": "Usuario #"
   },
-
   "perfil": {
     "title": "Recolix — Mi panel",
     "eyebrow": "Mi cuenta",
@@ -992,7 +995,6 @@
     "label_email": "Correo electrónico",
     "label_telefono": "Teléfono",
     "btn_cambiar_contrasenia": "Cambiar contraseña",
-
     "titulo_editar": "Editar datos de contacto",
     "nota_editar": "Solo podés modificar tu correo y teléfono. Para otros cambios contactá al administrador.",
     "field_email": "Correo electrónico",
@@ -1001,14 +1003,12 @@
     "field_tel_ph": "Ej: 099123456",
     "btn_guardar_cambios": "Guardar cambios",
     "btn_cancelar": "Cancelar",
-
     "titulo_cambiar_contrasenia": "Cambiar contraseña",
     "field_contra_actual": "Contraseña actual",
     "field_contra_actual_ph": "Tu contraseña actual",
     "field_contra_nueva": "Nueva contraseña",
     "field_contra_nueva_ph": "Mínimo 8 caracteres",
     "btn_cerrar_sesion": "Cerrar sesión",
-
     "msg_email_invalido": "Ingresá un correo válido.",
     "msg_tel_invalido": "El teléfono debe tener 9 dígitos.",
     "msg_no_pudo_guardar": "No se pudo guardar.",
@@ -1018,7 +1018,6 @@
     "msg_no_pudo_cambiar_contra": "No se pudo cambiar la contraseña.",
     "msg_contra_actualizada": "Contraseña actualizada correctamente."
   },
-
   "vecino": {
     "btn_volver_inicio": "← Volver al inicio",
     "label_municipio": "Municipio",
@@ -1033,13 +1032,11 @@
     "msg_no_pudo_guardar_municipio": "No se pudo guardar el municipio.",
     "msg_municipio_actualizado": "Municipio actualizado correctamente.",
     "msg_municipio_asignado": "Municipio asignado correctamente.",
-
     "eyebrow_incidencias": "Mis reportes",
     "titulo_incidencias": "Incidencias",
     "btn_nueva_incidencia": "+ Nueva incidencia",
     "cargando_incidencias": "Cargando tus incidencias...",
     "sin_incidencias": "Todavía no reportaste ninguna incidencia.",
-
     "nueva_incidencia_titulo": "Reportar una incidencia",
     "nueva_incidencia_tipo": "Tipo de incidencia",
     "nueva_incidencia_tipo_rotura": "Rotura",
@@ -1066,40 +1063,32 @@
     "msg_error_reportar_incidencia": "No se pudo enviar el reporte.",
     "msg_foto_tipo_invalido": "La foto debe ser un archivo JPG o PNG.",
     "msg_foto_tamano_invalido": "La foto no puede superar los 5 MB.",
-
     "eyebrow_notificaciones": "Alertas",
     "titulo_notificaciones": "Notificaciones",
     "cargando_notificaciones": "Cargando notificaciones...",
     "sin_notificaciones": "No tenés notificaciones por el momento.",
     "btn_marcar_leida": "Marcar leída"
   },
-
   "reportes": {
     "title": "Reportes — Recolix",
     "hero_title": "Reportes",
     "hero_sub": "Estadísticas y métricas clave de la operación de recolección. Elegí el período a visualizar.",
-
     "filtro_hoy": "Hoy",
     "filtro_semana": "Última semana",
     "filtro_mes": "Último mes",
     "filtro_siempre": "Desde siempre",
-
     "kpi_contenedores_recolectados": "Contenedores Recolectados",
     "kpi_usuarios_registrados": "Usuarios Registrados",
     "kpi_residuos_recolectados": "Residuos Recolectados (kg)",
-
     "chart_llenado_title": "Distribución del Nivel de Llenado",
     "chart_llenado_eje_x": "Nivel de llenado (%)",
     "chart_llenado_eje_y": "Cantidad de contenedores",
-
     "gauge_contenedores_funcionales": "Contenedores Funcionales",
     "gauge_contenedores_sin_recolectar": "Contenedores sin Recolectar",
     "gauge_incidencias_resueltas": "Incidencias Resueltas",
     "gauge_levantes_completados": "Levantes Completados",
-
     "hub_title": "Explorar reportes",
     "hub_sub": "Elegí una categoría para ver el detalle.",
-
     "card_zonas_criticas_titulo": "Zonas Urbanas Críticas",
     "card_zonas_criticas_desc": "Municipios con mayor concentración de contenedores críticos",
     "card_volumen_titulo": "Volumen de Residuos",
@@ -1114,13 +1103,11 @@
     "card_clasificacion_desc": "Distribución de contenedores y proporción reciclada por tipo de residuo",
     "card_usuarios_titulo": "Usuarios Registrados y Conectados",
     "card_usuarios_desc": "Evolución del padrón de usuarios de la plataforma",
-
     "detalle_btn_exportar": "Exportar",
     "detalle_exportando": "Generando archivo…",
     "detalle_volver": "Volver a Reportes",
     "detalle_proximamente_titulo": "Reporte en construcción",
     "detalle_proximamente_desc": "Este reporte todavía no está disponible. Estamos trabajando para traerlo pronto.",
-
     "zonas_th_municipio": "Municipio",
     "zonas_th_departamento": "Departamento",
     "zonas_th_incidencias": "Incidencias (últ. mes)",

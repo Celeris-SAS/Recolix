@@ -11,13 +11,13 @@ function autenticarUsuarioBackoffice(mysqli $conn, string $ci, string $contrasen
     $stmt->close();
 
     if (!$row || !password_verify($contrasenia, $row['contrasenia'])) {
-        return ['usuario' => null, 'error' => 'Cédula o contraseña incorrectos.'];
+        return ['usuario' => null, 'error' => 'credenciales_invalidas'];
     }
     if ($row['acceso'] !== 'habilitado') {
-        return ['usuario' => null, 'error' => 'Tu acceso aún no está habilitado. Contactá al administrador.'];
+        return ['usuario' => null, 'error' => 'acceso_no_habilitado'];
     }
     if ($row['rol'] === 'vecino') {
-        return ['usuario' => null, 'error' => 'No tenés permiso para acceder al panel de administración.'];
+        return ['usuario' => null, 'error' => 'sin_permiso_vecino'];
     }
 
     unset($row['contrasenia']);

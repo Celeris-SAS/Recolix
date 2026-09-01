@@ -5,6 +5,7 @@
     "nav_iniciar_sesion": "Log In",
     "nav_mi_perfil": "My profile",
     "nav_abrir_menu": "Open menu",
+    "nav_volver_sitio": "Back to site",
     "nav_portal_empleados": "Employee portal",
     "footer_desc": "Urban waste management platform for Montevideo.",
     "footer_navegacion": "Navigation",
@@ -18,7 +19,6 @@
     "lang_en": "English",
     "lang_pt": "Português"
   },
-
   "landing": {
     "title": "Recolix",
     "meta_description": "Recolix is Montevideo's urban waste management platform.",
@@ -32,17 +32,14 @@
     "legend_desbordado": "Overflowing",
     "legend_roto": "Broken",
     "ver_mapa_completo": "View full interactive map →",
-
     "stats_eyebrow": "Open data",
     "stats_title": "Recolix by the numbers",
     "stats_contenedores": "Registered containers",
     "stats_incidencias": "Incidents reported today",
     "stats_volumen": "Tons collected this month",
-
     "about_eyebrow": "What is Recolix",
     "about_title": "One platform for the whole operation",
     "about_desc": "Centralizes municipal urban waste management and citizen incident tracking.",
-
     "feature_mapa_titulo": "Real-time map",
     "feature_mapa_desc": "See container status and spot critical areas instantly.",
     "feature_incidencias_titulo": "Incident reporting",
@@ -51,7 +48,6 @@
     "feature_reportes_desc": "Volume indicators and critical zones, exportable as PDF and CSV.",
     "feature_notificaciones_titulo": "Notifications",
     "feature_notificaciones_desc": "Automatic alerts when your report changes status.",
-
     "register_eyebrow": "Resident account",
     "register_titulo": "Join as a resident",
     "register_paso1": "Fill out the form.",
@@ -68,7 +64,6 @@
     "register_contrasenia": "Password",
     "register_contrasenia_placeholder": "At least 8 characters",
     "register_submit": "Submit request",
-
     "validation_ci": "Enter your ID without dots or dashes (7-8 digits).",
     "validation_nombre": "First name can only contain letters.",
     "validation_apellido": "Last name can only contain letters.",
@@ -79,7 +74,6 @@
     "feedback_solicitud_enviada": "Request submitted successfully. We'll let you know once it's approved.",
     "feedback_error_conexion": "Could not connect to the server. Please try again.",
     "feedback_error_enviar": "Could not submit the request.",
-
     "reportar_titulo": "Report an incident",
     "reportar_tipo": "Incident type",
     "reportar_tipo_rotura": "Damage",
@@ -109,7 +103,6 @@
     "reportar_feedback_error_enviar": "Could not send the report.",
     "reportar_feedback_error_conexion": "Could not connect to the server. Please try again."
   },
-
   "login": {
     "title": "Recolix - Log in",
     "meta_description": "Log in to Recolix to manage incidents and track your reports.",
@@ -123,7 +116,6 @@
     "submit": "Log in",
     "no_tenes_cuenta": "Don't have an account yet?",
     "crear_cuenta": "Create account →",
-
     "validation_ci": "Enter your ID without dots or dashes (7 to 8 digits).",
     "validation_contrasenia": "Password must be at least 4 characters long.",
     "feedback_revisar_datos": "Check the entered data.",
@@ -131,7 +123,6 @@
     "feedback_login_correcto": "Login successful. Redirecting...",
     "feedback_error_conexion": "Error connecting to the server."
   },
-
   "mapa": {
     "title": "Recolix Map",
     "meta_description": "Interactive map of Recolix containers and collection zones.",
@@ -143,7 +134,6 @@
     "desc": "Geographic tracking of containers, incidents, and centers in the Recolix network for municipal operations.",
     "ultima_actualizacion": "Last updated",
     "summary_note": "The dot color indicates the status of each element.",
-
     "indicadores": "Indicators",
     "contenedores_activos": "Active containers",
     "inactivos": "Inactive",
@@ -154,12 +144,10 @@
     "camiones_en_operativa": "Trucks in operation",
     "con_tiempo_estimado": "With estimated time",
     "sin_proxima_parada": "No next stop",
-
     "referencia_visual": "Visual reference",
     "estado_contenedores": "Container status",
     "estado_centros": "Center status",
     "camion_en_ruta": "Truck en route",
-
     "js_tipo_ecocentro": "Eco-center",
     "js_tipo_planta_clasificacion": "Sorting plant",
     "js_tipo_relleno_sanitario": "Sanitary landfill",
@@ -191,7 +179,6 @@
     "js_respuesta_inesperada": "Unexpected API response",
     "js_locale": "en-US"
   },
-
   "backoffice": {
     "nav_inicio": "Home",
     "nav_camiones": "Trucks",
@@ -206,11 +193,9 @@
     "nav_usuarios": "Users",
     "nav_perfil_usuario": "User profile",
     "nav_menu": "Menu",
-
     "footer_pagina_principal": "Main page",
     "footer_mapa_publico": "Public map",
     "footer_copyright": "© 2026 Recolix. All rights reserved.",
-
     "index_title": "Backoffice — Recolix",
     "index_bienvenido": "Welcome,",
     "index_panel": "Admin panel",
@@ -243,7 +228,6 @@
     "index_card_usuarios_desc": "Manage system users",
     "index_js_pendiente_singular": "pending",
     "index_js_pendiente_plural": "pending",
-
     "solicitudes_title": "Recolix — Registration requests",
     "solicitudes_eyebrow": "Administration",
     "solicitudes_titulo": "Registration requests",
@@ -268,7 +252,6 @@
     "solicitudes_js_aprobada_ok": "Request approved successfully.",
     "solicitudes_js_error_rechazar": "Could not reject the request.",
     "solicitudes_js_rechazada_ok": "Request rejected.",
-
     "login_title": "Employee Portal — Recolix",
     "login_titulo": "Employee Portal",
     "login_subtitulo": "Sign in with your ID and password.",
@@ -280,22 +263,21 @@
     "login_error_ci": "Enter your ID without dots or dashes (6 to 8 digits).",
     "login_error_contrasenia": "Enter your password.",
     "login_error_conexion": "Error connecting to the server. Please try again later.",
-
+    "login_error_credenciales": "Incorrect ID or password.",
+    "login_error_acceso_no_habilitado": "Your access isn't enabled yet. Contact your administrator.",
+    "login_error_no_autorizado": "You don't have permission to access the admin panel.",
     "mapa_title": "Map — Recolix",
     "mapa_titulo": "Operational map",
     "mapa_sub": "View the status of containers and drop-off centers in Montevideo.",
-
     "denegado_title": "Unauthorized access — Recolix",
     "denegado_titulo": "Unauthorized access",
     "denegado_desc": "Your account does not have permission to access the Recolix admin panel.",
     "denegado_volver": "Back to main page"
   },
-
   "camiones": {
     "title": "Trucks — Recolix",
     "hero_title": "Trucks",
     "hero_sub": "Manage the waste collection vehicle fleet.",
-
     "card_agregar_titulo": "Add Truck",
     "card_agregar_desc": "Register a new vehicle",
     "card_agregar_btn": "Add",
@@ -317,7 +299,6 @@
     "card_progmant_titulo": "Schedule Maintenance",
     "card_progmant_desc": "Schedule a maintenance with date and time",
     "card_progmant_btn": "Schedule",
-
     "filtro_placeholder_select": "— Filter by —",
     "filtro_opt_estado": "Status",
     "filtro_opt_tipoCarga": "Load Type",
@@ -330,11 +311,9 @@
     "filtro_valor_placeholder": "Filter value...",
     "btn_aplicar": "Apply",
     "btn_limpiar": "Clear",
-
     "buscarid_placeholder": "Truck ID...",
     "btn_buscar": "Search",
     "btn_vertodos": "View All",
-
     "modificarid_placeholder": "Truck ID...",
     "campo_placeholder_select": "— Field —",
     "campo_opt_matricula": "License Plate",
@@ -346,10 +325,8 @@
     "valor_placeholder_seleccionacampo": "Select a field...",
     "btn_modificar": "Edit",
     "btn_cancelar": "Cancel",
-
     "deleteid_placeholder": "ID of the truck to decommission...",
     "btn_dardebaja": "Decommission",
-
     "mant_id_placeholder": "Truck ID...",
     "mant_tipo_preventivo": "Preventive",
     "mant_tipo_correctivo": "Corrective",
@@ -357,7 +334,6 @@
     "mant_costo_placeholder": "Cost ($)...",
     "btn_registrar": "Log",
     "btn_programar": "Schedule",
-
     "th_id": "ID",
     "th_matricula": "License Plate",
     "th_tipocarga": "Load Type",
@@ -374,7 +350,6 @@
     "th_costo": "Cost",
     "empty_state": "No results to show.",
     "loading_state": "Loading...",
-
     "modal_add_title": "Add Truck",
     "modal_edit_title": "Edit Truck",
     "field_matricula": "License Plate",
@@ -396,12 +371,10 @@
     "opt_estado_de_baja": "Decommissioned",
     "opt_estado_en_deposito": "In storage",
     "btn_guardar": "Save",
-
     "modal_delete_title": "Decommission",
     "delete_confirm_before": "Confirm you want to decommission truck",
     "delete_confirm_after": "?",
     "btn_eliminar": "Delete",
-
     "msg_ingresa_id": "Enter an ID",
     "msg_camion_no_encontrado": "Truck not found",
     "msg_error_conectar": "Error connecting to the API",
@@ -426,7 +399,6 @@
     "msg_mant_registrado": "Maintenance logged successfully",
     "msg_mant_programado": "Maintenance scheduled successfully",
     "sin_descripcion": "No description",
-
     "val_disponible": "Available",
     "val_en_ruta": "On route",
     "val_en_mantenimiento": "Under maintenance",
@@ -437,7 +409,6 @@
     "val_puerta_a_puerta": "Door-to-door",
     "val_preventivo": "Preventive",
     "val_correctivo": "Corrective",
-
     "filtro_titulo_estado": "Status:",
     "filtro_titulo_tipo": "Type:",
     "filtro_titulo_disponibles": "Available",
@@ -456,7 +427,6 @@
     "filtro_ph_modelo": "e.g. Ford F-550",
     "filtro_ph_capacidad": "kg (e.g. 5000)"
   },
-
   "crud": {
     "filtrar_por": "— Filter by —",
     "campo": "— Field —",
@@ -492,12 +462,10 @@
     "filtro_prefijo": "Filter —",
     "title_editar": "Edit"
   },
-
   "circuitos": {
     "title": "Circuits — Recolix",
     "hero_title": "Circuits",
     "hero_sub": "Manage the collection circuits within each municipality.",
-
     "mapa_titulo": "Circuit map",
     "mapa_hint": "Select a circuit on the map or in the table (🗺️) to see its data and generate its route.",
     "btn_cargar_contenedores": "Load containers",
@@ -506,7 +474,6 @@
     "field_ruta_actividad": "Activity",
     "field_ruta_actividad_ph": "Household collection",
     "btn_generar_ruta_optima": "Generate optimal route",
-
     "card_agregar_titulo": "Add Circuit",
     "card_agregar_desc": "Register a new circuit",
     "card_filtrar_desc": "Search by municipality, shift...",
@@ -518,7 +485,6 @@
     "card_genrutas_titulo": "Generate Routes",
     "card_genrutas_desc": "Filter circuits by day and frequency, and generate their routes",
     "card_genrutas_btn": "Generate",
-
     "filtro_opt_municipio": "Municipality",
     "filtro_opt_turno": "Shift",
     "filtro_opt_actividad": "Activity",
@@ -526,7 +492,6 @@
     "filtro_opt_dia": "Day",
     "filtro_ph_actividad": "e.g. Household collection",
     "filtro_ph_frecuencia": "e.g. Monday, Wednesday, Friday",
-
     "searchid_ph": "Circuit ID...",
     "modificarid_ph": "Circuit ID...",
     "campo_opt_municipio": "Municipality",
@@ -536,23 +501,27 @@
     "campo_opt_turno": "Shift",
     "campo_opt_frecuencia": "Frequency",
     "deleteid_ph": "ID of the circuit to delete...",
-
     "genrutas_dia": "— Day —",
     "genrutas_turno": "— Shift —",
     "genrutas_frecuencia": "— Frequency —",
-    "dia_domingo": "Sunday", "dia_lunes": "Monday", "dia_martes": "Tuesday",
-    "dia_miercoles": "Wednesday", "dia_jueves": "Thursday", "dia_viernes": "Friday", "dia_sabado": "Saturday",
-    "turno_manana": "Morning", "turno_tarde": "Afternoon", "turno_noche": "Night",
+    "dia_domingo": "Sunday",
+    "dia_lunes": "Monday",
+    "dia_martes": "Tuesday",
+    "dia_miercoles": "Wednesday",
+    "dia_jueves": "Thursday",
+    "dia_viernes": "Friday",
+    "dia_sabado": "Saturday",
+    "turno_manana": "Morning",
+    "turno_tarde": "Afternoon",
+    "turno_noche": "Night",
     "btn_buscar_circuitos": "Search circuits",
     "btn_generar_rutas_todos": "Generate routes for all",
-
     "th_municipio": "Municipality",
     "th_nombre": "Name",
     "th_codigo": "Code",
     "th_actividad": "Activity",
     "th_turno": "Shift",
     "th_frecuencia": "Frequency",
-
     "modal_add_title": "Add Circuit",
     "modal_edit_title": "Edit Circuit",
     "field_municipio": "Municipality",
@@ -570,11 +539,9 @@
     "field_frecuencia_ph": "Monday, Wednesday, Friday",
     "field_area_label": "Circuit area (optional)",
     "area_hint": "Draw the polygon with the tool on the left of the map. You can delete it and draw it again.",
-
     "modal_delete_title": "Delete circuit",
     "delete_confirm_before": "Confirm you want to delete circuit",
     "delete_confirm_after": "?",
-
     "msg_circuito_no_encontrado": "Circuit not found",
     "msg_circuito_eliminado": "Circuit deleted successfully",
     "msg_seleccionar_dia_turno_frec": "Select at least one day, shift, or frequency",
@@ -611,12 +578,10 @@
     "table_title_circuito_id": "Circuit #",
     "title_mapa_ruta": "Map and optimal route"
   },
-
   "rutas": {
     "title": "Routes — Recolix",
     "hero_title": "Routes",
     "hero_sub": "Routes are generated automatically from each circuit based on its containers' fill level.",
-
     "resumen_activas": "Active routes",
     "resumen_pendientes": "Pending routes",
     "resumen_prioritarias": "Priority routes",
@@ -625,12 +590,10 @@
     "resumen_circuito_prefijo": "Circuit",
     "resumen_contenedor_singular": "container",
     "resumen_contenedor_plural": "containers",
-
     "card_filtrar_desc": "Search by circuit, name...",
     "card_buscarid_desc": "Get a specific route",
     "card_eliminar_titulo": "Delete Route",
     "card_eliminar_desc": "Remove a route from the registry",
-
     "filtro_opt_circuito": "Circuit (ID)",
     "filtro_opt_actividad": "Activity",
     "filtro_opt_nombre": "Name",
@@ -638,17 +601,14 @@
     "filtro_ph_circuito": "e.g. 1",
     "filtro_ph_actividad": "e.g. Household collection",
     "filtro_ph_nombre": "e.g. North Route",
-
     "searchid_ph": "Route ID...",
     "deleteid_ph": "ID of the route to delete...",
-
     "th_circuito": "Circuit",
     "th_nombre": "Name",
     "th_actividad": "Activity",
     "th_turno": "Shift",
     "th_levante": "Pickup",
     "th_llenado_prom": "Avg. fill",
-
     "modal_levante_titulo": "Plan pickup —",
     "field_camion_disp": "Available truck",
     "field_cuadrilla": "Assigned crew",
@@ -667,24 +627,20 @@
     "salida_prefijo": "departure",
     "btn_cancelar_levante": "Cancel",
     "title_planificar_levante": "Plan pickup",
-
     "modal_delete_title": "Delete route",
     "delete_confirm_before": "Confirm you want to delete route",
     "delete_confirm_after": "?",
-
     "estado_sin_levante": "No pickup (pending scheduling)",
     "estado_pendiente": "Assigned (pickup pending)",
     "estado_en_curso": "In progress",
     "estado_completado": "Completed",
     "estado_cancelado": "Canceled",
-
     "badge_sin_asignar": "Unassigned",
     "badge_asignada": "Assigned",
     "badge_en_curso": "In progress",
     "badge_completada": "Completed",
     "badge_cancelada": "Canceled",
     "badge_asignado": "Assigned",
-
     "msg_ruta_no_encontrada": "Route not found",
     "msg_levante_cancelado": "Pickup canceled successfully",
     "msg_error_cancelar_levante": "Error canceling the pickup",
@@ -692,17 +648,14 @@
     "msg_ingresa_fecha_levante": "Enter the pickup date",
     "msg_levante_planificado": "Pickup planned successfully",
     "msg_ruta_eliminada": "Route deleted successfully",
-
     "table_title_todas": "All Routes",
     "table_title_ruta_id": "Route #",
     "filtro_estado_levante_prefijo": "Filter — Pickup status:"
   },
-
   "contenedores": {
     "title": "Containers — Recolix",
     "hero_title": "Containers",
     "hero_sub": "Manage the urban waste container inventory.",
-
     "card_agregar_titulo": "Add Container",
     "card_agregar_desc": "Register a new container",
     "card_filtrar_desc": "Search by municipality, type, or status...",
@@ -710,12 +663,10 @@
     "card_modificar_titulo": "Edit Container",
     "card_modificar_desc": "Edit an existing container's data",
     "card_baja_desc": "Deactivate a container from the registry",
-
     "filtro_opt_municipio": "Municipality",
     "filtro_opt_tiporesiduo": "Waste Type",
     "filtro_opt_estado": "Status",
     "filtro_opt_critico": "Critical (broken or overflowing)",
-
     "searchid_ph": "Container ID...",
     "modificarid_ph": "Container ID...",
     "campo_opt_calle": "Street",
@@ -725,7 +676,6 @@
     "campo_opt_idtipo": "Waste Type (ID)",
     "campo_opt_idcircuito": "Circuit (ID)",
     "deleteid_ph": "ID of the container to decommission...",
-
     "th_id": "ID",
     "th_calle": "Street",
     "th_numpuerta": "No.",
@@ -735,7 +685,6 @@
     "th_estado": "Status",
     "th_acciones": "Actions",
     "btn_mostrar_todos": "Show All",
-
     "modal_add_title": "Add Container",
     "modal_edit_title": "Edit Container",
     "field_calle": "Street",
@@ -754,46 +703,38 @@
     "opt_en_deposito": "In storage",
     "field_tiporesiduo": "Waste Type",
     "field_idcircuito": "Circuit ID",
-
     "modal_delete_title": "Decommission",
     "delete_confirm_before": "Confirm you want to decommission container",
     "delete_confirm_after": "?",
-
     "msg_contenedor_no_encontrado": "Container not found",
     "msg_error_actualizar_estado": "Error updating the status",
     "msg_estado_actualizado": "Status updated",
     "msg_contenedor_dado_baja": "Container decommissioned successfully",
     "msg_error_dar_baja": "Error decommissioning",
-
     "filtro_ph_calle": "e.g. Av. 18 de Julio",
     "filtro_ph_numcalle": "e.g. 1234",
     "filtro_ph_capacidad": "e.g. 1100",
     "ph_id_tiporesiduo": "Waste type ID",
     "ph_id_circuito": "Circuit ID",
     "ph_nuevo_valor": "New value...",
-
     "table_title_todos": "All Containers",
     "table_title_criticos": "Critical Containers",
     "table_title_contenedor_id": "Container #"
   },
-
   "centrosAcopio": {
     "title": "Drop-off Centers — Recolix",
     "hero_title": "Drop-off Centers",
     "hero_sub": "Manage eco-centers, sorting plants, sanitary landfills, and dump sites.",
-
     "card_agregar_titulo": "Add Center",
     "card_agregar_desc": "Register a new drop-off center",
     "card_filtrar_desc": "Search by municipality, type, or status...",
     "card_buscarid_desc": "Get a specific center",
     "card_baja_desc": "Close a drop-off center",
-
     "filtro_opt_municipio": "Municipality",
     "filtro_opt_tipo": "Type",
     "filtro_opt_estado": "Status",
     "searchid_ph": "Center ID...",
     "deleteid_ph": "ID of the center to close...",
-
     "th_id": "ID",
     "th_nombre": "Name",
     "th_tipo": "Type",
@@ -802,7 +743,6 @@
     "th_estado": "Status",
     "th_acciones": "Actions",
     "btn_mostrar_todos": "Show All",
-
     "modal_add_title": "Add Center",
     "modal_edit_title": "Edit Center",
     "field_municipio": "Municipality",
@@ -825,11 +765,9 @@
     "field_longitud": "Longitude",
     "field_capacidad_total": "Total capacity",
     "field_capacidad_total_ph": "5000",
-
     "modal_delete_title": "Decommission",
     "delete_confirm_before": "Confirm you want to close center",
     "delete_confirm_after": "?",
-
     "maquinaria_titulo_prefijo": "Machinery for",
     "maq_th_nombre": "Name",
     "maq_th_tipo": "Type",
@@ -855,7 +793,6 @@
     "btn_guardar_cambios": "Save changes",
     "opt_cambiar_estado": "Change status...",
     "title_ver_maquinaria": "View machinery",
-
     "msg_no_conectar_api": "Could not connect to the API",
     "msg_error_buscar_centro": "Error finding the center",
     "msg_error_filtrar": "Error filtering",
@@ -874,20 +811,97 @@
     "sin_datos": "No data",
     "municipio_prefijo": "Municipality"
   },
-
   "incidencias": {
     "title": "Incidents — Recolix"
   },
-
   "cuadrillas": {
     "title": "Crews — Recolix"
   },
-
+     "cuadrilla": {
+    "title": "Recolix — Crew",
+    "nav_inicio": "Home",
+    "nav_mapa": "Map",
+    "page_titulo": "Crew",
+    "page_sub": "Manage your daily collection tasks",
+    "levante_titulo": "Log Pickup",
+    "levante_sub": "Log the container picked up on the current route",
+    "levante_id_label": "Container ID",
+    "levante_id_ph": "Enter the container ID",
+    "levante_contenedor_label": "Container",
+    "levante_seleccionar_placeholder": "Select a container to see its info",
+    "contenedor_sin_datos": "no additional data loaded",
+    "levante_pregunta_recolectado": "Was the container collected?",
+    "levante_opt_si": "Yes, it was collected",
+    "levante_opt_no": "Couldn't be collected",
+    "levante_estado_encontrado_label": "Condition found (if not collected)",
+    "levante_estado_seleccionar": "Select condition",
+    "estado_sobrepeso": "Overweight",
+    "estado_riesgo_incendio": "Fire risk",
+    "estado_acceso_bloqueado": "Access blocked",
+    "estado_contenedor_ausente": "Container missing",
+    "estado_otro": "Other",
+    "levante_motivo_label": "Reason",
+    "levante_motivo_ph": "E.g.: access blocked by street construction",
+    "levante_peso_label": "Weight entered",
+    "levante_peso_ph": "E.g.: 350",
+    "levante_observaciones_label": "Notes (optional)",
+    "levante_observaciones_ph": "Write your notes...",
+    "btn_registrar_levante": "Log pickup",
+    "rutas_titulo": "Assigned Routes",
+    "rutas_sub": "Check today's assigned containers and route",
+    "ruta_asignada": "Assigned route:",
+    "turno": "Shift:",
+    "turno_matutino": "Morning",
+    "inicio": "Start:",
+    "badge_levante_completado": "Pickup completed",
+    "badge_levante_en_curso": "Pickup in progress",
+    "camion_disponible": "Available",
+    "camion_en_ruta": "On route",
+    "camion_en_mantenimiento": "Under maintenance",
+    "camion_de_baja": "Decommissioned",
+    "btn_reportar_desperfecto": "Report issue",
+    "btn_ver_mapa": "View on map",
+    "urgentes_titulo": "Urgent List",
+    "urgentes_sub": "Containers that need immediate attention",
+    "th_contenedor": "Container",
+    "th_ubicacion": "Location",
+    "th_tipo": "Type",
+    "th_dias_sin_recoleccion": "Days uncollected",
+    "th_nivel": "Level",
+    "th_accion": "Action",
+    "dias": "days",
+    "btn_registrar": "Log",
+    "modal_confirmar_titulo": "Confirm pickup",
+    "modal_confirmar_texto": "Confirm the pickup for container",
+    "modal_desperfecto_titulo": "Report mechanical issue",
+    "modal_desperfecto_camion": "Truck",
+    "modal_desperfecto_desc_label": "Problem description",
+    "modal_desperfecto_desc_ph": "E.g.: leaking oil, rear brake failure...",
+    "btn_enviar_notificacion": "Send notification",
+    "sin_contenedores_urgentes": "No urgent containers pending.",
+    "msg_ingresa_id": "Enter a container ID before logging the pickup.",
+    "msg_selecciona_estado": "Select the condition found.",
+    "msg_ingresa_motivo": "Enter the reason it wasn't collected.",
+    "msg_no_recolectado": "Container",
+    "msg_motivo_registrado": "Reason logged.",
+    "msg_levante_registrado": "Pickup logged for container",
+    "msg_camion_actualizado": "Truck updated to status",
+    "msg_describi_desperfecto": "Describe the issue found.",
+    "msg_desperfecto_notificado": "The issue with truck was reported",
+    "alerta_levante_sigue": "The pickup for",
+    "alerta_turno_finalizo": "and the shift has already ended.",
+    "estado_pendiente_texto": "pending",
+    "estado_en_curso_texto": "in progress"
+  },
+  "operario": {
+    "title": "Recolix — Operator",
+    "nav_inicio": "Home",
+    "nav_mapa": "Map"
+  },
   "usuarios": {
     "title": "Users — Recolix",
     "hero_title": "Users",
     "hero_sub": "Manage resident, crew, and administrator accounts for the system.",
-
     "card_agregar_titulo": "Add User",
     "card_agregar_desc": "Create a new account directly",
     "card_solicitudes_titulo": "Pending Requests",
@@ -900,7 +914,6 @@
     "card_estado_titulo": "Enable / Disable",
     "card_estado_desc": "Block or restore a user's access",
     "btn_cambiar_estado": "Change Status",
-
     "filtro_opt_rol": "Role",
     "filtro_opt_acceso": "Access",
     "searchid_ph": "User ID...",
@@ -910,7 +923,6 @@
     "campo_opt_tel": "Phone",
     "estadoid_ph": "User ID...",
     "btn_continuar": "Continue",
-
     "th_cedula": "ID",
     "th_nombre": "First name",
     "th_apellido": "Last name",
@@ -919,7 +931,6 @@
     "th_rol": "Role",
     "th_acceso": "Access",
     "th_acciones": "Actions",
-
     "modal_add_title": "Add User",
     "modal_edit_title": "Edit User",
     "field_cedula": "National ID",
@@ -939,10 +950,8 @@
     "opt_administrador": "Administrator",
     "field_contrasenia": "Password",
     "field_contrasenia_ph": "At least 8 characters",
-
     "modal_estado_title": "Change status",
     "btn_confirmar": "Confirm",
-
     "msg_ingresa_cedula": "Enter an ID",
     "msg_usuario_no_encontrado": "User not found",
     "msg_usuario_actualizado": "User updated",
@@ -953,16 +962,13 @@
     "msg_contrasenia_min": "Password must be at least 8 characters long",
     "msg_rol_actualizado": "Role updated",
     "msg_error_cambiar_estado": "Error changing status",
-
     "confirm_estado_before": "Confirm you want to",
     "confirm_estado_habilitar": "enable",
     "confirm_estado_deshabilitar": "disable",
     "confirm_estado_middle": "user",
     "confirm_estado_after": "?",
-
     "usuario_habilitado_ok": "User enabled successfully",
     "usuario_deshabilitado_ok": "User disabled successfully",
-
     "val_habilitado": "Enabled",
     "val_pendiente": "Pending",
     "val_deshabilitado": "Disabled",
@@ -970,18 +976,14 @@
     "val_cuadrilla": "Crew",
     "val_operario": "Operator",
     "val_administrador": "Administrator",
-
     "title_deshabilitar": "Disable",
     "title_habilitar": "Enable",
-
     "filtro_ph_email": "e.g. resident@email.com",
     "filtro_ph_tel": "e.g. 099123456",
     "ph_nuevo_valor": "New value...",
-
     "table_title_todos": "All Users",
     "table_title_usuario_id": "User #"
   },
-
   "perfil": {
     "title": "Recolix — My panel",
     "eyebrow": "My account",
@@ -992,7 +994,6 @@
     "label_email": "Email address",
     "label_telefono": "Phone",
     "btn_cambiar_contrasenia": "Change password",
-
     "titulo_editar": "Edit contact details",
     "nota_editar": "You can only update your email and phone. For other changes, contact your administrator.",
     "field_email": "Email address",
@@ -1001,14 +1002,12 @@
     "field_tel_ph": "e.g. 099123456",
     "btn_guardar_cambios": "Save changes",
     "btn_cancelar": "Cancel",
-
     "titulo_cambiar_contrasenia": "Change password",
     "field_contra_actual": "Current password",
     "field_contra_actual_ph": "Your current password",
     "field_contra_nueva": "New password",
     "field_contra_nueva_ph": "At least 8 characters",
     "btn_cerrar_sesion": "Log out",
-
     "msg_email_invalido": "Enter a valid email.",
     "msg_tel_invalido": "Phone number must have 9 digits.",
     "msg_no_pudo_guardar": "Could not save.",
@@ -1018,7 +1017,6 @@
     "msg_no_pudo_cambiar_contra": "Could not change the password.",
     "msg_contra_actualizada": "Password updated successfully."
   },
-
   "vecino": {
     "btn_volver_inicio": "← Back to home",
     "label_municipio": "Municipality",
@@ -1033,13 +1031,11 @@
     "msg_no_pudo_guardar_municipio": "Could not save the municipality.",
     "msg_municipio_actualizado": "Municipality updated successfully.",
     "msg_municipio_asignado": "Municipality assigned successfully.",
-
     "eyebrow_incidencias": "My reports",
     "titulo_incidencias": "Incidents",
     "btn_nueva_incidencia": "+ New incident",
     "cargando_incidencias": "Loading your incidents...",
     "sin_incidencias": "You haven't reported any incidents yet.",
-
     "nueva_incidencia_titulo": "Report an incident",
     "nueva_incidencia_tipo": "Incident type",
     "nueva_incidencia_tipo_rotura": "Damage",
@@ -1066,40 +1062,32 @@
     "msg_error_reportar_incidencia": "Could not send the report.",
     "msg_foto_tipo_invalido": "The photo must be a JPG or PNG file.",
     "msg_foto_tamano_invalido": "The photo can't be larger than 5 MB.",
-
     "eyebrow_notificaciones": "Alerts",
     "titulo_notificaciones": "Notifications",
     "cargando_notificaciones": "Loading notifications...",
     "sin_notificaciones": "You don't have any notifications right now.",
     "btn_marcar_leida": "Mark as read"
   },
-
   "reportes": {
     "title": "Reports — Recolix",
     "hero_title": "Reports",
     "hero_sub": "Key statistics and metrics for the collection operation. Choose the period to display.",
-
     "filtro_hoy": "Today",
     "filtro_semana": "Last week",
     "filtro_mes": "Last month",
     "filtro_siempre": "All time",
-
     "kpi_contenedores_recolectados": "Containers Collected",
     "kpi_usuarios_registrados": "Users Registered",
     "kpi_residuos_recolectados": "Waste Collected (kg)",
-
     "chart_llenado_title": "Fill Level Distribution",
     "chart_llenado_eje_x": "Fill level (%)",
     "chart_llenado_eje_y": "Number of containers",
-
     "gauge_contenedores_funcionales": "Functional Containers",
     "gauge_contenedores_sin_recolectar": "Uncollected Containers",
     "gauge_incidencias_resueltas": "Resolved Incidents",
     "gauge_levantes_completados": "Completed Pickups",
-
     "hub_title": "Explore reports",
     "hub_sub": "Choose a category to see the detail.",
-
     "card_zonas_criticas_titulo": "Critical Urban Zones",
     "card_zonas_criticas_desc": "Municipalities with the highest concentration of critical containers",
     "card_volumen_titulo": "Waste Volume",
@@ -1114,13 +1102,11 @@
     "card_clasificacion_desc": "Container distribution and recycled proportion by waste type",
     "card_usuarios_titulo": "Registered and Connected Users",
     "card_usuarios_desc": "Evolution of the platform's user base",
-
     "detalle_btn_exportar": "Export",
     "detalle_exportando": "Generating file…",
     "detalle_volver": "Back to Reports",
     "detalle_proximamente_titulo": "Report under construction",
     "detalle_proximamente_desc": "This report isn't available yet. We're working on bringing it soon.",
-
     "zonas_th_municipio": "Municipality",
     "zonas_th_departamento": "Department",
     "zonas_th_incidencias": "Incidents (last month)",

@@ -8,10 +8,10 @@ require_once __DIR__ . '/../i18n/i18n.php';
             header('Location: indexBackoffice.php');
             break;
         case 'cuadrilla':
-            header('Location: ../API_Usuarios/Vista/cuadrilla.html');
+            header('Location: ../API_Usuarios/Vista/cuadrilla.php');
             break;
         case 'operario':
-            header('Location: ../API_Usuarios/Vista/operario.html');
+            header('Location: ../API_Usuarios/Vista/operario.php');
             break;
         default:
             header('Location: indexBackoffice.php');
@@ -39,12 +39,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $db   = new conexion();
             $conn = $db->getConexion();
 
-                        $resultado = autenticarUsuarioBackoffice($conn, $ci, $contrasenia);
+            $resultado = autenticarUsuarioBackoffice($conn, $ci, $contrasenia);
+
+            $mapaErrores = [
+                'credenciales_invalidas' => 'backoffice.login_error_credenciales',
+                'acceso_no_habilitado'   => 'backoffice.login_error_acceso_no_habilitado',
+                'sin_permiso_vecino'     => 'backoffice.login_error_no_autorizado',
+            ];
 
             if ($resultado['error']) {
-                $_SESSION['login_error'] = $resultado['error'];
-            } elseif ($resultado['usuario']['rol'] === 'vecino') {
-                $_SESSION['login_error'] = t('backoffice.login_error_no_autorizado');
+                $clave = $mapaErrores[$resultado['error']] ?? 'backoffice.login_error_conexion';
+                $_SESSION['login_error'] = t($clave);
             } else {
                 $_SESSION['usuario'] = $resultado['usuario'];
 
@@ -53,10 +58,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         header('Location: indexBackoffice.php');
                         break;
                     case 'cuadrilla':
-                        header('Location: ../API_Usuarios/Vista/cuadrilla.html');
+                        header('Location: ../API_Usuarios/Vista/cuadrilla.php');
                         break;
                     case 'operario':
-                        header('Location: ../API_Usuarios/Vista/operario.html');
+                        header('Location: ../API_Usuarios/Vista/operario.php');
                         break;
                     default:
                         header('Location: indexBackoffice.php');

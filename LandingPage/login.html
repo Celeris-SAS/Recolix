@@ -27,23 +27,11 @@
         <img src="img/Logo.png" alt="Logo Recolix" class="logo-image" />
         <div class="logo-text">Recolix</div>
       </a>
-      <nav class="main-nav" id="mainNav">
-        <ul>
-          <li><a href="index_LandingPage.html">
-              <?= t('common.nav_inicio') ?>
-            </a></li>
-          <li><a href="mapa.html">
-              <?= t('common.nav_mapa') ?>
-            </a></li>
-        </ul>
-      </nav>
-      <div class="header-actions">
+          <div class="header-actions">
         <?php include __DIR__ . '/../i18n/switcher.php'; ?>
-        <a href="login.html" id="loginNavLink" class="btn btn-outline btn-sm">
-          <?= t('common.nav_iniciar_sesion') ?>
+        <a href="index_LandingPage.html" class="btn btn-outline btn-sm">
+          <?= t('common.nav_volver_sitio') ?>
         </a>
-        <button class="hamburger" id="hamburgerBtn" aria-label="<?= htmlspecialchars(t('common.nav_abrir_menu')) ?>"
-          aria-expanded="false">☰</button>
       </div>
     </div>
   </header>
@@ -158,14 +146,6 @@
 
     document.addEventListener('DOMContentLoaded', function () {
 
-      const btn = document.getElementById('hamburgerBtn');
-      const nav = document.getElementById('mainNav');
-      btn.addEventListener('click', () => {
-        const abierto = nav.classList.toggle('is-open');
-        btn.classList.toggle('is-open', abierto);
-        btn.textContent = abierto ? '✕' : '☰';
-      });
-
       const form = document.getElementById('loginForm');
       const ciError = document.getElementById('ciError');
       const passwordError = document.getElementById('passwordError');
@@ -220,22 +200,8 @@
           feedback.textContent = I18N.loginCorrecto;
           const usuario = data.data;
 
-          switch (usuario.rol) {
-            
-            case 'administrador':
-              window.location.href = '/recolix/API_Usuarios/vecino.php';
-              break;
-            case 'cuadrilla':
-              window.location.href = '/recolix/API_Usuarios/vecino.php';
-              break;
-            case 'operario':
-                window.location.href = '/recolix/API_Usuarios/Vista/vecino.php';
-              break;
-            case 'vecino':
-            default:
-              window.location.href = '/recolix/API_Usuarios/vecino.php';
-              break;
-          }
+          window.location.href = '/recolix/API_Usuarios/vecino.php';
+
         } catch (err) {
           console.error(err);
           feedback.style.display = 'block';
@@ -244,7 +210,7 @@
         }
       });
     });
-    
+
   </script>
   <script src="sesionNav.js"></script>
 </body>
