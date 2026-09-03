@@ -4,32 +4,32 @@ const API = '/recolix/API_Usuarios/api.php';
 const API_GESTION = '/recolix/API_Gestion';
 document.addEventListener('DOMContentLoaded', function () {
 
-let perfilActual = {};
+    let perfilActual = {};
 
-cargarPerfil();
-cargarIncidencias();
-cargarNotificaciones();
+    cargarPerfil();
+    cargarIncidencias();
+    cargarNotificaciones();
 
 
-       document.getElementById('logoutBtn').addEventListener('click', () => {
-        window.location.href = '/recolix/Backoffice/logout.php';
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        window.location.href = '/recolix/API_Usuarios/logout.php';
     });
 
 
     async function cargarPerfil() {
-    const resp  = await fetch(`${API}/usuarios/${CI}`);
-    const json  = await resp.json();
-    const perfil = json.data;
-    perfilActual = perfil;
-    document.getElementById('perfilNombre').textContent = perfil.primer_nombre + ' ' + perfil.p_apellido;
-    document.getElementById('perfilCI').textContent = perfil.ci_usuario;
-    document.getElementById('perfilEmail').textContent = perfil.email || '—';
-    document.getElementById('perfilTel').textContent = perfil.tel || '—';
-    document.getElementById('perfilMunicipio').textContent = perfil.municipio || I18N.sinAsignar;
-    const btnMunicipio = document.getElementById('asignarMunicipioBtn');
-    btnMunicipio.hidden = false;
-    btnMunicipio.textContent = perfil.id_municipio ? I18N.btnCambiarMunicipio : I18N.btnAgregarMunicipio;
-}
+        const resp = await fetch(`${API}/usuarios/${CI}`);
+        const json = await resp.json();
+        const perfil = json.data;
+        perfilActual = perfil;
+        document.getElementById('perfilNombre').textContent = perfil.primer_nombre + ' ' + perfil.p_apellido;
+        document.getElementById('perfilCI').textContent = perfil.ci_usuario;
+        document.getElementById('perfilEmail').textContent = perfil.email || '—';
+        document.getElementById('perfilTel').textContent = perfil.tel || '—';
+        document.getElementById('perfilMunicipio').textContent = perfil.municipio || I18N.sinAsignar;
+        const btnMunicipio = document.getElementById('asignarMunicipioBtn');
+        btnMunicipio.hidden = false;
+        btnMunicipio.textContent = perfil.id_municipio ? I18N.btnCambiarMunicipio : I18N.btnAgregarMunicipio;
+    }
 
 
     document.getElementById('editarPerfilBtn').addEventListener('click', () => {
@@ -67,22 +67,22 @@ cargarNotificaciones();
         }
         if (!esValido) return;
 
-       const resp = await fetch(`${API}/usuarios/${CI}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, tel })
-});
-const json = await resp.json();
+        const resp = await fetch(`${API}/usuarios/${CI}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, tel })
+        });
+        const json = await resp.json();
 
-if (json.status !== 'success') {
-    mostrarFeedback('perfilFeedback', json.message || I18N.msgNoPudoGuardar, false);
-    return;
-}
+        if (json.status !== 'success') {
+            mostrarFeedback('perfilFeedback', json.message || I18N.msgNoPudoGuardar, false);
+            return;
+        }
 
-    await cargarPerfil();
-    document.getElementById('perfilVista').hidden = false;
-    document.getElementById('perfilForm').hidden = true;
-    mostrarFeedback('perfilFeedback', I18N.msgDatosActualizados, true);
+        await cargarPerfil();
+        document.getElementById('perfilVista').hidden = false;
+        document.getElementById('perfilForm').hidden = true;
+        mostrarFeedback('perfilFeedback', I18N.msgDatosActualizados, true);
     });
 
 
@@ -93,7 +93,7 @@ if (json.status !== 'success') {
         document.getElementById('municipioForm').hidden = true;
     });
 
-  
+
     document.getElementById('asignarMunicipioBtn').addEventListener('click', () => {
         const esCambio = !!perfilActual.id_municipio;
         document.getElementById('perfilVista').hidden = true;
@@ -159,37 +159,37 @@ if (json.status !== 'success') {
         if (actual.length < 1 || nueva.length < 8) return;
 
         const resp = await fetch(`${API}/usuarios/cambiarContrasenia`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ci: CI, contraseniaActual: actual, nuevaContrasenia: nueva })
-});
-    const json = await resp.json();
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ci: CI, contraseniaActual: actual, nuevaContrasenia: nueva })
+        });
+        const json = await resp.json();
 
-    if (json.status !== 'success') {
-        mostrarFeedback('contraFeedback', json.message || I18N.msgNoPudoCambiarContra, false);
-        return;
-    }
+        if (json.status !== 'success') {
+            mostrarFeedback('contraFeedback', json.message || I18N.msgNoPudoCambiarContra, false);
+            return;
+        }
 
-    document.getElementById('contraActual').value = '';
-    document.getElementById('contraNueva').value = '';
-    document.getElementById('perfilVista').hidden = false;
-    document.getElementById('contraseniaForm').hidden = true;
-    mostrarFeedback('perfilFeedback', I18N.msgContraActualizada, true);
+        document.getElementById('contraActual').value = '';
+        document.getElementById('contraNueva').value = '';
+        document.getElementById('perfilVista').hidden = false;
+        document.getElementById('contraseniaForm').hidden = true;
+        mostrarFeedback('perfilFeedback', I18N.msgContraActualizada, true);
     });
 
 
-  async function cargarIncidencias() {
-    const contenedor = document.getElementById('incidenciasLista');
-    const resp = await fetch(`${API}/usuarios/getIncidencias?ci=${CI}`);
-    const json = await resp.json();
-    const lista = json.data;
+    async function cargarIncidencias() {
+        const contenedor = document.getElementById('incidenciasLista');
+        const resp = await fetch(`${API}/usuarios/getIncidencias?ci=${CI}`);
+        const json = await resp.json();
+        const lista = json.data;
 
-    if (!lista.length) {
-        contenedor.innerHTML = `<div class="estado-vacio">${I18N.sinIncidencias}</div>`;
-        return;
-    }
+        if (!lista.length) {
+            contenedor.innerHTML = `<div class="estado-vacio">${I18N.sinIncidencias}</div>`;
+            return;
+        }
 
-    contenedor.innerHTML = lista.map(inc => `
+        contenedor.innerHTML = lista.map(inc => `
         <div class="incidencia-card" data-estado="${inc.estado}">
             <div class="incidencia-info">
                 <p class="incidencia-tipo">${inc.tipo.replace('_', ' ')}</p>
@@ -199,7 +199,7 @@ if (json.status !== 'success') {
             <span class="badge badge-${inc.estado}">${inc.estado}</span>
         </div>
     `).join('');
-}
+    }
 
 
     // RF05/RF06 — mapa interactivo: muestra la ubicación del usuario y permite elegir el
@@ -382,15 +382,15 @@ if (json.status !== 'success') {
 
 
     async function cargarNotificaciones() {
-    const contenedor = document.getElementById('notificacionesLista');
-    const resp = await fetch(`${API}/usuarios/getNotificaciones?ci=${CI}`);
-    const json = await resp.json();
-    const lista = json.data;
+        const contenedor = document.getElementById('notificacionesLista');
+        const resp = await fetch(`${API}/usuarios/getNotificaciones?ci=${CI}`);
+        const json = await resp.json();
+        const lista = json.data;
 
-    if (!lista.length) {
-        contenedor.innerHTML = `<div class="estado-vacio">${I18N.sinNotificaciones}</div>`;
-        return;
-    }contenedor.innerHTML = lista.map(n => `
+        if (!lista.length) {
+            contenedor.innerHTML = `<div class="estado-vacio">${I18N.sinNotificaciones}</div>`;
+            return;
+        } contenedor.innerHTML = lista.map(n => `
         <div class="notif-card ${n.estado === 'leida' ? 'leida' : 'no-leida'}" id="notif-${n.id_notificacion}">
             <div class="notif-dot"></div>
             <div class="notif-cuerpo">
@@ -402,17 +402,17 @@ if (json.status !== 'success') {
             </div>
             ${n.estado !== 'leida' ? `<button class="btn-marcar-leida" data-id="${n.id_notificacion}">${I18N.btnMarcarLeida}</button>` : ''}
         </div>
-    `).join('');contenedor.querySelectorAll('.btn-marcar-leida').forEach(btn => {
-        btn.addEventListener('click', () => marcarLeida(btn.dataset.id));
-    });
-}
+    `).join(''); contenedor.querySelectorAll('.btn-marcar-leida').forEach(btn => {
+            btn.addEventListener('click', () => marcarLeida(btn.dataset.id));
+        });
+    }
 
     async function marcarLeida(idNotificacion) {
         await fetch(`${API}/usuarios/marcarNotificacionLeida`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idNotificacion })
-    });
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idNotificacion })
+        });
         const tarjeta = document.getElementById(`notif-${idNotificacion}`);
         if (tarjeta) {
             tarjeta.classList.remove('no-leida');
