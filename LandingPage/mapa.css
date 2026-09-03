@@ -250,3 +250,11 @@
         height: 480px;
     }
 }
+
+.main-nav a {
+  color: var(--ink);
+}
+
+.main-nav a:hover {
+  color: var(--moss);
+}

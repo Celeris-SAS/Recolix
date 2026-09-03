@@ -11,8 +11,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../Backoffice/styleBackoffice.css">
 <link rel="stylesheet" href="styles_vecino.css">
-<link rel="stylesheet" href="navExtras.css">
 <link rel="stylesheet" href="operario.css">
+<style>
+    /* Forzar menú hamburguesa siempre visible en esta vista */
+    .nav-links {
+        display: none !important;
+    }
+    .nav-hamburger {
+        display: flex !important;
+    }
+</style>
 </head>
 
 <body>
@@ -26,22 +34,19 @@
                 </a>
                 <nav class="nav-links">
                     <a href="operario.php" class="nav-active"><?= t('operario.nav_inicio') ?></a>
-                    <a href="http://localhost/recolix/Backoffice/mapa.php"><?= t('operario.nav_mapa') ?></a>
                 </nav>
             </div>
             <div class="nav-right">
                 <?php include __DIR__ . '/../../i18n/switcher.php'; ?>
-                <a href="../perfil.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
-                    <img src="../../API_Recoleccion/Vista/img/user.svg" alt="Usuario" class="nav-user-icon">
+                <a href="perfilOperario.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">                    <img src="../../API_Recoleccion/Vista/img/user.svg" alt="Usuario" class="nav-user-icon">
                 </a>
                 <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="<?= htmlspecialchars(t('backoffice.nav_menu')) ?>">
                     <span></span><span></span><span></span>
                 </button>
             </div>
         </div>
-        <nav class="nav-mobile" id="navMobile">
+               <nav class="nav-mobile" id="navMobile">
             <a href="operario.php" class="nav-active"><?= t('operario.nav_inicio') ?></a>
-            <a href="http://localhost/recolix/Backoffice/mapa.php"><?= t('operario.nav_mapa') ?></a>
         </nav>
         <div class="nav-hr"></div>
     </header>
@@ -78,10 +83,7 @@
                     </div>
                 </div>
 
-                <a class="btn btn-outline btn-full" href="http://localhost/recolix/Backoffice/mapa.php">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6v15l6-3 6 3 6-3V3l-6 3-6-3-6 3Z"/><path d="M9 3v15"/><path d="M15 6v15"/></svg>
-                    <?= t('operario.btn_ver_mapa') ?>
-                </a>
+    
             </div>
         </section>
 

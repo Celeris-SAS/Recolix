@@ -153,12 +153,17 @@ document.addEventListener('DOMContentLoaded', function () {
     grupo.clearLayers();
     Object.keys(counts[vista]).forEach((k) => { counts[vista][k] = 0; });
 
-    document.getElementById('indicadores-contenedores').style.display = vista === 'contenedores' ? '' : 'none';
-    document.getElementById('indicadores-centros').style.display = vista === 'centros' ? '' : 'none';
-    document.getElementById('leyenda-contenedores').style.display = vista === 'contenedores' ? '' : 'none';
-    document.getElementById('leyenda-centros').style.display = vista === 'centros' ? '' : 'none';
+    const indicadoresContenedores = document.getElementById('indicadores-contenedores');
+    const indicadoresCentros = document.getElementById('indicadores-centros');
+    const leyendaContenedores = document.getElementById('leyenda-contenedores');
+    const leyendaCentros = document.getElementById('leyenda-centros');
     const indicadoresCamiones = document.getElementById('indicadores-camiones');
     const leyendaCamiones = document.getElementById('leyenda-camiones');
+
+    if (indicadoresContenedores) indicadoresContenedores.style.display = vista === 'contenedores' ? '' : 'none';
+    if (indicadoresCentros) indicadoresCentros.style.display = vista === 'centros' ? '' : 'none';
+    if (leyendaContenedores) leyendaContenedores.style.display = vista === 'contenedores' ? '' : 'none';
+    if (leyendaCentros) leyendaCentros.style.display = vista === 'centros' ? '' : 'none';
     if (indicadoresCamiones) indicadoresCamiones.style.display = vista === 'camiones' ? '' : 'none';
     if (leyendaCamiones) leyendaCamiones.style.display = vista === 'camiones' ? '' : 'none';
 

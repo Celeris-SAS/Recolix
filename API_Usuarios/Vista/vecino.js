@@ -1,8 +1,7 @@
 
 
-const API = '/recolix/API_Usuarios';
+const API = '/recolix/API_Usuarios/api.php';
 const API_GESTION = '/recolix/API_Gestion';
-
 document.addEventListener('DOMContentLoaded', function () {
 
 let perfilActual = {};
@@ -12,8 +11,8 @@ cargarIncidencias();
 cargarNotificaciones();
 
 
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-        window.location.href = `${API}/logout.php`;
+       document.getElementById('logoutBtn').addEventListener('click', () => {
+        window.location.href = '/recolix/Backoffice/logout.php';
     });
 
 
