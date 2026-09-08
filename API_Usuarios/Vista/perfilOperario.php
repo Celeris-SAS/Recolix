@@ -318,7 +318,7 @@
         });
 
         document.getElementById('logoutBtn').addEventListener('click', function () {
-            window.location.href = '/recolix/Backoffice/logout.php';
+    window.location.href = '/recolix/Backoffice/logout_backoffice.php';
         });
 
         function toggleMobileMenu() {

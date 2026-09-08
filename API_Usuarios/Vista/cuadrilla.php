@@ -136,12 +136,7 @@
                                 </select>
                                 <p class="error-msg" id="estado-encontrado-error"></p>
                             </div>
-                            <div class="form-group">
-                                <label for="motivo"><?= t('cuadrilla.levante_motivo_label') ?></label>
-                                <input type="text" id="motivo" name="motivo" maxlength="150"
-                                    placeholder="<?= htmlspecialchars(t('cuadrilla.levante_motivo_ph')) ?>">
-                                <p class="error-msg" id="motivo-error"></p>
-                            </div>
+                            
                         </div>
                     </div>
 
