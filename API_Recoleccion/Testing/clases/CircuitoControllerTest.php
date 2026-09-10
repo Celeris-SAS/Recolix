@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../Controlador/circuitoController.php';
+require_once __DIR__ . '/../../Controlador/circuitoController.php';
 
 final class CircuitoControllerTest extends RecoleccionTestCase
 {

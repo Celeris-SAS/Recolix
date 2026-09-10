@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../Controlador/rutaController.php';
+require_once __DIR__ . '/../../Controlador/rutaController.php';
 
 final class RutaControllerTest extends RecoleccionTestCase
 {
