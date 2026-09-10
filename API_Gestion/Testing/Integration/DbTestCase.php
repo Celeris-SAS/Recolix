@@ -27,6 +27,8 @@ abstract class DbTestCase extends GestionTestCase
         'centro_acopio',
         'prediccion_llenado',
         'contenedor_levante',
+        'levante',
+        'ruta_recoleccion',
         'contenedor',
         'circuito',
         'municipio',
@@ -173,6 +175,69 @@ abstract class DbTestCase extends GestionTestCase
             $datos['latitud'],
             $datos['longitud'],
             $datos['capacidad_total'],
+            $datos['estado']
+        );
+        $stmt->execute();
+        $id = $conn->insert_id;
+        $stmt->close();
+        return $id;
+    }
+
+    // Usada por ReporteModel, que agrega datos de recolección (LEVANTE) aunque
+    // esa tabla sea "de Recolección" — Reportes es un módulo transversal.
+    protected function crearRuta(?int $circuitoId = null, array $overrides = []): int
+    {
+        $circuitoId ??= $this->crearCircuito();
+        $datos = array_merge([
+            'nombre' => 'Ruta Test',
+            'actividad' => 'recolección domiciliaria',
+            'activa' => 1,
+        ], $overrides);
+
+        $conn = $this->conn();
+        $stmt = $conn->prepare('INSERT INTO ruta_recoleccion (id_circuito, nombre, actividad, activa) VALUES (?, ?, ?, ?)');
+        $stmt->bind_param('issi', $circuitoId, $datos['nombre'], $datos['actividad'], $datos['activa']);
+        $stmt->execute();
+        $id = $conn->insert_id;
+        $stmt->close();
+        return $id;
+    }
+
+    // Idem: LEVANTE es de Recolección, pero ReporteModel lo necesita para sus agregados.
+    protected function crearLevante(?int $rutaId = null, array $overrides = []): int
+    {
+        $rutaId ??= $this->crearRuta();
+        $cuadrillaId = $overrides['id_cuadrilla'] ?? $this->crearCuadrilla();
+        $camionId = $overrides['id_camion'] ?? null;
+        if ($camionId === null) {
+            $conn = $this->conn();
+            $stmt = $conn->prepare("INSERT INTO camion (matricula, tipo_carga, capacidad, anio, modelo, estado) VALUES (?, 'carga_lateral', 5000, 2020, 'Modelo Test', 'disponible')");
+            $matricula = 'TST' . random_int(1000, 9999);
+            $stmt->bind_param('s', $matricula);
+            $stmt->execute();
+            $camionId = $conn->insert_id;
+            $stmt->close();
+        }
+        $datos = array_merge([
+            'hora_salida' => date('Y-m-d H:i:s'),
+            'hora_llegada' => null,
+            'total_recolectado' => 0,
+            'hora_levante' => date('Y-m-d'),
+            'estado' => 'completado',
+        ], $overrides);
+        unset($datos['id_cuadrilla'], $datos['id_camion']);
+
+        $conn = $this->conn();
+        $stmt = $conn->prepare('INSERT INTO levante (id_camion, id_cuadrilla, id_ruta, hora_salida, hora_llegada, total_recolectado, hora_levante, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+        $stmt->bind_param(
+            'iiissdss',
+            $camionId,
+            $cuadrillaId,
+            $rutaId,
+            $datos['hora_salida'],
+            $datos['hora_llegada'],
+            $datos['total_recolectado'],
+            $datos['hora_levante'],
             $datos['estado']
         );
         $stmt->execute();

@@ -17,7 +17,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const API = {
     contenedores: '/recolix/API_Gestion/contenedores',
     centros: '/recolix/API_Gestion/centros-acopio',
-    camiones: '/recolix/API_Recoleccion/camiones/obtenerEnOperativa'
+    camiones: '/recolix/API_Recoleccion/camiones/obtenerEnOperativa',
+    incidencias: '/recolix/API_Gestion/incidencias/getActivasConUbicacion'
   };
 
   const ICONO_CAMION = L.icon({
@@ -34,6 +35,13 @@ document.addEventListener('DOMContentLoaded', function () {
     operativo: '#9b59b6',
     saturado: '#8e44ad',
     cerrado: '#5b2c6f'
+  };
+
+  const COLORES_PRIORIDAD_INCIDENCIA = {
+    critica: '#c0392b',
+    alta: '#e3b23c',
+    media: '#2c4022',
+    baja: '#4b5446'
   };
 
   const ETIQUETAS_TIPO = {
@@ -57,10 +65,32 @@ document.addEventListener('DOMContentLoaded', function () {
     cerrado: I18N.estadoCerrado
   };
 
+  const ETIQUETAS_PRIORIDAD = {
+    critica: I18N.prioridadCritica,
+    alta: I18N.prioridadAlta,
+    media: I18N.prioridadMedia,
+    baja: I18N.prioridadBaja
+  };
+
+  const ETIQUETAS_TIPO_INCIDENCIA = {
+    rotura: I18N.tipoIncRotura,
+    desborde: I18N.tipoIncDesborde,
+    falta_recoleccion: I18N.tipoIncFaltaRecoleccion,
+    vandalismo: I18N.tipoIncVandalismo,
+    otro: I18N.tipoIncOtro
+  };
+
+  const ETIQUETAS_ESTADO_INCIDENCIA = {
+    abierta: I18N.estadoIncAbierta,
+    asignada: I18N.estadoIncAsignada,
+    en_curso: I18N.estadoIncEnCurso
+  };
+
   const counts = {
     contenedores: { funcional: 0, inactivo: 0, desbordado: 0, roto: 0, en_deposito: 0 },
     centros: { operativo: 0, saturado: 0, cerrado: 0 },
-    camiones: { total: 0, conEta: 0, sinEta: 0 }
+    camiones: { total: 0, conEta: 0, sinEta: 0 },
+    incidencias: { critica: 0, alta: 0, media: 0, baja: 0 }
   };
 
   const grupo = L.layerGroup().addTo(map);
@@ -127,6 +157,35 @@ document.addEventListener('DOMContentLoaded', function () {
     return [lat, lon];
   };
 
+  // RF72: incidencia activa dibujada como pin de "!" coloreado por prioridad,
+  // distinto de los circleMarker de contenedores para no confundirse aunque
+  // el color coincida (ej. crítica y desbordado comparten rojo).
+  const addIncidenciaPoint = (inc) => {
+    const lat = parseFloat(inc.latitud);
+    const lon = parseFloat(inc.longitud);
+    if (Number.isNaN(lat) || Number.isNaN(lon)) return null;
+
+    const color = COLORES_PRIORIDAD_INCIDENCIA[inc.prioridad] || COLORES_PRIORIDAD_INCIDENCIA.baja;
+    counts.incidencias[inc.prioridad] = (counts.incidencias[inc.prioridad] || 0) + 1;
+
+    const icono = L.divIcon({
+      className: 'mapa-marcador-incidencia-wrap',
+      html: `<div class="mapa-marcador-incidencia" style="background:${color}"><span>!</span></div>`,
+      iconSize: [22, 22],
+      iconAnchor: [11, 22]
+    });
+    const marker = L.marker([lat, lon], { icon: icono }).addTo(grupo);
+
+    const filas = [`<b>${etiqueta(ETIQUETAS_TIPO_INCIDENCIA, inc.tipo)}</b>`];
+    filas.push(`<b>${I18N.popupPrioridad}</b> ${etiqueta(ETIQUETAS_PRIORIDAD, inc.prioridad)}`);
+    filas.push(`<b>${I18N.popupEstado}</b> ${etiqueta(ETIQUETAS_ESTADO_INCIDENCIA, inc.estado)}`);
+    if (inc.calle) filas.push(`<b>${I18N.popupDireccion}</b> ${inc.calle}${inc.num_calle ? ' ' + inc.num_calle : ''}`);
+    filas.push(`<b>${I18N.popupFechaApertura}</b> ${inc.fecha_apertura}`);
+    marker.bindPopup(filas.join('<br>'), { maxWidth: 260 });
+
+    return [lat, lon];
+  };
+
   const renderSummary = (vista, total) => {
     const c = counts[vista];
     if (vista === 'centros') {
@@ -137,6 +196,11 @@ document.addEventListener('DOMContentLoaded', function () {
       document.getElementById('countCamionesTotal').textContent = c.total;
       document.getElementById('countCamionesConEta').textContent = c.conEta;
       document.getElementById('countCamionesSinEta').textContent = c.sinEta;
+    } else if (vista === 'incidencias') {
+      document.getElementById('countIncCritica').textContent = c.critica;
+      document.getElementById('countIncAlta').textContent = c.alta;
+      document.getElementById('countIncMedia').textContent = c.media;
+      document.getElementById('countIncBaja').textContent = c.baja;
     } else {
       document.getElementById('countActivos').textContent = c.funcional;
       document.getElementById('countInactivos').textContent = c.inactivo;
@@ -144,7 +208,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     const hora = new Date().toLocaleTimeString(I18N_LOCALE, { hour: '2-digit', minute: '2-digit' });
-    const etiquetaTotal = vista === 'centros' ? I18N.unidadCentros : (vista === 'camiones' ? I18N.unidadCamiones : I18N.unidadPuntos);
+    let etiquetaTotal = I18N.unidadPuntos;
+    if (vista === 'centros') etiquetaTotal = I18N.unidadCentros;
+    else if (vista === 'camiones') etiquetaTotal = I18N.unidadCamiones;
+    else if (vista === 'incidencias') etiquetaTotal = I18N.unidadIncidencias;
     document.getElementById('mapSummaryValue').textContent = `${total} ${etiquetaTotal} · ${hora}`;
   };
 
@@ -161,6 +228,31 @@ document.addEventListener('DOMContentLoaded', function () {
     const leyendaCamiones = document.getElementById('leyenda-camiones');
     if (indicadoresCamiones) indicadoresCamiones.style.display = vista === 'camiones' ? '' : 'none';
     if (leyendaCamiones) leyendaCamiones.style.display = vista === 'camiones' ? '' : 'none';
+    const indicadoresIncidencias = document.getElementById('indicadores-incidencias');
+    const leyendaIncidencias = document.getElementById('leyenda-incidencias');
+    if (indicadoresIncidencias) indicadoresIncidencias.style.display = vista === 'incidencias' ? '' : 'none';
+    if (leyendaIncidencias) leyendaIncidencias.style.display = vista === 'incidencias' ? '' : 'none';
+
+    if (vista === 'incidencias') {
+      let incidencias = [];
+      try {
+        const resp = await fetch(API.incidencias, { signal: AbortSignal.timeout(5000) });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const json = await resp.json();
+        incidencias = Array.isArray(json.data) ? json.data : [];
+      } catch (_) {
+        incidencias = [];
+      }
+
+      const bounds = [];
+      for (const inc of incidencias) {
+        const punto = addIncidenciaPoint(inc);
+        if (punto) bounds.push(punto);
+      }
+      renderSummary('incidencias', bounds.length);
+      if (bounds.length) map.fitBounds(bounds, { padding: [40, 40] });
+      return;
+    }
 
     if (vista === 'camiones') {
       let camiones = [];

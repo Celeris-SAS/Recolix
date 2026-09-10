@@ -138,6 +138,7 @@
     "tab_contenedores": "Contêineres",
     "tab_centros": "Centros de coleta",
     "tab_camiones": "Caminhões em operação",
+    "tab_incidencias": "Ocorrências",
     "eyebrow": "Mapa operacional",
     "titulo": "Veja contêineres e centros de coleta em Montevidéu",
     "desc": "Acompanhamento geográfico de contêineres, ocorrências e centros da rede Recolix para a operação municipal.",
@@ -154,6 +155,10 @@
     "camiones_en_operativa": "Caminhões em operação",
     "con_tiempo_estimado": "Com tempo estimado",
     "sin_proxima_parada": "Sem próxima parada",
+    "incidencias_critica": "Prioridade crítica",
+    "incidencias_alta": "Prioridade alta",
+    "incidencias_media": "Prioridade média",
+    "incidencias_baja": "Prioridade baixa",
 
     "referencia_visual": "Referência visual",
     "estado_contenedores": "Status dos contêineres",
@@ -188,8 +193,24 @@
     "js_unidad_centros": "centros",
     "js_unidad_camiones": "caminhões",
     "js_unidad_puntos": "pontos",
+    "js_unidad_incidencias": "ocorrências",
     "js_respuesta_inesperada": "Resposta inesperada da API",
-    "js_locale": "pt-BR"
+    "js_locale": "pt-BR",
+
+    "js_prioridad_critica": "Crítica",
+    "js_prioridad_alta": "Alta",
+    "js_prioridad_media": "Média",
+    "js_prioridad_baja": "Baixa",
+    "js_tipo_inc_rotura": "Quebra",
+    "js_tipo_inc_desborde": "Transbordamento",
+    "js_tipo_inc_falta_recoleccion": "Falta de coleta",
+    "js_tipo_inc_vandalismo": "Vandalismo",
+    "js_tipo_inc_otro": "Outro",
+    "js_estado_inc_abierta": "Aberta",
+    "js_estado_inc_asignada": "Atribuída",
+    "js_estado_inc_en_curso": "Em andamento",
+    "js_popup_prioridad": "Prioridade:",
+    "js_popup_fecha_apertura": "Reportado em:"
   },
 
   "backoffice": {

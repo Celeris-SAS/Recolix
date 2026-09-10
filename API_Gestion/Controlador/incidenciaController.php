@@ -202,6 +202,11 @@ class IncidenciaController {
         return $this->incidenciaModel->listarUrgentes();
     }
 
+    // RF72: incidencias activas con ubicación, para el mapa interactivo del backoffice.
+    public function getActivasConUbicacion() {
+        return $this->incidenciaModel->getActivasConUbicacion();
+    }
+
     public function getContenedoresVinculados($id) {
         $id = $this->validarId($id);
         $this->obtenerOFallar($id);

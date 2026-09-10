@@ -155,6 +155,29 @@ class IncidenciaModel {
         return $rows;
     }
 
+    // RF72: incidencias activas (sin resolver) con la ubicación de su contenedor,
+    // para dibujarlas en el mapa del backoffice. Reutiliza la misma deduplicación
+    // que los listados (una sola incidencia visible por contenedor).
+    public function getActivasConUbicacion() {
+        $stmt = mysqli_prepare($this->conn->getConexion(),
+            "SELECT i.id_incidencia, i.tipo, i.prioridad, i.estado, i.urgencia, i.fecha_apertura,
+                    c.id_contenedor, c.latitud, c.longitud, c.estado AS estado_contenedor,
+                    c.calle, c.num_calle
+             FROM INCIDENCIA i
+             JOIN INCIDENCIA_CONTENEDOR ic ON i.id_incidencia = ic.id_incidencia
+             JOIN CONTENEDOR c ON ic.id_contenedor = c.id_contenedor
+             WHERE i.estado != 'resuelta' AND " . $this->condicionSinDuplicadosAbiertos('i') . "
+             ORDER BY i.fecha_apertura DESC");
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $rows = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $rows[] = $row;
+        }
+        mysqli_stmt_close($stmt);
+        return $rows;
+    }
+
     // RF11/RF12: contenedores con incidencia urgente, priorizando desbordado y luego nivel_llenado.
     public function listarUrgentes() {
         $stmt = mysqli_prepare($this->conn->getConexion(),
