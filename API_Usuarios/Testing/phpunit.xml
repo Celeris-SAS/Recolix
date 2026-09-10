@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+         bootstrap="bootstrap.php"
+         colors="true"
+         failOnWarning="true"
+         failOnNotice="true"
+         failOnDeprecation="true">
+    <testsuites>
+        <testsuite name="Unit">
+            <directory>.</directory>
+            <exclude>./Integration</exclude>
+        </testsuite>
+        <testsuite name="Integration">
+            <directory>Integration</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <!-- Solo usadas por la suite de tests: apuntan a una base de datos
+             de test separada, nunca a la 'recolix' real. Ver setup-test-db.sh. -->
+        <env name="RECOLIX_DB_HOST" value="localhost"/>
+        <env name="RECOLIX_DB_USER" value="root"/>
+        <env name="RECOLIX_DB_PASS" value=""/>
+        <env name="RECOLIX_DB_NAME" value="recolix_test"/>
+    </php>
+</phpunit>
