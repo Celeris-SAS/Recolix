@@ -5,3 +5,5 @@ Recolix_class_diagram.mmd
 # PHPUnit standalone phar (descargado por Testing/install.sh, no se versiona)
 API_Recoleccion/Testing/phpunit.phar
 API_Recoleccion/Testing/.phpunit.cache/
+API_Usuarios/Testing/phpunit.phar
+API_Usuarios/Testing/.phpunit.cache/
