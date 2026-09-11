@@ -245,7 +245,7 @@ h3 {
     color: var(--ink);
 }
 
-.nav-hamburger {
+.site-header .nav-hamburger {
     display: none;
     flex-direction: column;
     justify-content: center;
@@ -258,7 +258,7 @@ h3 {
     height: 36px;
 }
 
-.nav-hamburger span {
+.site-header .nav-hamburger span {
     display: block;
     height: 2px;
     width: 24px;
@@ -271,7 +271,7 @@ h3 {
         display: block;
     }
 
-    .nav-hamburger {
+    .site-header .nav-hamburger {
         display: flex;
     }
 
