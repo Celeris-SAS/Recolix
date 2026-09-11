@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../Controlador/camionController.php';
+require_once __DIR__ . '/../../Controlador/camionController.php';
 
 /**
  * CamionController valida todos sus argumentos antes de tocar el Model,
