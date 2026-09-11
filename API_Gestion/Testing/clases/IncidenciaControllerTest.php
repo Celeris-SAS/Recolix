@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../Controlador/incidenciaController.php';
+require_once __DIR__ . '/../../Controlador/incidenciaController.php';
 
 /**
  * IncidenciaController valida todos sus argumentos antes de tocar el Model,

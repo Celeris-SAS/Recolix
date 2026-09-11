@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../Controlador/centroAcopioController.php';
+require_once __DIR__ . '/../../Controlador/centroAcopioController.php';
 
 final class CentroAcopioControllerTest extends GestionTestCase
 {

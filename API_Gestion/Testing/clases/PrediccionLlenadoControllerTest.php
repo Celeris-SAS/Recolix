@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../Controlador/prediccionLlenadoController.php';
+require_once __DIR__ . '/../../Controlador/prediccionLlenadoController.php';
 
 /**
  * calcularPrediccion() es la única lógica de negocio real de este

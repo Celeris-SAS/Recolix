@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../Controlador/maquinariaController.php';
+require_once __DIR__ . '/../../Controlador/maquinariaController.php';
 
 final class MaquinariaControllerTest extends GestionTestCase
 {

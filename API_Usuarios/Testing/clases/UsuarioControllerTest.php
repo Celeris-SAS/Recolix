@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../Controlador/UsuarioController.php';
+require_once __DIR__ . '/../../Controlador/UsuarioController.php';
 
 /**
  * UsuarioController valida todos sus argumentos antes de tocar el Model,

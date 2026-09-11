@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../Controlador/solicitudRegistroController.php';
+require_once __DIR__ . '/../../Controlador/solicitudRegistroController.php';
 
 final class SolicitudRegistroControllerTest extends UsuarioTestCase
 {

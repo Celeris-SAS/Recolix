@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../Controlador/tipoResiduoController.php';
+require_once __DIR__ . '/../../Controlador/tipoResiduoController.php';
 
 final class TipoResiduoControllerTest extends GestionTestCase
 {

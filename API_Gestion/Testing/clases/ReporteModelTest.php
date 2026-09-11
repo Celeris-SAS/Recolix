@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../Modelo/reporteModel.php';
+require_once __DIR__ . '/../../Modelo/reporteModel.php';
 
 /**
  * Cubre la parte de ReporteModel que es lógica pura (los fragmentos SQL de

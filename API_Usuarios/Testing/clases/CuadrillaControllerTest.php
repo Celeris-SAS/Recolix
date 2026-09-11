@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../Controlador/cuadrillaController.php';
+require_once __DIR__ . '/../../Controlador/cuadrillaController.php';
 
 final class CuadrillaControllerTest extends UsuarioTestCase
 {

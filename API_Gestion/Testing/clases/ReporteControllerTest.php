@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../Controlador/reporteController.php';
+require_once __DIR__ . '/../../Controlador/reporteController.php';
 
 /**
  * getDistribucionLlenado() es la única lógica de negocio real de este
