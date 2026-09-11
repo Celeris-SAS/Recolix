@@ -1,4 +1,7 @@
-<?php require_once __DIR__ . '/../../i18n/i18n.php'; ?>
+<?php
+session_start();
+require_once __DIR__ . '/../../i18n/i18n.php';
+?>
 <!DOCTYPE html>
 <html lang="<?= htmlspecialchars($RECOLIX_IDIOMA) ?>">
 <head>
@@ -151,7 +154,7 @@
 
     <script>
         const API_BASE = '/recolix/API_Usuarios/api.php';
-        const CI = <?= json_encode($_SESSION['ci_usuario'] ?? null) ?>;
+        const CI = <?= json_encode($_SESSION['usuario']['ci_usuario'] ?? null) ?>;
 
         const perfilVista = document.getElementById('perfilVista');
         const perfilForm = document.getElementById('perfilForm');

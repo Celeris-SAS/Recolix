@@ -1,18 +1,23 @@
+<?php
+session_start();
+require_once __DIR__ . '/../../i18n/i18n.php';
+?>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="<?= htmlspecialchars($RECOLIX_IDIOMA) ?>">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recolix — Mi perfil</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="../../Backoffice/styleBackoffice.css">
-    <link rel="stylesheet" href="styles_vecino.css">
-    <link rel="stylesheet" href="navExtras.css">
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><?= t('perfil.title') ?></title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap"
+    rel="stylesheet">
+<link rel="stylesheet" href="../../Backoffice/styleBackoffice.css">
+<link rel="stylesheet" href="styles_vecino.css">
+<link rel="stylesheet" href="navExtras.css">
 </head>
 
 <body>
@@ -20,27 +25,28 @@
     <header class="navbar">
         <div class="nav-inner">
             <div class="nav-left">
-                <a href="cuadrilla.html" class="brand">
+                <a href="cuadrilla.php" class="brand">
                     <img src="../../API_Recoleccion/Vista/logoRecolix.png" alt="Recolix" class="brand-logo">
                     <span class="brand-name">Recolix</span>
                 </a>
                 <nav class="nav-links">
-                    <a href="cuadrilla.html">Inicio</a>
-                    <a href="../../Backoffice/mapaCuadrilla.php">Mapa</a>
+                    <a href="cuadrilla.php"><?= t('cuadrilla.nav_inicio') ?></a>
+                    <a href="../../Backoffice/mapaCuadrilla.php"><?= t('cuadrilla.nav_mapa') ?></a>
                 </nav>
             </div>
             <div class="nav-right">
-                <a href="perfilCuadrilla.html" class="btn-user" title="Perfil de usuario">
+                <?php include __DIR__ . '/../../i18n/switcher.php'; ?>
+                <a href="perfilCuadrilla.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
                     <img src="../../API_Recoleccion/Vista/img/user.svg" alt="Usuario" class="nav-user-icon">
                 </a>
-                <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menú">
+                <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="<?= htmlspecialchars(t('backoffice.nav_menu')) ?>">
                     <span></span><span></span><span></span>
                 </button>
             </div>
         </div>
         <nav class="nav-mobile" id="navMobile">
-            <a href="cuadrilla.html">Inicio</a>
-            <a href="../../Backoffice/mapaCuadrilla.php">Mapa</a>
+            <a href="cuadrilla.php"><?= t('cuadrilla.nav_inicio') ?></a>
+            <a href="../../Backoffice/mapaCuadrilla.php"><?= t('cuadrilla.nav_mapa') ?></a>
         </nav>
         <div class="nav-hr"></div>
     </header>
@@ -49,77 +55,75 @@
         <section class="dash-section" id="seccionPerfil">
             <div class="section-header">
                 <div>
-                    <p class="section-eyebrow">Mi cuenta</p>
-                    <h2>Mis datos</h2>
+                    <p class="section-eyebrow"><?= t('perfil.eyebrow') ?></p>
+                    <h2><?= t('perfil.titulo') ?></h2>
                 </div>
-                <button class="btn btn-outline btn-sm" id="editarPerfilBtn">Editar datos</button>
+                <button class="btn btn-outline btn-sm" id="editarPerfilBtn"><?= t('perfil.btn_editar') ?></button>
             </div>
 
             <div class="panel-card" id="perfilVista">
                 <div class="perfil-grid">
                     <div class="perfil-campo">
-                        <p class="campo-label">Nombre completo</p>
-                        <p class="campo-valor" id="perfilNombre">Diego Fernández</p>
+                        <p class="campo-label"><?= t('perfil.label_nombre_completo') ?></p>
+                        <p class="campo-valor" id="perfilNombre">—</p>
                     </div>
                     <div class="perfil-campo">
-                        <p class="campo-label">Cédula de identidad</p>
-                        <p class="campo-valor" id="perfilCI">4.812.309-5</p>
+                        <p class="campo-label"><?= t('perfil.label_cedula') ?></p>
+                        <p class="campo-valor" id="perfilCI">—</p>
                     </div>
                     <div class="perfil-campo">
-                        <p class="campo-label">Correo electrónico</p>
-                        <p class="campo-valor" id="perfilEmail">diego.fernandez@recolix.uy</p>
+                        <p class="campo-label"><?= t('perfil.label_email') ?></p>
+                        <p class="campo-valor" id="perfilEmail">—</p>
                     </div>
                     <div class="perfil-campo">
-                        <p class="campo-label">Teléfono</p>
-                        <p class="campo-valor" id="perfilTel">099 234 567</p>
+                        <p class="campo-label"><?= t('perfil.label_telefono') ?></p>
+                        <p class="campo-valor" id="perfilTel">—</p>
                     </div>
                 </div>
-                <button class="btn btn-outline btn-sm" id="cambiarContraseniaBtn" style="margin-top:20px;">Cambiar
-                    contraseña</button>
+                <button class="btn btn-outline btn-sm" id="cambiarContraseniaBtn" style="margin-top:20px;"><?= t('perfil.btn_cambiar_contrasenia') ?></button>
             </div>
 
             <div class="panel-card" id="perfilForm" hidden>
-                <h3>Editar datos de contacto</h3>
-                <p class="form-nota">Solo podés modificar tu correo y teléfono. Para otros cambios contactá al
-                    administrador.</p>
+                <h3><?= t('perfil.titulo_editar') ?></h3>
+                <p class="form-nota"><?= t('perfil.nota_editar') ?></p>
                 <div class="form-row">
-                    <label for="editEmail">Correo electrónico</label>
-                    <input type="email" id="editEmail" name="email" placeholder="nombre@correo.com">
+                    <label for="editEmail"><?= t('perfil.field_email') ?></label>
+                    <input type="email" id="editEmail" name="email" placeholder="<?= htmlspecialchars(t('perfil.field_email_ph')) ?>">
                     <p class="error-msg" id="editEmailError"></p>
                 </div>
                 <div class="form-row">
-                    <label for="editTel">Teléfono</label>
-                    <input type="tel" id="editTel" name="tel" placeholder="Ej: 099123456">
+                    <label for="editTel"><?= t('perfil.field_tel') ?></label>
+                    <input type="tel" id="editTel" name="tel" placeholder="<?= htmlspecialchars(t('perfil.field_tel_ph')) ?>">
                     <p class="error-msg" id="editTelError"></p>
                 </div>
                 <div class="form-actions">
-                    <button class="btn btn-primary" id="guardarPerfilBtn">Guardar cambios</button>
-                    <button class="btn btn-outline btn-sm" id="cancelarPerfilBtn">Cancelar</button>
+                    <button class="btn btn-primary" id="guardarPerfilBtn"><?= t('perfil.btn_guardar_cambios') ?></button>
+                    <button class="btn btn-outline btn-sm" id="cancelarPerfilBtn"><?= t('perfil.btn_cancelar') ?></button>
                 </div>
                 <p class="form-feedback" id="perfilFeedback"></p>
             </div>
 
             <div class="panel-card" id="contraseniaForm" hidden>
-                <h3>Cambiar contraseña</h3>
+                <h3><?= t('perfil.titulo_cambiar_contrasenia') ?></h3>
                 <div class="form-row">
-                    <label for="contraActual">Contraseña actual</label>
-                    <input type="password" id="contraActual" placeholder="Tu contraseña actual">
+                    <label for="contraActual"><?= t('perfil.field_contra_actual') ?></label>
+                    <input type="password" id="contraActual" placeholder="<?= htmlspecialchars(t('perfil.field_contra_actual_ph')) ?>">
                     <p class="error-msg" id="contraActualError"></p>
                 </div>
                 <div class="form-row">
-                    <label for="contraNueva">Nueva contraseña</label>
-                    <input type="password" id="contraNueva" placeholder="Mínimo 8 caracteres">
+                    <label for="contraNueva"><?= t('perfil.field_contra_nueva') ?></label>
+                    <input type="password" id="contraNueva" placeholder="<?= htmlspecialchars(t('perfil.field_contra_nueva_ph')) ?>">
                     <p class="error-msg" id="contraNuevaError"></p>
                 </div>
                 <div class="form-actions">
-                    <button class="btn btn-primary" id="guardarContraBtn">Cambiar contraseña</button>
-                    <button class="btn btn-outline btn-sm" id="cancelarContraBtn">Cancelar</button>
+                    <button class="btn btn-primary" id="guardarContraBtn"><?= t('perfil.btn_cambiar_contrasenia') ?></button>
+                    <button class="btn btn-outline btn-sm" id="cancelarContraBtn"><?= t('perfil.btn_cancelar') ?></button>
                 </div>
                 <p class="form-feedback" id="contraFeedback"></p>
             </div>
 
             <div class="logout">
-                <button class="btn btn-outline btn-sm" id="logoutBtn">Cerrar sesión</button>
+                <button class="btn btn-outline btn-sm" id="logoutBtn"><?= t('perfil.btn_cerrar_sesion') ?></button>
             </div>
         </section>
     </main>
@@ -131,31 +135,30 @@
                     <img src="../../API_Recoleccion/Vista/logoRecolix.png" alt="Recolix" class="footer-logo-img">
                     <span class="footer-logo-name">Recolix</span>
                 </div>
-                <p>Plataforma de gestión de residuos urbanos para Montevideo.</p>
+                <p><?= t('common.footer_desc') ?></p>
             </div>
             <div class="footer-col">
-                <h3>Navegación</h3>
+                <h3><?= t('common.footer_navegacion') ?></h3>
                 <ul>
-                    <li><a href="../../LandingPage/index_LandingPage.html">Página principal</a></li>
-                    <li><a href="../../LandingPage/mapa.html">Mapa público</a></li>
+                    <li><a href="../../LandingPage/index_LandingPage.html"><?= t('backoffice.footer_pagina_principal') ?></a></li>
+                    <li><a href="../../LandingPage/mapa.html"><?= t('backoffice.footer_mapa_publico') ?></a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-hr"></div>
-        <p class="footer-copy">&copy; 2026 Recolix. Todos los derechos reservados.</p>
+        <p class="footer-copy"><?= t('backoffice.footer_copyright') ?></p>
     </footer>
 
     <script>
-        // Datos mock del usuario (mientras no hay conexión a la sesión real de PHP)
-        const datosPerfil = {
-            email: 'diego.fernandez@recolix.uy',
-            tel: '099 234 567'
-        };
+        const API_BASE = '/recolix/API_Usuarios/api.php';
+        const CI = <?= json_encode($_SESSION['usuario']['ci_usuario'] ?? null) ?>;
 
         const perfilVista = document.getElementById('perfilVista');
         const perfilForm = document.getElementById('perfilForm');
         const contraseniaForm = document.getElementById('contraseniaForm');
 
+        const perfilNombreEl = document.getElementById('perfilNombre');
+        const perfilCIEl = document.getElementById('perfilCI');
         const perfilEmailEl = document.getElementById('perfilEmail');
         const perfilTelEl = document.getElementById('perfilTel');
 
@@ -178,6 +181,24 @@
         const contraNuevaError = document.getElementById('contraNuevaError');
         const contraFeedback = document.getElementById('contraFeedback');
 
+        async function cargarPerfil() {
+            if (!CI) return;
+            try {
+                const res = await fetch(`${API_BASE}/usuarios/${CI}`);
+                const json = await res.json();
+                if (json.status === 'success' && json.data) {
+                    const u = json.data;
+                    perfilNombreEl.textContent = `${u.primer_nombre} ${u.p_apellido}`;
+                    perfilCIEl.textContent = u.ci_usuario;
+                    perfilEmailEl.textContent = u.email;
+                    perfilTelEl.textContent = u.tel;
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        cargarPerfil();
+
         function limpiarFeedback(el) {
             el.textContent = '';
             el.classList.remove('is-success', 'is-error');
@@ -190,8 +211,8 @@
         }
 
         function mostrarFormPerfil() {
-            editEmail.value = datosPerfil.email;
-            editTel.value = datosPerfil.tel;
+            editEmail.value = perfilEmailEl.textContent;
+            editTel.value = perfilTelEl.textContent;
             editEmailError.textContent = '';
             editTelError.textContent = '';
             limpiarFeedback(perfilFeedback);
@@ -216,7 +237,7 @@
         cancelarPerfilBtn.addEventListener('click', mostrarVista);
         cancelarContraBtn.addEventListener('click', mostrarVista);
 
-        guardarPerfilBtn.addEventListener('click', function () {
+        guardarPerfilBtn.addEventListener('click', async function () {
             editEmailError.textContent = '';
             editTelError.textContent = '';
             limpiarFeedback(perfilFeedback);
@@ -235,17 +256,30 @@
             }
             if (!valido) return;
 
-            datosPerfil.email = email;
-            datosPerfil.tel = tel;
-            perfilEmailEl.textContent = email;
-            perfilTelEl.textContent = tel;
-
-            perfilFeedback.textContent = 'Los datos se actualizaron correctamente.';
-            perfilFeedback.classList.add('is-success');
-            setTimeout(mostrarVista, 900);
+            try {
+                const res = await fetch(`${API_BASE}/usuarios/${CI}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, tel })
+                });
+                const json = await res.json();
+                if (json.status === 'success') {
+                    perfilEmailEl.textContent = email;
+                    perfilTelEl.textContent = tel;
+                    perfilFeedback.textContent = 'Los datos se actualizaron correctamente.';
+                    perfilFeedback.classList.add('is-success');
+                    setTimeout(mostrarVista, 900);
+                } else {
+                    perfilFeedback.textContent = json.message || 'No se pudo guardar.';
+                    perfilFeedback.classList.add('is-error');
+                }
+            } catch (err) {
+                perfilFeedback.textContent = 'No se pudo guardar.';
+                perfilFeedback.classList.add('is-error');
+            }
         });
 
-        guardarContraBtn.addEventListener('click', function () {
+        guardarContraBtn.addEventListener('click', async function () {
             contraActualError.textContent = '';
             contraNuevaError.textContent = '';
             limpiarFeedback(contraFeedback);
@@ -262,9 +296,25 @@
             }
             if (!valido) return;
 
-            contraFeedback.textContent = 'Contraseña actualizada correctamente.';
-            contraFeedback.classList.add('is-success');
-            setTimeout(mostrarVista, 900);
+            try {
+                const res = await fetch(`${API_BASE}/usuarios/cambiarContrasenia`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ci: CI, contraseniaActual: contraActual.value, nuevaContrasenia: contraNueva.value })
+                });
+                const json = await res.json();
+                if (json.status === 'success') {
+                    contraFeedback.textContent = 'Contraseña actualizada correctamente.';
+                    contraFeedback.classList.add('is-success');
+                    setTimeout(mostrarVista, 900);
+                } else {
+                    contraFeedback.textContent = json.message || 'No se pudo cambiar la contraseña.';
+                    contraFeedback.classList.add('is-error');
+                }
+            } catch (err) {
+                contraFeedback.textContent = 'No se pudo cambiar la contraseña.';
+                contraFeedback.classList.add('is-error');
+            }
         });
 
         document.getElementById('logoutBtn').addEventListener('click', function () {
@@ -276,5 +326,4 @@
         }
     </script>
 </body>
-
 </html>

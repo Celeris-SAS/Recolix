@@ -34,7 +34,7 @@
             </div>
             <div class="nav-right">
                 <?php include __DIR__ . '/../../i18n/switcher.php'; ?>
-                <a href="../Vista/perfilCuadrilla.html" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
+                <a href="../Vista/perfilCuadrilla.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
                     <img src="../../API_Recoleccion/Vista/img/user.svg" alt="Usuario" class="nav-user-icon">
                 </a>
                 <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menú">
@@ -261,7 +261,7 @@
                     </div>  
                 </div>
 
-                <a class="btn btn-outline btn-full" href="#">
+                <a class="btn btn-outline btn-full" href="../../Backoffice/mapaCuadrilla.php">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
                         <path d="M3 6v15l6-3 6 3 6-3V3l-6 3-6-3-6 3Z" />
