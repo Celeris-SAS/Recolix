@@ -113,6 +113,22 @@ CREATE TABLE `camion_centro` (
   `peso` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `camion_centro`
+--
+
+INSERT INTO `camion_centro` (`id`, `id_camion`, `id_centro`, `fecha_ingreso`, `peso`) VALUES
+(1, 1, 1, '2026-01-10', 4800),
+(2, 2, 2, '2026-01-15', 5200),
+(3, 3, 3, '2026-02-01', 3900),
+(4, 4, 4, '2026-02-10', 6100),
+(5, 5, 5, '2026-03-05', 4700),
+(6, 6, 6, '2026-03-20', 5300),
+(7, 7, 7, '2026-04-02', 4400),
+(8, 8, 1, '2026-04-18', 5900),
+(9, 9, 2, '2026-05-01', 4100),
+(10, 10, 3, '2026-05-15', 5000);
+
 -- --------------------------------------------------------
 
 --
@@ -141,7 +157,9 @@ INSERT INTO `centro_acopio` (`id_centro`, `id_municipio`, `nombre`, `tipo`, `cal
 (2, 5, 'Planta Burgues', 'planta_clasificacion', 'Av. Burgues', 4259, -34.8479490, -56.1696390, 10000, 'operativo'),
 (3, 1, 'Planta La Paloma', 'planta_clasificacion', 'Camino La Paloma', 3001, -34.8868780, -56.2675770, 10000, 'operativo'),
 (4, 7, 'Planta Géminis', 'planta_clasificacion', 'Camino Géminis', 0, -34.8365050, -56.1075120, 10000, 'operativo'),
-(5, 8, 'Planta Durán', 'planta_clasificacion', 'Camino José Durán', 4900, -34.8143320, -56.2141120, 10000, 'operativo');
+(5, 8, 'Planta Durán', 'planta_clasificacion', 'Camino José Durán', 4900, -34.8143320, -56.2141120, 10000, 'operativo'),
+(6, 4, 'Ecocentro Buceo', 'ecocentro', 'Av. Tomás Basáñez', 1212, -34.9053000, -56.1382000, 800, 'operativo'),
+(7, 3, 'Ecocentro Prado', 'ecocentro', 'Lucas J. Obes', 853, -34.8720000, -56.1980000, 700, 'operativo');
 
 -- --------------------------------------------------------
 
@@ -153,6 +171,22 @@ CREATE TABLE `centro_maquinaria` (
   `id_centro` int(11) NOT NULL,
   `id_maquinaria` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `centro_maquinaria`
+--
+
+INSERT INTO `centro_maquinaria` (`id_centro`, `id_maquinaria`) VALUES
+(1, 1),
+(2, 2),
+(3, 3),
+(4, 4),
+(5, 5),
+(6, 6),
+(7, 7),
+(1, 8),
+(2, 9),
+(3, 10);
 
 -- --------------------------------------------------------
 
@@ -176,7 +210,12 @@ INSERT INTO `centro_residuo` (`id_centro`, `id_residuo`, `ocupacion_actual`, `ca
 (1, 2, 1800, 3000),
 (2, 4, 2500, 4000),
 (3, 5, 1600, 3000),
-(4, 6, 900, 2000);
+(4, 6, 900, 2000),
+(6, 1, 500, 3000),
+(7, 2, 1200, 4000),
+(5, 7, 600, 2500),
+(3, 8, 300, 2000),
+(4, 9, 900, 5000);
 
 -- --------------------------------------------------------
 
@@ -188,6 +227,22 @@ CREATE TABLE `centro_usuario` (
   `id_centro` int(11) NOT NULL,
   `ci_usuario` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `centro_usuario`
+--
+
+INSERT INTO `centro_usuario` (`id_centro`, `ci_usuario`) VALUES
+(1, 11111111),
+(2, 22222222),
+(3, 33333333),
+(4, 44444444),
+(5, 55555555),
+(6, 66666666),
+(7, 77777777),
+(1, 88888888),
+(2, 99999999),
+(3, 10101010);
 
 -- --------------------------------------------------------
 
@@ -518,14 +573,7 @@ INSERT INTO `contenedor` (`id_contenedor`, `id_circuito`, `id_tipo`, `calle`, `n
 (455, 221, NULL, 'Camino Boiso Lanza', 3911, -34.8078868, -56.1326616, NULL, 0, 'funcional', NULL),
 (456, 156, NULL, 'José Enrique Michelena', 4028, -34.8965924, -56.1278621, NULL, 0, 'funcional', NULL),
 (457, 241, NULL, 'Juan Paullier', 2001, -34.8910302, -56.1705885, NULL, 0, 'funcional', NULL),
-(458, 160, NULL, 'Doctor José Brito Foresti', 3020, -34.8897691, -56.1524404, NULL, 0, 'funcional', NULL);
-
---
--- Contenedores adicionales (3 por circuito) basados en ubicaciones reales
--- de Contenedores_domiciliarios.csv (IM), con distintos niveles de llenado
---
-
-INSERT INTO `contenedor` (`id_contenedor`, `id_circuito`, `id_tipo`, `calle`, `num_calle`, `latitud`, `longitud`, `capacidad`, `nivel_llenado`, `estado`, `fecha_reparacion`) VALUES
+(458, 160, NULL, 'Doctor José Brito Foresti', 3020, -34.8897691, -56.1524404, NULL, 0, 'funcional', NULL),
 (459, 121, 6, 'Antonio Zubillaga', NULL, -34.8562460, -56.2335366, 120, 42, 'funcional', NULL),
 (460, 121, 5, 'Adolfo Vaillant', NULL, -34.8571515, -56.2365260, 1100, 85, 'funcional', NULL),
 (461, 121, 1, 'Laureles', NULL, -34.8676944, -56.2398439, 120, 11, 'funcional', NULL),
@@ -945,7 +993,11 @@ INSERT INTO `contenedor_levante` (`id_levante`, `id_contenedor`, `estado_encontr
 (5, 253, 'sobrepeso', 'Contenedor con exceso de residuos', '2026-08-27 08:05:00', 310),
 (6, 208, 'todo_ok', NULL, '2026-08-20 07:10:00', 180),
 (6, 362, 'todo_ok', NULL, '2026-08-20 07:40:00', 150),
-(7, 224, 'acceso_bloqueado', 'Vehículo estacionado bloqueando el acceso', '2026-08-28 08:30:00', NULL);
+(7, 224, 'acceso_bloqueado', 'Vehículo estacionado bloqueando el acceso', '2026-08-28 08:30:00', NULL),
+(9, 209, 'todo_ok', NULL, '2026-08-10 07:20:00', 200),
+(10, 210, 'todo_ok', NULL, '2026-08-11 07:50:00', 260),
+(11, 206, 'contenedor_ausente', 'No se encontró el contenedor en el lugar', '2026-08-12 08:15:00', NULL),
+(12, 207, 'todo_ok', NULL, '2026-08-13 07:35:00', 190);
 
 -- --------------------------------------------------------
 
@@ -964,7 +1016,16 @@ CREATE TABLE `cuadrilla` (
 --
 
 INSERT INTO `cuadrilla` (`id_cuadrilla`, `id_municipio`, `estado`) VALUES
-(1, 1, 'activa');
+(1, 1, 'activa'),
+(2, 2, 'activa'),
+(3, 3, 'activa'),
+(4, 4, 'activa'),
+(5, 5, 'inactiva'),
+(6, 6, 'activa'),
+(7, 7, 'activa'),
+(8, 8, 'inactiva'),
+(9, 1, 'activa'),
+(10, 2, 'activa');
 
 -- --------------------------------------------------------
 
@@ -995,7 +1056,12 @@ INSERT INTO `incidencia` (`id_incidencia`, `ci_usuario`, `id_cuadrilla`, `tipo`,
 (2, 33333333, NULL, 'rotura', 'Tapa del contenedor rota', 'media', 'abierta', 0, NULL, '2026-08-27 10:00:00', NULL),
 (3, 66666666, 1, 'falta_recoleccion', 'No se recolectó en la fecha programada', 'alta', 'resuelta', 1, NULL, '2026-08-20 09:30:00', '2026-08-21 16:45:00'),
 (4, 22222222, NULL, 'vandalismo', 'Contenedor con pintura y daños', 'baja', 'asignada', 0, NULL, '2026-08-15 12:00:00', NULL),
-(5, 33333333, 1, 'otro', 'Olores fuertes en la zona del contenedor', 'critica', 'resuelta', 1, NULL, '2026-06-01 07:00:00', '2026-06-02 09:00:00');
+(5, 33333333, 1, 'otro', 'Olores fuertes en la zona del contenedor', 'critica', 'resuelta', 1, NULL, '2026-06-01 07:00:00', '2026-06-02 09:00:00'),
+(6, 44444444, 2, 'rotura', 'Contenedor con tapa dañada por vandalismo', 'media', 'abierta', 0, NULL, '2026-08-05 09:00:00', NULL),
+(7, 55555555, 3, 'desborde', 'Desborde recurrente los fines de semana', 'alta', 'en_curso', 1, NULL, '2026-07-20 14:30:00', NULL),
+(8, 77777777, NULL, 'falta_recoleccion', 'No pasó el camión en la fecha programada', 'media', 'abierta', 0, NULL, '2026-07-10 08:00:00', NULL),
+(9, 88888888, 4, 'otro', 'Contenedor obstruyendo la vereda', 'baja', 'resuelta', 0, NULL, '2026-06-15 11:00:00', '2026-06-16 10:00:00'),
+(10, 99999999, 5, 'vandalismo', 'Grafitis y daños en contenedor', 'baja', 'asignada', 0, NULL, '2026-05-25 13:00:00', NULL);
 
 -- --------------------------------------------------------
 
@@ -1017,7 +1083,12 @@ INSERT INTO `incidencia_contenedor` (`id_incidencia`, `id_contenedor`) VALUES
 (2, 248),
 (3, 208),
 (4, 224),
-(5, 253);
+(5, 253),
+(6, 209),
+(7, 210),
+(8, 206),
+(9, 207),
+(10, 208);
 
 -- --------------------------------------------------------
 
@@ -1047,7 +1118,11 @@ INSERT INTO `levante` (`id_levante`, `id_camion`, `id_cuadrilla`, `id_ruta`, `ho
 (5, 7, 1, 2, '2026-08-27 07:15:00', '2026-08-27 12:00:00', 620.00, '2026-08-27', 'completado'),
 (6, 12, 1, 12, '2026-08-20 06:45:00', '2026-08-20 11:00:00', 940.25, '2026-08-20', 'completado'),
 (7, 19, 1, 52, '2026-08-28 08:00:00', NULL, 0.00, '2026-08-28', 'en_curso'),
-(8, 25, 1, 59, '2026-08-15 07:30:00', '2026-08-15 09:10:00', 300.00, '2026-08-15', 'cancelado');
+(8, 25, 1, 59, '2026-08-15 07:30:00', '2026-08-15 09:10:00', 300.00, '2026-08-15', 'cancelado'),
+(9, 15, 2, 71, '2026-08-10 07:00:00', '2026-08-10 11:15:00', 500.00, '2026-08-10', 'completado'),
+(10, 20, 3, 72, '2026-08-11 07:30:00', '2026-08-11 12:00:00', 620.75, '2026-08-11', 'completado'),
+(11, 28, 4, 73, '2026-08-12 08:00:00', NULL, 0.00, '2026-08-12', 'en_curso'),
+(12, 34, 5, 74, '2026-08-13 07:15:00', '2026-08-13 10:45:00', 410.30, '2026-08-13', 'completado');
 
 -- --------------------------------------------------------
 
@@ -1065,6 +1140,22 @@ CREATE TABLE `mantenimiento` (
   `fecha_fin` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `mantenimiento`
+--
+
+INSERT INTO `mantenimiento` (`id_mantenimiento`, `id_camion`, `tipo`, `descripcion`, `costo`, `fecha_inicio`, `fecha_fin`) VALUES
+(1, 1, 'preventivo', 'Cambio de aceite y filtros', 150.00, '2026-01-05 08:00:00', '2026-01-05 10:00:00'),
+(2, 5, 'correctivo', 'Reparación de sistema hidráulico', 850.50, '2026-02-10 09:00:00', '2026-02-11 17:00:00'),
+(3, 11, 'preventivo', 'Revisión de frenos', 200.00, '2026-03-01 08:30:00', '2026-03-01 12:00:00'),
+(4, 13, 'correctivo', 'Cambio de neumáticos', 1200.00, '2026-03-15 08:00:00', '2026-03-15 14:00:00'),
+(5, 20, 'preventivo', 'Mantenimiento del motor', 400.00, '2026-04-02 08:00:00', '2026-04-02 13:00:00'),
+(6, 22, 'correctivo', 'Reparación de compactador de carga', 950.75, '2026-04-20 09:00:00', '2026-04-21 16:00:00'),
+(7, 30, 'preventivo', 'Cambio de correas y filtros', 180.00, '2026-05-05 08:00:00', '2026-05-05 11:00:00'),
+(8, 33, 'correctivo', 'Reparación eléctrica', 300.25, '2026-05-18 08:00:00', '2026-05-18 12:00:00'),
+(9, 41, 'preventivo', 'Revisión general', 220.00, '2026-06-01 08:00:00', '2026-06-01 11:30:00'),
+(10, 48, 'correctivo', 'Cambio de sistema de escape', 670.00, '2026-06-15 08:00:00', '2026-06-15 15:00:00');
+
 -- --------------------------------------------------------
 
 --
@@ -1078,6 +1169,22 @@ CREATE TABLE `maquinaria` (
   `fecha_adquisicion` date DEFAULT NULL,
   `estado` enum('operativa','en_mantenimiento','fuera_servicio') NOT NULL DEFAULT 'operativa'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `maquinaria`
+--
+
+INSERT INTO `maquinaria` (`id_maquinaria`, `nombre`, `tipo`, `fecha_adquisicion`, `estado`) VALUES
+(1, 'Compactadora Industrial CX-100', 'compactadora', '2018-03-12', 'operativa'),
+(2, 'Cinta Transportadora Norte', 'cinta', '2019-07-01', 'operativa'),
+(3, 'Pala Cargadora Caterpillar 950', 'pala', '2016-11-20', 'en_mantenimiento'),
+(4, 'Báscula Digital 20T', 'bascula', '2020-01-15', 'operativa'),
+(5, 'Compactadora Industrial CX-200', 'compactadora', '2021-05-08', 'operativa'),
+(6, 'Cinta Transportadora Sur', 'cinta', '2017-09-23', 'fuera_servicio'),
+(7, 'Pala Cargadora Volvo L120', 'pala', '2015-04-02', 'operativa'),
+(8, 'Báscula Digital 40T', 'bascula', '2022-02-10', 'operativa'),
+(9, 'Trituradora de Residuos TR-50', 'otro', '2019-12-01', 'operativa'),
+(10, 'Herramientas de Mantenimiento Kit A', 'herramienta', '2020-06-18', 'operativa');
 
 -- --------------------------------------------------------
 
@@ -1121,6 +1228,22 @@ CREATE TABLE `notificacion` (
   `fecha_lectura` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `notificacion`
+--
+
+INSERT INTO `notificacion` (`id_notificacion`, `mensaje`, `tipo_origen`, `prioridad`, `estado`, `fecha_creacion`, `fecha_lectura`) VALUES
+(1, 'Contenedor 209 marcado como en depósito', 'contenedor', 'informativa', 'leida', '2026-08-01 08:00:00', '2026-08-01 09:00:00'),
+(2, 'Nueva incidencia crítica reportada', 'incidencia', 'critica', 'pendiente', '2026-08-05 09:15:00', NULL),
+(3, 'Camión SBR2012 dado de baja', 'camion', 'advertencia', 'archivada', '2026-01-10 10:00:00', '2026-01-11 08:00:00'),
+(4, 'Levante completado en circuito A_DU_RM_CL_105', 'levante', 'informativa', 'leida', '2026-08-10 12:00:00', '2026-08-10 13:00:00'),
+(5, 'Centro de acopio Vertedero La Cruz saturado', 'centro_acopio', 'critica', 'pendiente', '2026-08-12 07:30:00', NULL),
+(6, 'Incidencia de vandalismo asignada a cuadrilla', 'incidencia', 'advertencia', 'leida', '2026-08-15 14:00:00', '2026-08-15 15:00:00'),
+(7, 'Contenedor 210 reportado como inactivo', 'contenedor', 'advertencia', 'pendiente', '2026-08-16 08:00:00', NULL),
+(8, 'Mantenimiento programado para camión SBP9565', 'camion', 'informativa', 'archivada', '2026-02-10 09:00:00', '2026-02-10 10:00:00'),
+(9, 'Nuevo levante en curso', 'levante', 'informativa', 'pendiente', '2026-08-20 07:00:00', NULL),
+(10, 'Incidencia resuelta correctamente', 'incidencia', 'informativa', 'leida', '2026-06-16 10:00:00', '2026-06-16 11:00:00');
+
 -- --------------------------------------------------------
 
 --
@@ -1131,6 +1254,22 @@ CREATE TABLE `notificacion_usuario` (
   `id_notificacion` int(11) NOT NULL,
   `ci_usuario` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `notificacion_usuario`
+--
+
+INSERT INTO `notificacion_usuario` (`id_notificacion`, `ci_usuario`) VALUES
+(1, 11111111),
+(2, 22222222),
+(3, 11111111),
+(4, 55555555),
+(5, 11111111),
+(6, 99999999),
+(7, 33333333),
+(8, 11111111),
+(9, 55555555),
+(10, 44444444);
 
 -- --------------------------------------------------------
 
@@ -1144,6 +1283,22 @@ CREATE TABLE `prediccion_llenado` (
   `nivel_proyectado` int(11) DEFAULT NULL,
   `fecha_calculo` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `prediccion_llenado`
+--
+
+INSERT INTO `prediccion_llenado` (`id_prediccion`, `id_contenedor`, `nivel_proyectado`, `fecha_calculo`) VALUES
+(1, 206, 45, '2026-08-28 06:00:00'),
+(2, 207, 60, '2026-08-28 06:00:00'),
+(3, 208, 35, '2026-08-28 06:00:00'),
+(4, 209, 10, '2026-08-28 06:00:00'),
+(5, 210, 55, '2026-08-28 06:00:00'),
+(6, 253, 80, '2026-08-27 06:00:00'),
+(7, 248, 65, '2026-08-27 06:00:00'),
+(8, 224, 90, '2026-08-27 06:00:00'),
+(9, 362, 30, '2026-08-27 06:00:00'),
+(10, 455, 20, '2026-08-27 06:00:00');
 
 -- --------------------------------------------------------
 
@@ -1169,7 +1324,12 @@ INSERT INTO `reporte` (`id_reporte`, `ci_usuario`, `tipo`, `descripcion`, `forma
 (2, 11111111, 'csv', 'Exportación de volumen de residuos por tipo', 'CSV', '2026-08-27 15:30:00'),
 (3, 11111111, 'pdf', 'Reporte de incidencias del mes', 'PDF', '2026-08-20 11:00:00'),
 (4, 11111111, 'pantalla', 'Consulta en pantalla de frecuencia de recolección', 'PDF', '2026-08-15 10:00:00'),
-(5, 11111111, 'csv', 'Exportación de usuarios registrados', 'CSV', '2026-08-10 08:45:00');
+(5, 11111111, 'csv', 'Exportación de usuarios registrados', 'CSV', '2026-08-10 08:45:00'),
+(6, 22222222, 'pdf', 'Reporte de incidencias resueltas', 'PDF', '2026-08-05 10:00:00'),
+(7, 33333333, 'csv', 'Exportación de contenedores por estado', 'CSV', '2026-07-28 09:30:00'),
+(8, 44444444, 'pantalla', 'Consulta en pantalla de mantenimientos', 'PDF', '2026-07-15 11:00:00'),
+(9, 77777777, 'csv', 'Exportación de niveles de llenado', 'CSV', '2026-07-01 08:45:00'),
+(10, 88888888, 'pdf', 'Reporte mensual de recolección', 'PDF', '2026-06-30 17:00:00');
 
 -- --------------------------------------------------------
 
@@ -1210,6 +1370,22 @@ CREATE TABLE `ruta_cuadrilla` (
   `id_cuadrilla` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `ruta_cuadrilla`
+--
+
+INSERT INTO `ruta_cuadrilla` (`id_ruta`, `id_cuadrilla`) VALUES
+(1, 1),
+(2, 1),
+(12, 2),
+(52, 3),
+(59, 4),
+(71, 5),
+(72, 6),
+(73, 7),
+(74, 8),
+(75, 9);
+
 -- --------------------------------------------------------
 
 --
@@ -1233,7 +1409,12 @@ INSERT INTO `ruta_recoleccion` (`id_ruta`, `id_circuito`, `nombre`, `actividad`,
 (2, 164, 'Ruta óptima Circuito C_DU_RM_CL_101', 'recolección domiciliaria', 1),
 (12, 124, 'Ruta óptima Circuito A_DU_RM_CL_108', 'recolección domiciliaria', 1),
 (52, 221, 'Ruta óptima Circuito F_DU_RM_CL_112', 'recolección domiciliaria', 1),
-(59, 232, 'Ruta óptima Circuito G_DU_RM_CL_110', 'recolección domiciliaria', 1);
+(59, 232, 'Ruta óptima Circuito G_DU_RM_CL_110', 'recolección domiciliaria', 1),
+(71, 130, 'Ruta óptima Circuito A_DU_RM_CL_116', 'recolección domiciliaria', 1),
+(72, 140, 'Ruta óptima Circuito B_DU_RM_CL_07', 'recolección domiciliaria', 1),
+(73, 150, 'Ruta óptima Circuito CH_DU_RM_CL_108', 'recolección domiciliaria', 1),
+(74, 160, 'Ruta óptima Circuito CH_DU_RM_CL_120', 'recolección domiciliaria', 1),
+(75, 170, 'Ruta óptima Circuito C_DU_RM_CL_108', 'recolección domiciliaria', 1);
 
 -- --------------------------------------------------------
 
@@ -1259,7 +1440,10 @@ INSERT INTO `tipo_residuo` (`id_tipo`, `color`, `descripcion`, `reciclable`) VAL
 (4, 'Amarillo', 'Plástico simple o compuesto: PET, PEAD, PVC, PEBD, PP, PS y otros.', 1),
 (5, 'Azul', 'Papel y cartón: papeles de oficina, diarios, revistas, folletos y cajas de cartón.', 1),
 (6, 'Negro', 'Metales ferrosos y no ferrosos: latas, chatarra, latas de pintura y cables.', 1),
-(7, 'Blanco', 'Vidrios: botellas y frascos.', 1);
+(7, 'Blanco', 'Vidrios: botellas y frascos.', 1),
+(8, 'Naranja', 'Residuos electrónicos: equipos eléctricos y electrónicos en desuso.', 1),
+(9, 'Rojo', 'Residuos peligrosos: pilas, baterías y productos químicos.', 0),
+(10, 'Violeta', 'Residuos voluminosos: muebles, colchones y escombros menores.', 0);
 
 -- --------------------------------------------------------
 
@@ -1290,7 +1474,11 @@ INSERT INTO `usuario` (`ci_usuario`, `id_municipio`, `primer_nombre`, `p_apellid
 (33333333, 2, 'María', 'Gómez', 'maria.gomez@recolix.uy', '099222333', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'vecino', 'habilitado', '2026-08-25 10:15:00'),
 (44444444, 3, 'Lucía', 'Fernández', 'lucia.fernandez@recolix.uy', '099333444', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'operario', 'habilitado', '2026-08-10 09:30:00'),
 (55555555, 1, 'Diego', 'Rodríguez', 'diego.rodriguez@recolix.uy', '099444555', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'cuadrilla', 'habilitado', '2026-07-15 07:45:00'),
-(66666666, 4, 'Sofía', 'Martínez', 'sofia.martinez@recolix.uy', '099555666', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'vecino', 'habilitado', '2026-06-01 12:20:00');
+(66666666, 4, 'Sofía', 'Martínez', 'sofia.martinez@recolix.uy', '099555666', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'vecino', 'habilitado', '2026-06-01 12:20:00'),
+(77777777, 5, 'Valentina', 'Suárez', 'valentina.suarez@recolix.uy', '099666777', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'vecino', 'habilitado', '2026-05-20 10:00:00'),
+(88888888, 6, 'Martín', 'Silva', 'martin.silva@recolix.uy', '099777888', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'operario', 'habilitado', '2026-04-11 09:00:00'),
+(99999999, 7, 'Camila', 'Torres', 'camila.torres@recolix.uy', '099888999', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'cuadrilla', 'habilitado', '2026-03-05 08:30:00'),
+(10101010, 8, 'Nicolás', 'Castro', 'nicolas.castro@recolix.uy', '099999000', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'vecino', 'pendiente', '2026-08-01 07:00:00');
 
 --
 -- Indexes for dumped tables
@@ -1483,13 +1671,13 @@ ALTER TABLE `camion`
 -- AUTO_INCREMENT for table `camion_centro`
 --
 ALTER TABLE `camion_centro`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `centro_acopio`
 --
 ALTER TABLE `centro_acopio`
-  MODIFY `id_centro` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_centro` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `circuito`
@@ -1507,31 +1695,31 @@ ALTER TABLE `contenedor`
 -- AUTO_INCREMENT for table `cuadrilla`
 --
 ALTER TABLE `cuadrilla`
-  MODIFY `id_cuadrilla` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_cuadrilla` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `incidencia`
 --
 ALTER TABLE `incidencia`
-  MODIFY `id_incidencia` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_incidencia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `levante`
 --
 ALTER TABLE `levante`
-  MODIFY `id_levante` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id_levante` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `mantenimiento`
 --
 ALTER TABLE `mantenimiento`
-  MODIFY `id_mantenimiento` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_mantenimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `maquinaria`
 --
 ALTER TABLE `maquinaria`
-  MODIFY `id_maquinaria` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_maquinaria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `municipio`
@@ -1543,31 +1731,31 @@ ALTER TABLE `municipio`
 -- AUTO_INCREMENT for table `notificacion`
 --
 ALTER TABLE `notificacion`
-  MODIFY `id_notificacion` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_notificacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `prediccion_llenado`
 --
 ALTER TABLE `prediccion_llenado`
-  MODIFY `id_prediccion` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_prediccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `reporte`
 --
 ALTER TABLE `reporte`
-  MODIFY `id_reporte` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_reporte` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `ruta_recoleccion`
 --
 ALTER TABLE `ruta_recoleccion`
-  MODIFY `id_ruta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=71;
+  MODIFY `id_ruta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
 
 --
 -- AUTO_INCREMENT for table `tipo_residuo`
 --
 ALTER TABLE `tipo_residuo`
-  MODIFY `id_tipo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id_tipo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- Constraints for dumped tables
