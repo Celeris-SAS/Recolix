@@ -320,7 +320,9 @@
   <script>
     const API_USUARIOS = '/recolix/API_Usuarios';
     const API_GESTION = '/recolix/API_Gestion';
+    const I18N_LOCALE = <?= json_encode(t_locale()) ?>;
     const I18N = <?= json_encode(t_array([
+      'ultimaActualizacion' => 'mapa.ultima_actualizacion',
       'ci' => 'landing.validation_ci',
       'nombre' => 'landing.validation_nombre',
       'apellido' => 'landing.validation_apellido',
@@ -380,11 +382,44 @@
       });
 
 
-      setTimeout(() => {
-        document.getElementById('statContenedores').textContent = '13.420';
-        document.getElementById('statIncidencias').textContent = '27';
-        document.getElementById('statVolumen').textContent = '184 t';
-      }, 500);
+      (async function cargarEstadisticas() {
+        const elContenedores = document.getElementById('statContenedores');
+        const elIncidencias = document.getElementById('statIncidencias');
+        const elVolumen = document.getElementById('statVolumen');
+        const elActualizado = document.getElementById('statsUpdatedAt');
+
+        const fetchJson = async (url) => {
+          const resp = await fetch(url, { signal: AbortSignal.timeout(8000) });
+          if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+          const json = await resp.json();
+          return json && json.data;
+        };
+
+        try {
+          const [contenedores, incidenciasHoy, resumenMes] = await Promise.all([
+            fetchJson(`${API_GESTION}/contenedores`),
+            fetchJson(`${API_GESTION}/reportes/getIncidenciasDetalle?rango=hoy`),
+            fetchJson(`${API_GESTION}/reportes/getResumenGeneral?rango=mes`)
+          ]);
+
+          const totalContenedores = Array.isArray(contenedores) ? contenedores.length : 0;
+          const totalIncidenciasHoy = Array.isArray(incidenciasHoy) ? incidenciasHoy.length : 0;
+          const toneladasMes = resumenMes && resumenMes.residuosRecolectados != null
+            ? resumenMes.residuosRecolectados / 1000
+            : 0;
+
+          elContenedores.textContent = totalContenedores.toLocaleString(I18N_LOCALE);
+          elIncidencias.textContent = totalIncidenciasHoy.toLocaleString(I18N_LOCALE);
+          elVolumen.textContent = `${toneladasMes.toLocaleString(I18N_LOCALE, { maximumFractionDigits: 1 })} t`;
+
+          const hora = new Date().toLocaleTimeString(I18N_LOCALE, { hour: '2-digit', minute: '2-digit' });
+          elActualizado.textContent = `${I18N.ultimaActualizacion}: ${hora}`;
+        } catch (_) {
+          elContenedores.textContent = '—';
+          elIncidencias.textContent = '—';
+          elVolumen.textContent = '—';
+        }
+      })();
 
 
       const form = document.getElementById('registerForm');
