@@ -1,6 +1,6 @@
 <?php
-session_start();
-require_once __DIR__ . '/../../i18n/i18n.php';
+$rolesPermitidos = ['cuadrilla'];
+require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
 ?>
 <!DOCTYPE html>
 <html lang="<?= htmlspecialchars($RECOLIX_IDIOMA) ?>">

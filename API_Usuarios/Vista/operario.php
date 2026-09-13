@@ -1,4 +1,7 @@
-<?php require_once __DIR__ . '/../../i18n/i18n.php'; ?>
+<?php
+$rolesPermitidos = ['operario'];
+require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
+?>
 <!DOCTYPE html>
 <html lang="<?= htmlspecialchars($RECOLIX_IDIOMA) ?>">
 <head>
