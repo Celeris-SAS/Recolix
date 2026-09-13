@@ -1,119 +1,113 @@
-const API = '/recolix/API_Usuarios';
+document.addEventListener('DOMContentLoaded', cargarPerfil);
 
-document.addEventListener('DOMContentLoaded', function () {
-
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-        window.location.href = '../Backoffice/logout_backoffice.php';
-    });
-
-    async function cargarPerfil() {
-        const resp  = await fetch(`${API}/usuarios/${CI}`);
-        const json  = await resp.json();
-        const perfil = json.data;
-        document.getElementById('perfilNombre').textContent = perfil.primer_nombre + ' ' + perfil.p_apellido;
-        document.getElementById('perfilCI').textContent = perfil.ci_usuario;
-        document.getElementById('perfilEmail').textContent = perfil.email || '—';
-        document.getElementById('perfilTel').textContent = perfil.tel || '—';
-        document.getElementById('editEmail').value = perfil.email || '';
-        document.getElementById('editTel').value = perfil.tel || '';
+async function cargarPerfil() {
+    try {
+        const res = await fetch(`${API_BASE}/usuarios/${CI}`);
+        const json = await res.json();
+        if (json.status === 'success' && json.data) {
+            const u = json.data;
+            document.getElementById('perfilNombre').textContent = `${u.primer_nombre} ${u.p_apellido}`;
+            document.getElementById('perfilCI').textContent = u.ci_usuario;
+            document.getElementById('perfilEmail').textContent = u.email;
+            document.getElementById('perfilTel').textContent = u.tel;
+        } else {
+            mostrarFeedback(document.getElementById('perfilFeedback'), json.message || I18N.msgNoPudoGuardar, false);
+        }
+    } catch (err) {
+        console.error(err);
     }
+}
 
-    cargarPerfil();
+const perfilVista = document.getElementById('perfilVista');
+const perfilForm = document.getElementById('perfilForm');
+const contraseniaForm = document.getElementById('contraseniaForm');
 
-    document.getElementById('editarPerfilBtn').addEventListener('click', () => {
-        document.getElementById('perfilVista').hidden = true;
-        document.getElementById('perfilForm').hidden = false;
-        document.getElementById('contraseniaForm').hidden = true;
-    });
+document.getElementById('editarPerfilBtn').addEventListener('click', () => {
+    document.getElementById('editEmail').value = document.getElementById('perfilEmail').textContent;
+    document.getElementById('editTel').value = document.getElementById('perfilTel').textContent;
+    perfilVista.hidden = true;
+    perfilForm.hidden = false;
+    contraseniaForm.hidden = true;
+});
 
-    document.getElementById('cancelarPerfilBtn').addEventListener('click', () => {
-        document.getElementById('perfilVista').hidden = false;
-        document.getElementById('perfilForm').hidden = true;
-        limpiarFeedback('perfilFeedback');
-    });
+document.getElementById('cambiarContraseniaBtn').addEventListener('click', () => {
+    perfilVista.hidden = true;
+    perfilForm.hidden = true;
+    contraseniaForm.hidden = false;
+});
 
-    document.getElementById('guardarPerfilBtn').addEventListener('click', async () => {
-        const email = document.getElementById('editEmail').value.trim();
-        const tel = document.getElementById('editTel').value.trim();
+document.getElementById('cancelarPerfilBtn').addEventListener('click', mostrarVista);
+document.getElementById('cancelarContraBtn').addEventListener('click', mostrarVista);
 
-        const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
-        const telOk = /^\d{9}$/.test(tel);
+function mostrarVista() {
+    perfilVista.hidden = false;
+    perfilForm.hidden = true;
+    contraseniaForm.hidden = true;
+}
 
-        document.getElementById('editEmailError').textContent = emailOk ? '' : I18N.msgEmailInvalido;
-        document.getElementById('editTelError').textContent = telOk ? '' : I18N.msgTelInvalido;
+document.getElementById('guardarPerfilBtn').addEventListener('click', async () => {
+    const email = document.getElementById('editEmail').value.trim();
+    const tel = document.getElementById('editTel').value.trim();
+    const feedback = document.getElementById('perfilFeedback');
 
-        if (!emailOk || !telOk) return;
-
-        const resp = await fetch(`${API}/usuarios/${CI}`, {
+    try {
+        const res = await fetch(`${API_BASE}/usuarios/${CI}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, tel })
         });
-        const json = await resp.json();
-
-        if (json.status !== 'success') {
-            mostrarFeedback('perfilFeedback', json.message || I18N.msgNoPudoGuardar, false);
-            return;
+        const json = await res.json();
+        if (json.status === 'success') {
+            document.getElementById('perfilEmail').textContent = email;
+            document.getElementById('perfilTel').textContent = tel;
+            mostrarFeedback(feedback, I18N.msgDatosActualizados, true);
+            setTimeout(mostrarVista, 900);
+        } else {
+            mostrarFeedback(feedback, json.message || I18N.msgNoPudoGuardar, false);
         }
+    } catch (err) {
+        mostrarFeedback(feedback, I18N.msgNoPudoGuardar, false);
+    }
+});
 
-        await cargarPerfil();
-        document.getElementById('perfilVista').hidden = false;
-        document.getElementById('perfilForm').hidden = true;
-        mostrarFeedback('perfilFeedback', I18N.msgDatosActualizados, true);
-    });
+document.getElementById('guardarContraBtn').addEventListener('click', async () => {
+    const actual = document.getElementById('contraActual').value;
+    const nueva = document.getElementById('contraNueva').value;
+    const feedback = document.getElementById('contraFeedback');
 
-    document.getElementById('cambiarContraseniaBtn').addEventListener('click', () => {
-        document.getElementById('perfilVista').hidden = true;
-        document.getElementById('contraseniaForm').hidden = false;
-        document.getElementById('perfilForm').hidden = true;
-    });
+    if (!actual) {
+        document.getElementById('contraActualError').textContent = I18N.msgContraActualRequerida;
+        return;
+    }
+    if (nueva.length < 8) {
+        document.getElementById('contraNuevaError').textContent = I18N.msgContraNuevaMin;
+        return;
+    }
 
-    document.getElementById('cancelarContraBtn').addEventListener('click', () => {
-        document.getElementById('perfilVista').hidden = false;
-        document.getElementById('contraseniaForm').hidden = true;
-        limpiarFeedback('contraFeedback');
-    });
-
-    document.getElementById('guardarContraBtn').addEventListener('click', async () => {
-        const actual = document.getElementById('contraActual').value;
-        const nueva = document.getElementById('contraNueva').value;
-
-        document.getElementById('contraActualError').textContent =
-            actual.length < 1 ? I18N.msgContraActualRequerida : '';
-        document.getElementById('contraNuevaError').textContent =
-            nueva.length < 8 ? I18N.msgContraNuevaMin : '';
-
-        if (actual.length < 1 || nueva.length < 8) return;
-
-        const resp = await fetch(`${API}/usuarios/cambiarContrasenia`, {
+    try {
+        const res = await fetch(`${API_BASE}/usuarios/cambiarContrasenia`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ci: CI, contraseniaActual: actual, nuevaContrasenia: nueva })
         });
-        const json = await resp.json();
-
-        if (json.status !== 'success') {
-            mostrarFeedback('contraFeedback', json.message || I18N.msgNoPudoCambiarContra, false);
-            return;
+        const json = await res.json();
+        if (json.status === 'success') {
+            mostrarFeedback(feedback, I18N.msgContraActualizada, true);
+            setTimeout(mostrarVista, 900);
+        } else {
+            mostrarFeedback(feedback, json.message || I18N.msgNoPudoCambiarContra, false);
         }
-
-        document.getElementById('contraActual').value = '';
-        document.getElementById('contraNueva').value = '';
-        document.getElementById('perfilVista').hidden = false;
-        document.getElementById('contraseniaForm').hidden = true;
-        mostrarFeedback('perfilFeedback', I18N.msgContraActualizada, true);
-    });
-
-    function mostrarFeedback(idElemento, mensaje, esExito) {
-        const el = document.getElementById(idElemento);
-        el.textContent = mensaje;
-        el.className = 'form-feedback ' + (esExito ? 'is-success' : 'is-error');
+    } catch (err) {
+        mostrarFeedback(feedback, I18N.msgNoPudoCambiarContra, false);
     }
-
-    function limpiarFeedback(idElemento) {
-        const el = document.getElementById(idElemento);
-        el.textContent = '';
-        el.className = 'form-feedback';
-    }
-
 });
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+    window.location.href = '/recolix/Backoffice/logout_backoffice.php';
+});
+
+function mostrarFeedback(el, msg, exito) {
+    el.textContent = msg;
+    el.classList.remove('is-success', 'is-error');
+    el.classList.add(exito ? 'is-success' : 'is-error');
+}

@@ -1,4 +1,5 @@
 <?php
+$rolesPermitidos = ['administrador'];
 require_once __DIR__ . '/verificacion_sesion.php';
 require_once __DIR__ . '/../i18n/i18n.php';
 

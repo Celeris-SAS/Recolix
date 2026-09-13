@@ -36,51 +36,51 @@ if (!in_array($rol, $rolesPermitidos)) {
 <body>
 
     <header class="navbar">
-        <div class="nav-inner">
-            <div class="nav-left">
-                <a href="../Backoffice/indexBackoffice.php" class="brand">
-                    <img src="../API_Recoleccion/Vista/logoRecolix.png" alt="Recolix" class="brand-logo">
-                    <span class="brand-name">Recolix</span>
-                </a>
-                <nav class="nav-links">
-                    <a href="../Backoffice/indexBackoffice.php"><?= t('backoffice.nav_inicio') ?></a>
-                    <a href="../API_Recoleccion/Vista/camiones.php"><?= t('backoffice.nav_camiones') ?></a>
-                    <a href="../API_Recoleccion/Vista/circuitos.php"><?= t('backoffice.nav_circuitos') ?></a>
-                    <a href="../API_Recoleccion/Vista/rutas.php"><?= t('backoffice.nav_rutas') ?></a>
-                    <a href="Vista/cuadrillas.php"><?= t('backoffice.nav_cuadrillas') ?></a>
-                    <a href="../API_Gestion/Vista/contenedores.php"><?= t('backoffice.nav_contenedores') ?></a>
-                    <a href="../API_Gestion/Vista/centrosAcopio.php"><?= t('backoffice.nav_centros_acopio') ?></a>
-                    <a href="../Backoffice/mapa.php"><?= t('backoffice.nav_mapa') ?></a>
-                    <a href="../API_Gestion/Vista/reportes.php"><?= t('backoffice.nav_reportes') ?></a>
-                    <a href="../API_Gestion/Vista/incidencias.php"><?= t('backoffice.nav_incidencias') ?></a>
-                    <a href="Vista/usuarios.php"><?= t('backoffice.nav_usuarios') ?></a>
-                </nav>
-            </div>
-            <div class="nav-right">
-                <?php include __DIR__ . '/../i18n/switcher.php'; ?>
-                <a href="perfil.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
-                    <img src="../API_Recoleccion/Vista/img/user.svg" alt="Usuario" class="nav-user-icon">
-                </a>
-                <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="<?= htmlspecialchars(t('backoffice.nav_menu')) ?>">
-                    <span></span><span></span><span></span>
-                </button>
-            </div>
+    <div class="nav-inner">
+        <div class="nav-left">
+            <a href="../Backoffice/indexBackoffice.php" class="brand">
+                <img src="../API_Recoleccion/Vista/logoRecolix.png" alt="Recolix" class="brand-logo">
+                <span class="brand-name">Recolix</span>
+            </a>
+            <nav class="nav-links">
+                <a href="../Backoffice/indexBackoffice.php" class="nav-active"><?= t('backoffice.nav_inicio') ?></a>
+                <a href="../API_Recoleccion/Vista/camiones.php"><?= t('backoffice.nav_camiones') ?></a>
+                <a href="../API_Recoleccion/Vista/circuitos.php"><?= t('backoffice.nav_circuitos') ?></a>
+                <a href="../API_Recoleccion/Vista/rutas.php"><?= t('backoffice.nav_rutas') ?></a>
+                <a href="../API_Usuarios/Vista/cuadrillas.php"><?= t('backoffice.nav_cuadrillas') ?></a>
+                <a href="../API_Gestion/Vista/contenedores.php"><?= t('backoffice.nav_contenedores') ?></a>
+                <a href="../API_Gestion/Vista/centrosAcopio.php"><?= t('backoffice.nav_centros_acopio') ?></a>
+                <a href="mapa.php"><?= t('backoffice.nav_mapa') ?></a>
+                <a href="../API_Gestion/Vista/reportes.php"><?= t('backoffice.nav_reportes') ?></a>
+                <a href="../API_Gestion/Vista/incidencias.php"><?= t('backoffice.nav_incidencias') ?></a>
+                <a href="../API_Usuarios/Vista/usuarios.php"><?= t('backoffice.nav_usuarios') ?></a>
+            </nav>
         </div>
-        <nav class="nav-mobile" id="navMobile">
-            <a href="../Backoffice/indexBackoffice.php"><?= t('backoffice.nav_inicio') ?></a>
-            <a href="../API_Recoleccion/Vista/camiones.php"><?= t('backoffice.nav_camiones') ?></a>
-            <a href="../API_Recoleccion/Vista/circuitos.php"><?= t('backoffice.nav_circuitos') ?></a>
-            <a href="../API_Recoleccion/Vista/rutas.php"><?= t('backoffice.nav_rutas') ?></a>
-            <a href="Vista/cuadrillas.php"><?= t('backoffice.nav_cuadrillas') ?></a>
-            <a href="../API_Gestion/Vista/contenedores.php"><?= t('backoffice.nav_contenedores') ?></a>
-            <a href="../API_Gestion/Vista/centrosAcopio.php"><?= t('backoffice.nav_centros_acopio') ?></a>
-            <a href="../Backoffice/mapa.php"><?= t('backoffice.nav_mapa') ?></a>
-            <a href="../API_Gestion/Vista/reportes.php"><?= t('backoffice.nav_reportes') ?></a>
-            <a href="../API_Gestion/Vista/incidencias.php"><?= t('backoffice.nav_incidencias') ?></a>
-            <a href="Vista/usuarios.php"><?= t('backoffice.nav_usuarios') ?></a>
-        </nav>
-        <div class="nav-hr"></div>
-    </header>
+        <div class="nav-right">
+            <?php include __DIR__ . '/../i18n/switcher.php'; ?>
+            <a href="../API_Usuarios/perfil.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
+                <img src="../API_Recoleccion/Vista/img/user.svg" alt="Usuario" class="nav-user-icon">
+            </a>
+            <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="<?= htmlspecialchars(t('backoffice.nav_menu')) ?>">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </div>
+    <nav class="nav-mobile" id="navMobile">
+        <a href="../Backoffice/indexBackoffice.php" class="nav-active"><?= t('backoffice.nav_inicio') ?></a>
+        <a href="../API_Recoleccion/Vista/camiones.php"><?= t('backoffice.nav_camiones') ?></a>
+        <a href="../API_Recoleccion/Vista/circuitos.php"><?= t('backoffice.nav_circuitos') ?></a>
+        <a href="../API_Recoleccion/Vista/rutas.php"><?= t('backoffice.nav_rutas') ?></a>
+        <a href="../API_Usuarios/Vista/cuadrillas.php"><?= t('backoffice.nav_cuadrillas') ?></a>
+        <a href="../API_Gestion/Vista/contenedores.php"><?= t('backoffice.nav_contenedores') ?></a>
+        <a href="../API_Gestion/Vista/centrosAcopio.php"><?= t('backoffice.nav_centros_acopio') ?></a>
+        <a href="mapa.php"><?= t('backoffice.nav_mapa') ?></a>
+        <a href="../API_Gestion/Vista/reportes.php"><?= t('backoffice.nav_reportes') ?></a>
+        <a href="../API_Gestion/Vista/incidencias.php"><?= t('backoffice.nav_incidencias') ?></a>
+        <a href="../API_Usuarios/Vista/usuarios.php"><?= t('backoffice.nav_usuarios') ?></a>
+    </nav>
+    <div class="nav-hr"></div>
+</header>
 
     <main class="container dash-main">
         <section class="dash-section" id="seccionPerfil">
@@ -180,6 +180,7 @@ if (!in_array($rol, $rolesPermitidos)) {
 </footer>
 
     <script>
+        const API_BASE = '/recolix/API_Usuarios/api.php';
         const CI = <?= json_encode($ci) ?>;
         const I18N = <?= json_encode(t_array([
             'msgEmailInvalido' => 'perfil.msg_email_invalido',

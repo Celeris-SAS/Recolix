@@ -673,3 +673,14 @@ a { text-decoration: none; color: inherit; }
     .hero-title { font-size: 1.2rem; }
     .card-operar { width: 100%; }
 }
+/* ==========================================================================
+   Forzar menú hamburguesa siempre visible en esta vista
+   ========================================================================== */
+
+.nav-links {
+  display: none !important;
+}
+
+.nav-hamburger {
+  display: flex !important;
+}

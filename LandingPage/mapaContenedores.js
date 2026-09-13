@@ -14,8 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
   window.addEventListener('load', () => map.invalidateSize());
   window.addEventListener('resize', () => map.invalidateSize());
 
-  const API_URL = '/recolix/API_Gestion/contenedores';
-
+  const API_URL = '/recolix/API_Gestion/api.php/contenedores';
   const COLORES = {
     funcional: '#4CAF50',
     inactivo: '#e3b23c',

@@ -40,9 +40,7 @@ if (!isset($_SESSION['ci_usuario'])) {
                 <a href="vecino.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
                     <img src="Vista/img/user.svg" alt="Usuario" class="nav-user-icon">
                 </a>
-                <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="<?= htmlspecialchars(t('common.nav_abrir_menu')) ?>">
-                    <span></span><span></span><span></span>
-                </button>
+                
             </div>
         </div>
     </header>
@@ -225,7 +223,7 @@ if (!isset($_SESSION['ci_usuario'])) {
     <footer class="site-footer">
     <div class="container">
       <div class="footer-grid">
-        <div class="footer-brand">
+                <div class="footer-brand">
           <a href="vecino.php" class="logo">
             <img src="../LandingPage/img/LogoBlanco.png" alt="Logo Recolix" class="logo-imageBlanco" />
             <div class="logo-text">Recolix</div>

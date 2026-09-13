@@ -2,8 +2,21 @@
 session_start();
 require_once __DIR__ . '/../i18n/i18n.php';
 
-    if (isset($_SESSION['usuario']) && !empty($_SESSION['usuario']['rol']) && $_SESSION['usuario']['rol'] !== 'vecino') {
-    header('Location: indexBackoffice.php');
+       if (isset($_SESSION['usuario']) && !empty($_SESSION['usuario']['rol']) && $_SESSION['usuario']['rol'] !== 'vecino') {
+    switch ($_SESSION['usuario']['rol']) {
+        case 'administrador':
+            header('Location: indexBackoffice.php');
+            break;
+        case 'cuadrilla':
+            header('Location: ../API_Usuarios/Vista/cuadrilla.php');
+            break;
+        case 'operario':
+            header('Location: ../API_Usuarios/Vista/operario.php');
+            break;
+        default:
+            header('Location: indexBackoffice.php');
+            break;
+    }
     exit;
 }
 
@@ -28,11 +41,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $resultado = autenticarUsuarioBackoffice($conn, $ci, $contrasenia);
 
+            $mapaErrores = [
+                'credenciales_invalidas' => 'backoffice.login_error_credenciales',
+                'acceso_no_habilitado'   => 'backoffice.login_error_acceso_no_habilitado',
+                'sin_permiso_vecino'     => 'backoffice.login_error_no_autorizado',
+            ];
+
             if ($resultado['error']) {
-                $_SESSION['login_error'] = $resultado['error'];
+                $clave = $mapaErrores[$resultado['error']] ?? 'backoffice.login_error_conexion';
+                $_SESSION['login_error'] = t($clave);
             } else {
                 $_SESSION['usuario'] = $resultado['usuario'];
-                header('Location: indexBackoffice.php');
+
+                switch ($resultado['usuario']['rol']) {
+                    case 'administrador':
+                        header('Location: indexBackoffice.php');
+                        break;
+                    case 'cuadrilla':
+                        header('Location: ../API_Usuarios/Vista/cuadrilla.php');
+                        break;
+                    case 'operario':
+                        header('Location: ../API_Usuarios/Vista/operario.php');
+                        break;
+                    default:
+                        header('Location: indexBackoffice.php');
+                        break;
+                }
                 exit;
             }
         } catch (Exception $e) {

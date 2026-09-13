@@ -2,40 +2,30 @@
 session_start();
 require_once __DIR__ . '/../i18n/i18n.php';
 
-if (!isset($_SESSION['usuario'])) {
-    header('Location: /recolix/LandingPage/login.html');
-    exit;
-}
-
 $rol = $_SESSION['usuario']['rol'] ?? '';
 
-if ($rol === 'vecino' || empty($rol)) {
-    http_response_code(403);
-    ?><!DOCTYPE html>
-<html lang="<?= htmlspecialchars($RECOLIX_IDIOMA) ?>">
-<head>
-    <meta charset="UTF-8">
-    <meta name="google" content="notranslate">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= t('backoffice.denegado_title') ?></title>
-    <link rel="stylesheet" href="/recolix/Backoffice/styleBackoffice.css">
-    <link rel="stylesheet" href="/recolix/Backoffice/styleAccesoDenegado.css">
-</head>
-<body>
-<div class="denegado-wrap">
-    <?php include __DIR__ . '/../i18n/switcher.php'; ?>
-    <div class="denegado-logo">
-        <img src="/recolix/API_Recoleccion/Vista/logoRecolix.png" alt="Recolix">
-        <span>Recolix</span>
-    </div>
-    <div class="denegado-icono">⛔</div>
-    <h1 class="denegado-titulo"><?= t('backoffice.denegado_titulo') ?></h1>
-    <p class="denegado-desc">
-        <?= t('backoffice.denegado_desc') ?>
-    </p>
-    <a href="/recolix/LandingPage/index_LandingPage.html" class="btn-volver"><?= t('backoffice.denegado_volver') ?></a>
-</div>
-</body>
-</html><?php
+// Regla base: sin sesión, vecino o rol vacío nunca pueden entrar al Backoffice/portal interno.
+$denegado = !isset($_SESSION['usuario']) || $rol === 'vecino' || empty($rol);
+
+// Si la página que incluye este archivo definió $rolesPermitidos ANTES del
+// require_once, además se exige que el rol esté en esa lista puntual.
+// Ejemplo (arriba de todo en cuadrilla.php):
+//   $rolesPermitidos = ['cuadrilla'];
+//   require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
+if (!$denegado && isset($rolesPermitidos) && !in_array($rol, $rolesPermitidos, true)) {
+    $denegado = true;
+}
+
+if (!$denegado) {
+    // Guardamos esta página como la última visitada válidamente, para poder
+    // volver acá si más adelante se intenta entrar a algo no permitido.
+    $_SESSION['ultima_pagina_permitida'] = $_SERVER['REQUEST_URI'];
+} else {
+    // Volvemos a la última página permitida que la persona haya visitado.
+    // Si todavía no visitó ninguna (ej. primer intento tras loguearse), caemos
+    // a la landing page pública como respaldo.
+    $destino = $_SESSION['ultima_pagina_permitida'] ?? '/recolix/LandingPage/index_LandingPage.html';
+
+    header('Location: ' . $destino);
     exit;
 }
