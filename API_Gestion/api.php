@@ -106,6 +106,7 @@ $config = [
             'actions' => [
                 'reglasValidacion',
                 'listarUrgentes',
+                'getActivasConUbicacion',
                 'getContenedoresVinculados',
                 'asignarCuadrilla',
                 'cerrar',
@@ -176,8 +177,12 @@ if (strpos($uri, $basePath) === 0) {
     $relativePath = substr($uri, strlen($basePath));
     $uriSegments  = explode('/', trim($relativePath, '/'));
 
-    $resource = isset($uriSegments[0]) ? $uriSegments[0] : null;
-    $id= null;   
+    if (isset($uriSegments[0])) {
+        $resource = $uriSegments[0];
+    } else {
+        $resource = null;
+    }
+    $id= null;
     
 
     if (!$resource || !isset($config['resources'][$resource])) {
@@ -199,9 +204,17 @@ if (strpos($uri, $basePath) === 0) {
     }
 
     $action = null;
-    $action = isset($uriSegments[1]) && !is_numeric($uriSegments[1]) ? $uriSegments[1] : null;
+    if (isset($uriSegments[1]) && !is_numeric($uriSegments[1])) {
+        $action = $uriSegments[1];
+    } else {
+        $action = null;
+    }
     if ($action) {
-        $id = isset($uriSegments[2]) ? $uriSegments[2] : null;
+        if (isset($uriSegments[2])) {
+            $id = $uriSegments[2];
+        } else {
+            $id = null;
+        }
     } else {
         if (isset($uriSegments[1]) && is_numeric($uriSegments[1])) {
             $id = $uriSegments[1];

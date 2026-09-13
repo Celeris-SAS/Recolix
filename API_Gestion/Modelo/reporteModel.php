@@ -10,7 +10,10 @@ class ReporteModel {
 
     private function contarFilas($sql) {
         $result = mysqli_query($this->conn->getConexion(), $sql);
-        return $result ? (int) mysqli_fetch_row($result)[0] : 0;
+        if ($result) {
+            return (int) mysqli_fetch_row($result)[0];
+        }
+        return 0;
     }
 
     // Fragmento SQL para acotar una columna DATE (ej. LEVANTE.hora_levante) al rango elegido.
@@ -62,7 +65,10 @@ class ReporteModel {
             FROM LEVANTE l
             WHERE " . $this->condicionRangoFecha('l.hora_levante', $rango) . "
         ");
-        return $result ? (float) mysqli_fetch_row($result)[0] : 0.0;
+        if ($result) {
+            return (float) mysqli_fetch_row($result)[0];
+        }
+        return 0.0;
     }
 
     public function getNivelesLlenado($rango = 'hoy') {
@@ -179,7 +185,11 @@ class ReporteModel {
         foreach ($contenedores as $idMunicipio => $datos) {
             $total              = $datos['total'];
             $desbordados        = $datos['desbordados'];
-            $porcentaje         = $total > 0 ? round(($desbordados / $total) * 100, 1) : 0.0;
+            if ($total > 0) {
+                $porcentaje = round(($desbordados / $total) * 100, 1);
+            } else {
+                $porcentaje = 0.0;
+            }
             $incidenciasMes     = $incidencias[$idMunicipio] ?? 0;
 
             $superaIncidencias  = $incidenciasMes > self::UMBRAL_INCIDENCIAS_MES;
@@ -208,7 +218,11 @@ class ReporteModel {
         }
 
         usort($zonas, function ($a, $b) {
-            return $b['incidenciasMes'] <=> $a['incidenciasMes'] ?: $b['porcentaje'] <=> $a['porcentaje'];
+            $comparacion = $b['incidenciasMes'] <=> $a['incidenciasMes'];
+            if ($comparacion !== 0) {
+                return $comparacion;
+            }
+            return $b['porcentaje'] <=> $a['porcentaje'];
         });
 
         return $zonas;
@@ -254,12 +268,17 @@ class ReporteModel {
         $result = mysqli_query($this->conn->getConexion(), $sql);
         $filas = [];
         while ($row = mysqli_fetch_assoc($result)) {
+            if ($row['horasResolucion'] !== null) {
+                $horasResolucion = (float) $row['horasResolucion'];
+            } else {
+                $horasResolucion = null;
+            }
             $filas[] = [
                 'tipo'             => $row['tipo'],
                 'prioridad'        => $row['prioridad'],
                 'estado'           => $row['estado'],
                 'fechaApertura'    => $row['fecha_apertura'],
-                'horasResolucion'  => $row['horasResolucion'] !== null ? (float) $row['horasResolucion'] : null,
+                'horasResolucion'  => $horasResolucion,
             ];
         }
         return $filas;
@@ -329,7 +348,11 @@ class ReporteModel {
         while ($row = mysqli_fetch_assoc($result)) {
             $capacidad  = (int) $row['capacidad_total'];
             $ocupacion  = (int) $row['ocupacionActual'];
-            $porcentaje = $capacidad > 0 ? round(($ocupacion / $capacidad) * 100, 1) : 0.0;
+            if ($capacidad > 0) {
+                $porcentaje = round(($ocupacion / $capacidad) * 100, 1);
+            } else {
+                $porcentaje = 0.0;
+            }
 
             $filas[] = [
                 'nombre'          => $row['nombre'],
@@ -384,7 +407,11 @@ class ReporteModel {
         foreach ($filas as $idTipo => &$fila) {
             $kg = $kgPorTipo[$idTipo] ?? 0.0;
             $fila['totalKg']    = $kg;
-            $fila['porcentaje'] = $totalGeneral > 0 ? round(($kg / $totalGeneral) * 100, 1) : 0.0;
+            if ($totalGeneral > 0) {
+                $fila['porcentaje'] = round(($kg / $totalGeneral) * 100, 1);
+            } else {
+                $fila['porcentaje'] = 0.0;
+            }
         }
         unset($fila);
 

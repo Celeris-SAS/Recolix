@@ -67,6 +67,7 @@ require_once __DIR__ . '/../i18n/i18n.php';
     <button class="mapa-tab is-active" data-tipo="contenedores"><?= t('mapa.tab_contenedores') ?></button>
     <button class="mapa-tab" data-tipo="centros"><?= t('mapa.tab_centros') ?></button>
     <button class="mapa-tab" data-tipo="camiones"><?= t('mapa.tab_camiones') ?></button>
+    <button class="mapa-tab" data-tipo="incidencias"><?= t('mapa.tab_incidencias') ?></button>
 </div>
 
 <section class="hero">
@@ -95,6 +96,12 @@ require_once __DIR__ . '/../i18n/i18n.php';
                 <li><span><?= t('mapa.con_tiempo_estimado') ?></span><strong id="countCamionesConEta">0</strong></li>
                 <li><span><?= t('mapa.sin_proxima_parada') ?></span><strong id="countCamionesSinEta">0</strong></li>
             </ul>
+            <ul class="mapa-info-list" id="indicadores-incidencias" style="display:none">
+                <li><span><?= t('mapa.incidencias_critica') ?></span><strong id="countIncCritica">0</strong></li>
+                <li><span><?= t('mapa.incidencias_alta') ?></span><strong id="countIncAlta">0</strong></li>
+                <li><span><?= t('mapa.incidencias_media') ?></span><strong id="countIncMedia">0</strong></li>
+                <li><span><?= t('mapa.incidencias_baja') ?></span><strong id="countIncBaja">0</strong></li>
+            </ul>
         </div>
 
         <div class="mapa-panel">
@@ -112,6 +119,12 @@ require_once __DIR__ . '/../i18n/i18n.php';
             </ul>
             <ul class="mapa-leyenda" id="leyenda-camiones" style="display:none">
                 <li class="leyenda-en-ruta"><?= t('mapa.camion_en_ruta') ?></li>
+            </ul>
+            <ul class="mapa-leyenda" id="leyenda-incidencias" style="display:none">
+                <li class="leyenda-inc-critica"><?= t('mapa.js_prioridad_critica') ?></li>
+                <li class="leyenda-inc-alta"><?= t('mapa.js_prioridad_alta') ?></li>
+                <li class="leyenda-inc-media"><?= t('mapa.js_prioridad_media') ?></li>
+                <li class="leyenda-inc-baja"><?= t('mapa.js_prioridad_baja') ?></li>
             </ul>
         </div>
 
@@ -180,7 +193,22 @@ require_once __DIR__ . '/../i18n/i18n.php';
         'unidadCentros' => 'mapa.js_unidad_centros',
         'unidadCamiones' => 'mapa.js_unidad_camiones',
         'unidadPuntos' => 'mapa.js_unidad_puntos',
+        'unidadIncidencias' => 'mapa.js_unidad_incidencias',
         'respuestaInesperada' => 'mapa.js_respuesta_inesperada',
+        'prioridadCritica' => 'mapa.js_prioridad_critica',
+        'prioridadAlta' => 'mapa.js_prioridad_alta',
+        'prioridadMedia' => 'mapa.js_prioridad_media',
+        'prioridadBaja' => 'mapa.js_prioridad_baja',
+        'tipoIncRotura' => 'mapa.js_tipo_inc_rotura',
+        'tipoIncDesborde' => 'mapa.js_tipo_inc_desborde',
+        'tipoIncFaltaRecoleccion' => 'mapa.js_tipo_inc_falta_recoleccion',
+        'tipoIncVandalismo' => 'mapa.js_tipo_inc_vandalismo',
+        'tipoIncOtro' => 'mapa.js_tipo_inc_otro',
+        'estadoIncAbierta' => 'mapa.js_estado_inc_abierta',
+        'estadoIncAsignada' => 'mapa.js_estado_inc_asignada',
+        'estadoIncEnCurso' => 'mapa.js_estado_inc_en_curso',
+        'popupPrioridad' => 'mapa.js_popup_prioridad',
+        'popupFechaApertura' => 'mapa.js_popup_fecha_apertura',
     ])) ?>;
     const I18N_LOCALE = <?= json_encode(t_locale()) ?>;
 </script>

@@ -431,7 +431,10 @@ require_once __DIR__ . '/../../i18n/i18n.php';
 
         function nombreMunicipio(id) {
             const m = MUNICIPIOS.find(x => x.id == id);
-            return m ? m.nombre : `${I18N.municipioPrefijo} ${id}`;
+            if (m) {
+                return m.nombre;
+            }
+            return `${I18N.municipioPrefijo} ${id}`;
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
@@ -467,7 +470,11 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             try {
                 const res = await fetch(`${API_BASE}/centros-acopio/reglasValidacion`);
                 const json = await res.json();
-                reglasCentro = json.status === 'success' ? json.data : reglasCentroFallback();
+                if (json.status === 'success') {
+                    reglasCentro = json.data;
+                } else {
+                    reglasCentro = reglasCentroFallback();
+                }
             } catch {
                 reglasCentro = reglasCentroFallback();
             }
@@ -488,7 +495,11 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             try {
                 const res = await fetch(`${API_BASE}/centros-acopio`);
                 const json = await res.json();
-                centrosActuales = json.status === 'success' ? json.data : [];
+                if (json.status === 'success') {
+                    centrosActuales = json.data;
+                } else {
+                    centrosActuales = [];
+                }
                 renderCentros(centrosActuales);
                 document.getElementById('btnMostrarTodos').style.display = 'none';
             } catch {
@@ -507,7 +518,11 @@ require_once __DIR__ . '/../../i18n/i18n.php';
         function renderCentros(rows) {
             const body = document.getElementById('centrosBody');
             document.getElementById('tableCount').textContent = `(${rows.length})`;
-            document.getElementById('noResultados').style.display = rows.length ? 'none' : 'flex';
+            if (rows.length) {
+                document.getElementById('noResultados').style.display = 'none';
+            } else {
+                document.getElementById('noResultados').style.display = 'flex';
+            }
 
             body.innerHTML = rows.map(c => `
                 <tr data-id="${c.id_centro}">
@@ -545,7 +560,11 @@ require_once __DIR__ . '/../../i18n/i18n.php';
         }
 
         function mostrarCargando(mostrar) {
-            document.getElementById('loadingState').style.display = mostrar ? 'flex' : 'none';
+            if (mostrar) {
+                document.getElementById('loadingState').style.display = 'flex';
+            } else {
+                document.getElementById('loadingState').style.display = 'none';
+            }
         }
 
         async function buscarPorId() {
@@ -573,7 +592,11 @@ require_once __DIR__ . '/../../i18n/i18n.php';
         function actualizarFiltroValor() {
             const campo = document.getElementById('filtroCampo').value;
             const select = document.getElementById('filtroValorSelect');
-            select.style.display = campo ? 'inline-block' : 'none';
+            if (campo) {
+                select.style.display = 'inline-block';
+            } else {
+                select.style.display = 'none';
+            }
             if (campo === 'municipio') {
                 select.innerHTML = MUNICIPIOS.map(m => `<option value="${m.id}">${m.nombre}</option>`).join('');
             } else if (campo === 'tipo') {
@@ -593,7 +616,11 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             try {
                 const res = await fetch(`${API_BASE}/centros-acopio/${ACCION_POR_CAMPO[campo]}/${encodeURIComponent(valor)}`);
                 const json = await res.json();
-                centrosActuales = json.status === 'success' ? json.data : [];
+                if (json.status === 'success') {
+                    centrosActuales = json.data;
+                } else {
+                    centrosActuales = [];
+                }
                 renderCentros(centrosActuales);
                 document.getElementById('btnMostrarTodos').style.display = 'inline-block';
             } catch {
@@ -645,18 +672,32 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 capacidadTotal: parseInt(document.getElementById('capacidadTotal').value, 10),
                 estado: document.getElementById('estado').value
             };
+            let url, method;
+            if (id) {
+                url = `${API_BASE}/centros-acopio/${id}`;
+                method = 'PUT';
+            } else {
+                url = `${API_BASE}/centros-acopio`;
+                method = 'POST';
+            }
             try {
                 const res = await fetch(
-                    id ? `${API_BASE}/centros-acopio/${id}` : `${API_BASE}/centros-acopio`,
+                    url,
                     {
-                        method: id ? 'PUT' : 'POST',
+                        method: method,
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(body)
                     }
                 );
                 const json = await res.json();
                 if (json.status === 'success') {
-                    mostrarToast(id ? I18N.msgCentroModificado : I18N.msgCentroAgregado);
+                    let mensaje;
+                    if (id) {
+                        mensaje = I18N.msgCentroModificado;
+                    } else {
+                        mensaje = I18N.msgCentroAgregado;
+                    }
+                    mostrarToast(mensaje);
                     cerrarModal();
                     listarCentros();
                 } else {
@@ -701,7 +742,13 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             const id = document.getElementById('deleteId').value;
             if (!id) return;
             const c = centrosActuales.find(x => x.id_centro == id);
-            confirmarBorrar(id, c ? c.nombre : `#${id}`);
+            let nombreCentro;
+            if (c) {
+                nombreCentro = c.nombre;
+            } else {
+                nombreCentro = `#${id}`;
+            }
+            confirmarBorrar(id, nombreCentro);
         }
 
         // ── MAQUINARIA (anidada dentro del centro) ─────────────────────────
@@ -726,8 +773,16 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             try {
                 const res = await fetch(`${API_BASE}/maquinaria/obtenerPorCentro/${idCentro}`);
                 const json = await res.json();
-                maquinariaActual = json.status === 'success' ? json.data : [];
-                vacio.style.display = maquinariaActual.length ? 'none' : 'flex';
+                if (json.status === 'success') {
+                    maquinariaActual = json.data;
+                } else {
+                    maquinariaActual = [];
+                }
+                if (maquinariaActual.length) {
+                    vacio.style.display = 'none';
+                } else {
+                    vacio.style.display = 'flex';
+                }
                 body.innerHTML = maquinariaActual.map(m => `
                     <tr>
                         <td>${m.nombre}</td>
@@ -778,19 +833,34 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 estado: document.getElementById('maqEstado').value
             };
             const editando = !!idMaquinaria;
-            const body = editando ? datosComunes : { idCentro: parseInt(idCentro, 10), ...datosComunes };
+            let body, url, method;
+            if (editando) {
+                body = datosComunes;
+                url = `${API_BASE}/maquinaria/${idMaquinaria}`;
+                method = 'PUT';
+            } else {
+                body = { idCentro: parseInt(idCentro, 10), ...datosComunes };
+                url = `${API_BASE}/maquinaria`;
+                method = 'POST';
+            }
             try {
                 const res = await fetch(
-                    editando ? `${API_BASE}/maquinaria/${idMaquinaria}` : `${API_BASE}/maquinaria`,
+                    url,
                     {
-                        method: editando ? 'PUT' : 'POST',
+                        method: method,
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(body)
                     }
                 );
                 const json = await res.json();
                 if (json.status === 'success') {
-                    mostrarToast(editando ? I18N.msgMaquinariaModificada : I18N.msgMaquinariaAgregada);
+                    let mensaje;
+                    if (editando) {
+                        mensaje = I18N.msgMaquinariaModificada;
+                    } else {
+                        mensaje = I18N.msgMaquinariaAgregada;
+                    }
+                    mostrarToast(mensaje);
                     cancelarEdicionMaquinaria();
                     cargarMaquinariaDeCentro(idCentro);
                 } else {
@@ -810,19 +880,31 @@ require_once __DIR__ . '/../../i18n/i18n.php';
         function toggleFiltros() {
             const bar = document.getElementById('filterBar');
             ocultarControles();
-            bar.style.display = bar.style.display === 'none' ? 'block' : 'none';
+            if (bar.style.display === 'none') {
+                bar.style.display = 'block';
+            } else {
+                bar.style.display = 'none';
+            }
         }
 
         function toggleBusquedaId() {
             const bar = document.getElementById('searchBar');
             ocultarControles();
-            bar.style.display = bar.style.display === 'none' ? 'block' : 'none';
+            if (bar.style.display === 'none') {
+                bar.style.display = 'block';
+            } else {
+                bar.style.display = 'none';
+            }
         }
 
         function toggleDarDeBaja() {
             const bar = document.getElementById('deleteBar');
             ocultarControles();
-            bar.style.display = bar.style.display === 'none' ? 'block' : 'none';
+            if (bar.style.display === 'none') {
+                bar.style.display = 'block';
+            } else {
+                bar.style.display = 'none';
+            }
         }
 
         function onOverlayClick(event, modalId) {

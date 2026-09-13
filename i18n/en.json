@@ -138,6 +138,7 @@
     "tab_contenedores": "Containers",
     "tab_centros": "Drop-off centers",
     "tab_camiones": "Trucks in operation",
+    "tab_incidencias": "Incidents",
     "eyebrow": "Operational map",
     "titulo": "View containers and drop-off centers in Montevideo",
     "desc": "Geographic tracking of containers, incidents, and centers in the Recolix network for municipal operations.",
@@ -154,6 +155,10 @@
     "camiones_en_operativa": "Trucks in operation",
     "con_tiempo_estimado": "With estimated time",
     "sin_proxima_parada": "No next stop",
+    "incidencias_critica": "Critical priority",
+    "incidencias_alta": "High priority",
+    "incidencias_media": "Medium priority",
+    "incidencias_baja": "Low priority",
 
     "referencia_visual": "Visual reference",
     "estado_contenedores": "Container status",
@@ -188,8 +193,24 @@
     "js_unidad_centros": "centers",
     "js_unidad_camiones": "trucks",
     "js_unidad_puntos": "points",
+    "js_unidad_incidencias": "incidents",
     "js_respuesta_inesperada": "Unexpected API response",
-    "js_locale": "en-US"
+    "js_locale": "en-US",
+
+    "js_prioridad_critica": "Critical",
+    "js_prioridad_alta": "High",
+    "js_prioridad_media": "Medium",
+    "js_prioridad_baja": "Low",
+    "js_tipo_inc_rotura": "Damage",
+    "js_tipo_inc_desborde": "Overflow",
+    "js_tipo_inc_falta_recoleccion": "Missed collection",
+    "js_tipo_inc_vandalismo": "Vandalism",
+    "js_tipo_inc_otro": "Other",
+    "js_estado_inc_abierta": "Open",
+    "js_estado_inc_asignada": "Assigned",
+    "js_estado_inc_en_curso": "In progress",
+    "js_popup_prioridad": "Priority:",
+    "js_popup_fecha_apertura": "Reported:"
   },
 
   "backoffice": {
