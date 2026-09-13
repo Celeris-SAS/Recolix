@@ -138,6 +138,7 @@
     "tab_contenedores": "Contenedores",
     "tab_centros": "Centros de acopio",
     "tab_camiones": "Camiones en operativa",
+    "tab_incidencias": "Incidencias",
     "eyebrow": "Mapa operativo",
     "titulo": "Visualizá contenedores y centros de acopio en Montevideo",
     "desc": "Seguimiento geográfico de contenedores, incidencias y centros de la red de Recolix para la operación municipal.",
@@ -154,6 +155,10 @@
     "camiones_en_operativa": "Camiones en operativa",
     "con_tiempo_estimado": "Con tiempo estimado",
     "sin_proxima_parada": "Sin próxima parada",
+    "incidencias_critica": "Prioridad crítica",
+    "incidencias_alta": "Prioridad alta",
+    "incidencias_media": "Prioridad media",
+    "incidencias_baja": "Prioridad baja",
 
     "referencia_visual": "Referencia visual",
     "estado_contenedores": "Estado de los contenedores",
@@ -188,8 +193,24 @@
     "js_unidad_centros": "centros",
     "js_unidad_camiones": "camiones",
     "js_unidad_puntos": "puntos",
+    "js_unidad_incidencias": "incidencias",
     "js_respuesta_inesperada": "Respuesta inesperada de la API",
-    "js_locale": "es-UY"
+    "js_locale": "es-UY",
+
+    "js_prioridad_critica": "Crítica",
+    "js_prioridad_alta": "Alta",
+    "js_prioridad_media": "Media",
+    "js_prioridad_baja": "Baja",
+    "js_tipo_inc_rotura": "Rotura",
+    "js_tipo_inc_desborde": "Desborde",
+    "js_tipo_inc_falta_recoleccion": "Falta de recolección",
+    "js_tipo_inc_vandalismo": "Vandalismo",
+    "js_tipo_inc_otro": "Otro",
+    "js_estado_inc_abierta": "Abierta",
+    "js_estado_inc_asignada": "Asignada",
+    "js_estado_inc_en_curso": "En curso",
+    "js_popup_prioridad": "Prioridad:",
+    "js_popup_fecha_apertura": "Reportada:"
   },
 
   "backoffice": {

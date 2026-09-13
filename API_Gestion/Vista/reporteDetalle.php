@@ -299,7 +299,10 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
         }
 
         function badgeParaMotivo(motivo) {
-            return motivo === 'ambos' ? 'badge-danger' : 'badge-warning';
+            if (motivo === 'ambos') {
+                return 'badge-danger';
+            }
+            return 'badge-warning';
         }
 
         async function cargarZonasCriticas() {
@@ -315,7 +318,12 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
             try {
                 const res  = await fetch(`${API_BASE}/reportes/getZonasCriticas`);
                 const json = await res.json();
-                const zonas = json.status === 'success' ? json.data : [];
+                let zonas;
+                if (json.status === 'success') {
+                    zonas = json.data;
+                } else {
+                    zonas = [];
+                }
 
                 loading.style.display = 'none';
 
@@ -445,13 +453,28 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
                 case 'kg':
                     return `${formatearNumero(valor)} kg`;
                 case 'num':
-                    return valor === null || valor === undefined ? LABEL_SIN_DATOS : formatearNumero(valor);
+                    if (valor === null || valor === undefined) {
+                        return LABEL_SIN_DATOS;
+                    }
+                    return formatearNumero(valor);
                 case 'horas':
-                    return valor === null || valor === undefined ? LABEL_SIN_DATOS : `${formatearNumero(valor)} h`;
+                    if (valor === null || valor === undefined) {
+                        return LABEL_SIN_DATOS;
+                    }
+                    return `${formatearNumero(valor)} h`;
                 case 'tipoResiduo':
                     return `<span class="color-dot" style="background:${colorParaTipoResiduo(row.color)}"></span>${valor ?? ''}`;
-                case 'reciclableBadge':
-                    return `<span class="badge ${valor ? 'badge-success' : 'badge-warning'}">${valor ? LABEL_SI : LABEL_NO}</span>`;
+                case 'reciclableBadge': {
+                    let claseBadge, textoBadge;
+                    if (valor) {
+                        claseBadge = 'badge-success';
+                        textoBadge = LABEL_SI;
+                    } else {
+                        claseBadge = 'badge-warning';
+                        textoBadge = LABEL_NO;
+                    }
+                    return `<span class="badge ${claseBadge}">${textoBadge}</span>`;
+                }
                 case 'porcentajeBadge':
                     return `<span class="badge ${badgeParaPorcentaje(valor)}">${valor}%</span>`;
                 case 'tipoIncidencia':
@@ -467,7 +490,10 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
                 case 'estadoVertedero':
                     return `<span class="badge ${badgeParaEstadoVertedero(valor)}">${LABELS_ESTADO_VERTEDERO[valor] ?? valor}</span>`;
                 default:
-                    return (valor === null || valor === undefined || valor === '') ? LABEL_SIN_DATOS : valor;
+                    if (valor === null || valor === undefined || valor === '') {
+                        return LABEL_SIN_DATOS;
+                    }
+                    return valor;
             }
         }
 
@@ -495,7 +521,12 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
                 }
                 const res  = await fetch(url);
                 const json = await res.json();
-                const filas = json.status === 'success' ? json.data : [];
+                let filas;
+                if (json.status === 'success') {
+                    filas = json.data;
+                } else {
+                    filas = [];
+                }
 
                 loading.style.display = 'none';
 

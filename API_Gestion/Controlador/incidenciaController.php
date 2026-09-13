@@ -8,6 +8,7 @@ class IncidenciaController {
     private $estadosValidos = ['abierta', 'asignada', 'en_curso', 'resuelta'];
     private $mimesImagenValidos = ['jpeg' => 'jpg', 'jpg' => 'jpg', 'png' => 'png'];
     private $tamanoMaxImagen = 5242880; // RF07: 5 MB
+    private $estadosContenedorUrgentes = ['roto', 'desbordado', 'inactivo'];
 
     private $contenedorModel;
 
@@ -89,6 +90,22 @@ class IncidenciaController {
         return ['datos' => $datos, 'extension' => $extension];
     }
 
+    // Prioridad escalonada: no la elige el usuario ("para los usuarios su incidencia
+    // siempre es urgente"). Escala según cuántas incidencias no resueltas acumula
+    // el contenedor, contando la que se está por crear.
+    private function calcularPrioridad($cantidadIncidencias) {
+        if ($cantidadIncidencias >= 10) {
+            return 'critica';
+        }
+        if ($cantidadIncidencias >= 5) {
+            return 'alta';
+        }
+        if ($cantidadIncidencias >= 2) {
+            return 'media';
+        }
+        return 'baja';
+    }
+
     private function guardarImagen($datos, $extension) {
         $directorio = __DIR__ . '/../Vista/uploads/incidencias';
         if (!is_dir($directorio)) {
@@ -126,13 +143,33 @@ class IncidenciaController {
         if (!$this->incidenciaModel->usuarioExiste($ciUsuario)) {
             throw new InvalidArgumentException("No existe un usuario con la cédula $ciUsuario.");
         }
-        if (!$this->contenedorModel->getContenedor($idContenedor)) {
+        $contenedor = $this->contenedorModel->getContenedor($idContenedor);
+        if (!$contenedor) {
             throw new InvalidArgumentException("No existe un contenedor con el ID $idContenedor.");
         }
+        if ($this->incidenciaModel->usuarioTieneIncidenciaAbiertaEnContenedor($ciUsuario, $idContenedor)) {
+            throw new InvalidArgumentException("Ya tenés un reporte sin resolver sobre este contenedor.");
+        }
 
-        $urlImagen = $imagenValida ? $this->guardarImagen($imagenValida['datos'], $imagenValida['extension']) : null;
+        if ($imagenValida) {
+            $urlImagen = $this->guardarImagen($imagenValida['datos'], $imagenValida['extension']);
+        } else {
+            $urlImagen = null;
+        }
 
-        $idIncidencia = $this->incidenciaModel->crearIncidencia($ciUsuario, $tipo, $descripcion, $urlImagen);
+        // RF09: urgente cuando el contenedor está roto, desbordado o inactivo.
+        if (in_array($contenedor['estado'], $this->estadosContenedorUrgentes, true)) {
+            $urgencia = 1;
+        } else {
+            $urgencia = 0;
+        }
+
+        // Prioridad escalonada: +1 porque esta incidencia todavía no está insertada
+        // y debe contarse a sí misma.
+        $cantidadIncidencias = $this->incidenciaModel->contarIncidenciasAbiertasPorContenedor($idContenedor) + 1;
+        $prioridad = $this->calcularPrioridad($cantidadIncidencias);
+
+        $idIncidencia = $this->incidenciaModel->crearIncidencia($ciUsuario, $tipo, $descripcion, $urlImagen, $urgencia, $prioridad);
         $this->incidenciaModel->vincularContenedor($idIncidencia, $idContenedor);
         return $this->incidenciaModel->getIncidencia($idIncidencia);
     }
@@ -163,6 +200,11 @@ class IncidenciaController {
 
     public function listarUrgentes() {
         return $this->incidenciaModel->listarUrgentes();
+    }
+
+    // RF72: incidencias activas con ubicación, para el mapa interactivo del backoffice.
+    public function getActivasConUbicacion() {
+        return $this->incidenciaModel->getActivasConUbicacion();
     }
 
     public function getContenedoresVinculados($id) {
