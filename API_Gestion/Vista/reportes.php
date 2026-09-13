@@ -276,7 +276,12 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             try {
                 const res  = await fetch(`${API_BASE}/reportes/getIndicadores?rango=${currentRango}`);
                 const json = await res.json();
-                const data = json.status === 'success' ? json.data : {};
+                let data;
+                if (json.status === 'success') {
+                    data = json.data;
+                } else {
+                    data = {};
+                }
                 crearGauge('gaugeFuncionales', 'valFuncionales', data.contenedoresFuncionales ?? 0);
                 crearGauge('gaugeSinRecolectar', 'valSinRecolectar', data.contenedoresSinRecolectar ?? 0);
                 crearGauge('gaugeIncidencias', 'valIncidencias', data.incidenciasResueltas ?? 0);

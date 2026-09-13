@@ -53,7 +53,11 @@ class CentroAcopioController {
             throw new InvalidArgumentException("$nombre debe ser un número decimal válido.");
         }
         $valor = floatval($valor);
-        $limite = ($nombre === 'Latitud') ? 90 : 180;
+        if ($nombre === 'Latitud') {
+            $limite = 90;
+        } else {
+            $limite = 180;
+        }
         if ($valor < -$limite || $valor > $limite) {
             throw new InvalidArgumentException("$nombre debe estar entre -$limite y $limite.");
         }

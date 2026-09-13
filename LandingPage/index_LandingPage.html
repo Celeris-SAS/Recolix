@@ -4,11 +4,9 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="google" content="notranslate">
+    <meta name="google" content="notranslate">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>
-    <?= t('landing.title') ?>
-  </title>
+  <title><?= t('landing.title') ?></title>
   <meta name="description" content="<?= htmlspecialchars(t('landing.meta_description')) ?>">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -47,22 +45,15 @@
 
       <nav class="main-nav" id="mainNav">
         <ul>
-          <li><a href="index_LandingPage.html">
-              <?= t('common.nav_inicio') ?>
-            </a></li>
-          <li><a href="mapa.html">
-              <?= t('common.nav_mapa') ?>
-            </a></li>
+          <li><a href="index_LandingPage.html"><?= t('common.nav_inicio') ?></a></li>
+          <li><a href="mapa.html"><?= t('common.nav_mapa') ?></a></li>
         </ul>
       </nav>
 
       <div class="header-actions">
         <?php include __DIR__ . '/../i18n/switcher.php'; ?>
-        <a href="login.html" id="loginNavLink" class="btn btn-outline btn-sm">
-          <?= t('common.nav_iniciar_sesion') ?>
-        </a>
-        <button class="hamburger" id="hamburgerBtn" aria-label="<?= htmlspecialchars(t('common.nav_abrir_menu')) ?>"
-          aria-expanded="false">☰</button>
+        <a href="login.html" id="loginNavLink" class="btn btn-outline btn-sm"><?= t('common.nav_iniciar_sesion') ?></a>
+        <button class="hamburger" id="hamburgerBtn" aria-label="<?= htmlspecialchars(t('common.nav_abrir_menu')) ?>" aria-expanded="false">☰</button>
       </div>
 
     </div>
@@ -75,19 +66,13 @@
       <div class="container hero-inner">
         <div class="hero-panel">
           <h1>Recolix</h1>
-          <h2 class="hero-tagline">
-            <?= t('landing.hero_tagline') ?>
-          </h2>
+          <h2 class="hero-tagline"><?= t('landing.hero_tagline') ?></h2>
           <p class="hero-desc">
             <?= t('landing.hero_desc') ?>
           </p>
           <div class="hero-actions">
-            <a href="#" class="btn btn-primary" id="btnReportarIncidencia">
-              <?= t('landing.hero_reportar_incidencia') ?>
-            </a>
-            <a href="index_LandingPage.html#registro" class="btn btn-outline">
-              <?= t('landing.hero_crear_cuenta') ?>
-            </a>
+            <a href="#" class="btn btn-primary" id="btnReportarIncidencia"><?= t('landing.hero_reportar_incidencia') ?></a>
+            <a href="index_LandingPage.html#registro" class="btn btn-outline"><?= t('landing.hero_crear_cuenta') ?></a>
           </div>
         </div>
 
@@ -97,25 +82,13 @@
               <div id="hero-mapa"></div>
             </div>
             <div class="map-legend">
-              <p class="map-legend-title">
-                <?= t('landing.map_legend_title') ?>
-              </p>
-              <p class="legend-item legend-ok">
-                <?= t('landing.legend_funcional') ?>
-              </p>
-              <p class="legend-item legend-warn">
-                <?= t('landing.legend_inactivo') ?>
-              </p>
-              <p class="legend-item legend-crit">
-                <?= t('landing.legend_desbordado') ?>
-              </p>
-              <p class="legend-item legend-off">
-                <?= t('landing.legend_roto') ?>
-              </p>
+              <p class="map-legend-title"><?= t('landing.map_legend_title') ?></p>
+              <p class="legend-item legend-ok"><?= t('landing.legend_funcional') ?></p>
+              <p class="legend-item legend-warn"><?= t('landing.legend_inactivo') ?></p>
+              <p class="legend-item legend-crit"><?= t('landing.legend_desbordado') ?></p>
+              <p class="legend-item legend-off"><?= t('landing.legend_roto') ?></p>
             </div>
-            <a href="mapa.html" class="map-link">
-              <?= t('landing.ver_mapa_completo') ?>
-            </a>
+            <a href="mapa.html" class="map-link"><?= t('landing.ver_mapa_completo') ?></a>
           </div>
         </div>
       </div>
@@ -123,31 +96,21 @@
 
     <div class="stats" id="estadisticas">
       <div class="container">
-        <p class="section-eyebrow">
-          <?= t('landing.stats_eyebrow') ?>
-        </p>
-        <h2 class="section-title">
-          <?= t('landing.stats_title') ?>
-        </h2>
+        <p class="section-eyebrow"><?= t('landing.stats_eyebrow') ?></p>
+        <h2 class="section-title"><?= t('landing.stats_title') ?></h2>
 
         <div class="stats-grid">
           <div class="stat-card">
             <p class="stat-value" id="statContenedores">0</p>
-            <p class="stat-label">
-              <?= t('landing.stats_contenedores') ?>
-            </p>
+            <p class="stat-label"><?= t('landing.stats_contenedores') ?></p>
           </div>
           <div class="stat-card" data-status="warn">
             <p class="stat-value" id="statIncidencias">0</p>
-            <p class="stat-label">
-              <?= t('landing.stats_incidencias') ?>
-            </p>
+            <p class="stat-label"><?= t('landing.stats_incidencias') ?></p>
           </div>
           <div class="stat-card">
             <p class="stat-value" id="statVolumen">0</p>
-            <p class="stat-label">
-              <?= t('landing.stats_volumen') ?>
-            </p>
+            <p class="stat-label"><?= t('landing.stats_volumen') ?></p>
           </div>
         </div>
         <p class="stats-note" id="statsUpdatedAt"></p>
@@ -157,15 +120,9 @@
     <div class="about" id="nosotros">
       <div class="container about-grid">
         <div class="about-text">
-          <p class="section-eyebrow">
-            <?= t('landing.about_eyebrow') ?>
-          </p>
-          <h2 class="section-title">
-            <?= t('landing.about_title') ?>
-          </h2>
-          <p>
-            <?= t('landing.about_desc') ?>
-          </p>
+          <p class="section-eyebrow"><?= t('landing.about_eyebrow') ?></p>
+          <h2 class="section-title"><?= t('landing.about_title') ?></h2>
+          <p><?= t('landing.about_desc') ?></p>
         </div>
 
         <div class="features-grid">
@@ -178,12 +135,8 @@
               <path
                 d="M8.714 14h-3.71a1 1 0 0 0-.948.683l-2.004 6A1 1 0 0 0 3 22h18a1 1 0 0 0 .948-1.316l-2-6a1 1 0 0 0-.949-.684h-3.712" />
             </svg>
-            <h3>
-              <?= t('landing.feature_mapa_titulo') ?>
-            </h3>
-            <p>
-              <?= t('landing.feature_mapa_desc') ?>
-            </p>
+            <h3><?= t('landing.feature_mapa_titulo') ?></h3>
+            <p><?= t('landing.feature_mapa_desc') ?></p>
           </div>
 
           <div class="feature-card">
@@ -195,12 +148,8 @@
               <path d="M3 6h18" />
               <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
             </svg>
-            <h3>
-              <?= t('landing.feature_incidencias_titulo') ?>
-            </h3>
-            <p>
-              <?= t('landing.feature_incidencias_desc') ?>
-            </p>
+            <h3><?= t('landing.feature_incidencias_titulo') ?></h3>
+            <p><?= t('landing.feature_incidencias_desc') ?></p>
           </div>
 
           <div class="feature-card">
@@ -213,12 +162,8 @@
               <path d="M4 18.463V21" />
               <path d="M8 14.656V21" />
             </svg>
-            <h3>
-              <?= t('landing.feature_reportes_titulo') ?>
-            </h3>
-            <p>
-              <?= t('landing.feature_reportes_desc') ?>
-            </p>
+            <h3><?= t('landing.feature_reportes_titulo') ?></h3>
+            <p><?= t('landing.feature_reportes_desc') ?></p>
           </div>
 
           <div class="feature-card">
@@ -230,12 +175,8 @@
                 d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" />
               <path d="M4 2C2.8 3.7 2 5.7 2 8" />
             </svg>
-            <h3>
-              <?= t('landing.feature_notificaciones_titulo') ?>
-            </h3>
-            <p>
-              <?= t('landing.feature_notificaciones_desc') ?>
-            </p>
+            <h3><?= t('landing.feature_notificaciones_titulo') ?></h3>
+            <p><?= t('landing.feature_notificaciones_desc') ?></p>
           </div>
         </div>
       </div>
@@ -244,86 +185,58 @@
     <div class="register" id="registro">
       <div class="container register-grid">
         <div class="register-info">
-          <p class="section-eyebrow" style="color:var(--leaf);">
-            <?= t('landing.register_eyebrow') ?>
-          </p>
-          <h2>
-            <?= t('landing.register_titulo') ?>
-          </h2>
+          <p class="section-eyebrow" style="color:var(--leaf);"><?= t('landing.register_eyebrow') ?></p>
+          <h2><?= t('landing.register_titulo') ?></h2>
           <div class="steps">
             <div class="step">
               <p class="step-num">1</p>
-              <p>
-                <?= t('landing.register_paso1') ?>
-              </p>
+              <p><?= t('landing.register_paso1') ?></p>
             </div>
             <div class="step">
               <p class="step-num">2</p>
-              <p>
-                <?= t('landing.register_paso2') ?>
-              </p>
+              <p><?= t('landing.register_paso2') ?></p>
             </div>
             <div class="step">
               <p class="step-num">3</p>
-              <p>
-                <?= t('landing.register_paso3') ?>
-              </p>
+              <p><?= t('landing.register_paso3') ?></p>
             </div>
           </div>
         </div>
 
         <form class="register-form" id="registerForm" novalidate>
           <div class="form-row">
-            <label for="ci">
-              <?= t('landing.register_cedula') ?>
-            </label>
-            <input type="text" id="ci" name="ci"
-              placeholder="<?= htmlspecialchars(t('landing.register_cedula_placeholder')) ?>" required>
+            <label for="ci"><?= t('landing.register_cedula') ?></label>
+            <input type="text" id="ci" name="ci" placeholder="<?= htmlspecialchars(t('landing.register_cedula_placeholder')) ?>" required>
             <p class="error-msg" id="ciError"></p>
           </div>
           <div class="form-row-2col">
             <div>
-              <label for="nombre">
-                <?= t('landing.register_nombre') ?>
-              </label>
+              <label for="nombre"><?= t('landing.register_nombre') ?></label>
               <input type="text" id="nombre" name="nombre" required>
               <p class="error-msg" id="nombreError"></p>
             </div>
             <div>
-              <label for="apellido">
-                <?= t('landing.register_apellido') ?>
-              </label>
+              <label for="apellido"><?= t('landing.register_apellido') ?></label>
               <input type="text" id="apellido" name="apellido" required>
               <p class="error-msg" id="apellidoError"></p>
             </div>
           </div>
           <div class="form-row">
-            <label for="email">
-              <?= t('landing.register_email') ?>
-            </label>
-            <input type="email" id="email" name="email"
-              placeholder="<?= htmlspecialchars(t('landing.register_email_placeholder')) ?>" required>
+            <label for="email"><?= t('landing.register_email') ?></label>
+            <input type="email" id="email" name="email" placeholder="<?= htmlspecialchars(t('landing.register_email_placeholder')) ?>" required>
             <p class="error-msg" id="emailError"></p>
           </div>
           <div class="form-row">
-            <label for="telefono">
-              <?= t('landing.register_telefono') ?>
-            </label>
-            <input type="tel" id="telefono" name="telefono"
-              placeholder="<?= htmlspecialchars(t('landing.register_telefono_placeholder')) ?>" required>
+            <label for="telefono"><?= t('landing.register_telefono') ?></label>
+            <input type="tel" id="telefono" name="telefono" placeholder="<?= htmlspecialchars(t('landing.register_telefono_placeholder')) ?>" required>
             <p class="error-msg" id="telefonoError"></p>
           </div>
           <div class="form-row">
-            <label for="contrasenia">
-              <?= t('landing.register_contrasenia') ?>
-            </label>
-            <input type="password" id="contrasenia" name="contrasenia"
-              placeholder="<?= htmlspecialchars(t('landing.register_contrasenia_placeholder')) ?>" required>
+            <label for="contrasenia"><?= t('landing.register_contrasenia') ?></label>
+            <input type="password" id="contrasenia" name="contrasenia" placeholder="<?= htmlspecialchars(t('landing.register_contrasenia_placeholder')) ?>" required>
             <p class="error-msg" id="contraseniaError"></p>
           </div>
-          <button type="submit" class="btn btn-primary btn-block" id="registerSubmitBtn">
-            <?= t('landing.register_submit') ?>
-          </button>
+          <button type="submit" class="btn btn-primary btn-block" id="registerSubmitBtn"><?= t('landing.register_submit') ?></button>
           <p class="form-feedback" id="formFeedback"></p>
         </form>
       </div>
@@ -333,69 +246,40 @@
   <div class="modal-overlay" id="modalReportar" style="display:none" onclick="onOverlayClickReportar(event)">
     <div class="modal-box">
       <div class="modal-box-header">
-        <h3>
-          <?= t('landing.reportar_titulo') ?>
-        </h3>
+        <h3><?= t('landing.reportar_titulo') ?></h3>
         <button type="button" class="modal-close" onclick="cerrarModalReportar()">✕</button>
       </div>
       <form id="reportarForm" novalidate>
         <div class="form-row">
-          <label for="repTipo">
-            <?= t('landing.reportar_tipo') ?>
-          </label>
+          <label for="repTipo"><?= t('landing.reportar_tipo') ?></label>
           <select id="repTipo" name="tipo" required>
-            <option value="rotura">
-              <?= t('landing.reportar_tipo_rotura') ?>
-            </option>
-            <option value="desborde">
-              <?= t('landing.reportar_tipo_desborde') ?>
-            </option>
-            <option value="falta_recoleccion">
-              <?= t('landing.reportar_tipo_falta_recoleccion') ?>
-            </option>
-            <option value="vandalismo">
-              <?= t('landing.reportar_tipo_vandalismo') ?>
-            </option>
-            <option value="otro">
-              <?= t('landing.reportar_tipo_otro') ?>
-            </option>
+            <option value="rotura"><?= t('landing.reportar_tipo_rotura') ?></option>
+            <option value="desborde"><?= t('landing.reportar_tipo_desborde') ?></option>
+            <option value="falta_recoleccion"><?= t('landing.reportar_tipo_falta_recoleccion') ?></option>
+            <option value="vandalismo"><?= t('landing.reportar_tipo_vandalismo') ?></option>
+            <option value="otro"><?= t('landing.reportar_tipo_otro') ?></option>
           </select>
         </div>
         <div class="form-row">
-          <label for="repContenedor">
-            <?= t('landing.reportar_contenedor') ?>
-          </label>
-          <p class="field-hint" id="repUbicacionStatus">
-            <?= t('landing.reportar_detectando_ubicacion') ?>
-          </p>
+          <label for="repContenedor"><?= t('landing.reportar_contenedor') ?></label>
+          <p class="field-hint" id="repUbicacionStatus"><?= t('landing.reportar_detectando_ubicacion') ?></p>
           <div id="repMapaContenedor" class="modal-map"></div>
           <p class="field-hint" id="repContenedorSeleccionado" style="display:none"></p>
           <input type="hidden" id="repContenedor" name="idContenedor">
-          <p class="field-hint">
-            <?= t('landing.reportar_contenedor_ayuda') ?>
-          </p>
+          <p class="field-hint"><?= t('landing.reportar_contenedor_ayuda') ?></p>
           <p class="error-msg" id="repContenedorError"></p>
         </div>
         <div class="form-row">
-          <label for="repDescripcion">
-            <?= t('landing.reportar_descripcion') ?>
-          </label>
-          <textarea id="repDescripcion" name="descripcion" rows="3" maxlength="500"
-            placeholder="<?= htmlspecialchars(t('landing.reportar_descripcion_placeholder')) ?>"></textarea>
+          <label for="repDescripcion"><?= t('landing.reportar_descripcion') ?></label>
+          <textarea id="repDescripcion" name="descripcion" rows="3" maxlength="500" placeholder="<?= htmlspecialchars(t('landing.reportar_descripcion_placeholder')) ?>"></textarea>
         </div>
         <div class="form-row">
-          <label for="repFoto">
-            <?= t('landing.reportar_foto') ?>
-          </label>
+          <label for="repFoto"><?= t('landing.reportar_foto') ?></label>
           <input type="file" id="repFoto" name="imagen" accept="image/jpeg,image/png">
-          <p class="field-hint">
-            <?= t('landing.reportar_foto_ayuda') ?>
-          </p>
+          <p class="field-hint"><?= t('landing.reportar_foto_ayuda') ?></p>
           <p class="error-msg" id="repFotoError"></p>
         </div>
-        <button type="submit" class="btn btn-primary btn-block" id="reportarSubmitBtn">
-          <?= t('landing.reportar_submit') ?>
-        </button>
+        <button type="submit" class="btn btn-primary btn-block" id="reportarSubmitBtn"><?= t('landing.reportar_submit') ?></button>
         <p class="form-feedback" id="reportarFeedback"></p>
       </form>
     </div>
@@ -409,37 +293,21 @@
             <img src="img/LogoBlanco.png" alt="Logo Recolix" class="logo-imageBlanco" />
             <div class="logo-text">Recolix</div>
           </a>
-          <p>
-            <?= t('common.footer_desc') ?>
-          </p>
+          <p><?= t('common.footer_desc') ?></p>
         </div>
         <div class="footer-col">
-          <h3>
-            <?= t('common.footer_navegacion') ?>
-          </h3>
+          <h3><?= t('common.footer_navegacion') ?></h3>
           <ul>
-            <li><a href="index_LandingPage.html">
-                <?= t('common.footer_inicio') ?>
-              </a></li>
-            <li><a href="mapa.html">
-                <?= t('common.footer_mapa') ?>
-              </a></li>
-            <li><a href="../Backoffice/login_backoffice.php">
-                <?= t('common.footer_portal_empleados') ?>
-              </a></li>
+            <li><a href="index_LandingPage.html"><?= t('common.footer_inicio') ?></a></li>
+            <li><a href="mapa.html"><?= t('common.footer_mapa') ?></a></li>
+            <li><a href="../Backoffice/login_backoffice.php"><?= t('common.footer_portal_empleados') ?></a></li>
           </ul>
         </div>
         <div class="footer-col">
-          <h3>
-            <?= t('common.footer_canales') ?>
-          </h3>
+          <h3><?= t('common.footer_canales') ?></h3>
           <ul>
-            <li>
-              <?= t('common.footer_linea') ?>
-            </li>
-            <li>
-              <?= t('common.footer_whatsapp') ?>
-            </li>
+            <li><?= t('common.footer_linea') ?></li>
+            <li><?= t('common.footer_whatsapp') ?></li>
           </ul>
         </div>
       </div>
@@ -450,32 +318,33 @@
   <script src="mapaContenedoresBase.js"></script>
 
   <script>
+    const API_USUARIOS = '/recolix/API_Usuarios';
     const API_GESTION = '/recolix/API_Gestion';
-    const API_USUARIOS = '/recolix/API_Usuarios/api.php';
-    const PAGINAS_USUARIOS = '/recolix/API_Usuarios';
+    const I18N_LOCALE = <?= json_encode(t_locale()) ?>;
     const I18N = <?= json_encode(t_array([
+      'ultimaActualizacion' => 'mapa.ultima_actualizacion',
       'ci' => 'landing.validation_ci',
-        'nombre' => 'landing.validation_nombre',
-          'apellido' => 'landing.validation_apellido',
-            'email' => 'landing.validation_email',
-              'telefono' => 'landing.validation_telefono',
-                'contrasenia' => 'landing.validation_contrasenia',
-                  'revisarCampos' => 'landing.feedback_revisar_campos',
-                    'solicitudEnviada' => 'landing.feedback_solicitud_enviada',
-                      'errorConexion' => 'landing.feedback_error_conexion',
-                        'errorEnviar' => 'landing.feedback_error_enviar',
-                          'reportarValidationContenedor' => 'landing.reportar_validation_contenedor',
-                            'reportarEnviado' => 'landing.reportar_feedback_enviado',
-                              'reportarErrorEnviar' => 'landing.reportar_feedback_error_enviar',
-                                'reportarErrorConexion' => 'landing.reportar_feedback_error_conexion',
-                                  'detectandoUbicacion' => 'landing.reportar_detectando_ubicacion',
-                                    'ubicacionDetectada' => 'landing.reportar_ubicacion_detectada',
-                                      'ubicacionDenegada' => 'landing.reportar_ubicacion_denegada',
-                                        'ubicacionNoDisponible' => 'landing.reportar_ubicacion_no_disponible',
-                                          'contenedorSeleccionado' => 'landing.reportar_contenedor_seleccionado',
-                                            'tuUbicacion' => 'landing.reportar_tu_ubicacion',
-                                              'reportarFotoTipoInvalido' => 'landing.reportar_foto_tipo_invalido',
-                                                'reportarFotoTamanoInvalido' => 'landing.reportar_foto_tamano_invalido',
+      'nombre' => 'landing.validation_nombre',
+      'apellido' => 'landing.validation_apellido',
+      'email' => 'landing.validation_email',
+      'telefono' => 'landing.validation_telefono',
+      'contrasenia' => 'landing.validation_contrasenia',
+      'revisarCampos' => 'landing.feedback_revisar_campos',
+      'solicitudEnviada' => 'landing.feedback_solicitud_enviada',
+      'errorConexion' => 'landing.feedback_error_conexion',
+      'errorEnviar' => 'landing.feedback_error_enviar',
+      'reportarValidationContenedor' => 'landing.reportar_validation_contenedor',
+      'reportarEnviado' => 'landing.reportar_feedback_enviado',
+      'reportarErrorEnviar' => 'landing.reportar_feedback_error_enviar',
+      'reportarErrorConexion' => 'landing.reportar_feedback_error_conexion',
+      'detectandoUbicacion' => 'landing.reportar_detectando_ubicacion',
+      'ubicacionDetectada' => 'landing.reportar_ubicacion_detectada',
+      'ubicacionDenegada' => 'landing.reportar_ubicacion_denegada',
+      'ubicacionNoDisponible' => 'landing.reportar_ubicacion_no_disponible',
+      'contenedorSeleccionado' => 'landing.reportar_contenedor_seleccionado',
+      'tuUbicacion' => 'landing.reportar_tu_ubicacion',
+      'reportarFotoTipoInvalido' => 'landing.reportar_foto_tipo_invalido',
+      'reportarFotoTamanoInvalido' => 'landing.reportar_foto_tamano_invalido',
     ])) ?>;
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -513,11 +382,44 @@
       });
 
 
-      setTimeout(() => {
-        document.getElementById('statContenedores').textContent = '13.420';
-        document.getElementById('statIncidencias').textContent = '27';
-        document.getElementById('statVolumen').textContent = '184 t';
-      }, 500);
+      (async function cargarEstadisticas() {
+        const elContenedores = document.getElementById('statContenedores');
+        const elIncidencias = document.getElementById('statIncidencias');
+        const elVolumen = document.getElementById('statVolumen');
+        const elActualizado = document.getElementById('statsUpdatedAt');
+
+        const fetchJson = async (url) => {
+          const resp = await fetch(url, { signal: AbortSignal.timeout(8000) });
+          if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+          const json = await resp.json();
+          return json && json.data;
+        };
+
+        try {
+          const [contenedores, incidenciasHoy, resumenMes] = await Promise.all([
+            fetchJson(`${API_GESTION}/contenedores`),
+            fetchJson(`${API_GESTION}/reportes/getIncidenciasDetalle?rango=hoy`),
+            fetchJson(`${API_GESTION}/reportes/getResumenGeneral?rango=mes`)
+          ]);
+
+          const totalContenedores = Array.isArray(contenedores) ? contenedores.length : 0;
+          const totalIncidenciasHoy = Array.isArray(incidenciasHoy) ? incidenciasHoy.length : 0;
+          const toneladasMes = resumenMes && resumenMes.residuosRecolectados != null
+            ? resumenMes.residuosRecolectados / 1000
+            : 0;
+
+          elContenedores.textContent = totalContenedores.toLocaleString(I18N_LOCALE);
+          elIncidencias.textContent = totalIncidenciasHoy.toLocaleString(I18N_LOCALE);
+          elVolumen.textContent = `${toneladasMes.toLocaleString(I18N_LOCALE, { maximumFractionDigits: 1 })} t`;
+
+          const hora = new Date().toLocaleTimeString(I18N_LOCALE, { hour: '2-digit', minute: '2-digit' });
+          elActualizado.textContent = `${I18N.ultimaActualizacion}: ${hora}`;
+        } catch (_) {
+          elContenedores.textContent = '—';
+          elIncidencias.textContent = '—';
+          elVolumen.textContent = '—';
+        }
+      })();
 
 
       const form = document.getElementById('registerForm');
@@ -591,7 +493,7 @@
       btnReportar.addEventListener('click', async (e) => {
         e.preventDefault();
         try {
-          const resp = await fetch(`${PAGINAS_USUARIOS}/sesion.php`);
+          const resp = await fetch(`${API_USUARIOS}/sesion.php`);
           const data = await resp.json();
           if (!data.loggedIn) {
             window.location.href = 'login.html';

@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../Controlador/trasladoController.php';
+require_once __DIR__ . '/../../Controlador/trasladoController.php';
 
 final class TrasladoControllerTest extends RecoleccionTestCase
 {

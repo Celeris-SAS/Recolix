@@ -305,7 +305,11 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             try {
                 const res = await fetch(`${API_BASE}/incidencias/reglasValidacion`);
                 const json = await res.json();
-                reglas = json.status === 'success' ? json.data : reglasFallback();
+                if (json.status === 'success') {
+                    reglas = json.data;
+                } else {
+                    reglas = reglasFallback();
+                }
             } catch {
                 reglas = reglasFallback();
             }
@@ -424,7 +428,11 @@ require_once __DIR__ . '/../../i18n/i18n.php';
         function actualizarFiltroValor() {
             const campo = document.getElementById('filtroCampo').value;
             const select = document.getElementById('filtroValorSelect');
-            select.style.display = campo ? 'inline-block' : 'none';
+            if (campo) {
+                select.style.display = 'inline-block';
+            } else {
+                select.style.display = 'none';
+            }
             if (!campo) return;
             const labels = { estado: LABELS_ESTADO, tipo: LABELS_TIPO, prioridad: LABELS_PRIORIDAD }[campo];
             const valores = (reglas[campo] && reglas[campo].valores) || Object.keys(labels);
@@ -506,18 +514,43 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             }
 
             noRes.style.display = 'none';
-            count.textContent = `${incidenciasActuales.length} resultado${incidenciasActuales.length !== 1 ? 's' : ''}`;
+            let sufijoResultado;
+            if (incidenciasActuales.length !== 1) {
+                sufijoResultado = 's';
+            } else {
+                sufijoResultado = '';
+            }
+            count.textContent = `${incidenciasActuales.length} resultado${sufijoResultado}`;
 
             incidenciasActuales.forEach(inc => {
+                let celdaFoto;
+                if (inc.url_imagen) {
+                    celdaFoto = `<button type="button" class="td-thumb-btn" data-action="foto" data-id="${inc.id_incidencia}" title="Ver foto"><img src="${escapeHtml(inc.url_imagen)}" alt="Foto de la incidencia" class="td-thumb"></button>`;
+                } else {
+                    celdaFoto = '—';
+                }
+                let celdaUrgente;
+                if (Number(inc.urgencia) === 1) {
+                    celdaUrgente = 'Sí';
+                } else {
+                    celdaUrgente = 'No';
+                }
+                let celdaCuadrilla;
+                if (inc.id_cuadrilla) {
+                    celdaCuadrilla = '#' + escapeHtml(inc.id_cuadrilla);
+                } else {
+                    celdaCuadrilla = '—';
+                }
+
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
     <td class="td-id" data-label="ID">${escapeHtml(inc.id_incidencia)}</td>
     <td data-label="Tipo">${escapeHtml(LABELS_TIPO[inc.tipo] || inc.tipo)}</td>
-    <td data-label="Foto">${inc.url_imagen ? `<button type="button" class="td-thumb-btn" data-action="foto" data-id="${inc.id_incidencia}" title="Ver foto"><img src="${escapeHtml(inc.url_imagen)}" alt="Foto de la incidencia" class="td-thumb"></button>` : '—'}</td>
+    <td data-label="Foto">${celdaFoto}</td>
     <td data-label="Prioridad"><span class="badge badge-${badgePrioridad(inc.prioridad)}">${escapeHtml(LABELS_PRIORIDAD[inc.prioridad] || inc.prioridad)}</span></td>
-    <td data-label="Urgente">${Number(inc.urgencia) === 1 ? 'Sí' : 'No'}</td>
+    <td data-label="Urgente">${celdaUrgente}</td>
     <td data-label="Estado"><span class="badge badge-${badgeEstado(inc.estado)}">${escapeHtml(LABELS_ESTADO[inc.estado] || inc.estado)}</span></td>
-    <td data-label="Cuadrilla">${inc.id_cuadrilla ? '#' + escapeHtml(inc.id_cuadrilla) : '—'}</td>
+    <td data-label="Cuadrilla">${celdaCuadrilla}</td>
     <td data-label="Apertura">${formatearFecha(inc.fecha_apertura)}</td>
     <td class="td-actions" data-label="Acciones">${accionesPorEstado(inc)}</td>
 `;
@@ -605,20 +638,33 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             try {
                 const res = await fetch(`${API_BASE}/incidencias/getContenedoresVinculados/${id}`);
                 const json = await res.json();
-                const contenedores = json.status === 'success' ? json.data : [];
+                let contenedores;
+                if (json.status === 'success') {
+                    contenedores = json.data;
+                } else {
+                    contenedores = [];
+                }
                 if (!contenedores.length) {
                     vacio.style.display = 'flex';
                     return;
                 }
-                tbody.innerHTML = contenedores.map(c => `
+                tbody.innerHTML = contenedores.map(c => {
+                    let celdaLlenado;
+                    if (c.nivel_llenado != null) {
+                        celdaLlenado = c.nivel_llenado + '%';
+                    } else {
+                        celdaLlenado = '—';
+                    }
+                    return `
                     <tr>
                         <td class="td-id">${escapeHtml(c.id_contenedor)}</td>
                         <td>${escapeHtml(c.calle)}</td>
                         <td>${escapeHtml(c.num_calle)}</td>
                         <td><span class="badge badge-neutral">${escapeHtml(c.estado)}</span></td>
-                        <td>${c.nivel_llenado != null ? c.nivel_llenado + '%' : '—'}</td>
+                        <td>${celdaLlenado}</td>
                     </tr>
-                `).join('');
+                `;
+                }).join('');
             } catch {
                 mostrarToast('No se pudieron cargar los contenedores vinculados', 'error');
             }
@@ -649,21 +695,33 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             const fb = document.getElementById('filterBar');
             const abierta = fb.style.display === 'none';
             ocultarControles();
-            fb.style.display = abierta ? 'block' : 'none';
+            if (abierta) {
+                fb.style.display = 'block';
+            } else {
+                fb.style.display = 'none';
+            }
         }
 
         function toggleBusquedaId() {
             const sb = document.getElementById('searchBar');
             const abierta = sb.style.display === 'none';
             ocultarControles();
-            sb.style.display = abierta ? 'block' : 'none';
+            if (abierta) {
+                sb.style.display = 'block';
+            } else {
+                sb.style.display = 'none';
+            }
         }
 
         function toggleAsignar() {
             const ab = document.getElementById('asignarBar');
             const abierta = ab.style.display === 'none';
             ocultarControles();
-            ab.style.display = abierta ? 'block' : 'none';
+            if (abierta) {
+                ab.style.display = 'block';
+            } else {
+                ab.style.display = 'none';
+            }
         }
 
         async function asignarCuadrillaDesdeBarra() {
@@ -707,8 +765,13 @@ require_once __DIR__ . '/../../i18n/i18n.php';
         }
 
         function setLoading(show) {
-            document.getElementById('loadingState').style.display = show ? 'flex' : 'none';
-            document.getElementById('incidenciasBody').style.opacity = show ? '0.3' : '1';
+            if (show) {
+                document.getElementById('loadingState').style.display = 'flex';
+                document.getElementById('incidenciasBody').style.opacity = '0.3';
+            } else {
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('incidenciasBody').style.opacity = '1';
+            }
         }
 
         function toggleMobileMenu() {

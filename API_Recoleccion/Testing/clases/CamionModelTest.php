@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../Modelo/camionModel.php';
+require_once __DIR__ . '/../../Modelo/camionModel.php';
 
 /**
  * Cubre la parte de CamionModel que es lógica pura (distancia Haversine y

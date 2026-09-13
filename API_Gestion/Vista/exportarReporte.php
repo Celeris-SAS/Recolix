@@ -35,7 +35,12 @@ $tipoIncLabels     = ['rotura' => 'Rotura', 'desborde' => 'Desborde', 'falta_rec
 $prioridadLabels   = ['baja' => 'Baja', 'media' => 'Media', 'alta' => 'Alta', 'critica' => 'Crítica'];
 $tipoVertLabels    = ['vertedero' => 'Vertedero', 'relleno_sanitario' => 'Relleno Sanitario'];
 $estadoVertLabels  = ['operativo' => 'Operativo', 'saturado' => 'Saturado', 'cerrado' => 'Cerrado'];
-$siNo              = function ($valor) { return $valor ? 'Sí' : 'No'; };
+$siNo              = function ($valor) {
+    if ($valor) {
+        return 'Sí';
+    }
+    return 'No';
+};
 
 switch ($tipo) {
     case 'zonas_criticas':
@@ -50,7 +55,11 @@ switch ($tipo) {
 
     case 'volumen':
         $rangosValidos = ['hoy', 'semana', 'mes', 'siempre'];
-        $rango = in_array($_GET['rango'] ?? '', $rangosValidos, true) ? $_GET['rango'] : 'siempre';
+        if (in_array($_GET['rango'] ?? '', $rangosValidos, true)) {
+            $rango = $_GET['rango'];
+        } else {
+            $rango = 'siempre';
+        }
         fputcsv($salida, ['Período', 'Tipo de Residuo', 'Total (kg)', 'Recolecciones']);
         foreach ($reporteModel->getVolumenPorTipoYPeriodo($rango) as $fila) {
             fputcsv($salida, [$fila['periodo'], $fila['tipoResiduo'], $fila['totalKg'], $fila['totalRecolecciones']]);
@@ -59,7 +68,11 @@ switch ($tipo) {
 
     case 'incidencias':
         $rangosValidos = ['hoy', 'semana', 'mes', 'siempre'];
-        $rango = in_array($_GET['rango'] ?? '', $rangosValidos, true) ? $_GET['rango'] : 'siempre';
+        if (in_array($_GET['rango'] ?? '', $rangosValidos, true)) {
+            $rango = $_GET['rango'];
+        } else {
+            $rango = 'siempre';
+        }
         $estadoIncLabels = ['abierta' => 'Abierta', 'asignada' => 'Asignada', 'resuelta' => 'Resuelta'];
         fputcsv($salida, ['Tipo', 'Prioridad', 'Estado', 'Fecha Apertura', 'Tiempo de Resolución (h)']);
         foreach ($reporteModel->getIncidenciasDetalle($rango) as $fila) {
@@ -74,8 +87,16 @@ switch ($tipo) {
 
     case 'frecuencia':
         $turnosValidos = ['mañana', 'tarde', 'noche'];
-        $turno = in_array($_GET['turno'] ?? '', $turnosValidos, true) ? $_GET['turno'] : null;
-        $dia   = trim($_GET['dia'] ?? '') !== '' ? $_GET['dia'] : null;
+        if (in_array($_GET['turno'] ?? '', $turnosValidos, true)) {
+            $turno = $_GET['turno'];
+        } else {
+            $turno = null;
+        }
+        if (trim($_GET['dia'] ?? '') !== '') {
+            $dia = $_GET['dia'];
+        } else {
+            $dia = null;
+        }
         fputcsv($salida, ['Circuito', 'Código', 'Municipio', 'Turno', 'Frecuencia', 'Levantes Completados']);
         foreach ($reporteModel->getFrecuenciaRecoleccion($turno, $dia) as $fila) {
             fputcsv($salida, [
@@ -108,7 +129,11 @@ switch ($tipo) {
 
     case 'usuarios':
         $rangosValidos = ['24h', 'semana', 'mes', 'siempre'];
-        $rango = in_array($_GET['rango'] ?? '', $rangosValidos, true) ? $_GET['rango'] : 'siempre';
+        if (in_array($_GET['rango'] ?? '', $rangosValidos, true)) {
+            $rango = $_GET['rango'];
+        } else {
+            $rango = 'siempre';
+        }
         fputcsv($salida, ['Período', 'Nuevos Usuarios', 'Vecinos', 'Operarios', 'Cuadrillas', 'Administradores']);
         foreach ($reporteModel->getEvolucionUsuarios($rango) as $fila) {
             fputcsv($salida, [

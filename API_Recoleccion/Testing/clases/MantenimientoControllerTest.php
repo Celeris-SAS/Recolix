@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../Controlador/mantenimientoController.php';
+require_once __DIR__ . '/../../Controlador/mantenimientoController.php';
 
 final class MantenimientoControllerTest extends RecoleccionTestCase
 {

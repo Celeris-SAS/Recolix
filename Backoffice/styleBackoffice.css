@@ -439,6 +439,31 @@ a { text-decoration: none; color: inherit; }
 
 .leyenda-en-ruta::before    { background: #2c7be5; }
 
+.leyenda-inc-critica::before { background: #c0392b; }
+.leyenda-inc-alta::before    { background: #e3b23c; }
+.leyenda-inc-media::before   { background: #2c4022; }
+.leyenda-inc-baja::before    { background: #4b5446; }
+
+.mapa-marcador-incidencia {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    border: 2px solid #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.35);
+}
+
+.mapa-marcador-incidencia span {
+    transform: rotate(45deg);
+    color: #fff;
+    font-weight: 800;
+    font-size: 12px;
+    line-height: 1;
+}
+
 .mapa-tabs {
     display: flex;
     justify-content: center;

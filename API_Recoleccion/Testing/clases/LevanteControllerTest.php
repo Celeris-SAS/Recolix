@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../Controlador/levanteController.php';
+require_once __DIR__ . '/../../Controlador/levanteController.php';
 
 final class LevanteControllerTest extends RecoleccionTestCase
 {

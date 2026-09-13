@@ -402,7 +402,10 @@ require_once __DIR__ . '/../../i18n/i18n.php';
         }
 
         function fuenteTipos() {
-            return tiposResiduo.length ? tiposResiduo : TIPOS_RESIDUO;
+            if (tiposResiduo.length) {
+                return tiposResiduo;
+            }
+            return TIPOS_RESIDUO;
         }
 
         function poblarSelectTipoResiduo() {
@@ -569,22 +572,37 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             const select = document.getElementById('filtroValorSelect');
             if (!tipo) { mostrarToast(I18N.msgSeleccionaFiltro, 'warning'); return; }
 
-            const valor = (select.style.display !== 'none' ? select.value : input.value).trim();
+            let valorCrudo;
+            if (select.style.display !== 'none') {
+                valorCrudo = select.value;
+            } else {
+                valorCrudo = input.value;
+            }
+            const valor = valorCrudo.trim();
             if (!valor) { mostrarToast(I18N.msgSeleccionaValorFiltro, 'warning'); return; }
 
             setLoading(true);
             try {
-                const url = (tipo === 'estado' && valor === 'critico')
-                    ? `${API_BASE}/contenedores/filtrarCriticos`
-                    : `${API_BASE}/contenedores?${tipo}=${encodeURIComponent(valor)}`;
+                let url;
+                if (tipo === 'estado' && valor === 'critico') {
+                    url = `${API_BASE}/contenedores/filtrarCriticos`;
+                } else {
+                    url = `${API_BASE}/contenedores?${tipo}=${encodeURIComponent(valor)}`;
+                }
                 const res = await fetch(url);
                 const json = await res.json();
                 if (json.status === 'success') {
                     renderTabla(json.data);
+                    let labelEstado;
+                    if (valor === 'critico') {
+                        labelEstado = I18N.filtroOptCritico;
+                    } else {
+                        labelEstado = `${I18N.filtroOptEstado}: ${valor}`;
+                    }
                     const labels = {
                         municipio: `${I18N.filtroOptMunicipio}: ${valor}`,
                         tipoResiduo: `${I18N.filtroOptTiporesiduo}: ${valor}`,
-                        estado: valor === 'critico' ? I18N.filtroOptCritico : `${I18N.filtroOptEstado}: ${valor}`
+                        estado: labelEstado
                     };
                     setTableTitle(`${I18N.filtroPrefijo} ${labels[tipo] || tipo}`);
                 } else {
@@ -712,11 +730,19 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 }
             }
 
+            let url, method;
+            if (id) {
+                url = `${API_BASE}/contenedores/${id}`;
+                method = 'PUT';
+            } else {
+                url = `${API_BASE}/contenedores`;
+                method = 'POST';
+            }
             try {
                 const res = await fetch(
-                    id ? `${API_BASE}/contenedores/${id}` : `${API_BASE}/contenedores`,
+                    url,
                     {
-                        method: id ? 'PUT' : 'POST',
+                        method: method,
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(body)
                     }
@@ -746,7 +772,13 @@ require_once __DIR__ . '/../../i18n/i18n.php';
 
             if (campo === 'estado') {
                 select.innerHTML = ['funcional', 'roto', 'desbordado', 'inactivo', 'en_deposito']
-                    .map((v, i) => `<option value="${v}"${i === 0 ? ' selected' : ''}>${formatearEstado(v)}</option>`)
+                    .map((v, i) => {
+                        let selected = '';
+                        if (i === 0) {
+                            selected = ' selected';
+                        }
+                        return `<option value="${v}"${selected}>${formatearEstado(v)}</option>`;
+                    })
                     .join('');
                 select.style.display = '';
             } else {
@@ -770,7 +802,13 @@ require_once __DIR__ . '/../../i18n/i18n.php';
 
             const input = document.getElementById('modificarValor');
             const select = document.getElementById('modificarValorSelect');
-            const valor = (select.style.display !== 'none' ? select : input).value.trim();
+            let campoValor;
+            if (select.style.display !== 'none') {
+                campoValor = select;
+            } else {
+                campoValor = input;
+            }
+            const valor = campoValor.value.trim();
             if (!valor) { mostrarToast(I18N.msgIngresaValor, 'warning'); return; }
 
             if (campo === 'estado') {
@@ -908,7 +946,13 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             }
 
             noRes.style.display = 'none';
-            count.textContent = `${contenedoresActuales.length} ${contenedoresActuales.length !== 1 ? I18N.resultadoPlural : I18N.resultadoSingular}`;
+            let etiquetaResultado;
+            if (contenedoresActuales.length !== 1) {
+                etiquetaResultado = I18N.resultadoPlural;
+            } else {
+                etiquetaResultado = I18N.resultadoSingular;
+            }
+            count.textContent = `${contenedoresActuales.length} ${etiquetaResultado}`;
 
             contenedoresActuales.forEach(c => {
                 const tipo = fuenteTipos().find(t => (t.id_tipo ?? t.id) === parseInt(c.id_tipo));
@@ -960,7 +1004,11 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             sb.style.display = 'none';
             mb.style.display = 'none';
             db.style.display = 'none';
-            fb.style.display = fb.style.display === 'none' ? 'block' : 'none';
+            if (fb.style.display === 'none') {
+                fb.style.display = 'block';
+            } else {
+                fb.style.display = 'none';
+            }
         }
 
         function toggleBusquedaId() {
@@ -971,7 +1019,11 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             fb.style.display = 'none';
             mb.style.display = 'none';
             db.style.display = 'none';
-            sb.style.display = sb.style.display === 'none' ? 'block' : 'none';
+            if (sb.style.display === 'none') {
+                sb.style.display = 'block';
+            } else {
+                sb.style.display = 'none';
+            }
         }
 
         function toggleModificar() {
@@ -982,7 +1034,11 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             fb.style.display = 'none';
             sb.style.display = 'none';
             db.style.display = 'none';
-            mb.style.display = mb.style.display === 'none' ? 'block' : 'none';
+            if (mb.style.display === 'none') {
+                mb.style.display = 'block';
+            } else {
+                mb.style.display = 'none';
+            }
         }
 
         function toggleDarDeBaja() {
@@ -993,7 +1049,11 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             fb.style.display = 'none';
             sb.style.display = 'none';
             mb.style.display = 'none';
-            db.style.display = db.style.display === 'none' ? 'block' : 'none';
+            if (db.style.display === 'none') {
+                db.style.display = 'block';
+            } else {
+                db.style.display = 'none';
+            }
         }
 
         function ocultarControles() {
@@ -1014,7 +1074,11 @@ require_once __DIR__ . '/../../i18n/i18n.php';
 
         function onOverlayClick(e, modalId) {
             if (e.target.id === modalId) {
-                modalId === 'modalForm' ? cerrarModal() : cerrarModalDelete();
+                if (modalId === 'modalForm') {
+                    cerrarModal();
+                } else {
+                    cerrarModalDelete();
+                }
             }
         }
 
@@ -1023,8 +1087,13 @@ require_once __DIR__ . '/../../i18n/i18n.php';
         }
 
         function setLoading(show) {
-            document.getElementById('loadingState').style.display = show ? 'flex' : 'none';
-            document.getElementById('contenedoresBody').style.opacity = show ? '0.3' : '1';
+            if (show) {
+                document.getElementById('loadingState').style.display = 'flex';
+                document.getElementById('contenedoresBody').style.opacity = '0.3';
+            } else {
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('contenedoresBody').style.opacity = '1';
+            }
         }
 
         function toggleMobileMenu() {
