@@ -8,11 +8,11 @@
          failOnDeprecation="true">
     <testsuites>
         <testsuite name="Unit">
-            <directory>.</directory>
-            <exclude>./Integration</exclude>
+            <directory suffix="ControllerTest.php">clases</directory>
+            <directory suffix="ModelTest.php">clases</directory>
         </testsuite>
         <testsuite name="Integration">
-            <directory>Integration</directory>
+            <directory suffix="IntegrationTest.php">clases</directory>
         </testsuite>
     </testsuites>
     <php>
