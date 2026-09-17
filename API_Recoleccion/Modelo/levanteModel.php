@@ -240,7 +240,24 @@ class LevanteModel {
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
 
+        $this->iniciarIncidenciasDeLaRuta($idLevante);
+
         return $this->getLevante($idLevante);
+    }
+
+    // Al salir la cuadrilla, las incidencias ya asignadas de los contenedores de esta
+    // ruta pasan a "en_curso": la cuadrilla las va a atender en el mismo recorrido.
+    private function iniciarIncidenciasDeLaRuta($idLevante) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "
+            UPDATE incidencia i
+            JOIN incidencia_contenedor ic ON ic.id_incidencia = i.id_incidencia
+            JOIN contenedor_levante cl ON cl.id_contenedor = ic.id_contenedor
+            SET i.estado = 'en_curso'
+            WHERE cl.id_levante = ? AND i.estado = 'asignada'
+        ");
+        mysqli_stmt_bind_param($stmt, "i", $idLevante);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
     }
 
     public function registrarContenedor($idLevante, $idContenedor, $estadoEncontrado, $peso, $motivo) {

@@ -135,6 +135,30 @@ final class LevanteModelIntegrationTest extends DbTestCase
         $model->iniciarLevante($idLevante);
     }
 
+    public function testIniciarLevantePasaAEnCursoLasIncidenciasAsignadasDeLaRuta(): void
+    {
+        [$model, $idLevante, , $contenedorId] = $this->levantePendiente();
+        $ciUsuario = $this->crearUsuario();
+        $idIncidencia = $this->crearIncidencia($ciUsuario, ['estado' => 'asignada']);
+        $this->vincularIncidenciaContenedor($idIncidencia, $contenedorId);
+
+        $model->iniciarLevante($idLevante);
+
+        $this->assertSame(1, $this->contarFilas('incidencia', "id_incidencia = $idIncidencia AND estado = 'en_curso'"));
+    }
+
+    public function testIniciarLevanteNoTocaIncidenciasQueNoEstanAsignadas(): void
+    {
+        [$model, $idLevante, , $contenedorId] = $this->levantePendiente();
+        $ciUsuario = $this->crearUsuario();
+        $idIncidencia = $this->crearIncidencia($ciUsuario, ['estado' => 'abierta']);
+        $this->vincularIncidenciaContenedor($idIncidencia, $contenedorId);
+
+        $model->iniciarLevante($idLevante);
+
+        $this->assertSame(1, $this->contarFilas('incidencia', "id_incidencia = $idIncidencia AND estado = 'abierta'"));
+    }
+
     public function testRegistrarContenedorTodoOkRequierePeso(): void
     {
         [$model, $idLevante, , $contenedorId] = $this->levantePendiente();
