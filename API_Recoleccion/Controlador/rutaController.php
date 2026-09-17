@@ -55,13 +55,46 @@
             ];
         }
 
+        // estado/estado_levante se derivan de los conteos de levante (en_curso/pendiente/
+        // completado) que trae SELECT_CON_LEVANTES. Se calculan acá (no en el modelo) y de
+        // forma centralizada para que el badge de estado sea el mismo sin importar por qué
+        // endpoint haya llegado la ruta (listado completo, por id, por circuito o filtrada).
+        private function calcularEstadoLevante($r) {
+            $enCurso = (int) ($r['en_curso_count'] ?? 0);
+            $pendientes = (int) ($r['pendiente_count'] ?? 0);
+            $completados = (int) ($r['completado_count'] ?? 0);
+            $totalLevantes = (int) ($r['levantes_count'] ?? 0);
+
+            if ($enCurso > 0) {
+                $estado = 'activa';
+                $estadoLevante = 'en_curso';
+            } elseif ($pendientes > 0) {
+                $estado = 'pendiente';
+                $estadoLevante = 'pendiente';
+            } elseif ($totalLevantes === 0) {
+                $estado = 'pendiente';
+                $estadoLevante = 'sin_levante';
+            } elseif ($completados > 0) {
+                $estado = 'finalizada';
+                $estadoLevante = 'completado';
+            } else {
+                $estado = 'finalizada';
+                $estadoLevante = 'cancelado';
+            }
+
+            $r['estado'] = $estado;
+            $r['estado_levante'] = $estadoLevante;
+            return $r;
+        }
+
         public function getAllRutas() {
-            return $this->rutaModel->getAllRutas();
+            return array_map([$this, 'calcularEstadoLevante'], $this->rutaModel->getAllRutas());
         }
 
         public function getRuta($id) {
             $id = $this->validarId($id);
-            return $this->rutaModel->getRuta($id);
+            $ruta = $this->rutaModel->getRuta($id);
+            return $ruta ? $this->calcularEstadoLevante($ruta) : $ruta;
         }
 
         public function insertRuta($circuitoId, $nombre, $actividad) {
@@ -90,17 +123,17 @@
 
         public function obtenerPorCircuito($circuitoId) {
             $circuitoId = $this->validarId($circuitoId);
-            return $this->rutaModel->obtenerPorCircuito($circuitoId);
+            return array_map([$this, 'calcularEstadoLevante'], $this->rutaModel->obtenerPorCircuito($circuitoId));
         }
 
         public function filtrarPorActividad($actividad) {
             $actividad = $this->validarString($actividad, 'Actividad');
-            return $this->rutaModel->filtrarPorActividad($actividad);
+            return array_map([$this, 'calcularEstadoLevante'], $this->rutaModel->filtrarPorActividad($actividad));
         }
 
         public function filtrarPorNombre($nombre) {
             $nombre = $this->validarString($nombre, 'Nombre');
-            return $this->rutaModel->filtrarPorNombre($nombre);
+            return array_map([$this, 'calcularEstadoLevante'], $this->rutaModel->filtrarPorNombre($nombre));
         }
 
         public function agregarContenedor($rutaId, $contenedorId, $ordenVisita) {
@@ -146,36 +179,7 @@
         public function obtenerResumen() {
             $rutas = $this->rutaModel->obtenerResumen();
             return array_map(function ($r) {
-                $enCurso = (int) $r['en_curso_count'];
-                $pendientes = (int) $r['pendiente_count'];
-                $completados = (int) $r['completado_count'];
-                $totalLevantes = (int) $r['levantes_count'];
-
-                if ($enCurso > 0) {
-                    $estado = 'activa';
-                } elseif ($pendientes > 0 || $totalLevantes === 0) {
-                    $estado = 'pendiente';
-                } else {
-                    $estado = 'finalizada';
-                }
-
-                // estado_levante es más granular que "estado": distingue completada de
-                // cancelada, y una ruta nunca planificada ("sin_levante") de una que ya
-                // tiene un levante pendiente. Se usa para filtrar/ordenar la tabla de rutas.
-                if ($enCurso > 0) {
-                    $estadoLevante = 'en_curso';
-                } elseif ($pendientes > 0) {
-                    $estadoLevante = 'pendiente';
-                } elseif ($totalLevantes === 0) {
-                    $estadoLevante = 'sin_levante';
-                } elseif ($completados > 0) {
-                    $estadoLevante = 'completado';
-                } else {
-                    $estadoLevante = 'cancelado';
-                }
-
-                $r['estado'] = $estado;
-                $r['estado_levante'] = $estadoLevante;
+                $r = $this->calcularEstadoLevante($r);
                 $r['llenado_promedio'] = $r['llenado_promedio'] !== null ? round((float) $r['llenado_promedio'], 1) : null;
                 $r['contenedores_count'] = (int) $r['contenedores_count'];
                 return $r;

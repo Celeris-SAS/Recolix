@@ -41,7 +41,10 @@ class RutaModel {
     // haya llegado la fila (listado completo, por id, o filtrada).
     private const SELECT_CON_LEVANTES = "
         SELECT r.*, ci.turno,
-               (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta) AS levantes_count
+               (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta) AS levantes_count,
+               (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta AND l.estado = 'en_curso') AS en_curso_count,
+               (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta AND l.estado = 'pendiente') AS pendiente_count,
+               (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta AND l.estado = 'completado') AS completado_count
         FROM ruta_recoleccion r
         LEFT JOIN circuito ci ON ci.id_circuito = r.id_circuito
     ";
