@@ -203,7 +203,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
 
             <a href="reporteDetalle.php?tipo=maquinaria" class="card-operar">
                 <div class="card-content">
-                    <div class="card-icon"><img src="../../Backoffice/img/centroAcopio.svg" alt="" class="card-svg-icon"></div>
+                    <div class="card-icon"><img src="../../Backoffice/img/centroAcopio.png" alt="" class="card-svg-icon"></div>
                     <h3><?= t('reportes.card_maquinaria_titulo') ?></h3>
                     <p><?= t('reportes.card_maquinaria_desc') ?></p>
                 </div>
