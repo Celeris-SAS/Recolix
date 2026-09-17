@@ -319,6 +319,7 @@
 
   <script>
     const API_USUARIOS = '/recolix/API_Usuarios';
+    const API_USUARIOS_ROUTER = '/recolix/API_Usuarios/api.php';
     const API_GESTION = '/recolix/API_Gestion';
     const I18N_LOCALE = <?= json_encode(t_locale()) ?>;
     const I18N = <?= json_encode(t_array([
@@ -455,7 +456,7 @@
         }
 
         try {
-          const resp = await fetch(`${API_USUARIOS}/solicitudes`, {
+          const resp = await fetch(`${API_USUARIOS_ROUTER}/solicitudes`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
