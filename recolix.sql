@@ -1480,6 +1480,11 @@ INSERT INTO `usuario` (`ci_usuario`, `id_municipio`, `primer_nombre`, `p_apellid
 (99999999, 7, 'Camila', 'Torres', 'camila.torres@recolix.uy', '099888999', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'cuadrilla', 'habilitado', '2026-03-05 08:30:00'),
 (10101010, 8, 'Nicolás', 'Castro', 'nicolas.castro@recolix.uy', '099999000', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'vecino', 'pendiente', '2026-08-01 07:00:00');
 
+CREATE TABLE `usuario_cuadrilla` (
+  `ci_usuario` int(11) NOT NULL,
+  `id_cuadrilla` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 --
 -- Indexes for dumped tables
 --
@@ -1656,6 +1661,10 @@ ALTER TABLE `tipo_residuo`
 ALTER TABLE `usuario`
   ADD PRIMARY KEY (`ci_usuario`),
   ADD KEY `id_municipio` (`id_municipio`);
+
+ALTER TABLE `usuario_cuadrilla`
+  ADD PRIMARY KEY (`ci_usuario`,`id_cuadrilla`),
+  ADD KEY `id_cuadrilla` (`id_cuadrilla`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -1886,6 +1895,13 @@ ALTER TABLE `ruta_recoleccion`
 --
 ALTER TABLE `usuario`
   ADD CONSTRAINT `usuario_ibfk_1` FOREIGN KEY (`id_municipio`) REFERENCES `municipio` (`id_municipio`) ON UPDATE CASCADE;
+
+--
+-- Constraints for table `usuario_cuadrilla`
+--
+ALTER TABLE `usuario_cuadrilla`
+  ADD CONSTRAINT `usuario_cuadrilla_ibfk_1` FOREIGN KEY (`ci_usuario`) REFERENCES `usuario` (`ci_usuario`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `usuario_cuadrilla_ibfk_2` FOREIGN KEY (`id_cuadrilla`) REFERENCES `cuadrilla` (`id_cuadrilla`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
