@@ -6,6 +6,7 @@
     "nav_mi_perfil": "My profile",
     "nav_abrir_menu": "Open menu",
     "nav_portal_empleados": "Employee portal",
+    "nav_volver_sitio": "Back to site",
     "footer_desc": "Urban waste management platform for Montevideo.",
     "footer_navegacion": "Navigation",
     "footer_inicio": "Home",
@@ -300,6 +301,7 @@
     "login_volver": "← Back to main page",
     "login_error_ci": "Enter your ID without dots or dashes (6 to 8 digits).",
     "login_error_contrasenia": "Enter your password.",
+    "login_error_credenciales": "Incorrect ID or password.",
     "login_error_conexion": "Error connecting to the server. Please try again later.",
 
     "mapa_title": "Map — Recolix",

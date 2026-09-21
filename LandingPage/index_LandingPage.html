@@ -52,7 +52,7 @@
 
       <div class="header-actions">
         <?php include __DIR__ . '/../i18n/switcher.php'; ?>
-        <a href="login.html" id="loginNavLink" class="btn btn-outline btn-sm"><?= t('common.nav_iniciar_sesion') ?></a>
+        <a href="login.php" id="loginNavLink" class="btn btn-outline btn-sm"><?= t('common.nav_iniciar_sesion') ?></a>
         <button class="hamburger" id="hamburgerBtn" aria-label="<?= htmlspecialchars(t('common.nav_abrir_menu')) ?>" aria-expanded="false">☰</button>
       </div>
 
@@ -496,12 +496,12 @@
           const resp = await fetch(`${API_USUARIOS}/sesion.php`);
           const data = await resp.json();
           if (!data.loggedIn) {
-            window.location.href = 'login.html';
+            window.location.href = 'login.php';
             return;
           }
           abrirModalReportar();
         } catch (e) {
-          window.location.href = 'login.html';
+          window.location.href = 'login.php';
         }
       });
 

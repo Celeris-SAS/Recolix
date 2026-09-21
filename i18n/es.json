@@ -6,6 +6,7 @@
     "nav_mi_perfil": "Mi perfil",
     "nav_abrir_menu": "Abrir menú",
     "nav_portal_empleados": "Portal de empleados",
+    "nav_volver_sitio": "Volver al sitio",
     "footer_desc": "Plataforma de gestión de residuos urbanos para Montevideo.",
     "footer_navegacion": "Navegación",
     "footer_inicio": "Inicio",
@@ -300,6 +301,7 @@
     "login_volver": "← Volver a la página principal",
     "login_error_ci": "Ingresá tu cédula sin puntos ni guiones (6 a 8 dígitos).",
     "login_error_contrasenia": "Ingresá tu contraseña.",
+    "login_error_credenciales": "Cédula o contraseña incorrecta.",
     "login_error_conexion": "Error al conectar con el servidor. Intentá de nuevo más tarde.",
 
     "mapa_title": "Mapa — Recolix",

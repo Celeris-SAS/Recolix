@@ -6,6 +6,7 @@
     "nav_mi_perfil": "Meu perfil",
     "nav_abrir_menu": "Abrir menu",
     "nav_portal_empleados": "Portal de funcionários",
+    "nav_volver_sitio": "Voltar ao site",
     "footer_desc": "Plataforma de gestão de resíduos urbanos de Montevidéu.",
     "footer_navegacion": "Navegação",
     "footer_inicio": "Início",
@@ -300,6 +301,7 @@
     "login_volver": "← Voltar à página principal",
     "login_error_ci": "Digite seu documento sem pontos ou traços (6 a 8 dígitos).",
     "login_error_contrasenia": "Digite sua senha.",
+    "login_error_credenciales": "Cédula ou senha incorreta.",
     "login_error_conexion": "Erro ao conectar com o servidor. Tente novamente mais tarde.",
 
     "mapa_title": "Mapa — Recolix",

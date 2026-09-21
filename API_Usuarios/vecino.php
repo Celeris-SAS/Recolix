@@ -3,7 +3,7 @@ session_start();
 require_once __DIR__ . '/../i18n/i18n.php';
 
 if (!isset($_SESSION['ci_usuario'])) {
-    header("Location: ../LandingPage/login.html");
+    header("Location: ../LandingPage/login.php");
     exit();
 }
 ?>
