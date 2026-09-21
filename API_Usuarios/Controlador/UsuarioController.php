@@ -145,8 +145,9 @@ class UsuarioController {
     }
 
 
-    public function getPerfil($ci) {
+        public function getPerfil($ci) {
         $ci = $this->validarCI($ci);
+        $this->verificarAccesoPerfil($ci);  
         $perfil = $this->usuarioModel->getPerfil($ci);
         if (!$perfil) {
             throw new InvalidArgumentException("No existe un usuario con la cédula $ci.");

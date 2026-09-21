@@ -18,8 +18,22 @@ $config = [
             'insertMethod' => 'crearSolicitud',
             'updateMethod' => null,
             'deleteMethod' => null,
+
             'actions' => ['reglasValidacion', 'getSolicitudesPendientes', 'aprobar', 'rechazar'],
             'filters' => []
+            'actions' => ['reglasValidacion', 'getSolicitudesPendientes', 'aprobar', 'rechazar'],
+            'filters' => [],
+            'rolesAccion' => [
+                'reglasValidacion'          => null,
+                'getSolicitudesPendientes'  => ['administrador'],
+                'aprobar'                   => ['administrador'],
+                'rechazar'                  => ['administrador'],
+            ],
+            'rolesMetodo' => [
+                'POST' => null, // crearSolicitud: alta pública de vecino
+            ],
+        ],
+
         ],
 
 
@@ -46,7 +60,28 @@ $config = [
                 'cambiarAcceso',
                 'setMunicipio'
             ],
-            'filters' => []
+            'filters' => [],
+            'rolesAccion' => [
+                'login'                   => null,
+                'logout'                  => '*',
+                'reglasValidacion'        => null,
+                'cambiarContrasenia'      => '*',
+                'getIncidencias'          => '*',
+                'getNotificaciones'       => '*',
+                'marcarNotificacionLeida' => '*',
+                'setMunicipio'            => '*',
+                'filtrarRol'              => ['administrador'],
+                'filtrarAcceso'           => ['administrador'],
+                'cambiarRol'              => ['administrador'],
+                'cambiarAcceso'           => ['administrador'],
+            ],
+              'rolesMetodo' => [
+                'GET'    => '*',
+                'POST'   => ['administrador'],
+                'PUT'    => '*',
+                'DELETE' => ['administrador'],
+            ],
+        ],
         ],
 
         'cuadrillas' => [
@@ -67,17 +102,60 @@ $config = [
                 'obtenerHistorial'
             ],
             'filters' => []
-        ]
-
-    ]
+              'rolesAccion' => [
+                'reglasValidacion'      => null,
+                'esDisponible'          => '*',
+                'filtrarEstado'         => '*',
+                'filtrarMunicipio'      => '*',
+                'filtrarDisponibilidad' => '*',
+                'obtenerHistorial'      => ['administrador'],
+            ],
+            'rolesMetodo' => [
+                'GET'    => '*',
+                'POST'   => ['administrador'],
+                'PUT'    => ['administrador'],
+                'DELETE' => ['administrador'],
+            ],
+          ]
 ];
+
+function verificarPermiso($rolesRequeridos) {
+    if ($rolesRequeridos === null) return;
+
+    $rol = $_SESSION['usuario']['rol'] ?? null;
+    if (!$rol) {
+        http_response_code(401);
+        echo json_encode(['status' => 'error', 'message' => 'No autenticado']);
+        exit;
+    }
+    if ($rolesRequeridos === '*') return;
+
+    if (!in_array($rol, $rolesRequeridos)) {
+        http_response_code(403);
+        echo json_encode(['status' => 'error', 'message' => 'No tenés permiso para esta acción']);
+        exit;
+    }
+}
 
 $method = $_SERVER['REQUEST_METHOD'];
 $uri    = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); 
 
 $basePath = $config['base_path']; 
+    if (isset($_GET['action']) && $_GET['action']) {
+        $action = $_GET['action'];
+    }
 
-// DEBUG TEMPORAL - borrar después
+    // ← ACÁ, antes del debug y del "if ($action && ...)"
+    $rolesAccion = $resourceConfig['rolesAccion'] ?? [];
+    $rolesMetodo = $resourceConfig['rolesMetodo'] ?? [];
+
+    if ($action) {
+        verificarPermiso($rolesAccion[$action] ?? ['administrador']);
+    } else {
+        verificarPermiso($rolesMetodo[$method] ?? ['administrador']);
+    }
+
+    // Debug de acción
 if (isset($_GET['debug'])) {
     $relativePath = (strpos($uri, $basePath) === 0) ? substr($uri, strlen($basePath)) : 'NO COINCIDE';
     $uriSegments = explode('/', trim($relativePath, '/'));
