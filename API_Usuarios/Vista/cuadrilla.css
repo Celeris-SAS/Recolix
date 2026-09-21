@@ -493,14 +493,3 @@
     padding: 20px;
   }
 }
-/* ==========================================================================
-   Forzar menú hamburguesa siempre visible en esta vista
-   ========================================================================== */
-
-.nav-links {
-  display: none !important;
-}
-
-.nav-hamburger {
-  display: flex !important;
-}
