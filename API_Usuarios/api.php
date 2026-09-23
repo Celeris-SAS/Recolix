@@ -6,8 +6,8 @@ header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('Access-Control-Allow-Headers: Content-Type');
 
 $config = [
-'base_path' => '/recolix/API_Usuarios/api.php/',    'resources' => [
-
+    'base_path' => '/recolix/API_Usuarios/api.php/',
+    'resources' => [
 
         'solicitudes' => [
             'singular'    => 'SolicitudRegistro',
@@ -18,9 +18,6 @@ $config = [
             'insertMethod' => 'crearSolicitud',
             'updateMethod' => null,
             'deleteMethod' => null,
-
-            'actions' => ['reglasValidacion', 'getSolicitudesPendientes', 'aprobar', 'rechazar'],
-            'filters' => []
             'actions' => ['reglasValidacion', 'getSolicitudesPendientes', 'aprobar', 'rechazar'],
             'filters' => [],
             'rolesAccion' => [
@@ -33,9 +30,6 @@ $config = [
                 'POST' => null, // crearSolicitud: alta pública de vecino
             ],
         ],
-
-        ],
-
 
         'usuarios' => [
             'singular'    => 'Usuario',
@@ -75,13 +69,12 @@ $config = [
                 'cambiarRol'              => ['administrador'],
                 'cambiarAcceso'           => ['administrador'],
             ],
-              'rolesMetodo' => [
+            'rolesMetodo' => [
                 'GET'    => '*',
                 'POST'   => ['administrador'],
                 'PUT'    => '*',
                 'DELETE' => ['administrador'],
             ],
-        ],
         ],
 
         'cuadrillas' => [
@@ -101,8 +94,8 @@ $config = [
                 'filtrarDisponibilidad',
                 'obtenerHistorial'
             ],
-            'filters' => []
-              'rolesAccion' => [
+            'filters' => [],
+            'rolesAccion' => [
                 'reglasValidacion'      => null,
                 'esDisponible'          => '*',
                 'filtrarEstado'         => '*',
@@ -116,11 +109,13 @@ $config = [
                 'PUT'    => ['administrador'],
                 'DELETE' => ['administrador'],
             ],
-          ]
+        ]
+
+    ]
 ];
 
 function verificarPermiso($rolesRequeridos) {
-    if ($rolesRequeridos === null) return;
+    if ($rolesRequeridos === null) return; // público
 
     $rol = $_SESSION['usuario']['rol'] ?? null;
     if (!$rol) {
@@ -128,7 +123,7 @@ function verificarPermiso($rolesRequeridos) {
         echo json_encode(['status' => 'error', 'message' => 'No autenticado']);
         exit;
     }
-    if ($rolesRequeridos === '*') return;
+    if ($rolesRequeridos === '*') return; // cualquier autenticado
 
     if (!in_array($rol, $rolesRequeridos)) {
         http_response_code(403);
@@ -138,24 +133,11 @@ function verificarPermiso($rolesRequeridos) {
 }
 
 $method = $_SERVER['REQUEST_METHOD'];
-$uri    = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); 
+$uri    = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-$basePath = $config['base_path']; 
-    if (isset($_GET['action']) && $_GET['action']) {
-        $action = $_GET['action'];
-    }
+$basePath = $config['base_path'];
 
-    // ← ACÁ, antes del debug y del "if ($action && ...)"
-    $rolesAccion = $resourceConfig['rolesAccion'] ?? [];
-    $rolesMetodo = $resourceConfig['rolesMetodo'] ?? [];
-
-    if ($action) {
-        verificarPermiso($rolesAccion[$action] ?? ['administrador']);
-    } else {
-        verificarPermiso($rolesMetodo[$method] ?? ['administrador']);
-    }
-
-    // Debug de acción
+// DEBUG TEMPORAL - borrar después
 if (isset($_GET['debug'])) {
     $relativePath = (strpos($uri, $basePath) === 0) ? substr($uri, strlen($basePath)) : 'NO COINCIDE';
     $uriSegments = explode('/', trim($relativePath, '/'));
@@ -171,7 +153,7 @@ if (isset($_GET['debug'])) {
     exit;
 }
 
-if (strpos($uri, $basePath) === 0) { 
+if (strpos($uri, $basePath) === 0) {
     $relativePath = substr($uri, strlen($basePath));
     $uriSegments  = explode('/', trim($relativePath, '/'));
 
@@ -189,9 +171,9 @@ if (strpos($uri, $basePath) === 0) {
 
     $controllerClass = $resourceConfig['controller'];
     try {
-        $controller = new $controllerClass(); 
+        $controller = new $controllerClass();
     } catch (Throwable $e) {
-        http_response_code(500); 
+        http_response_code(500);
         echo json_encode(['status' => 'error', 'message' => 'Error al inicializar controller: ' . $e->getMessage()]);
         exit;
     }
@@ -213,13 +195,23 @@ if (strpos($uri, $basePath) === 0) {
         $action = $_GET['action'];
     }
 
+    // ── Chequeo de permisos: acá, porque ya existen $resourceConfig, $action y $method ──
+    $rolesAccion = $resourceConfig['rolesAccion'] ?? [];
+    $rolesMetodo = $resourceConfig['rolesMetodo'] ?? [];
+
+    if ($action) {
+        verificarPermiso($rolesAccion[$action] ?? ['administrador']);
+    } else {
+        verificarPermiso($rolesMetodo[$method] ?? ['administrador']);
+    }
+
     if ($action && isset($resourceConfig['actions']) && in_array($action, $resourceConfig['actions']) && method_exists($controller, $action)) {
         $callParams = [];
         if ($id !== null) $callParams[] = $id;
-        
+
         // Leer el body una sola vez
         $bodyRaw = file_get_contents('php://input');
-        
+
         if ($method === 'GET') {
             $query = $_GET;
             unset($query['action']);
@@ -234,7 +226,7 @@ if (strpos($uri, $basePath) === 0) {
                 if (!empty($query)) $callParams = array_merge($callParams, array_values($query));
             }
         }
-        
+
         // Debug de acción
         if (isset($_GET['debug'])) {
             echo json_encode([
