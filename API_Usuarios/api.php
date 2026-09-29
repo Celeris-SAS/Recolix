@@ -200,10 +200,13 @@ if (strpos($uri, $basePath) === 0) {
     $rolesMetodo = $resourceConfig['rolesMetodo'] ?? [];
 
     if ($action) {
-        verificarPermiso($rolesAccion[$action] ?? ['administrador']);
+        $requerido = array_key_exists($action, $rolesAccion) ? $rolesAccion[$action] : ['administrador'];
+        verificarPermiso($requerido);
     } else {
-        verificarPermiso($rolesMetodo[$method] ?? ['administrador']);
+        $requerido = array_key_exists($method, $rolesMetodo) ? $rolesMetodo[$method] : ['administrador'];
+        verificarPermiso($requerido);
     }
+
 
     if ($action && isset($resourceConfig['actions']) && in_array($action, $resourceConfig['actions']) && method_exists($controller, $action)) {
         $callParams = [];
