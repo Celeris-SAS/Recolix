@@ -58,6 +58,7 @@
                 'cuadrillaId' => ['tipo' => 'entero', 'min' => 1, 'label' => 'ID de la cuadrilla'],
                 'horaSalida' => ['tipo' => 'texto', 'label' => 'Hora de salida'],
                 'horaLevante' => ['tipo' => 'texto', 'label' => 'Fecha del levante'],
+                'centroId' => ['tipo' => 'entero', 'min' => 1, 'label' => 'Sitio de disposición final'],
                 'contenedorId' => ['tipo' => 'entero', 'min' => 1, 'label' => 'ID del contenedor'],
                 'estadoEncontrado' => ['max' => 30, 'label' => 'Estado encontrado'],
                 'peso' => ['tipo' => 'entero', 'min' => 0, 'label' => 'Peso'],
@@ -83,10 +84,11 @@
             return $this->levanteModel->obtenerCuadrillas();
         }
 
-        public function planificar($rutaId, $camionId, $cuadrillaId, $horaSalida = null, $horaLevante = null) {
+        public function planificar($rutaId, $camionId, $cuadrillaId, $horaSalida = null, $horaLevante = null, $centroId = null) {
             $rutaId = $this->validarId($rutaId);
             $camionId = $this->validarId($camionId);
             $cuadrillaId = $this->validarId($cuadrillaId);
+            $centroId = ($centroId !== null && $centroId !== '') ? $this->validarId($centroId) : null;
 
             if ($horaSalida === null || $horaSalida === '') {
                 $horaSalida = date('Y-m-d H:i:s');
@@ -95,7 +97,7 @@
                 $horaLevante = date('Y-m-d');
             }
 
-            return $this->levanteModel->planificarLevante($rutaId, $camionId, $cuadrillaId, $horaSalida, $horaLevante);
+            return $this->levanteModel->planificarLevante($rutaId, $camionId, $cuadrillaId, $horaSalida, $horaLevante, $centroId);
         }
 
         public function iniciar($id) {

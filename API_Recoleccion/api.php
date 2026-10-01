@@ -104,7 +104,8 @@ $config = [
                 'obtenerCuadrillas',
                 'obtenerLevantes',
                 'generarOptima',
-                'obtenerResumen'
+                'obtenerResumen',
+                'obtenerCargaEstimada'
             ],
             'filters' => [
                 'circuitoId' => 'obtenerPorCircuito',
@@ -162,6 +163,16 @@ $config = [
                 'actividad' => 'filtrarPorActividad',
                 'frecuencia' => 'filtrarPorFrecuencia',
                 'dia' => 'filtrarPorDia'
+            ]
+        ],
+        'centros' => [
+            'singular' => 'Centro',
+            'controller' => 'CentroController',
+            'file' => 'Controlador/centroController.php',
+            'getAllMethod' => 'getAllCentros',
+            'getMethod' => 'getCentro',
+            'actions' => [
+                'filtrarOperativos'
             ]
         ],
     ]

@@ -25,6 +25,7 @@ abstract class DbTestCase extends RecoleccionTestCase
         'ruta_contenedor',
         'ruta_cuadrilla',
         'mantenimiento',
+        'centro_levante',
         'levante',
         'camion_centro',
         'contenedor',
@@ -109,6 +110,25 @@ abstract class DbTestCase extends RecoleccionTestCase
         $conn = $this->conn();
         $stmt = $conn->prepare('INSERT INTO camion (matricula, tipo_carga, capacidad, anio, modelo, estado) VALUES (?, ?, ?, ?, ?, ?)');
         $stmt->bind_param('ssiiss', $datos['matricula'], $datos['tipo_carga'], $datos['capacidad'], $datos['anio'], $datos['modelo'], $datos['estado']);
+        $stmt->execute();
+        $id = $conn->insert_id;
+        $stmt->close();
+        return $id;
+    }
+
+    protected function crearCentro(array $overrides = []): int
+    {
+        $municipioId = $overrides['id_municipio'] ?? $this->crearMunicipio();
+        $datos = array_merge([
+            'id_municipio' => $municipioId,
+            'nombre' => 'Centro Test',
+            'tipo' => 'relleno_sanitario',
+            'estado' => 'operativo',
+        ], $overrides);
+
+        $conn = $this->conn();
+        $stmt = $conn->prepare('INSERT INTO centro_acopio (id_municipio, nombre, tipo, estado) VALUES (?, ?, ?, ?)');
+        $stmt->bind_param('isss', $datos['id_municipio'], $datos['nombre'], $datos['tipo'], $datos['estado']);
         $stmt->execute();
         $id = $conn->insert_id;
         $stmt->close();
