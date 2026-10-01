@@ -303,6 +303,8 @@
     "login_error_contrasenia": "Ingresá tu contraseña.",
     "login_error_credenciales": "Cédula o contraseña incorrecta.",
     "login_error_conexion": "Error al conectar con el servidor. Intentá de nuevo más tarde.",
+    "login_error_no_autorizado": "Tu cuenta no tiene permisos para acceder al portal de empleados.",
+
 
     "mapa_title": "Mapa — Recolix",
     "mapa_titulo": "Mapa operativo",
