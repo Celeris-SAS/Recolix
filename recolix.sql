@@ -20,7 +20,7 @@ SET time_zone = "+00:00";
 --
 -- Database: `recolix`
 --
-DROP DATABASE `recolix` IF EXISTS;
+DROP DATABASE IF EXISTS `recolix`;
 CREATE DATABASE IF NOT EXISTS `recolix` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `recolix`;
 
