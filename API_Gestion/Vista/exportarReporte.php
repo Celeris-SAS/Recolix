@@ -11,6 +11,8 @@ $tiposExportables = [
     'vertederos'     => 'Capacidad de los Vertederos',
     'clasificacion'  => 'Clasificación y Reciclaje de Residuos',
     'usuarios'       => 'Usuarios Registrados',
+    'camiones'       => 'Disponibilidad y Uso de la Flota',
+    'maquinaria'     => 'Disponibilidad de Maquinaria',
 ];
 
 $tipo = $_GET['tipo'] ?? '';
@@ -35,6 +37,17 @@ $tipoIncLabels     = ['rotura' => 'Rotura', 'desborde' => 'Desborde', 'falta_rec
 $prioridadLabels   = ['baja' => 'Baja', 'media' => 'Media', 'alta' => 'Alta', 'critica' => 'Crítica'];
 $tipoVertLabels    = ['vertedero' => 'Vertedero', 'relleno_sanitario' => 'Relleno Sanitario'];
 $estadoVertLabels  = ['operativo' => 'Operativo', 'saturado' => 'Saturado', 'cerrado' => 'Cerrado'];
+$estadoCamionLabels = [
+    'disponible' => 'Disponible', 'en_ruta' => 'En Ruta', 'en_mantenimiento' => 'En Mantenimiento',
+    'de_baja' => 'De Baja', 'en_deposito' => 'En Depósito',
+];
+$tipoMaquinariaLabels = [
+    'compactadora' => 'Compactadora', 'cinta' => 'Cinta Transportadora', 'pala' => 'Pala Mecánica',
+    'bascula' => 'Báscula', 'herramienta' => 'Herramienta', 'otro' => 'Otro',
+];
+$estadoMaquinariaLabels = [
+    'operativa' => 'Operativa', 'en_mantenimiento' => 'En Mantenimiento', 'fuera_servicio' => 'Fuera de Servicio',
+];
 $siNo              = function ($valor) {
     if ($valor) {
         return 'Sí';
@@ -139,6 +152,35 @@ switch ($tipo) {
             fputcsv($salida, [
                 $fila['periodo'], $fila['nuevosUsuarios'], $fila['vecinos'],
                 $fila['operarios'], $fila['cuadrillas'], $fila['administradores'],
+            ]);
+        }
+        break;
+
+    case 'camiones':
+        $rangosValidos = ['hoy', 'semana', 'mes', 'siempre'];
+        if (in_array($_GET['rango'] ?? '', $rangosValidos, true)) {
+            $rango = $_GET['rango'];
+        } else {
+            $rango = 'siempre';
+        }
+        fputcsv($salida, ['Matrícula', 'Modelo', 'Tipo de Carga', 'Estado', 'Viajes Completados', 'Recolectado (kg)', 'Horas en Ruta', 'Horas en Mantenimiento']);
+        foreach ($reporteModel->getDisponibilidadCamiones($rango) as $fila) {
+            fputcsv($salida, [
+                $fila['matricula'], $fila['modelo'], $fila['tipoCarga'],
+                $estadoCamionLabels[$fila['estado']] ?? $fila['estado'],
+                $fila['viajesCompletados'], $fila['kgRecolectados'],
+                $fila['horasEnRuta'], $fila['horasMantenimiento'],
+            ]);
+        }
+        break;
+
+    case 'maquinaria':
+        fputcsv($salida, ['Nombre', 'Tipo', 'Centro de Acopio', 'Municipio', 'Estado', 'Fecha de Adquisición']);
+        foreach ($reporteModel->getDisponibilidadMaquinaria() as $fila) {
+            fputcsv($salida, [
+                $fila['nombre'], $tipoMaquinariaLabels[$fila['tipo']] ?? $fila['tipo'],
+                $fila['centro'], $fila['municipio'],
+                $estadoMaquinariaLabels[$fila['estado']] ?? $fila['estado'], $fila['fechaAdquisicion'],
             ]);
         }
         break;

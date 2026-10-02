@@ -1093,6 +1093,22 @@ INSERT INTO `incidencia_contenedor` (`id_incidencia`, `id_contenedor`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `centro_levante`
+--
+-- Destino final (sitio de disposición) elegido para un levante al planificarlo: una vez
+-- que el camión termina de recorrer la ruta, debe dirigirse ahí como última parada.
+-- No es lo mismo que `camion_centro`, que registra ingresos ya ocurridos (con peso y
+-- fecha reales); esta tabla guarda el destino planeado antes de que eso pase.
+--
+
+CREATE TABLE `centro_levante` (
+  `id_levante` int(11) NOT NULL,
+  `id_centro` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `levante`
 --
 
@@ -1574,6 +1590,13 @@ ALTER TABLE `incidencia_contenedor`
   ADD KEY `id_contenedor` (`id_contenedor`);
 
 --
+-- Indexes for table `centro_levante`
+--
+ALTER TABLE `centro_levante`
+  ADD PRIMARY KEY (`id_levante`),
+  ADD KEY `id_centro` (`id_centro`);
+
+--
 -- Indexes for table `levante`
 --
 ALTER TABLE `levante`
@@ -1836,6 +1859,13 @@ ALTER TABLE `incidencia`
 ALTER TABLE `incidencia_contenedor`
   ADD CONSTRAINT `incidencia_contenedor_ibfk_1` FOREIGN KEY (`id_incidencia`) REFERENCES `incidencia` (`id_incidencia`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `incidencia_contenedor_ibfk_2` FOREIGN KEY (`id_contenedor`) REFERENCES `contenedor` (`id_contenedor`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `centro_levante`
+--
+ALTER TABLE `centro_levante`
+  ADD CONSTRAINT `centro_levante_ibfk_1` FOREIGN KEY (`id_levante`) REFERENCES `levante` (`id_levante`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `centro_levante_ibfk_2` FOREIGN KEY (`id_centro`) REFERENCES `centro_acopio` (`id_centro`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `levante`

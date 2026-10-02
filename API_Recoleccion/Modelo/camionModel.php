@@ -153,16 +153,24 @@ class CamionModel
         return $camiones;
     }
 
-    public function filtrarDisponibilidad()
+    public function filtrarDisponibilidad($capacidadMinima = null)
     {
-        $stmt = mysqli_prepare($this->conn->getConexion(), "
+        $sql = "
             SELECT c.* FROM camion c
             WHERE c.estado = 'disponible'
               AND NOT EXISTS (
                   SELECT 1 FROM levante l
                   WHERE l.id_camion = c.id_camion AND l.estado IN ('pendiente', 'en_curso')
               )
-        ");
+        ";
+        if ($capacidadMinima !== null) {
+            $sql .= " AND c.capacidad >= ?";
+        }
+
+        $stmt = mysqli_prepare($this->conn->getConexion(), $sql);
+        if ($capacidadMinima !== null) {
+            mysqli_stmt_bind_param($stmt, "i", $capacidadMinima);
+        }
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
         $camiones = [];

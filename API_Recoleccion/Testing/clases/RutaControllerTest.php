@@ -181,4 +181,76 @@ final class RutaControllerTest extends RecoleccionTestCase
 
         $this->assertNull($resultado[0]['llenado_promedio']);
     }
+
+    private function contenedorElegible($id, $capacidad, $nivelLlenado, $lat = 0, $lon = 0): array
+    {
+        return [
+            'id_contenedor' => $id,
+            'capacidad' => $capacidad,
+            'nivel_llenado' => $nivelLlenado,
+            'latitud' => $lat,
+            'longitud' => $lon,
+        ];
+    }
+
+    public function testLimitarPorCapacidadDescartaContenedorQueExcedeCapacidadDisponible(): void
+    {
+        $controller = $this->controller();
+        // 4000kg (80% de 5000) + 2000kg (100% de 2000) superaría los 5000kg de referencia:
+        // el segundo contenedor no debe entrar en la ruta.
+        $elegibles = [
+            $this->contenedorElegible(1, 5000, 80),
+            $this->contenedorElegible(2, 2000, 100),
+        ];
+
+        $orden = $this->callPrivate($controller, 'limitarPorCapacidad', [[1, 2], $elegibles]);
+
+        $this->assertSame([1], $orden);
+    }
+
+    public function testLimitarPorCapacidadSigueEvaluandoContenedoresMasChicosLuegoDeDescartarUno(): void
+    {
+        $controller = $this->controller();
+        // Tras descartar el contenedor 2 (no entra), el 3 (500kg) sí entra porque
+        // la carga acumulada sigue en 4000kg.
+        $elegibles = [
+            $this->contenedorElegible(1, 5000, 80),
+            $this->contenedorElegible(2, 2000, 100),
+            $this->contenedorElegible(3, 500, 100),
+        ];
+
+        $orden = $this->callPrivate($controller, 'limitarPorCapacidad', [[1, 2, 3], $elegibles]);
+
+        $this->assertSame([1, 3], $orden);
+    }
+
+    public function testLimitarPorCapacidadDevuelveVacioSiElPrimerContenedorYaExcede(): void
+    {
+        $controller = $this->controller();
+        $elegibles = [$this->contenedorElegible(1, 6000, 100)];
+
+        $orden = $this->callPrivate($controller, 'limitarPorCapacidad', [[1], $elegibles]);
+
+        $this->assertSame([], $orden);
+    }
+
+    public function testObtenerCargaEstimadaSumaPesoDeTodosLosContenedoresDeLaRuta(): void
+    {
+        $controller = $this->controller();
+        $stub = new class {
+            public function obtenerContenedores($rutaId)
+            {
+                return [
+                    ['capacidad' => 1000, 'nivel_llenado' => 50],
+                    ['capacidad' => 2000, 'nivel_llenado' => 25],
+                ];
+            }
+        };
+        $this->setPrivateProperty($controller, 'rutaModel', $stub);
+
+        $resultado = $controller->obtenerCargaEstimada(1);
+
+        $this->assertSame(1000.0, $resultado['peso_estimado_kg']);
+        $this->assertSame(2, $resultado['contenedores_count']);
+    }
 }

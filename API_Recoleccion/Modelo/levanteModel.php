@@ -62,10 +62,12 @@ class LevanteModel {
 
     public function getAllLevantes() {
         $stmt = mysqli_prepare($this->conn->getConexion(), "
-            SELECT l.*, c.matricula, cu.id_municipio
+            SELECT l.*, c.matricula, cu.id_municipio, ce.nombre AS centro_nombre
             FROM levante l
             LEFT JOIN camion c ON c.id_camion = l.id_camion
             LEFT JOIN cuadrilla cu ON cu.id_cuadrilla = l.id_cuadrilla
+            LEFT JOIN centro_levante lc ON lc.id_levante = l.id_levante
+            LEFT JOIN centro_acopio ce ON ce.id_centro = lc.id_centro
             ORDER BY l.hora_levante DESC, l.id_levante DESC
         ");
         mysqli_stmt_execute($stmt);
@@ -80,9 +82,11 @@ class LevanteModel {
 
     public function obtenerPorRuta($idRuta) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "
-            SELECT l.*, c.matricula
+            SELECT l.*, c.matricula, ce.nombre AS centro_nombre
             FROM levante l
             LEFT JOIN camion c ON c.id_camion = l.id_camion
+            LEFT JOIN centro_levante lc ON lc.id_levante = l.id_levante
+            LEFT JOIN centro_acopio ce ON ce.id_centro = lc.id_centro
             WHERE l.id_ruta = ?
             ORDER BY l.hora_salida DESC
         ");
@@ -97,7 +101,7 @@ class LevanteModel {
         return $levantes;
     }
 
-    public function planificarLevante($idRuta, $idCamion, $idCuadrilla, $horaSalida, $horaLevante) {
+    public function planificarLevante($idRuta, $idCamion, $idCuadrilla, $horaSalida, $horaLevante, $idCentro = null) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT activa FROM ruta_recoleccion WHERE id_ruta = ?");
         mysqli_stmt_bind_param($stmt, "i", $idRuta);
         mysqli_stmt_execute($stmt);
@@ -160,6 +164,21 @@ class LevanteModel {
             throw new InvalidArgumentException("El camión ya tiene un levante pendiente o en curso");
         }
 
+        if ($idCentro !== null) {
+            $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT estado FROM centro_acopio WHERE id_centro = ?");
+            mysqli_stmt_bind_param($stmt, "i", $idCentro);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+            $centro = mysqli_fetch_assoc($result);
+            mysqli_stmt_close($stmt);
+            if (!$centro) {
+                throw new InvalidArgumentException("Sitio de disposición final no encontrado");
+            }
+            if ($centro['estado'] !== 'operativo') {
+                throw new InvalidArgumentException("El sitio de disposición final seleccionado no está operativo");
+            }
+        }
+
         $stmt = mysqli_prepare($this->conn->getConexion(), "
             INSERT INTO levante (id_camion, id_cuadrilla, id_ruta, hora_salida, hora_levante, estado)
             VALUES (?, ?, ?, ?, ?, 'pendiente')
@@ -175,6 +194,16 @@ class LevanteModel {
         mysqli_stmt_close($stmt);
 
         $this->precargarContenedores($idLevante, $idRuta);
+
+        // El destino final elegido queda registrado en centro_levante (no en camion_centro,
+        // que es solo para ingresos ya ocurridos con peso y fecha reales): una vez que el
+        // camión termina la ruta, debe dirigirse a este centro como última parada.
+        if ($idCentro !== null) {
+            $stmt = mysqli_prepare($this->conn->getConexion(), "INSERT INTO centro_levante (id_levante, id_centro) VALUES (?, ?)");
+            mysqli_stmt_bind_param($stmt, "ii", $idLevante, $idCentro);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_close($stmt);
+        }
 
         return $this->getLevante($idLevante);
     }
@@ -240,7 +269,24 @@ class LevanteModel {
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
 
+        $this->iniciarIncidenciasDeLaRuta($idLevante);
+
         return $this->getLevante($idLevante);
+    }
+
+    // Al salir la cuadrilla, las incidencias ya asignadas de los contenedores de esta
+    // ruta pasan a "en_curso": la cuadrilla las va a atender en el mismo recorrido.
+    private function iniciarIncidenciasDeLaRuta($idLevante) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "
+            UPDATE incidencia i
+            JOIN incidencia_contenedor ic ON ic.id_incidencia = i.id_incidencia
+            JOIN contenedor_levante cl ON cl.id_contenedor = ic.id_contenedor
+            SET i.estado = 'en_curso'
+            WHERE cl.id_levante = ? AND i.estado = 'asignada'
+        ");
+        mysqli_stmt_bind_param($stmt, "i", $idLevante);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
     }
 
     public function registrarContenedor($idLevante, $idContenedor, $estadoEncontrado, $peso, $motivo) {
