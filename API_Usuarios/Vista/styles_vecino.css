@@ -784,3 +784,16 @@ input:focus {
     justify-content: flex-end;
     margin-top: 20px;
 }
+.logout {
+    gap: 10px;
+}
+
+.btn-peligro {
+    border: 2px solid var(--status-crit);
+    color: var(--status-crit);
+}
+
+.btn-peligro:hover {
+    background: var(--status-crit);
+    color: var(--white);
+}

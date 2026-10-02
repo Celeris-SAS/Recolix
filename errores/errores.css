@@ -1,0 +1,92 @@
+:root {
+  --ink: #1c2117;
+  --ink-soft: #4b5446;
+  --moss: #3f5a33;
+  --moss-dark: #2c4022;
+  --leaf: #8bbd3f;
+  --paper: #f6f5ef;
+  --paper-dim: #ece9df;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 16px;
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--paper);
+  text-align: center;
+  -webkit-font-smoothing: antialiased;
+}
+
+.error-wrap {
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.error-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--moss);
+}
+
+.error-logo img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.error-codigo {
+  font-family: var(--font-display);
+  font-size: clamp(4.5rem, 20vw, 7rem);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--moss);
+}
+
+.error-titulo {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.error-desc {
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.btn-volver {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.7rem 1.5rem;
+  background: var(--moss);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.btn-volver:hover {
+  background: var(--moss-dark);
+}

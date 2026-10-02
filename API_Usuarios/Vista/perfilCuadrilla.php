@@ -87,6 +87,16 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 <h3><?= t('perfil.titulo_editar') ?></h3>
                 <p class="form-nota"><?= t('perfil.nota_editar') ?></p>
                 <div class="form-row">
+                    <label for="editNombre"><?= t('perfil.field_nombre') ?></label>
+                    <input type="text" id="editNombre" name="nombre" maxlength="50">
+                    <p class="error-msg" id="editNombreError"></p>
+                </div>
+                <div class="form-row">
+                    <label for="editApellido"><?= t('perfil.field_apellido') ?></label>
+                    <input type="text" id="editApellido" name="apellido" maxlength="50">
+                    <p class="error-msg" id="editApellidoError"></p>
+                </div>
+                <div class="form-row">
                     <label for="editEmail"><?= t('perfil.field_email') ?></label>
                     <input type="email" id="editEmail" name="email" placeholder="<?= htmlspecialchars(t('perfil.field_email_ph')) ?>">
                     <p class="error-msg" id="editEmailError"></p>
@@ -122,7 +132,26 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 <p class="form-feedback" id="contraFeedback"></p>
             </div>
 
+            <div class="panel-card" id="borrarCuentaConfirm" hidden>
+                <h3><?= t('perfil.titulo_borrar_cuenta') ?></h3>
+                <p class="form-nota"><?= t('perfil.nota_borrar_cuenta') ?></p>
+                <div class="form-actions">
+                    <button class="btn btn-peligro" id="confirmarBorrarBtn"><?= t('perfil.btn_confirmar_borrar') ?></button>
+                    <button class="btn btn-outline btn-sm" id="cancelarBorrarBtn"><?= t('perfil.btn_cancelar') ?></button>
+                </div>
+                <p class="form-feedback" id="borrarFeedback"></p>
+            </div>
+
+            <div class="panel-card" id="borrarCuentaTrabajador" hidden>
+                <h3><?= t('perfil.titulo_borrar_trabajador') ?></h3>
+                <p class="form-nota"><?= t('perfil.nota_borrar_trabajador') ?></p>
+                <div class="form-actions">
+                    <button class="btn btn-outline btn-sm" id="cerrarAvisoTrabajadorBtn"><?= t('perfil.btn_entendido') ?></button>
+                </div>
+            </div>
+
             <div class="logout">
+                <button class="btn btn-peligro btn-sm" id="borrarCuentaBtn" data-ci="<?= htmlspecialchars((string) ($_SESSION['usuario']['ci_usuario'] ?? null)) ?>" data-es-vecino="<?= (false) ? '1' : '0' ?>" data-msg-error="<?= htmlspecialchars(t('perfil.msg_no_pudo_borrar')) ?>"><?= t('perfil.btn_borrar_cuenta') ?></button>
                 <button class="btn btn-outline btn-sm" id="logoutBtn"><?= t('perfil.btn_cerrar_sesion') ?></button>
             </div>
         </section>
@@ -169,6 +198,10 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
         const guardarPerfilBtn = document.getElementById('guardarPerfilBtn');
         const guardarContraBtn = document.getElementById('guardarContraBtn');
 
+        const editNombre = document.getElementById('editNombre');
+        const editApellido = document.getElementById('editApellido');
+        const editNombreError = document.getElementById('editNombreError');
+        const editApellidoError = document.getElementById('editApellidoError');
         const editEmail = document.getElementById('editEmail');
         const editTel = document.getElementById('editTel');
         const editEmailError = document.getElementById('editEmailError');
@@ -181,6 +214,8 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
         const contraNuevaError = document.getElementById('contraNuevaError');
         const contraFeedback = document.getElementById('contraFeedback');
 
+        let perfilDatos = {};
+
         async function cargarPerfil() {
             if (!CI) return;
             try {
@@ -188,6 +223,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 const json = await res.json();
                 if (json.status === 'success' && json.data) {
                     const u = json.data;
+                    perfilDatos = u;
                     perfilNombreEl.textContent = `${u.primer_nombre} ${u.p_apellido}`;
                     perfilCIEl.textContent = u.ci_usuario;
                     perfilEmailEl.textContent = u.email;
@@ -211,6 +247,10 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
         }
 
         function mostrarFormPerfil() {
+            editNombre.value = perfilDatos.primer_nombre || '';
+            editApellido.value = perfilDatos.p_apellido || '';
+            editNombreError.textContent = '';
+            editApellidoError.textContent = '';
             editEmail.value = perfilEmailEl.textContent;
             editTel.value = perfilTelEl.textContent;
             editEmailError.textContent = '';
@@ -242,9 +282,24 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             editTelError.textContent = '';
             limpiarFeedback(perfilFeedback);
 
+            editNombreError.textContent = '';
+            editApellidoError.textContent = '';
+
+            const primerNombre = editNombre.value.trim();
+            const pApellido = editApellido.value.trim();
             const email = editEmail.value.trim();
             const tel = editTel.value.trim();
             let valido = true;
+
+            const regexNombre = /^[A-Za-zÁÉÍÓÚÑÜáéíóúñü\s]{2,50}$/;
+            if (!regexNombre.test(primerNombre)) {
+                editNombreError.textContent = <?= json_encode(t('perfil.msg_nombre_invalido')) ?>;
+                valido = false;
+            }
+            if (!regexNombre.test(pApellido)) {
+                editApellidoError.textContent = <?= json_encode(t('perfil.msg_nombre_invalido')) ?>;
+                valido = false;
+            }
 
             if (!email || !email.includes('@')) {
                 editEmailError.textContent = 'Ingresá un correo electrónico válido.';
@@ -260,10 +315,12 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 const res = await fetch(`${API_BASE}/usuarios/${CI}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, tel })
+                    body: JSON.stringify({ email, tel, primerNombre, pApellido })
                 });
                 const json = await res.json();
                 if (json.status === 'success') {
+                    perfilDatos = { ...perfilDatos, primer_nombre: primerNombre, p_apellido: pApellido };
+                    perfilNombreEl.textContent = `${primerNombre} ${pApellido}`;
                     perfilEmailEl.textContent = email;
                     perfilTelEl.textContent = tel;
                     perfilFeedback.textContent = 'Los datos se actualizaron correctamente.';
@@ -325,5 +382,6 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             document.getElementById('navMobile').classList.toggle('nav-mobile-open');
         }
     </script>
+    <script src="borrarCuenta.js"></script>
 </body>
 </html>
