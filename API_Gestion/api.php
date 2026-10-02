@@ -139,7 +139,9 @@ $config = [
                 'getFrecuenciaRecoleccion',
                 'getCapacidadVertederos',
                 'getClasificacionResiduos',
-                'getEvolucionUsuarios'
+                'getEvolucionUsuarios',
+                'getDisponibilidadCamiones',
+                'getDisponibilidadMaquinaria'
             ],
             'filters' => []
         ],

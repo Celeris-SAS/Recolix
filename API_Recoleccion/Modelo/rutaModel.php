@@ -128,7 +128,7 @@ class RutaModel {
     }
 
     public function obtenerContenedores($rutaId) {
-        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT rc.id_contenedor, rc.orden_visita, c.calle, c.num_calle, c.latitud, c.longitud, c.capacidad, c.estado FROM ruta_contenedor rc JOIN contenedor c ON c.id_contenedor = rc.id_contenedor WHERE rc.id_ruta = ? ORDER BY rc.orden_visita ASC");
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT rc.id_contenedor, rc.orden_visita, c.calle, c.num_calle, c.latitud, c.longitud, c.capacidad, c.nivel_llenado, c.estado FROM ruta_contenedor rc JOIN contenedor c ON c.id_contenedor = rc.id_contenedor WHERE rc.id_ruta = ? ORDER BY rc.orden_visita ASC");
         mysqli_stmt_bind_param($stmt, "i", $rutaId);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);

@@ -122,4 +122,47 @@ final class LevanteControllerTest extends RecoleccionTestCase
         $this->expectException(InvalidArgumentException::class);
         $controller->obtenerPorRuta(0);
     }
+
+    public function testPlanificarPasaCentroIdValidadoAlModel(): void
+    {
+        $controller = $this->controller();
+        $stub = new class {
+            public array $llamada = [];
+            public function planificarLevante($rutaId, $camionId, $cuadrillaId, $horaSalida, $horaLevante, $centroId = null)
+            {
+                $this->llamada = compact('rutaId', 'camionId', 'cuadrillaId', 'horaSalida', 'horaLevante', 'centroId');
+                return 42;
+            }
+        };
+        $this->setPrivateProperty($controller, 'levanteModel', $stub);
+
+        $controller->planificar(1, 2, 3, '2026-01-01 08:00:00', '2026-01-01', '5');
+
+        $this->assertSame(5, $stub->llamada['centroId']);
+    }
+
+    public function testPlanificarTrataCentroIdVacioComoNulo(): void
+    {
+        $controller = $this->controller();
+        $stub = new class {
+            public array $llamada = [];
+            public function planificarLevante($rutaId, $camionId, $cuadrillaId, $horaSalida, $horaLevante, $centroId = null)
+            {
+                $this->llamada = compact('rutaId', 'camionId', 'cuadrillaId', 'horaSalida', 'horaLevante', 'centroId');
+                return 42;
+            }
+        };
+        $this->setPrivateProperty($controller, 'levanteModel', $stub);
+
+        $controller->planificar(1, 2, 3, '2026-01-01 08:00:00', '2026-01-01');
+
+        $this->assertNull($stub->llamada['centroId']);
+    }
+
+    public function testPlanificarRechazaCentroIdInvalido(): void
+    {
+        $controller = $this->controller();
+        $this->expectException(InvalidArgumentException::class);
+        $controller->planificar(1, 2, 3, '2026-01-01 08:00:00', '2026-01-01', 0);
+    }
 }
