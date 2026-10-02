@@ -351,9 +351,10 @@ final class LevanteModelIntegrationTest extends DbTestCase
         $idLevante = (int) $levante['id_levante'];
 
         $model->iniciarLevante($idLevante);
+        // Registrar el último contenedor cierra el levante solo (no hay que llamar a completarLevante).
         $model->registrarContenedor($idLevante, $contenedorId, 'todo_ok', 42, null);
-        $model->completarLevante($idLevante);
 
+        $this->assertSame('completado', $model->getLevante($idLevante)['estado']);
         $this->assertSame(1, $this->contarFilas('centro_levante', "id_levante = $idLevante AND id_centro = $centroId"));
     }
 
