@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: Aug 01, 2026 at 07:35 PM
--- Server version: 10.4.28-MariaDB
--- PHP Version: 8.2.4
+-- Host: 127.0.0.1:3306
+-- Generation Time: Oct 02, 2026 at 01:47 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -20,7 +20,7 @@ SET time_zone = "+00:00";
 --
 -- Database: `recolix`
 --
-DROP DATABASE IF EXISTS `recolix`;
+DROP DATABASE `recolix` IF EXISTS;
 CREATE DATABASE IF NOT EXISTS `recolix` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `recolix`;
 
@@ -113,6 +113,22 @@ CREATE TABLE `camion_centro` (
   `peso` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `camion_centro`
+--
+
+INSERT INTO `camion_centro` (`id`, `id_camion`, `id_centro`, `fecha_ingreso`, `peso`) VALUES
+(1, 1, 1, '2026-01-10', 4800),
+(2, 2, 2, '2026-01-15', 5200),
+(3, 3, 3, '2026-02-01', 3900),
+(4, 4, 4, '2026-02-10', 6100),
+(5, 5, 5, '2026-03-05', 4700),
+(6, 6, 6, '2026-03-20', 5300),
+(7, 7, 7, '2026-04-02', 4400),
+(8, 8, 1, '2026-04-18', 5900),
+(9, 9, 2, '2026-05-01', 4100),
+(10, 10, 3, '2026-05-15', 5000);
+
 -- --------------------------------------------------------
 
 --
@@ -141,7 +157,9 @@ INSERT INTO `centro_acopio` (`id_centro`, `id_municipio`, `nombre`, `tipo`, `cal
 (2, 5, 'Planta Burgues', 'planta_clasificacion', 'Av. Burgues', 4259, -34.8479490, -56.1696390, 10000, 'operativo'),
 (3, 1, 'Planta La Paloma', 'planta_clasificacion', 'Camino La Paloma', 3001, -34.8868780, -56.2675770, 10000, 'operativo'),
 (4, 7, 'Planta Géminis', 'planta_clasificacion', 'Camino Géminis', 0, -34.8365050, -56.1075120, 10000, 'operativo'),
-(5, 8, 'Planta Durán', 'planta_clasificacion', 'Camino José Durán', 4900, -34.8143320, -56.2141120, 10000, 'operativo');
+(5, 8, 'Planta Durán', 'planta_clasificacion', 'Camino José Durán', 4900, -34.8143320, -56.2141120, 10000, 'operativo'),
+(6, 4, 'Ecocentro Buceo', 'ecocentro', 'Av. Tomás Basáñez', 1212, -34.9053000, -56.1382000, 800, 'operativo'),
+(7, 3, 'Ecocentro Prado', 'ecocentro', 'Lucas J. Obes', 853, -34.8720000, -56.1980000, 700, 'operativo');
 
 -- --------------------------------------------------------
 
@@ -153,6 +171,22 @@ CREATE TABLE `centro_maquinaria` (
   `id_centro` int(11) NOT NULL,
   `id_maquinaria` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `centro_maquinaria`
+--
+
+INSERT INTO `centro_maquinaria` (`id_centro`, `id_maquinaria`) VALUES
+(1, 1),
+(1, 8),
+(2, 2),
+(2, 9),
+(3, 3),
+(3, 10),
+(4, 4),
+(5, 5),
+(6, 6),
+(7, 7);
 
 -- --------------------------------------------------------
 
@@ -176,7 +210,12 @@ INSERT INTO `centro_residuo` (`id_centro`, `id_residuo`, `ocupacion_actual`, `ca
 (1, 2, 1800, 3000),
 (2, 4, 2500, 4000),
 (3, 5, 1600, 3000),
-(4, 6, 900, 2000);
+(3, 8, 300, 2000),
+(4, 6, 900, 2000),
+(4, 9, 900, 5000),
+(5, 7, 600, 2500),
+(6, 1, 500, 3000),
+(7, 2, 1200, 4000);
 
 -- --------------------------------------------------------
 
@@ -188,6 +227,22 @@ CREATE TABLE `centro_usuario` (
   `id_centro` int(11) NOT NULL,
   `ci_usuario` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `centro_usuario`
+--
+
+INSERT INTO `centro_usuario` (`id_centro`, `ci_usuario`) VALUES
+(1, 11111111),
+(1, 88888888),
+(2, 22222222),
+(2, 99999999),
+(3, 10101010),
+(3, 33333333),
+(4, 44444444),
+(5, 55555555),
+(6, 66666666),
+(7, 77777777);
 
 -- --------------------------------------------------------
 
@@ -518,7 +573,401 @@ INSERT INTO `contenedor` (`id_contenedor`, `id_circuito`, `id_tipo`, `calle`, `n
 (455, 221, NULL, 'Camino Boiso Lanza', 3911, -34.8078868, -56.1326616, NULL, 0, 'funcional', NULL),
 (456, 156, NULL, 'José Enrique Michelena', 4028, -34.8965924, -56.1278621, NULL, 0, 'funcional', NULL),
 (457, 241, NULL, 'Juan Paullier', 2001, -34.8910302, -56.1705885, NULL, 0, 'funcional', NULL),
-(458, 160, NULL, 'Doctor José Brito Foresti', 3020, -34.8897691, -56.1524404, NULL, 0, 'funcional', NULL);
+(458, 160, NULL, 'Doctor José Brito Foresti', 3020, -34.8897691, -56.1524404, NULL, 0, 'funcional', NULL),
+(459, 121, 6, 'Antonio Zubillaga', NULL, -34.8562460, -56.2335366, 120, 42, 'funcional', NULL),
+(460, 121, 5, 'Adolfo Vaillant', NULL, -34.8571515, -56.2365260, 1100, 85, 'funcional', NULL),
+(461, 121, 1, 'Laureles', NULL, -34.8676944, -56.2398439, 120, 11, 'funcional', NULL),
+(462, 122, 6, 'Vicente Yáñez Pinzón', NULL, -34.8682976, -56.2212727, 1100, 54, 'funcional', NULL),
+(463, 122, 2, 'Pedro Celestino Bauzá', NULL, -34.8621404, -56.2271407, 1100, 19, 'funcional', NULL),
+(464, 122, 5, 'Avenida Carlos María Ramírez', NULL, -34.8616783, -56.2304679, 360, 78, 'funcional', NULL),
+(465, 123, 1, 'Campichuelo', NULL, -34.8489324, -56.2348852, 120, 82, 'funcional', NULL),
+(466, 123, 4, 'Caonabó', NULL, -34.8518720, -56.2365912, 120, 43, 'funcional', NULL),
+(467, 123, 3, 'Antonio Zubillaga', NULL, -34.8526056, -56.2308117, 360, 13, 'funcional', NULL),
+(468, 124, 4, 'Camino Carlos María de Pena', NULL, -34.8524456, -56.2100350, 120, 58, 'funcional', NULL),
+(469, 124, 5, 'General Hornos', NULL, -34.8499973, -56.2179610, 360, 4, 'funcional', NULL),
+(470, 124, 7, 'Camino Carlos María de Pena', NULL, -34.8479205, -56.2184075, 360, 92, 'funcional', NULL),
+(471, 125, 1, 'General Hornos', NULL, -34.8405591, -56.2350014, 240, 99, 'desbordado', NULL),
+(472, 125, 7, 'General Hornos', NULL, -34.8389001, -56.2377640, 120, 36, 'funcional', NULL),
+(473, 125, 4, 'General Hornos', NULL, -34.8440571, -56.2287245, 360, 5, 'funcional', NULL),
+(474, 126, 6, 'Cleveland', NULL, -34.8369857, -56.2479464, 120, 89, 'funcional', NULL),
+(475, 126, 5, 'Pasaje Emaus', NULL, -34.8424999, -56.2514092, 240, 46, 'funcional', NULL),
+(476, 126, 5, 'Cleveland', NULL, -34.8369707, -56.2479296, 240, 8, 'funcional', NULL),
+(477, 127, 6, 'Miguel de Unamuno', NULL, -34.8502165, -56.2718025, 360, 64, 'funcional', NULL),
+(478, 127, 7, 'Primera Al Norte', NULL, -34.8506247, -56.2676579, 120, 11, 'funcional', NULL),
+(479, 127, 2, 'Miguel de Unamuno', NULL, -34.8506935, -56.2781070, 120, 98, 'desbordado', NULL),
+(480, 128, 2, 'Avenida Doctor Santín Carlos Rossi', NULL, -34.8592704, -56.2511871, 1100, 11, 'funcional', NULL),
+(481, 128, 4, 'Camino Alianza', NULL, -34.8575634, -56.2606539, 1100, 37, 'funcional', NULL),
+(482, 128, 2, NULL, NULL, -34.8529866, -56.2705764, 360, 84, 'funcional', NULL),
+(483, 129, 3, 'Camino la Paloma', NULL, -34.8687606, -56.2563468, 240, 20, 'funcional', NULL),
+(484, 129, 2, 'Puerto Rico', NULL, -34.8731981, -56.2593502, 1100, 96, 'desbordado', NULL),
+(485, 129, 1, 'Pasaje Central', NULL, -34.8721595, -56.2631385, 120, 43, 'funcional', NULL),
+(486, 130, 4, 'Francisca Aznar de Artigas', NULL, -34.8335585, -56.2718861, 1100, 99, 'desbordado', NULL),
+(487, 130, 5, 'Avenida Luis Batlle Berres', NULL, -34.8375116, -56.2690748, 1100, 23, 'funcional', NULL),
+(488, 130, 5, 'Coronel Santiago Artigas', NULL, -34.8371025, -56.2679360, 360, 40, 'funcional', NULL),
+(489, 131, 7, 'Portugal', NULL, -34.8947702, -56.2494299, 360, 3, 'funcional', NULL),
+(490, 131, 1, 'Portugal', NULL, -34.8885420, -56.2505879, 360, 56, 'funcional', NULL),
+(491, 131, 4, 'Río de Janeiro', NULL, -34.8875106, -56.2531247, 240, 81, 'funcional', NULL),
+(492, 132, 7, 'Charcas', NULL, -34.8847106, -56.2545662, 360, 51, 'funcional', NULL),
+(493, 132, 7, 'Rusia', NULL, -34.8849860, -56.2640617, 240, 11, 'funcional', NULL),
+(494, 132, 2, 'Suecia', NULL, -34.8825533, -56.2520422, 360, 83, 'funcional', NULL),
+(495, 133, 1, 'Bélgica', NULL, -34.8800937, -56.2547456, 360, 88, 'funcional', NULL),
+(496, 133, 7, 'Bélgica', NULL, -34.8809852, -56.2614143, 360, 3, 'funcional', NULL),
+(497, 133, 2, 'China', NULL, -34.8816813, -56.2590751, 120, 54, 'funcional', NULL),
+(498, 134, 2, 'Guaraní', NULL, -34.9074196, -56.2128121, 1100, 58, 'funcional', NULL),
+(499, 134, 5, 'Andes', NULL, -34.9049436, -56.1981810, 240, 93, 'funcional', NULL),
+(500, 134, 3, 'Cerrito', NULL, -34.9072790, -56.2125969, 1100, 5, 'funcional', NULL),
+(501, 135, 4, 'Héctor Gutiérrez Ruiz', NULL, -34.9070512, -56.1911703, 1100, 25, 'funcional', NULL),
+(502, 135, 1, 'Paraguay', NULL, -34.9035398, -56.1928440, 240, 87, 'funcional', NULL),
+(503, 135, 2, 'Río Negro', NULL, -34.9096439, -56.1933320, 120, 41, 'funcional', NULL),
+(504, 136, 1, 'Calle 17 Metros', NULL, -34.9128752, -56.1886489, 120, 42, 'funcional', NULL),
+(505, 136, 2, 'Calle 17 Metros', NULL, -34.9129206, -56.1886657, 120, 96, 'desbordado', NULL),
+(506, 136, 1, 'Carlos Quijano', NULL, -34.9080901, -56.1887911, 360, 20, 'funcional', NULL),
+(507, 137, 6, 'Carlos Roxlo', NULL, -34.9037888, -56.1817734, 1100, 56, 'funcional', NULL),
+(508, 137, 2, 'Paysandú', NULL, -34.8986175, -56.1782051, 1100, 93, 'funcional', NULL),
+(509, 137, 7, 'Doctor Joaquín Requena', NULL, -34.8926268, -56.1716910, 1100, 11, 'funcional', NULL),
+(510, 138, 6, 'Salto', NULL, -34.9063029, -56.1823270, 120, 91, 'funcional', NULL),
+(511, 138, 1, 'Durazno', NULL, -34.9096626, -56.1787455, 1100, 14, 'funcional', NULL),
+(512, 138, 6, 'Doctor Emilio Frugoni', NULL, -34.9082041, -56.1752399, 360, 48, 'funcional', NULL),
+(513, 139, 2, 'Eduardo Acevedo', NULL, -34.9031404, -56.1755771, 360, 92, 'funcional', NULL),
+(514, 139, 4, 'Juan D. Jackson', NULL, -34.9026981, -56.1737875, 240, 52, 'funcional', NULL),
+(515, 139, 7, 'Miguel del Corro', NULL, -34.9019578, -56.1709657, 120, 9, 'funcional', NULL),
+(516, 140, 7, NULL, NULL, -34.9057988, -56.1708856, 240, 55, 'funcional', NULL),
+(517, 140, 2, '21 de Setiembre', NULL, -34.9101756, -56.1665940, 1100, 95, 'desbordado', NULL),
+(518, 140, 4, NULL, NULL, -34.9137094, -56.1727549, 1100, 4, 'funcional', NULL),
+(519, 141, 7, 'Nicaragua', NULL, -34.8941186, -56.1865838, 1100, 8, 'funcional', NULL),
+(520, 141, 3, 'Batoví', NULL, -34.8931171, -56.1837300, 1100, 78, 'funcional', NULL),
+(521, 141, 6, 'Yi', NULL, -34.8978018, -56.1891903, 1100, 47, 'funcional', NULL),
+(522, 142, 6, 'Patria', NULL, -34.9181842, -56.1648401, 360, 65, 'funcional', NULL),
+(523, 142, 1, 'Ingeniero Carlos María Maggiolo', NULL, -34.9187425, -56.1635098, 120, 9, 'funcional', NULL),
+(524, 142, 5, 'Julio Herrera y Reissig', NULL, -34.9181902, -56.1656953, 1100, 79, 'funcional', NULL),
+(525, 143, 1, NULL, NULL, -34.9211027, -56.1557972, 120, 65, 'funcional', NULL),
+(526, 143, 6, 'General Gregorio Suárez', NULL, -34.9191321, -56.1588825, 240, 94, 'funcional', NULL),
+(527, 143, 4, 'Víctor Soliño', NULL, -34.9244259, -56.1596273, 120, 4, 'funcional', NULL),
+(528, 144, 6, 'Echeverría', NULL, -34.9165631, -56.1613397, 360, 97, 'desbordado', NULL),
+(529, 144, 3, 'Doctor Enrique Muñoz', NULL, -34.9155287, -56.1573486, 240, 36, 'funcional', NULL),
+(530, 144, 6, 'Libertad', NULL, -34.9132839, -56.1621645, 360, 22, 'funcional', NULL),
+(531, 145, 3, 'José Vázquez Ledesma', NULL, -34.9197529, -56.1550581, 120, 7, 'funcional', NULL),
+(532, 145, 1, 'Juan María Pérez', NULL, -34.9176951, -56.1521785, 1100, 98, 'desbordado', NULL),
+(533, 145, 5, 'Jaime Zudáñez', NULL, -34.9165031, -56.1519767, 120, 56, 'funcional', NULL),
+(534, 146, 2, 'Doctor Marcelino Izcua Barbat', NULL, -34.9079368, -56.1511312, 360, 82, 'funcional', NULL),
+(535, 146, 3, 'Doctor José Scosería', NULL, -34.9159476, -56.1501498, 240, 19, 'funcional', NULL),
+(536, 146, 4, 'Luis B. Cavia', NULL, -34.9138811, -56.1507922, 360, 43, 'funcional', NULL),
+(537, 147, 3, NULL, NULL, -34.9044153, -56.1620615, 360, 43, 'funcional', NULL),
+(538, 147, 5, 'Maldonado', NULL, -34.9077310, -56.1630437, 240, 81, 'funcional', NULL),
+(539, 147, 6, 'General Arquitecto Alfredo Baldomir', NULL, -34.9087705, -56.1609978, 360, 7, 'funcional', NULL),
+(540, 148, 7, 'Avenida Doctor Francisco Soca', NULL, -34.9066558, -56.1544016, 360, 79, 'funcional', NULL),
+(541, 148, 1, 'Félix Buxareo', NULL, -34.9067495, -56.1439769, 120, 43, 'funcional', NULL),
+(542, 148, 3, '14 de Julio', NULL, -34.9037112, -56.1485101, 240, 18, 'funcional', NULL),
+(543, 149, 1, 'Miguel Barreiro', NULL, -34.9090035, -56.1468767, 120, 57, 'funcional', NULL),
+(544, 149, 6, 'Manuel Pagola', NULL, -34.9099048, -56.1444175, 240, 20, 'funcional', NULL),
+(545, 149, 5, 'Echevarriarza', NULL, -34.9085093, -56.1423839, 120, 91, 'funcional', NULL),
+(546, 150, 3, 'Basilio Pereira de la Luz', NULL, -34.9030236, -56.1419651, 120, 82, 'funcional', NULL),
+(547, 150, 3, 'Basilio Pereira de la Luz', NULL, -34.9039839, -56.1416683, 240, 48, 'funcional', NULL),
+(548, 150, 6, 'Basilio Pereira de la Luz', NULL, -34.9092825, -56.1402836, 240, 7, 'funcional', NULL),
+(549, 151, 7, 'Avenida Italia', NULL, -34.8945624, -56.1634724, 240, 54, 'funcional', NULL),
+(550, 151, 4, '20 de Setiembre', NULL, -34.9009770, -56.1628263, 120, 82, 'funcional', NULL),
+(551, 151, 2, 'Somme', NULL, -34.8986646, -56.1612760, 360, 16, 'funcional', NULL),
+(552, 152, 4, 'Diego Lamas', NULL, -34.8998902, -56.1533355, 120, 43, 'funcional', NULL),
+(553, 152, 7, 'Capitán Videla', NULL, -34.9009974, -56.1543459, 1100, 10, 'funcional', NULL),
+(554, 152, 2, 'Méndez Núñez', NULL, -34.9021346, -56.1546603, 240, 83, 'funcional', NULL),
+(555, 153, 4, 'Eduardo Mac Eachen', NULL, -34.9014239, -56.1500646, 360, 42, 'funcional', NULL),
+(556, 153, 3, 'Rafael Pastoriza', NULL, -34.8993720, -56.1523476, 120, 10, 'funcional', NULL),
+(557, 153, 7, 'Alejo Rosell y Rius', NULL, -34.9020691, -56.1463199, 360, 78, 'funcional', NULL),
+(558, 154, 1, 'Marco Bruto', NULL, -34.8994597, -56.1406413, 360, 95, 'desbordado', NULL),
+(559, 154, 2, 'Julio César', NULL, -34.9016316, -56.1411523, 360, 24, 'funcional', NULL),
+(560, 154, 1, 'Bernandina Fragoso de Rivera', NULL, -34.8960326, -56.1441994, 120, 61, 'funcional', NULL),
+(561, 155, 4, 'Tiburcio Gómez', NULL, -34.8956481, -56.1372610, 240, 48, 'funcional', NULL),
+(562, 155, 3, 'Jacinto Vera', NULL, -34.8968714, -56.1350412, 120, 13, 'funcional', NULL),
+(563, 155, 6, 'Jacinto Vera', NULL, -34.8970865, -56.1359118, 1100, 97, 'desbordado', NULL),
+(564, 156, 4, 'José Enrique Michelena', NULL, -34.8965924, -56.1278621, 120, 99, 'desbordado', NULL),
+(565, 156, 6, 'José Gestal', NULL, -34.8975808, -56.1264642, 360, 58, 'funcional', NULL),
+(566, 156, 5, 'Estivao', NULL, -34.8980133, -56.1326403, 360, 24, 'funcional', NULL),
+(567, 157, 6, 'Maipú', NULL, -34.8930413, -56.1461470, 360, 12, 'funcional', NULL),
+(568, 157, 5, 'República del Salvador', NULL, -34.8920879, -56.1475995, 240, 91, 'funcional', NULL),
+(569, 157, 2, 'Navarra', NULL, -34.8936444, -56.1469696, 1100, 56, 'funcional', NULL),
+(570, 158, 5, 'Comodoro Coe', NULL, -34.8940888, -56.1420439, 120, 8, 'funcional', NULL),
+(571, 158, 3, 'Santiago Gadea', NULL, -34.8908399, -56.1418578, 360, 96, 'desbordado', NULL),
+(572, 158, 2, 'Doctor Francisco Simón', NULL, -34.8878437, -56.1440586, 1100, 54, 'funcional', NULL),
+(573, 159, 5, 'Presidente Berro', NULL, -34.8923976, -56.1615696, 1100, 92, 'funcional', NULL),
+(574, 159, 7, 'Presidente Berro', NULL, -34.8918883, -56.1624916, 240, 13, 'funcional', NULL),
+(575, 159, 6, 'Presidente Giro', NULL, -34.8897983, -56.1639327, 120, 49, 'funcional', NULL),
+(576, 160, 6, 'Estero Bellaco', NULL, -34.8894233, -56.1564392, 360, 54, 'funcional', NULL),
+(577, 160, 2, 'Jaime Cibils', NULL, -34.8841570, -56.1576248, 240, 88, 'funcional', NULL),
+(578, 160, 2, 'Coronel Lucas Píriz', NULL, -34.8844960, -56.1604847, 120, 23, 'funcional', NULL),
+(579, 161, 6, 'Doctor Pedro Escuder Núñez', NULL, -34.8897589, -56.1507115, 240, 22, 'funcional', NULL),
+(580, 161, 6, 'Pedro Olmida', NULL, -34.8837789, -56.1558672, 1100, 80, 'funcional', NULL),
+(581, 161, 4, 'Mariano Moreno', NULL, -34.8812183, -56.1571096, 1100, 62, 'funcional', NULL),
+(582, 162, 7, 'Avenida Doctor Francisco Soca', NULL, -34.9087329, -56.1535196, 1100, 59, 'funcional', NULL),
+(583, 162, 1, 'Bulevar España', NULL, -34.9147501, -56.1512989, 240, 91, 'funcional', NULL),
+(584, 162, 7, 'Avenida Ingeniero Luis P. Ponce', NULL, -34.9025826, -56.1613732, 120, 6, 'funcional', NULL),
+(585, 163, 7, 'Avenida Centenario', NULL, -34.8850242, -56.1524766, 1100, 24, 'funcional', NULL),
+(586, 163, 5, 'Avenida Luis Alberto de Herrera', NULL, -34.9053624, -56.1371504, 1100, 51, 'funcional', NULL),
+(587, 163, 7, 'Avenida Centenario', NULL, -34.8863903, -56.1528512, 1100, 95, 'desbordado', NULL),
+(588, 164, 7, 'General José María Luna', NULL, -34.8813859, -56.1878691, 1100, 17, 'funcional', NULL),
+(589, 164, 6, 'Doctor Juan José de Amézaga', NULL, -34.8859464, -56.1842423, 240, 43, 'funcional', NULL),
+(590, 164, 3, 'Doctor Luis P. Lenguas', NULL, -34.8899148, -56.1832457, 1100, 85, 'funcional', NULL),
+(591, 165, 2, 'Concepción Arenal', NULL, -34.8789577, -56.1865311, 240, 88, 'funcional', NULL),
+(592, 165, 2, 'Carlos Reyles', NULL, -34.8818776, -56.1815946, 1100, 10, 'funcional', NULL),
+(593, 165, 6, 'Blandengues', NULL, -34.8829997, -56.1842105, 240, 43, 'funcional', NULL),
+(594, 166, 4, 'Nueva Palmira', NULL, -34.8884508, -56.1704820, 120, 16, 'funcional', NULL),
+(595, 166, 2, 'Nueva Palmira', NULL, -34.8881802, -56.1679810, 1100, 48, 'funcional', NULL),
+(596, 166, 4, 'Nueva Palmira', NULL, -34.8879905, -56.1660285, 120, 88, 'funcional', NULL),
+(597, 167, 3, 'Quijote', NULL, -34.8760528, -56.1656523, 1100, 93, 'funcional', NULL),
+(598, 167, 7, 'Quijote', NULL, -34.8719373, -56.1661225, 1100, 47, 'funcional', NULL),
+(599, 167, 5, 'Cádiz', NULL, -34.8792664, -56.1621434, 240, 21, 'funcional', NULL),
+(600, 168, 6, 'Cufré', NULL, -34.8760226, -56.1711070, 1100, 16, 'funcional', NULL),
+(601, 168, 6, 'Lorenzo Fernández', NULL, -34.8747868, -56.1752493, 240, 78, 'funcional', NULL),
+(602, 168, 7, 'José L. Terra', NULL, -34.8781768, -56.1791571, 1100, 50, 'funcional', NULL),
+(603, 169, 1, 'Doctor José María Penco', NULL, -34.8730871, -56.1785034, 1100, 64, 'funcional', NULL),
+(604, 169, 2, 'Guaviyú', NULL, -34.8709443, -56.1775839, 1100, 3, 'funcional', NULL),
+(605, 169, 2, 'Avenida General Flores', NULL, -34.8786757, -56.1808162, 120, 90, 'funcional', NULL),
+(606, 170, 3, 'Doctor Alfredo García Morales', NULL, -34.8791551, -56.1935536, 1100, 9, 'funcional', NULL),
+(607, 170, 3, 'Tomás Toribio', NULL, -34.8768360, -56.1876809, 120, 88, 'funcional', NULL),
+(608, 170, 4, 'Doctor Alfredo García Morales', NULL, -34.8785230, -56.1912712, 120, 49, 'funcional', NULL),
+(609, 171, 7, 'General Enrique Martínez', NULL, -34.8727404, -56.1954895, 120, 42, 'funcional', NULL),
+(610, 171, 2, '12 de Diciembre', NULL, -34.8735230, -56.2034751, 240, 98, 'desbordado', NULL),
+(611, 171, 7, 'Avenida Joaquín Suárez', NULL, -34.8761647, -56.1966880, 120, 14, 'funcional', NULL),
+(612, 172, 4, 'Doctor José María Penco', NULL, -34.8610090, -56.1761268, 360, 50, 'funcional', NULL),
+(613, 172, 7, 'Juana de Arco', NULL, -34.8664689, -56.1736559, 360, 99, 'desbordado', NULL),
+(614, 172, 2, 'Senaque', NULL, -34.8627281, -56.1757845, 120, 7, 'funcional', NULL),
+(615, 173, 4, 'Marcelino Sosa', NULL, -34.8693718, -56.1800722, 240, 21, 'funcional', NULL),
+(616, 173, 1, 'Bulevar General Artigas', NULL, -34.8708878, -56.1852766, 240, 35, 'funcional', NULL),
+(617, 173, 1, 'Guaviyú', NULL, -34.8683161, -56.1775715, 360, 87, 'funcional', NULL),
+(618, 174, 5, 'Ciclovía Boulevard', NULL, -34.8711025, -56.1883782, 1100, 96, 'desbordado', NULL),
+(619, 174, 6, 'Chuy', NULL, -34.8669743, -56.1907520, 360, 60, 'funcional', NULL),
+(620, 174, 1, 'Herrero y Espinosa', NULL, -34.8675242, -56.1884384, 360, 6, 'funcional', NULL),
+(621, 175, 6, 'Avenida Costanera Felipe Carapé', NULL, -34.8530401, -56.1947071, 240, 18, 'funcional', NULL),
+(622, 175, 4, 'Pantaleón Sotelo', NULL, -34.8560088, -56.2003090, 240, 91, 'funcional', NULL),
+(623, 175, 6, 'Vasco Da Gama', NULL, -34.8563390, -56.2014199, 360, 38, 'funcional', NULL),
+(624, 176, 7, 'Adolfo Berro', NULL, -34.8673196, -56.1965235, 240, 17, 'funcional', NULL),
+(625, 176, 7, 'Avenida Buschental', NULL, -34.8666644, -56.2070738, 120, 96, 'desbordado', NULL),
+(626, 176, 3, 'Arquímedes', NULL, -34.8699564, -56.1987000, 1100, 48, 'funcional', NULL),
+(627, 177, 4, 'Pablo Zufriategui', NULL, -34.8629392, -56.2125520, 360, 90, 'funcional', NULL),
+(628, 177, 2, 'Solís Grande', NULL, -34.8727962, -56.2105613, 1100, 22, 'funcional', NULL),
+(629, 177, 2, 'Amado Nervo', NULL, -34.8672546, -56.2106805, 360, 56, 'funcional', NULL),
+(630, 178, 5, 'Joanicó', NULL, -34.8802974, -56.1518614, 240, 57, 'funcional', NULL),
+(631, 178, 1, 'General Urquiza', NULL, -34.8796890, -56.1529070, 240, 22, 'funcional', NULL),
+(632, 178, 6, 'Avenida Dámaso Antonio Larrañaga', NULL, -34.8812010, -56.1521407, 1100, 86, 'funcional', NULL),
+(633, 179, 4, 'Comercio', NULL, -34.8729736, -56.1458405, 120, 10, 'funcional', NULL),
+(634, 179, 1, 'María Stagnero de Munar', NULL, -34.8743525, -56.1477867, 360, 57, 'funcional', NULL),
+(635, 179, 2, 'Himalaya', NULL, -34.8693243, -56.1482231, 1100, 93, 'funcional', NULL),
+(636, 180, 4, 'General José Villagrán', NULL, -34.8686322, -56.1349361, 360, 24, 'funcional', NULL),
+(637, 180, 3, 'Pamplona', NULL, -34.8707299, -56.1391783, 1100, 89, 'funcional', NULL),
+(638, 180, 3, '20 de Febrero', NULL, -34.8663989, -56.1366631, 360, 53, 'funcional', NULL),
+(639, 181, 2, 'Juan José Debali', NULL, -34.8666196, -56.1425095, 240, 45, 'funcional', NULL),
+(640, 181, 6, 'Lucas Moreno', NULL, -34.8659477, -56.1411669, 1100, 9, 'funcional', NULL),
+(641, 181, 3, '20 de Febrero', NULL, -34.8652113, -56.1442042, 360, 81, 'funcional', NULL),
+(642, 182, 1, 'Himalaya', NULL, -34.8658756, -56.1511564, 240, 89, 'funcional', NULL),
+(643, 182, 3, 'Himalaya', NULL, -34.8658903, -56.1511407, 120, 42, 'funcional', NULL),
+(644, 182, 1, 'Espartillo', NULL, -34.8669269, -56.1511968, 360, 12, 'funcional', NULL),
+(645, 183, 4, 'Antonio Serratosa', NULL, -34.8600659, -56.1431980, 1100, 18, 'funcional', NULL),
+(646, 183, 4, 'Ayuntamiento', NULL, -34.8636419, -56.1479175, 360, 38, 'funcional', NULL),
+(647, 183, 2, 'Menéndez y Pelayo', NULL, -34.8650349, -56.1391546, 120, 78, 'funcional', NULL),
+(648, 184, 2, 'Avenida General Flores', NULL, -34.8610459, -56.1672322, 240, 47, 'funcional', NULL),
+(649, 184, 7, 'Valladolid', NULL, -34.8649791, -56.1600312, 360, 93, 'funcional', NULL),
+(650, 184, 1, 'Valladolid', NULL, -34.8652508, -56.1605708, 240, 5, 'funcional', NULL),
+(651, 185, 7, 'Santiago Sierra', NULL, -34.8579002, -56.1603135, 1100, 54, 'funcional', NULL),
+(652, 185, 4, 'José J. Olmedo', NULL, -34.8558592, -56.1580813, 1100, 16, 'funcional', NULL),
+(653, 185, 3, 'Coronel Guillermo Muñoz', NULL, -34.8566521, -56.1557819, 1100, 97, 'desbordado', NULL),
+(654, 186, 3, 'Corumbé', NULL, -34.8522195, -56.1553532, 120, 54, 'funcional', NULL),
+(655, 186, 2, 'Corumbé', NULL, -34.8541876, -56.1561470, 240, 81, 'funcional', NULL),
+(656, 186, 2, 'Avenida General Flores', NULL, -34.8495292, -56.1577829, 120, 4, 'funcional', NULL),
+(657, 187, 1, 'Juan Méndez', NULL, -34.8599372, -56.1713149, 240, 17, 'funcional', NULL),
+(658, 187, 3, 'Santa Ana', NULL, -34.8535904, -56.1663907, 360, 97, 'desbordado', NULL),
+(659, 187, 6, 'José Revuelta', NULL, -34.8585326, -56.1693129, 1100, 57, 'funcional', NULL),
+(660, 188, 4, 'General Martín Rodríguez', NULL, -34.8557181, -56.1782688, 120, 60, 'funcional', NULL),
+(661, 188, 5, 'Elba', NULL, -34.8490159, -56.1847792, 240, 11, 'funcional', NULL),
+(662, 188, 6, 'Ortiz de Zárate', NULL, -34.8527481, -56.1779308, 240, 98, 'desbordado', NULL),
+(663, 189, 4, 'Juan Acosta', NULL, -34.8392099, -56.1635701, 120, 4, 'funcional', NULL),
+(664, 189, 4, 'Juan Acosta', NULL, -34.8476330, -56.1655906, 360, 40, 'funcional', NULL),
+(665, 189, 6, 'José A. Possolo', NULL, -34.8418522, -56.1589896, 1100, 87, 'funcional', NULL),
+(666, 190, 4, 'Bulevar Aparicio Saravia', NULL, -34.8334423, -56.1493393, 360, 49, 'funcional', NULL),
+(667, 190, 5, 'Itacumbú', NULL, -34.8397568, -56.1587494, 360, 18, 'funcional', NULL),
+(668, 190, 1, 'Itacumbú', NULL, -34.8434136, -56.1535409, 120, 80, 'funcional', NULL),
+(669, 191, 7, 'Doctor José A. Verocay', NULL, -34.8307740, -56.1645381, 240, 99, 'desbordado', NULL),
+(670, 191, 4, 'Avenida General San Martín', NULL, -34.8300995, -56.1679608, 1100, 3, 'funcional', NULL),
+(671, 191, 3, 'Doctor Carlos María Fosalba', NULL, -34.8310790, -56.1681932, 240, 59, 'funcional', NULL),
+(672, 192, 3, 'Capitán Tula', NULL, -34.8230318, -56.1641221, 360, 18, 'funcional', NULL),
+(673, 192, 6, 'Óscar Bonaldi', NULL, -34.8256437, -56.1653947, 120, 93, 'funcional', NULL),
+(674, 192, 7, 'Doctor Horacio García Lagos', NULL, -34.8281258, -56.1719572, 240, 37, 'funcional', NULL),
+(675, 193, 4, 'Agustín Vera', NULL, -34.8228785, -56.1482386, 120, 56, 'funcional', NULL),
+(676, 193, 3, 'Arturo Scarone', NULL, -34.8176095, -56.1482802, 360, 12, 'funcional', NULL),
+(677, 193, 3, 'Matilde Pacheco de Batlle y Ordóñez', NULL, -34.8227591, -56.1436497, 120, 90, 'funcional', NULL),
+(678, 194, 1, 'Avenida José Belloni', NULL, -34.8142005, -56.1387798, 240, 24, 'funcional', NULL),
+(679, 194, 5, 'Guadalquivir', NULL, -34.8123383, -56.1447736, 360, 95, 'desbordado', NULL),
+(680, 194, 5, 'Teniente Durán', NULL, -34.8117317, -56.1429051, 1100, 62, 'funcional', NULL),
+(681, 195, 3, 'Eusebio Cabral', NULL, -34.8071089, -56.1421919, 1100, 41, 'funcional', NULL),
+(682, 195, 6, 'Avenida Costanera Miguel Ángel Da Costa', NULL, -34.7995273, -56.1659088, 1100, 4, 'funcional', NULL),
+(683, 195, 1, 'Ángel Salvador Adami', NULL, -34.8049596, -56.1644430, 120, 86, 'funcional', NULL),
+(684, 196, 5, 'Salvia', NULL, -34.7777414, -56.1398420, 1100, 40, 'funcional', NULL),
+(685, 196, 1, 'Ágatas', NULL, -34.7744127, -56.1325979, 240, 25, 'funcional', NULL),
+(686, 196, 7, 'Ágatas', NULL, -34.7764047, -56.1329695, 120, 87, 'funcional', NULL),
+(687, 197, 4, 'Agustina Contucci de Oribe', NULL, -34.8791883, -56.1467133, 1100, 7, 'funcional', NULL),
+(688, 197, 4, 'Asilo', NULL, -34.8820572, -56.1499099, 240, 50, 'funcional', NULL),
+(689, 197, 4, 'María Stagnero de Munar', NULL, -34.8789605, -56.1439287, 240, 87, 'funcional', NULL),
+(690, 198, 7, 'Cubo del Sur', NULL, -34.8828113, -56.1293047, 1100, 82, 'funcional', NULL),
+(691, 198, 3, 'Benito Aispurúa', NULL, -34.8846457, -56.1293616, 360, 58, 'funcional', NULL),
+(692, 198, 7, 'José Antonio Cabrera', NULL, -34.8760444, -56.1389821, 120, 19, 'funcional', NULL),
+(693, 199, 3, 'Juan José Castro', NULL, -34.8783190, -56.1282275, 1100, 7, 'funcional', NULL),
+(694, 199, 4, 'Manila', NULL, -34.8734893, -56.1254550, 360, 95, 'desbordado', NULL),
+(695, 199, 7, 'Pérez Galdos', NULL, -34.8745123, -56.1301989, 240, 49, 'funcional', NULL),
+(696, 200, 6, 'Asamblea', NULL, -34.8899627, -56.1095601, 1100, 91, 'funcional', NULL),
+(697, 200, 6, 'Santiago de Anca', NULL, -34.8944512, -56.1116209, 1100, 42, 'funcional', NULL),
+(698, 200, 4, 'Candelaria', NULL, -34.8896332, -56.1108605, 240, 15, 'funcional', NULL),
+(699, 201, 7, 'Erevan', NULL, -34.8848499, -56.1126301, 1100, 96, 'desbordado', NULL),
+(700, 201, 1, 'Valencia', NULL, -34.8854108, -56.1040579, 1100, 7, 'funcional', NULL),
+(701, 201, 1, 'Sevilla', NULL, -34.8856366, -56.1242814, 240, 51, 'funcional', NULL),
+(702, 202, 6, 'Petrona Rosende', NULL, -34.8722333, -56.1147639, 120, 5, 'funcional', NULL),
+(703, 202, 7, 'Pedro Cosio', NULL, -34.8734597, -56.1065895, 360, 86, 'funcional', NULL),
+(704, 202, 7, 'Iguá', NULL, -34.8780686, -56.1059712, 1100, 50, 'funcional', NULL),
+(705, 203, 6, 'Avenida Estanislao López', NULL, -34.8884347, -56.1089731, 360, 36, 'funcional', NULL),
+(706, 203, 2, 'Avenida Estanislao López', NULL, -34.8881538, -56.1045522, 120, 97, 'desbordado', NULL),
+(707, 203, 4, 'Almería', NULL, -34.8947048, -56.1051137, 120, 20, 'funcional', NULL),
+(708, 204, 3, 'Verdi', NULL, -34.8976398, -56.1227530, 120, 40, 'funcional', NULL),
+(709, 204, 3, 'Avenida Eugenio P. Baroffio', NULL, -34.8859554, -56.0889891, 360, 87, 'funcional', NULL),
+(710, 204, 3, 'René', NULL, -34.8886017, -56.0881265, 1100, 17, 'funcional', NULL),
+(711, 205, 2, 'Ana María Rubens', NULL, -34.8722964, -56.1044150, 120, 53, 'funcional', NULL),
+(712, 205, 5, 'Pablo Mañe', NULL, -34.8726004, -56.0927882, 1100, 99, 'desbordado', NULL),
+(713, 205, 5, 'Agrigento', NULL, -34.8721029, -56.0906981, 240, 16, 'funcional', NULL),
+(714, 206, 3, 'Doctor Enrique Azarola', NULL, -34.8753529, -56.0594540, 120, 10, 'funcional', NULL),
+(715, 206, 7, 'Avenida Doctora María Luisa Saldún de Rodríguez', NULL, -34.8801549, -56.0813376, 1100, 98, 'desbordado', NULL),
+(716, 206, 3, 'Doctor José Francisco Arias', NULL, -34.8750182, -56.0767153, 240, 49, 'funcional', NULL),
+(717, 207, 4, 'Avenida San Carlos de Bolívar', NULL, -34.8883310, -56.0748447, 360, 21, 'funcional', NULL),
+(718, 207, 2, 'Palmas y Ombúes', NULL, -34.8937450, -56.0792196, 1100, 98, 'desbordado', NULL),
+(719, 207, 7, 'Avenida San Marino', NULL, -34.8933124, -56.0733103, 1100, 44, 'funcional', NULL),
+(720, 208, 1, 'Esteban A. Elena', NULL, -34.8885416, -56.0604106, 1100, 21, 'funcional', NULL),
+(721, 208, 3, 'Avenida General Rivera', NULL, -34.8873461, -56.0620460, 120, 96, 'desbordado', NULL),
+(722, 208, 5, 'Ciudad de París', NULL, -34.8933855, -56.0712200, 120, 46, 'funcional', NULL),
+(723, 209, 5, 'General Nariño', NULL, -34.8708226, -56.0521319, 360, 54, 'funcional', NULL),
+(724, 209, 6, 'Avenida del Sol', NULL, -34.8728568, -56.0423476, 240, 89, 'funcional', NULL),
+(725, 209, 6, 'Doctor Raúl E. Baetghen', NULL, -34.8751188, -56.0543888, 120, 10, 'funcional', NULL),
+(726, 210, 1, 'Enrique Chiancone', NULL, -34.8750267, -56.1133758, 360, 96, 'desbordado', NULL),
+(727, 210, 3, 'Doctor Roberto Berro', NULL, -34.8732164, -56.1177477, 1100, 17, 'funcional', NULL),
+(728, 210, 2, 'Doctor Roberto Berro', NULL, -34.8723432, -56.1179570, 240, 36, 'funcional', NULL),
+(729, 211, 3, 'La Rabida', NULL, -34.8658712, -56.0720927, 1100, 94, 'funcional', NULL),
+(730, 211, 7, 'Joaquín de la Sagra', NULL, -34.8686633, -56.1012344, 360, 14, 'funcional', NULL),
+(731, 211, 6, 'Ariosto D González', NULL, -34.8628123, -56.1128283, 360, 51, 'funcional', NULL),
+(732, 212, 7, 'Doctor Pantaleón Pérez', NULL, -34.8637532, -56.1189824, 360, 7, 'funcional', NULL),
+(733, 212, 1, 'Capitán Villademoros', NULL, -34.8659392, -56.1241049, 1100, 59, 'funcional', NULL),
+(734, 212, 1, 'Hernán Gómez', NULL, -34.8675580, -56.1224235, 360, 85, 'funcional', NULL),
+(735, 213, 7, 'General Timoteo Aparicio', NULL, -34.8653932, -56.1271020, 360, 14, 'funcional', NULL),
+(736, 213, 1, NULL, NULL, -34.8636336, -56.1262913, 240, 99, 'desbordado', NULL),
+(737, 213, 4, NULL, NULL, -34.8592174, -56.1321701, 120, 56, 'funcional', NULL),
+(738, 214, 6, 'Avenida José Belloni', NULL, -34.8494287, -56.1333796, 360, 98, 'desbordado', NULL),
+(739, 214, 6, 'Francisco Sainz Rosas', NULL, -34.8480422, -56.1384271, 1100, 42, 'funcional', NULL),
+(740, 214, 1, 'Virrey Elío', NULL, -34.8503347, -56.1334337, 240, 22, 'funcional', NULL),
+(741, 215, 4, 'Avenida Dámaso Antonio Larrañaga', NULL, -34.8486217, -56.1479572, 1100, 38, 'funcional', NULL),
+(742, 215, 3, 'Horacio Areco', NULL, -34.8478736, -56.1411742, 1100, 81, 'funcional', NULL),
+(743, 215, 5, 'Avenida General Flores', NULL, -34.8417221, -56.1513988, 240, 18, 'funcional', NULL),
+(744, 216, 6, 'Santo Tomé', NULL, -34.8527439, -56.1229662, 360, 91, 'funcional', NULL),
+(745, 216, 2, 'Itazurubi', NULL, -34.8540324, -56.1221709, 1100, 18, 'funcional', NULL),
+(746, 216, 4, 'Costanera Maestra Aurelia Viera', NULL, -34.8569785, -56.1184622, 240, 54, 'funcional', NULL),
+(747, 217, 4, 'Avenida Luis Braille', NULL, -34.8423923, -56.1210232, 360, 98, 'desbordado', NULL),
+(748, 217, 2, 'Sebastopol', NULL, -34.8467168, -56.1137149, 120, 14, 'funcional', NULL),
+(749, 217, 7, 'Módena', NULL, -34.8406366, -56.1356755, 1100, 52, 'funcional', NULL),
+(750, 218, 7, 'Lacio', NULL, -34.8319980, -56.1335755, 360, 55, 'funcional', NULL),
+(751, 218, 2, 'Camino General Leandro Gómez', NULL, -34.8300560, -56.1414831, 240, 97, 'desbordado', NULL),
+(752, 218, 7, 'Alsacia', NULL, -34.8390042, -56.1293319, 240, 23, 'funcional', NULL),
+(753, 219, 7, 'Continuación Venecia', NULL, -34.8400924, -56.1181527, 240, 84, 'funcional', NULL),
+(754, 219, 7, 'Susana Pintos', NULL, -34.8377393, -56.1139965, 120, 53, 'funcional', NULL),
+(755, 219, 3, 'Lutecia', NULL, -34.8368038, -56.1273421, 240, 9, 'funcional', NULL),
+(756, 220, 1, 'Umberto Pittamiglio', NULL, -34.8222841, -56.1311443, 360, 38, 'funcional', NULL),
+(757, 220, 7, 'El Parnaso', NULL, -34.8270515, -56.1282164, 240, 99, 'desbordado', NULL),
+(758, 220, 5, 'Dunant', NULL, -34.8251722, -56.1297440, 360, 8, 'funcional', NULL),
+(759, 221, 6, 'Camino Paso de la Española', NULL, -34.8096413, -56.1318336, 120, 39, 'funcional', NULL),
+(760, 221, 4, 'Marrubio', NULL, -34.8060493, -56.1348824, 1100, 4, 'funcional', NULL),
+(761, 221, 7, 'Camino las Amapolas', NULL, -34.8058249, -56.1259610, 360, 91, 'funcional', NULL),
+(762, 222, 6, 'Camino Maldonado', NULL, -34.8289010, -56.1091322, 360, 51, 'funcional', NULL),
+(763, 222, 4, 'Florencia', NULL, -34.8257376, -56.1190058, 120, 17, 'funcional', NULL),
+(764, 222, 1, NULL, NULL, -34.8252370, -56.1106404, 1100, 85, 'funcional', NULL),
+(765, 223, 3, 'Estepona', NULL, -34.8255362, -56.1049493, 240, 50, 'funcional', NULL),
+(766, 223, 1, 'Mariana Pineda', NULL, -34.8212763, -56.1054082, 240, 92, 'funcional', NULL),
+(767, 223, 3, 'Archidona', NULL, -34.8228780, -56.1062755, 360, 6, 'funcional', NULL),
+(768, 224, 1, 'Carlos Camusso', NULL, -34.8038322, -56.0799309, 120, 12, 'funcional', NULL),
+(769, 224, 7, 'Carlos Camusso', NULL, -34.8031994, -56.0787612, 240, 49, 'funcional', NULL),
+(770, 224, 4, 'José Marcos Monterroso', NULL, -34.8034892, -56.0810500, 1100, 94, 'funcional', NULL),
+(771, 225, 3, 'Soria', NULL, -34.8388773, -56.1998767, 1100, 47, 'funcional', NULL),
+(772, 225, 3, 'Tacuabé', NULL, -34.8370756, -56.2132975, 360, 17, 'funcional', NULL),
+(773, 225, 3, 'Quicuyó', NULL, -34.8337701, -56.2198945, 240, 91, 'funcional', NULL),
+(774, 226, 1, 'Teruel', NULL, -34.8348045, -56.1957960, 360, 80, 'funcional', NULL),
+(775, 226, 7, 'Camino Coronel Raíz', NULL, -34.8289815, -56.2007613, 240, 61, 'funcional', NULL),
+(776, 226, 5, 'Marconi', NULL, -34.8283559, -56.2067056, 120, 5, 'funcional', NULL),
+(777, 227, 7, 'Mauricio Maeterlink', NULL, -34.8179388, -56.2140701, 120, 24, 'funcional', NULL),
+(778, 227, 3, 'Bulevar Aparicio Saravia', NULL, -34.8285400, -56.1982383, 360, 91, 'funcional', NULL),
+(779, 227, 3, 'Bulevar Aparicio Saravia', NULL, -34.8235930, -56.2065282, 120, 38, 'funcional', NULL),
+(780, 228, 3, 'Las Violetas', NULL, -34.8440237, -56.2063953, 360, 56, 'funcional', NULL),
+(781, 228, 1, 'Astengo', NULL, -34.8399961, -56.2144436, 360, 93, 'funcional', NULL),
+(782, 228, 5, 'Bernardino Guas', NULL, -34.8401649, -56.2123479, 240, 7, 'funcional', NULL),
+(783, 229, 5, 'Confucio', NULL, -34.8323886, -56.2416186, 360, 54, 'funcional', NULL),
+(784, 229, 1, 'Avenida Islas Canarias', NULL, -34.8376269, -56.2312472, 240, 22, 'funcional', NULL),
+(785, 229, 3, 'María Orticochea', NULL, -34.8307761, -56.2347953, 360, 99, 'desbordado', NULL),
+(786, 230, 1, 'Avenida Millán', NULL, -34.8325200, -56.2249834, 240, 8, 'funcional', NULL),
+(787, 230, 6, 'Alberto Gómez Ruano', NULL, -34.8226264, -56.2358652, 120, 62, 'funcional', NULL),
+(788, 230, 1, 'Camino Ariel', NULL, -34.8239149, -56.2330903, 240, 82, 'funcional', NULL),
+(789, 231, 7, 'Pintos Cardeiros', NULL, -34.8184648, -56.2254613, 120, 13, 'funcional', NULL),
+(790, 231, 1, 'Coronel Pedro de León', NULL, -34.8186654, -56.2304977, 240, 89, 'funcional', NULL),
+(791, 231, 2, 'Luis Brandi', NULL, -34.8227907, -56.2261518, 120, 40, 'funcional', NULL),
+(792, 232, 4, 'Bulevar Aparicio Saravia', NULL, -34.8118518, -56.2265995, 360, 17, 'funcional', NULL),
+(793, 232, 2, 'Isaac Albéniz', NULL, -34.8116889, -56.2334999, 120, 91, 'funcional', NULL),
+(794, 232, 3, 'Camino Lecocq', NULL, -34.8106329, -56.2276574, 1100, 56, 'funcional', NULL),
+(795, 233, 1, 'Camino del Apero', NULL, -34.8002327, -56.2371620, 240, 24, 'funcional', NULL),
+(796, 233, 4, 'Avenida Lezica', NULL, -34.7961129, -56.2481326, 120, 53, 'funcional', NULL),
+(797, 233, 1, 'Gioia', NULL, -34.7891739, -56.2503974, 240, 93, 'funcional', NULL),
+(798, 234, 1, 'Avenida Lezica', NULL, -34.8022326, -56.2347175, 120, 7, 'funcional', NULL),
+(799, 234, 4, 'Matto Grosso', NULL, -34.8083744, -56.2269447, 1100, 86, 'funcional', NULL),
+(800, 234, 2, 'Lanús', NULL, -34.8053300, -56.2289282, 240, 59, 'funcional', NULL),
+(801, 235, 1, 'Doctor Elbio J Dodera', NULL, -34.7921539, -56.2253089, 1100, 10, 'funcional', NULL),
+(802, 235, 7, 'Ruta César Mayo Gutiérrez', NULL, -34.7929090, -56.2242019, 120, 51, 'funcional', NULL),
+(803, 235, 4, 'Camino Carlos A. López', NULL, -34.7917104, -56.2294170, 120, 95, 'desbordado', NULL),
+(804, 236, 3, 'Hudson', NULL, -34.8102873, -56.2162203, 120, 21, 'funcional', NULL),
+(805, 236, 4, 'Daniel Zorrilla', NULL, -34.8081309, -56.2168317, 120, 96, 'desbordado', NULL),
+(806, 236, 3, 'Tabapy', NULL, -34.8078949, -56.2145399, 240, 48, 'funcional', NULL),
+(807, 237, 7, 'Arturo Despouey', NULL, -34.8137604, -56.2009627, 120, 89, 'funcional', NULL),
+(808, 237, 2, 'Hudson', NULL, -34.8214351, -56.1969884, 1100, 64, 'funcional', NULL),
+(809, 237, 5, 'Renoir', NULL, -34.8135065, -56.2063947, 1100, 25, 'funcional', NULL),
+(810, 239, 7, 'Florentino Ameghino', NULL, -34.8535366, -56.2408505, 240, 88, 'funcional', NULL),
+(811, 239, 1, 'Julián Laguna', NULL, -34.8441110, -56.2431393, 120, 58, 'funcional', NULL),
+(812, 239, 5, 'Águeda Susviela de Rodríguez', NULL, -34.8491995, -56.2392552, 240, 12, 'funcional', NULL),
+(813, 240, 2, 'Estados Unidos', NULL, -34.8770545, -56.2595843, 360, 61, 'funcional', NULL),
+(814, 240, 2, 'Japón', NULL, -34.8769931, -56.2658308, 240, 82, 'funcional', NULL),
+(815, 240, 5, 'Japón', NULL, -34.8753879, -56.2539220, 240, 23, 'funcional', NULL),
+(816, 241, 6, 'Hocquart', NULL, -34.8899707, -56.1786722, 360, 23, 'funcional', NULL),
+(817, 241, 7, 'Nicaragua', NULL, -34.8918097, -56.1797062, 360, 50, 'funcional', NULL),
+(818, 241, 2, 'Bulevar General Artigas', NULL, -34.8903486, -56.1656480, 1100, 92, 'funcional', NULL),
+(819, 242, 3, 'Miguel Grau', NULL, -34.9035612, -56.1285739, 120, 44, 'funcional', NULL),
+(820, 242, 3, 'Rizal', NULL, -34.9011548, -56.1321287, 1100, 23, 'funcional', NULL),
+(821, 242, 4, 'Tomás de Tezanos', NULL, -34.9005225, -56.1320999, 120, 86, 'funcional', NULL),
+(822, 243, 4, 'Magariños Cervantes', NULL, -34.8931867, -56.1395752, 120, 5, 'funcional', NULL),
+(823, 243, 4, 'Tomás Gómez', NULL, -34.8932599, -56.1373494, 240, 55, 'funcional', NULL),
+(824, 243, 3, 'Tomás Gómez', NULL, -34.8934552, -56.1377708, 1100, 80, 'funcional', NULL),
+(825, 244, 5, 'Emilio Raña', NULL, -34.8813520, -56.1612786, 240, 38, 'funcional', NULL),
+(826, 244, 1, 'José Hernández', NULL, -34.8849795, -56.1636564, 240, 17, 'funcional', NULL),
+(827, 244, 6, 'Quijote', NULL, -34.8811769, -56.1650882, 1100, 88, 'funcional', NULL),
+(828, 245, 4, 'Ramón Márquez', NULL, -34.8583777, -56.1834677, 1100, 22, 'funcional', NULL),
+(829, 245, 7, 'Avenida Burgues', NULL, -34.8550447, -56.1831707, 360, 89, 'funcional', NULL),
+(830, 245, 6, 'Ramón Márquez', NULL, -34.8577137, -56.1831910, 120, 40, 'funcional', NULL),
+(831, 246, 3, 'Avenida José Pedro Varela', NULL, -34.8601091, -56.1462199, 360, 88, 'funcional', NULL),
+(832, 246, 6, 'Capitán Hipólito Mordeille', NULL, -34.8605136, -56.1507925, 240, 37, 'funcional', NULL),
+(833, 246, 3, 'Doctor José Irureta Goyena', NULL, -34.8597079, -56.1479584, 120, 13, 'funcional', NULL),
+(834, 247, 2, 'Camino Teniente Galeano', NULL, -34.8275635, -56.1437548, 120, 14, 'funcional', NULL),
+(835, 247, 3, 'Maratón', NULL, -34.8313873, -56.1446374, 1100, 44, 'funcional', NULL),
+(836, 247, 6, 'Camino Teniente Galeano', NULL, -34.8278047, -56.1458858, 360, 98, 'desbordado', NULL),
+(837, 248, 5, 'Avenida Mariscal Francisco Solano López', NULL, -34.8933243, -56.1239535, 360, 94, 'funcional', NULL),
+(838, 248, 1, 'Avenida Ramón Anador', NULL, -34.8928995, -56.1294373, 360, 64, 'funcional', NULL),
+(839, 248, 3, 'Plutarco', NULL, -34.8900424, -56.1280482, 240, 24, 'funcional', NULL),
+(840, 249, 3, 'Mones Roses', NULL, -34.8819535, -56.0646016, 120, 42, 'funcional', NULL),
+(841, 249, 5, 'Pedro Domingo Murillo', NULL, -34.8809588, -56.0661421, 120, 82, 'funcional', NULL),
+(842, 249, 6, 'Jamaica', NULL, -34.8800848, -56.0650509, 360, 9, 'funcional', NULL),
+(843, 250, 7, 'Pintado', NULL, -34.8463905, -56.1215498, 240, 47, 'funcional', NULL),
+(844, 250, 6, 'Cochabamba', NULL, -34.8511473, -56.1146259, 1100, 82, 'funcional', NULL),
+(845, 250, 1, 'Del Fuerte', NULL, -34.8479355, -56.1158812, 1100, 22, 'funcional', NULL),
+(846, 251, 3, 'Loreto Gomensoro', NULL, -34.8470101, -56.2026864, 1100, 44, 'funcional', NULL),
+(847, 251, 7, 'Víctor Hugo', NULL, -34.8433396, -56.1978041, 240, 92, 'funcional', NULL);
+INSERT INTO `contenedor` (`id_contenedor`, `id_circuito`, `id_tipo`, `calle`, `num_calle`, `latitud`, `longitud`, `capacidad`, `nivel_llenado`, `estado`, `fecha_reparacion`) VALUES
+(848, 251, 3, 'Lautreamont', NULL, -34.8502366, -56.1964867, 1100, 22, 'funcional', NULL),
+(849, 252, 7, 'Antonio Rubio', NULL, -34.8077348, -56.2505340, 240, 94, 'funcional', NULL),
+(850, 252, 7, 'Luis Lasagna', NULL, -34.8014726, -56.2449565, 240, 15, 'funcional', NULL),
+(851, 252, 7, 'Montalvo', NULL, -34.7996385, -56.2501264, 360, 51, 'funcional', NULL);
 
 -- --------------------------------------------------------
 
@@ -545,7 +994,11 @@ INSERT INTO `contenedor_levante` (`id_levante`, `id_contenedor`, `estado_encontr
 (5, 253, 'sobrepeso', 'Contenedor con exceso de residuos', '2026-08-27 08:05:00', 310),
 (6, 208, 'todo_ok', NULL, '2026-08-20 07:10:00', 180),
 (6, 362, 'todo_ok', NULL, '2026-08-20 07:40:00', 150),
-(7, 224, 'acceso_bloqueado', 'Vehículo estacionado bloqueando el acceso', '2026-08-28 08:30:00', NULL);
+(7, 224, 'acceso_bloqueado', 'Vehículo estacionado bloqueando el acceso', '2026-08-28 08:30:00', NULL),
+(9, 209, 'todo_ok', NULL, '2026-08-10 07:20:00', 200),
+(10, 210, 'todo_ok', NULL, '2026-08-11 07:50:00', 260),
+(11, 206, 'contenedor_ausente', 'No se encontró el contenedor en el lugar', '2026-08-12 08:15:00', NULL),
+(12, 207, 'todo_ok', NULL, '2026-08-13 07:35:00', 190);
 
 -- --------------------------------------------------------
 
@@ -564,7 +1017,16 @@ CREATE TABLE `cuadrilla` (
 --
 
 INSERT INTO `cuadrilla` (`id_cuadrilla`, `id_municipio`, `estado`) VALUES
-(1, 1, 'activa');
+(1, 1, 'activa'),
+(2, 2, 'activa'),
+(3, 3, 'activa'),
+(4, 4, 'activa'),
+(5, 5, 'inactiva'),
+(6, 6, 'activa'),
+(7, 7, 'activa'),
+(8, 8, 'inactiva'),
+(9, 1, 'activa'),
+(10, 2, 'activa');
 
 -- --------------------------------------------------------
 
@@ -595,7 +1057,12 @@ INSERT INTO `incidencia` (`id_incidencia`, `ci_usuario`, `id_cuadrilla`, `tipo`,
 (2, 33333333, NULL, 'rotura', 'Tapa del contenedor rota', 'media', 'abierta', 0, NULL, '2026-08-27 10:00:00', NULL),
 (3, 66666666, 1, 'falta_recoleccion', 'No se recolectó en la fecha programada', 'alta', 'resuelta', 1, NULL, '2026-08-20 09:30:00', '2026-08-21 16:45:00'),
 (4, 22222222, NULL, 'vandalismo', 'Contenedor con pintura y daños', 'baja', 'asignada', 0, NULL, '2026-08-15 12:00:00', NULL),
-(5, 33333333, 1, 'otro', 'Olores fuertes en la zona del contenedor', 'critica', 'resuelta', 1, NULL, '2026-06-01 07:00:00', '2026-06-02 09:00:00');
+(5, 33333333, 1, 'otro', 'Olores fuertes en la zona del contenedor', 'critica', 'resuelta', 1, NULL, '2026-06-01 07:00:00', '2026-06-02 09:00:00'),
+(6, 44444444, 2, 'rotura', 'Contenedor con tapa dañada por vandalismo', 'media', 'abierta', 0, NULL, '2026-08-05 09:00:00', NULL),
+(7, 55555555, 3, 'desborde', 'Desborde recurrente los fines de semana', 'alta', 'en_curso', 1, NULL, '2026-07-20 14:30:00', NULL),
+(8, 77777777, NULL, 'falta_recoleccion', 'No pasó el camión en la fecha programada', 'media', 'abierta', 0, NULL, '2026-07-10 08:00:00', NULL),
+(9, 88888888, 4, 'otro', 'Contenedor obstruyendo la vereda', 'baja', 'resuelta', 0, NULL, '2026-06-15 11:00:00', '2026-06-16 10:00:00'),
+(10, 99999999, 5, 'vandalismo', 'Grafitis y daños en contenedor', 'baja', 'asignada', 0, NULL, '2026-05-25 13:00:00', NULL);
 
 -- --------------------------------------------------------
 
@@ -617,7 +1084,12 @@ INSERT INTO `incidencia_contenedor` (`id_incidencia`, `id_contenedor`) VALUES
 (2, 248),
 (3, 208),
 (4, 224),
-(5, 253);
+(5, 253),
+(6, 209),
+(7, 210),
+(8, 206),
+(9, 207),
+(10, 208);
 
 -- --------------------------------------------------------
 
@@ -647,7 +1119,11 @@ INSERT INTO `levante` (`id_levante`, `id_camion`, `id_cuadrilla`, `id_ruta`, `ho
 (5, 7, 1, 2, '2026-08-27 07:15:00', '2026-08-27 12:00:00', 620.00, '2026-08-27', 'completado'),
 (6, 12, 1, 12, '2026-08-20 06:45:00', '2026-08-20 11:00:00', 940.25, '2026-08-20', 'completado'),
 (7, 19, 1, 52, '2026-08-28 08:00:00', NULL, 0.00, '2026-08-28', 'en_curso'),
-(8, 25, 1, 59, '2026-08-15 07:30:00', '2026-08-15 09:10:00', 300.00, '2026-08-15', 'cancelado');
+(8, 25, 1, 59, '2026-08-15 07:30:00', '2026-08-15 09:10:00', 300.00, '2026-08-15', 'cancelado'),
+(9, 15, 2, 71, '2026-08-10 07:00:00', '2026-08-10 11:15:00', 500.00, '2026-08-10', 'completado'),
+(10, 20, 3, 72, '2026-08-11 07:30:00', '2026-08-11 12:00:00', 620.75, '2026-08-11', 'completado'),
+(11, 28, 4, 73, '2026-08-12 08:00:00', NULL, 0.00, '2026-08-12', 'en_curso'),
+(12, 34, 5, 74, '2026-08-13 07:15:00', '2026-08-13 10:45:00', 410.30, '2026-08-13', 'completado');
 
 -- --------------------------------------------------------
 
@@ -665,6 +1141,22 @@ CREATE TABLE `mantenimiento` (
   `fecha_fin` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `mantenimiento`
+--
+
+INSERT INTO `mantenimiento` (`id_mantenimiento`, `id_camion`, `tipo`, `descripcion`, `costo`, `fecha_inicio`, `fecha_fin`) VALUES
+(1, 1, 'preventivo', 'Cambio de aceite y filtros', 150.00, '2026-01-05 08:00:00', '2026-01-05 10:00:00'),
+(2, 5, 'correctivo', 'Reparación de sistema hidráulico', 850.50, '2026-02-10 09:00:00', '2026-02-11 17:00:00'),
+(3, 11, 'preventivo', 'Revisión de frenos', 200.00, '2026-03-01 08:30:00', '2026-03-01 12:00:00'),
+(4, 13, 'correctivo', 'Cambio de neumáticos', 1200.00, '2026-03-15 08:00:00', '2026-03-15 14:00:00'),
+(5, 20, 'preventivo', 'Mantenimiento del motor', 400.00, '2026-04-02 08:00:00', '2026-04-02 13:00:00'),
+(6, 22, 'correctivo', 'Reparación de compactador de carga', 950.75, '2026-04-20 09:00:00', '2026-04-21 16:00:00'),
+(7, 30, 'preventivo', 'Cambio de correas y filtros', 180.00, '2026-05-05 08:00:00', '2026-05-05 11:00:00'),
+(8, 33, 'correctivo', 'Reparación eléctrica', 300.25, '2026-05-18 08:00:00', '2026-05-18 12:00:00'),
+(9, 41, 'preventivo', 'Revisión general', 220.00, '2026-06-01 08:00:00', '2026-06-01 11:30:00'),
+(10, 48, 'correctivo', 'Cambio de sistema de escape', 670.00, '2026-06-15 08:00:00', '2026-06-15 15:00:00');
+
 -- --------------------------------------------------------
 
 --
@@ -678,6 +1170,22 @@ CREATE TABLE `maquinaria` (
   `fecha_adquisicion` date DEFAULT NULL,
   `estado` enum('operativa','en_mantenimiento','fuera_servicio') NOT NULL DEFAULT 'operativa'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `maquinaria`
+--
+
+INSERT INTO `maquinaria` (`id_maquinaria`, `nombre`, `tipo`, `fecha_adquisicion`, `estado`) VALUES
+(1, 'Compactadora Industrial CX-100', 'compactadora', '2018-03-12', 'operativa'),
+(2, 'Cinta Transportadora Norte', 'cinta', '2019-07-01', 'operativa'),
+(3, 'Pala Cargadora Caterpillar 950', 'pala', '2016-11-20', 'en_mantenimiento'),
+(4, 'Báscula Digital 20T', 'bascula', '2020-01-15', 'operativa'),
+(5, 'Compactadora Industrial CX-200', 'compactadora', '2021-05-08', 'operativa'),
+(6, 'Cinta Transportadora Sur', 'cinta', '2017-09-23', 'fuera_servicio'),
+(7, 'Pala Cargadora Volvo L120', 'pala', '2015-04-02', 'operativa'),
+(8, 'Báscula Digital 40T', 'bascula', '2022-02-10', 'operativa'),
+(9, 'Trituradora de Residuos TR-50', 'otro', '2019-12-01', 'operativa'),
+(10, 'Herramientas de Mantenimiento Kit A', 'herramienta', '2020-06-18', 'operativa');
 
 -- --------------------------------------------------------
 
@@ -721,6 +1229,22 @@ CREATE TABLE `notificacion` (
   `fecha_lectura` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `notificacion`
+--
+
+INSERT INTO `notificacion` (`id_notificacion`, `mensaje`, `tipo_origen`, `prioridad`, `estado`, `fecha_creacion`, `fecha_lectura`) VALUES
+(1, 'Contenedor 209 marcado como en depósito', 'contenedor', 'informativa', 'leida', '2026-08-01 08:00:00', '2026-08-01 09:00:00'),
+(2, 'Nueva incidencia crítica reportada', 'incidencia', 'critica', 'pendiente', '2026-08-05 09:15:00', NULL),
+(3, 'Camión SBR2012 dado de baja', 'camion', 'advertencia', 'archivada', '2026-01-10 10:00:00', '2026-01-11 08:00:00'),
+(4, 'Levante completado en circuito A_DU_RM_CL_105', 'levante', 'informativa', 'leida', '2026-08-10 12:00:00', '2026-08-10 13:00:00'),
+(5, 'Centro de acopio Vertedero La Cruz saturado', 'centro_acopio', 'critica', 'pendiente', '2026-08-12 07:30:00', NULL),
+(6, 'Incidencia de vandalismo asignada a cuadrilla', 'incidencia', 'advertencia', 'leida', '2026-08-15 14:00:00', '2026-08-15 15:00:00'),
+(7, 'Contenedor 210 reportado como inactivo', 'contenedor', 'advertencia', 'pendiente', '2026-08-16 08:00:00', NULL),
+(8, 'Mantenimiento programado para camión SBP9565', 'camion', 'informativa', 'archivada', '2026-02-10 09:00:00', '2026-02-10 10:00:00'),
+(9, 'Nuevo levante en curso', 'levante', 'informativa', 'pendiente', '2026-08-20 07:00:00', NULL),
+(10, 'Incidencia resuelta correctamente', 'incidencia', 'informativa', 'leida', '2026-06-16 10:00:00', '2026-06-16 11:00:00');
+
 -- --------------------------------------------------------
 
 --
@@ -731,6 +1255,22 @@ CREATE TABLE `notificacion_usuario` (
   `id_notificacion` int(11) NOT NULL,
   `ci_usuario` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `notificacion_usuario`
+--
+
+INSERT INTO `notificacion_usuario` (`id_notificacion`, `ci_usuario`) VALUES
+(1, 11111111),
+(2, 22222222),
+(3, 11111111),
+(4, 55555555),
+(5, 11111111),
+(6, 99999999),
+(7, 33333333),
+(8, 11111111),
+(9, 55555555),
+(10, 44444444);
 
 -- --------------------------------------------------------
 
@@ -744,6 +1284,22 @@ CREATE TABLE `prediccion_llenado` (
   `nivel_proyectado` int(11) DEFAULT NULL,
   `fecha_calculo` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `prediccion_llenado`
+--
+
+INSERT INTO `prediccion_llenado` (`id_prediccion`, `id_contenedor`, `nivel_proyectado`, `fecha_calculo`) VALUES
+(1, 206, 45, '2026-08-28 06:00:00'),
+(2, 207, 60, '2026-08-28 06:00:00'),
+(3, 208, 35, '2026-08-28 06:00:00'),
+(4, 209, 10, '2026-08-28 06:00:00'),
+(5, 210, 55, '2026-08-28 06:00:00'),
+(6, 253, 80, '2026-08-27 06:00:00'),
+(7, 248, 65, '2026-08-27 06:00:00'),
+(8, 224, 90, '2026-08-27 06:00:00'),
+(9, 362, 30, '2026-08-27 06:00:00'),
+(10, 455, 20, '2026-08-27 06:00:00');
 
 -- --------------------------------------------------------
 
@@ -769,7 +1325,12 @@ INSERT INTO `reporte` (`id_reporte`, `ci_usuario`, `tipo`, `descripcion`, `forma
 (2, 11111111, 'csv', 'Exportación de volumen de residuos por tipo', 'CSV', '2026-08-27 15:30:00'),
 (3, 11111111, 'pdf', 'Reporte de incidencias del mes', 'PDF', '2026-08-20 11:00:00'),
 (4, 11111111, 'pantalla', 'Consulta en pantalla de frecuencia de recolección', 'PDF', '2026-08-15 10:00:00'),
-(5, 11111111, 'csv', 'Exportación de usuarios registrados', 'CSV', '2026-08-10 08:45:00');
+(5, 11111111, 'csv', 'Exportación de usuarios registrados', 'CSV', '2026-08-10 08:45:00'),
+(6, 22222222, 'pdf', 'Reporte de incidencias resueltas', 'PDF', '2026-08-05 10:00:00'),
+(7, 33333333, 'csv', 'Exportación de contenedores por estado', 'CSV', '2026-07-28 09:30:00'),
+(8, 44444444, 'pantalla', 'Consulta en pantalla de mantenimientos', 'PDF', '2026-07-15 11:00:00'),
+(9, 77777777, 'csv', 'Exportación de niveles de llenado', 'CSV', '2026-07-01 08:45:00'),
+(10, 88888888, 'pdf', 'Reporte mensual de recolección', 'PDF', '2026-06-30 17:00:00');
 
 -- --------------------------------------------------------
 
@@ -810,6 +1371,22 @@ CREATE TABLE `ruta_cuadrilla` (
   `id_cuadrilla` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `ruta_cuadrilla`
+--
+
+INSERT INTO `ruta_cuadrilla` (`id_ruta`, `id_cuadrilla`) VALUES
+(1, 1),
+(2, 1),
+(12, 2),
+(52, 3),
+(59, 4),
+(71, 5),
+(72, 6),
+(73, 7),
+(74, 8),
+(75, 9);
+
 -- --------------------------------------------------------
 
 --
@@ -833,7 +1410,12 @@ INSERT INTO `ruta_recoleccion` (`id_ruta`, `id_circuito`, `nombre`, `actividad`,
 (2, 164, 'Ruta óptima Circuito C_DU_RM_CL_101', 'recolección domiciliaria', 1),
 (12, 124, 'Ruta óptima Circuito A_DU_RM_CL_108', 'recolección domiciliaria', 1),
 (52, 221, 'Ruta óptima Circuito F_DU_RM_CL_112', 'recolección domiciliaria', 1),
-(59, 232, 'Ruta óptima Circuito G_DU_RM_CL_110', 'recolección domiciliaria', 1);
+(59, 232, 'Ruta óptima Circuito G_DU_RM_CL_110', 'recolección domiciliaria', 1),
+(71, 130, 'Ruta óptima Circuito A_DU_RM_CL_116', 'recolección domiciliaria', 1),
+(72, 140, 'Ruta óptima Circuito B_DU_RM_CL_07', 'recolección domiciliaria', 1),
+(73, 150, 'Ruta óptima Circuito CH_DU_RM_CL_108', 'recolección domiciliaria', 1),
+(74, 160, 'Ruta óptima Circuito CH_DU_RM_CL_120', 'recolección domiciliaria', 1),
+(75, 170, 'Ruta óptima Circuito C_DU_RM_CL_108', 'recolección domiciliaria', 1);
 
 -- --------------------------------------------------------
 
@@ -859,7 +1441,10 @@ INSERT INTO `tipo_residuo` (`id_tipo`, `color`, `descripcion`, `reciclable`) VAL
 (4, 'Amarillo', 'Plástico simple o compuesto: PET, PEAD, PVC, PEBD, PP, PS y otros.', 1),
 (5, 'Azul', 'Papel y cartón: papeles de oficina, diarios, revistas, folletos y cajas de cartón.', 1),
 (6, 'Negro', 'Metales ferrosos y no ferrosos: latas, chatarra, latas de pintura y cables.', 1),
-(7, 'Blanco', 'Vidrios: botellas y frascos.', 1);
+(7, 'Blanco', 'Vidrios: botellas y frascos.', 1),
+(8, 'Naranja', 'Residuos electrónicos: equipos eléctricos y electrónicos en desuso.', 1),
+(9, 'Rojo', 'Residuos peligrosos: pilas, baterías y productos químicos.', 0),
+(10, 'Violeta', 'Residuos voluminosos: muebles, colchones y escombros menores.', 0);
 
 -- --------------------------------------------------------
 
@@ -870,6 +1455,8 @@ INSERT INTO `tipo_residuo` (`id_tipo`, `color`, `descripcion`, `reciclable`) VAL
 CREATE TABLE `usuario` (
   `ci_usuario` int(11) NOT NULL,
   `id_municipio` int(11) DEFAULT NULL,
+  `id_cuadrilla` int(11) DEFAULT NULL,
+  `id_centro` int(11) DEFAULT NULL,
   `primer_nombre` varchar(50) NOT NULL,
   `p_apellido` varchar(50) NOT NULL,
   `email` varchar(120) NOT NULL,
@@ -884,13 +1471,31 @@ CREATE TABLE `usuario` (
 -- Dumping data for table `usuario`
 --
 
-INSERT INTO `usuario` (`ci_usuario`, `id_municipio`, `primer_nombre`, `p_apellido`, `email`, `tel`, `contrasenia`, `rol`, `acceso`, `fecha_registro`) VALUES
-(11111111, 1, 'Admin', 'Test', 'admin@recolix.uy', NULL, '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'administrador', 'habilitado', '2026-07-31 13:52:50'),
-(22222222, 1, 'Juan', 'Pérez', 'juan.perez@recolix.uy', '099111222', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'vecino', 'habilitado', '2026-08-28 08:00:00'),
-(33333333, 2, 'María', 'Gómez', 'maria.gomez@recolix.uy', '099222333', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'vecino', 'habilitado', '2026-08-25 10:15:00'),
-(44444444, 3, 'Lucía', 'Fernández', 'lucia.fernandez@recolix.uy', '099333444', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'operario', 'habilitado', '2026-08-10 09:30:00'),
-(55555555, 1, 'Diego', 'Rodríguez', 'diego.rodriguez@recolix.uy', '099444555', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'cuadrilla', 'habilitado', '2026-07-15 07:45:00'),
-(66666666, 4, 'Sofía', 'Martínez', 'sofia.martinez@recolix.uy', '099555666', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'vecino', 'habilitado', '2026-06-01 12:20:00');
+INSERT INTO `usuario` (`ci_usuario`, `id_municipio`, `id_cuadrilla`, `id_centro`, `primer_nombre`, `p_apellido`, `email`, `tel`, `contrasenia`, `rol`, `acceso`, `fecha_registro`) VALUES
+(10101010, 8, NULL, NULL, 'Nicolás', 'Castro', 'nicolas.castro@recolix.uy', '099999000', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'vecino', 'pendiente', '2026-08-01 07:00:00'),
+(11111111, 1, NULL, NULL, 'Admin', 'Test', 'admin@recolix.uy', NULL, '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'administrador', 'habilitado', '2026-07-31 13:52:50'),
+(12345676, 1, NULL, 1, 'Nacho', 'Trullén', 'operario@gmail.com', '094058840', '$2y$10$TTDn5CfLXXzOq0IxtS9mLu4NKrllSewCgc3nW5veABHG5ZZWF14NW', 'operario', 'habilitado', '2026-10-01 20:08:05'),
+(12345677, 1, 1, NULL, 'Juan', 'Perez', 'hola@gmail.com', '099123456', '$2y$10$XQLfEJNdvcTxnlDLt0/hG.q1ycUVCmqQjyjFmgws4mpBMtjRxA3iO', 'cuadrilla', 'habilitado', '2026-10-01 08:57:42'),
+(12345678, NULL, NULL, NULL, 'Admin', 'Test', 'admin@recolix.com', '099000000', '$2y$10$1kHyCHDW9cHtpP8yJIFGG.dT46A/MV5oJocyntr79CbEXswbz9tWq', 'administrador', 'habilitado', '2026-09-17 09:18:56'),
+(22222222, 1, NULL, NULL, 'Juan', 'Pérez', 'juan.perez@recolix.uy', '099111222', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'vecino', 'habilitado', '2026-08-28 08:00:00'),
+(33333333, 2, NULL, NULL, 'María', 'Gómez', 'maria.gomez@recolix.uy', '099222333', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'vecino', 'habilitado', '2026-08-25 10:15:00'),
+(44444444, 3, NULL, NULL, 'Lucía', 'Fernández', 'lucia.fernandez@recolix.uy', '099333444', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'operario', 'habilitado', '2026-08-10 09:30:00'),
+(55555555, 1, NULL, NULL, 'Diego', 'Rodríguez', 'diego.rodriguez@recolix.uy', '099444555', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'cuadrilla', 'habilitado', '2026-07-15 07:45:00'),
+(66666666, 4, NULL, NULL, 'Sofía', 'Martínez', 'sofia.martinez@recolix.uy', '099555666', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'vecino', 'habilitado', '2026-06-01 12:20:00'),
+(77777777, 5, NULL, NULL, 'Valentina', 'Suárez', 'valentina.suarez@recolix.uy', '099666777', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'vecino', 'habilitado', '2026-05-20 10:00:00'),
+(88888888, 6, NULL, NULL, 'Martín', 'Silva', 'martin.silva@recolix.uy', '099777888', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'operario', 'habilitado', '2026-04-11 09:00:00'),
+(99999999, 7, NULL, NULL, 'Camila', 'Torres', 'camila.torres@recolix.uy', '099888999', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'cuadrilla', 'habilitado', '2026-03-05 08:30:00');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `usuario_cuadrilla`
+--
+
+CREATE TABLE `usuario_cuadrilla` (
+  `ci_usuario` int(11) NOT NULL,
+  `id_cuadrilla` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Indexes for dumped tables
@@ -1067,7 +1672,16 @@ ALTER TABLE `tipo_residuo`
 --
 ALTER TABLE `usuario`
   ADD PRIMARY KEY (`ci_usuario`),
-  ADD KEY `id_municipio` (`id_municipio`);
+  ADD KEY `id_municipio` (`id_municipio`),
+  ADD KEY `id_cuadrilla` (`id_cuadrilla`),
+  ADD KEY `id_centro` (`id_centro`);
+
+--
+-- Indexes for table `usuario_cuadrilla`
+--
+ALTER TABLE `usuario_cuadrilla`
+  ADD PRIMARY KEY (`ci_usuario`,`id_cuadrilla`),
+  ADD KEY `id_cuadrilla` (`id_cuadrilla`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -1083,13 +1697,13 @@ ALTER TABLE `camion`
 -- AUTO_INCREMENT for table `camion_centro`
 --
 ALTER TABLE `camion_centro`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `centro_acopio`
 --
 ALTER TABLE `centro_acopio`
-  MODIFY `id_centro` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_centro` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `circuito`
@@ -1101,37 +1715,37 @@ ALTER TABLE `circuito`
 -- AUTO_INCREMENT for table `contenedor`
 --
 ALTER TABLE `contenedor`
-  MODIFY `id_contenedor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=459;
+  MODIFY `id_contenedor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=852;
 
 --
 -- AUTO_INCREMENT for table `cuadrilla`
 --
 ALTER TABLE `cuadrilla`
-  MODIFY `id_cuadrilla` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_cuadrilla` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `incidencia`
 --
 ALTER TABLE `incidencia`
-  MODIFY `id_incidencia` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_incidencia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `levante`
 --
 ALTER TABLE `levante`
-  MODIFY `id_levante` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id_levante` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `mantenimiento`
 --
 ALTER TABLE `mantenimiento`
-  MODIFY `id_mantenimiento` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_mantenimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `maquinaria`
 --
 ALTER TABLE `maquinaria`
-  MODIFY `id_maquinaria` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_maquinaria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `municipio`
@@ -1143,31 +1757,31 @@ ALTER TABLE `municipio`
 -- AUTO_INCREMENT for table `notificacion`
 --
 ALTER TABLE `notificacion`
-  MODIFY `id_notificacion` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_notificacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `prediccion_llenado`
 --
 ALTER TABLE `prediccion_llenado`
-  MODIFY `id_prediccion` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_prediccion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `reporte`
 --
 ALTER TABLE `reporte`
-  MODIFY `id_reporte` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_reporte` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `ruta_recoleccion`
 --
 ALTER TABLE `ruta_recoleccion`
-  MODIFY `id_ruta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=71;
+  MODIFY `id_ruta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
 
 --
 -- AUTO_INCREMENT for table `tipo_residuo`
 --
 ALTER TABLE `tipo_residuo`
-  MODIFY `id_tipo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id_tipo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- Constraints for dumped tables
@@ -1297,7 +1911,16 @@ ALTER TABLE `ruta_recoleccion`
 -- Constraints for table `usuario`
 --
 ALTER TABLE `usuario`
-  ADD CONSTRAINT `usuario_ibfk_1` FOREIGN KEY (`id_municipio`) REFERENCES `municipio` (`id_municipio`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `usuario_ibfk_1` FOREIGN KEY (`id_municipio`) REFERENCES `municipio` (`id_municipio`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `usuario_ibfk_2` FOREIGN KEY (`id_cuadrilla`) REFERENCES `cuadrilla` (`id_cuadrilla`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `usuario_ibfk_3` FOREIGN KEY (`id_centro`) REFERENCES `centro_acopio` (`id_centro`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+--
+-- Constraints for table `usuario_cuadrilla`
+--
+ALTER TABLE `usuario_cuadrilla`
+  ADD CONSTRAINT `usuario_cuadrilla_ibfk_1` FOREIGN KEY (`ci_usuario`) REFERENCES `usuario` (`ci_usuario`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `usuario_cuadrilla_ibfk_2` FOREIGN KEY (`id_cuadrilla`) REFERENCES `cuadrilla` (`id_cuadrilla`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
