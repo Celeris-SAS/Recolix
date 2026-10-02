@@ -301,7 +301,9 @@
     "login_volver": "← Back to main page",
     "login_error_ci": "Enter your ID without dots or dashes (6 to 8 digits).",
     "login_error_contrasenia": "Enter your password.",
+    "login_error_credenciales": "Incorrect ID or password.",
     "login_error_conexion": "Error connecting to the server. Please try again later.",
+    "login_error_no_autorizado": "Your account does not have permission to access the employee portal.",
 
     "mapa_title": "Map — Recolix",
     "mapa_titulo": "Operational map",
