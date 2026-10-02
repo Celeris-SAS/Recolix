@@ -108,9 +108,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
                         <button type="button" class="btn btn-primary" id="btn-iniciar-levante" hidden>
                             <?= t('cuadrilla.btn_iniciar_levante') ?>
                         </button>
-                        <button type="button" class="btn btn-outline" id="btn-completar-levante" hidden>
-                            <?= t('cuadrilla.btn_completar_levante') ?>
-                        </button>
                     </div>
                 </div>
 
@@ -303,7 +300,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             'noRecolectado' => 'cuadrilla.msg_no_recolectado',
             'motivoRegistrado' => 'cuadrilla.msg_motivo_registrado',
             'levanteRegistrado' => 'cuadrilla.msg_levante_registrado',
-            'confirmarCompletarLevante' => 'cuadrilla.msg_confirmar_completar_levante',
             'debeIniciarRuta' => 'cuadrilla.msg_levante_pendiente_iniciar',
             'camionActualizado' => 'cuadrilla.msg_camion_actualizado',
             'describiDesperfecto' => 'cuadrilla.msg_describi_desperfecto',
@@ -340,7 +336,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
         const infoBox = document.getElementById('contenedor-info');
         const formLevante = document.getElementById('form-levante');
         const btnIniciar = document.getElementById('btn-iniciar-levante');
-        const btnCompletar = document.getElementById('btn-completar-levante');
         const routesList = document.getElementById('routes-list');
         const routesEmpty = document.getElementById('routes-empty');
         const seccionLevante = document.getElementById('seccion-levante');
@@ -509,7 +504,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
                 CONTENEDORES = {};
                 listaContenedores.innerHTML = '';
                 btnIniciar.hidden = true;
-                btnCompletar.hidden = true;
                 habilitarFormLevante(false);
                 sinLevanteMsg.hidden = false;
                 levantePendienteMsg.hidden = true;
@@ -576,37 +570,12 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             renderContenedoresRuta(levanteActivo.contenedores || []);
 
             const esPendiente = levanteActivo.estado === 'pendiente';
-            const esEnCurso = levanteActivo.estado === 'en_curso';
-            const contenedoresSinRegistrar = contarContenedoresSinRegistrar(levanteActivo.contenedores || []);
             btnIniciar.hidden = !esPendiente;
-            btnCompletar.hidden = !esEnCurso;
-            // No se puede completar el levante hasta que todos los contenedores de la
-            // ruta tengan un peso o un motivo registrado (el backend lo exige igual,
-            // esto es solo para no dejar tocar el botón antes de tiempo).
-            btnCompletar.disabled = contenedoresSinRegistrar > 0;
             levantePendienteMsg.hidden = !esPendiente;
             // Se puede completar el formulario (tipear, elegir contenedor) aunque la ruta
             // todavía no haya arrancado; solo el envío final queda bloqueado hasta iniciarla
             // (ver validación en el submit de form-levante).
             habilitarFormLevante(true);
-            return contenedoresSinRegistrar;
-        }
-
-        function contarContenedoresSinRegistrar(contenedores) {
-            return contenedores.filter(function (c) {
-                return !c.hora_vaciado && !c.motivo;
-            }).length;
-        }
-
-        async function intentarCompletarLevante() {
-            if (!levanteActivo) return;
-            try {
-                await apiFetch(`${API_RECOLECCION}/levantes/completar/${levanteActivo.id_levante}`, { method: 'POST' });
-                mostrarToast(I18N.badgeCompletado);
-                await cargarRutas();
-            } catch (e) {
-                mostrarToast(e.message, 'warning');
-            }
         }
 
         btnIniciar.addEventListener('click', async function () {
@@ -618,10 +587,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             } catch (e) {
                 mostrarToast(e.message, 'warning');
             }
-        });
-
-        btnCompletar.addEventListener('click', async function () {
-            await intentarCompletarLevante();
         });
 
         // RF71 — Registro de motivo de no recolección
@@ -704,26 +669,28 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
                     })
                 });
 
+                let mensaje;
+                let tipoToast;
                 if (fueRecolectado) {
-                    mostrarToast(I18N.levanteRegistrado + ' #' + id + '.');
+                    mensaje = I18N.levanteRegistrado + ' #' + id + '.';
                 } else {
                     const estadoTexto = estadoEncontrado.options[estadoEncontrado.selectedIndex].text;
-                    mostrarToast(I18N.noRecolectado + ' #' + id + ' (' + estadoTexto + '). ' + I18N.motivoRegistrado, 'warning');
+                    mensaje = I18N.noRecolectado + ' #' + id + ' (' + estadoTexto + '). ' + I18N.motivoRegistrado;
+                    tipoToast = 'warning';
                 }
 
                 formLevante.reset();
                 actualizarInfoContenedor('');
                 grupoNoRecolectado.hidden = true;
-                const idLevanteActual = levanteActivo.id_levante;
-                const sinRegistrar = await cargarLevante(idLevanteActual);
+                await cargarLevante(levanteActivo.id_levante);
 
-                // Si ya no queda ningún contenedor pendiente, se le pregunta a la
-                // cuadrilla si quiere completar el levante en el momento.
-                if (levanteActivo && levanteActivo.estado === 'en_curso' && sinRegistrar === 0) {
-                    if (confirm(I18N.confirmarCompletarLevante)) {
-                        await intentarCompletarLevante();
-                    }
+                // Al registrar el último contenedor pendiente el backend cierra el levante
+                // solo: se vuelve a cargar el panel para que la ruta deje de aparecer.
+                if (levanteActivo && levanteActivo.estado === 'completado') {
+                    mensaje += ' ' + I18N.badgeCompletado + '.';
+                    await cargarRutas();
                 }
+                mostrarToast(mensaje, tipoToast);
             } catch (e) {
                 mostrarToast(e.message, 'warning');
             }

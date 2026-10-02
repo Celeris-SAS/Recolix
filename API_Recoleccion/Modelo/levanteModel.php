@@ -343,7 +343,32 @@ class LevanteModel {
             $this->actualizarNivelLlenado($idContenedor, $pesoVal);
         }
 
-        return $this->obtenerContenedor($idLevante, $idContenedor);
+        $contenedor = $this->obtenerContenedor($idLevante, $idContenedor);
+
+        // Cuando el último contenedor pendiente queda registrado (recolectado o con el
+        // motivo de por qué no se recolectó) el levante se cierra solo: no hay botón de
+        // "completar" y la ruta deja de figurar como asignada a la cuadrilla.
+        if (empty($this->contenedoresPendientes($idLevante))) {
+            $this->completarLevante($idLevante);
+        }
+
+        return $contenedor;
+    }
+
+    // El contenedor_levante se precarga con estado_encontrado='todo_ok' por defecto
+    // para cada contenedor de la ruta (ver precargarContenedores), así que ese campo
+    // solo no alcanza para saber si la cuadrilla ya pasó por él. Se considera
+    // procesado recién cuando tiene hora_vaciado (se recolectó) o motivo (no se
+    // recolectó).
+    private function contenedoresPendientes($idLevante) {
+        $pendientes = [];
+        foreach ($this->obtenerContenedores($idLevante) as $c) {
+            $fueProcesado = $c['hora_vaciado'] !== null || trim((string) $c['motivo']) !== '';
+            if (!$fueProcesado) {
+                $pendientes[] = $c['id_contenedor'];
+            }
+        }
+        return $pendientes;
     }
 
     private function obtenerContenedor($idLevante, $idContenedor) {
@@ -374,19 +399,7 @@ class LevanteModel {
             throw new InvalidArgumentException("Solo se puede completar un levante en curso");
         }
 
-        // El contenedor_levante se precarga con estado_encontrado='todo_ok' por defecto
-        // para cada contenedor de la ruta (ver precargarContenedores), así que ese campo
-        // solo no alcanza para saber si la cuadrilla ya pasó por él. Se considera
-        // procesado recién cuando tiene hora_vaciado (se recolectó) o motivo (no se
-        // recolectó); si no, no se puede completar el levante todavía.
-        $contenedores = $this->obtenerContenedores($idLevante);
-        $pendientes = [];
-        foreach ($contenedores as $c) {
-            $fueProcesado = $c['hora_vaciado'] !== null || trim((string) $c['motivo']) !== '';
-            if (!$fueProcesado) {
-                $pendientes[] = $c['id_contenedor'];
-            }
-        }
+        $pendientes = $this->contenedoresPendientes($idLevante);
         if (!empty($pendientes)) {
             throw new InvalidArgumentException("Todavía faltan contenedores por registrar: #" . implode(', #', $pendientes));
         }
