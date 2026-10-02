@@ -10,6 +10,8 @@ $tiposReporte = [
     'vertederos'     => ['titulo' => 'reportes.card_vertederos_titulo',     'desc' => 'reportes.card_vertederos_desc',     'implementado' => true],
     'clasificacion'  => ['titulo' => 'reportes.card_clasificacion_titulo',  'desc' => 'reportes.card_clasificacion_desc',  'implementado' => true],
     'usuarios'       => ['titulo' => 'reportes.card_usuarios_titulo',       'desc' => 'reportes.card_usuarios_desc',       'implementado' => true],
+    'camiones'       => ['titulo' => 'reportes.card_camiones_titulo',       'desc' => 'reportes.card_camiones_desc',       'implementado' => true],
+    'maquinaria'     => ['titulo' => 'reportes.card_maquinaria_titulo',     'desc' => 'reportes.card_maquinaria_desc',     'implementado' => true],
 ];
 
 $tipo = $_GET['tipo'] ?? '';
@@ -27,6 +29,8 @@ $reportEndpoints = [
     'vertederos'    => 'getCapacidadVertederos',
     'clasificacion' => 'getClasificacionResiduos',
     'usuarios'      => 'getEvolucionUsuarios',
+    'camiones'      => 'getDisponibilidadCamiones',
+    'maquinaria'    => 'getDisponibilidadMaquinaria',
 ];
 
 $reportColumns = [
@@ -76,6 +80,24 @@ $reportColumns = [
         ['key' => 'cuadrillas',      'label' => 'reportes.usuarios_th_cuadrillas',      'fmt' => 'num'],
         ['key' => 'administradores', 'label' => 'reportes.usuarios_th_administradores', 'fmt' => 'num'],
     ],
+    'camiones' => [
+        ['key' => 'matricula',          'label' => 'reportes.camiones_th_matricula',   'fmt' => 'text'],
+        ['key' => 'modelo',             'label' => 'reportes.camiones_th_modelo',      'fmt' => 'text'],
+        ['key' => 'tipoCarga',          'label' => 'reportes.camiones_th_tipo_carga',  'fmt' => 'text'],
+        ['key' => 'estado',             'label' => 'reportes.camiones_th_estado',      'fmt' => 'estadoCamion'],
+        ['key' => 'viajesCompletados',  'label' => 'reportes.camiones_th_viajes',      'fmt' => 'num'],
+        ['key' => 'kgRecolectados',     'label' => 'reportes.camiones_th_kg',          'fmt' => 'kg'],
+        ['key' => 'horasEnRuta',        'label' => 'reportes.camiones_th_horas_ruta',  'fmt' => 'horas'],
+        ['key' => 'horasMantenimiento', 'label' => 'reportes.camiones_th_horas_mant',  'fmt' => 'horas'],
+    ],
+    'maquinaria' => [
+        ['key' => 'nombre',           'label' => 'reportes.maquinaria_th_nombre',    'fmt' => 'text'],
+        ['key' => 'tipo',             'label' => 'reportes.maquinaria_th_tipo',      'fmt' => 'tipoMaquinaria'],
+        ['key' => 'centro',           'label' => 'reportes.maquinaria_th_centro',    'fmt' => 'text'],
+        ['key' => 'municipio',        'label' => 'reportes.maquinaria_th_municipio', 'fmt' => 'text'],
+        ['key' => 'estado',           'label' => 'reportes.maquinaria_th_estado',    'fmt' => 'estadoMaquinaria'],
+        ['key' => 'fechaAdquisicion', 'label' => 'reportes.maquinaria_th_fecha',     'fmt' => 'text'],
+    ],
 ];
 
 $reportEmptyKey = [
@@ -85,6 +107,8 @@ $reportEmptyKey = [
     'vertederos'    => 'reportes.vertederos_empty',
     'clasificacion' => 'reportes.clasificacion_empty',
     'usuarios'      => 'reportes.usuarios_empty',
+    'camiones'      => 'reportes.camiones_empty',
+    'maquinaria'    => 'reportes.maquinaria_empty',
 ];
 
 $esReporteGenerico = isset($reportEndpoints[$tipo]);
@@ -202,7 +226,7 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
                 <button type="button" class="filtro-btn" data-rango="mes"><?= t('reportes.usuarios_filtro_mes') ?></button>
                 <button type="button" class="filtro-btn filtro-btn-active" data-rango="siempre"><?= t('reportes.usuarios_filtro_siempre') ?></button>
             </div>
-            <?php elseif (in_array($tipo, ['volumen', 'incidencias'], true)): ?>
+            <?php elseif (in_array($tipo, ['volumen', 'incidencias', 'camiones'], true)): ?>
             <div class="filtro-rango" id="filtroRango">
                 <button type="button" class="filtro-btn" data-rango="hoy"><?= t('reportes.filtro_hoy') ?></button>
                 <button type="button" class="filtro-btn" data-rango="semana"><?= t('reportes.filtro_semana') ?></button>
@@ -403,6 +427,26 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
             saturado:  <?= json_encode(t('reportes.vertederos_estado_saturado')) ?>,
             cerrado:   <?= json_encode(t('reportes.vertederos_estado_cerrado')) ?>
         };
+        const LABELS_ESTADO_CAMION = {
+            disponible:        <?= json_encode(t('reportes.camiones_estado_disponible')) ?>,
+            en_ruta:           <?= json_encode(t('reportes.camiones_estado_en_ruta')) ?>,
+            en_mantenimiento:  <?= json_encode(t('reportes.camiones_estado_en_mantenimiento')) ?>,
+            de_baja:           <?= json_encode(t('reportes.camiones_estado_de_baja')) ?>,
+            en_deposito:       <?= json_encode(t('reportes.camiones_estado_en_deposito')) ?>
+        };
+        const LABELS_TIPO_MAQUINARIA = {
+            compactadora: <?= json_encode(t('reportes.maquinaria_tipo_compactadora')) ?>,
+            cinta:        <?= json_encode(t('reportes.maquinaria_tipo_cinta')) ?>,
+            pala:         <?= json_encode(t('reportes.maquinaria_tipo_pala')) ?>,
+            bascula:      <?= json_encode(t('reportes.maquinaria_tipo_bascula')) ?>,
+            herramienta:  <?= json_encode(t('reportes.maquinaria_tipo_herramienta')) ?>,
+            otro:         <?= json_encode(t('reportes.maquinaria_tipo_otro')) ?>
+        };
+        const LABELS_ESTADO_MAQUINARIA = {
+            operativa:         <?= json_encode(t('reportes.maquinaria_estado_operativa')) ?>,
+            en_mantenimiento:  <?= json_encode(t('reportes.maquinaria_estado_en_mantenimiento')) ?>,
+            fuera_servicio:    <?= json_encode(t('reportes.maquinaria_estado_fuera_servicio')) ?>
+        };
         const LABEL_SI = <?= json_encode(t('reportes.badge_si')) ?>;
         const LABEL_NO = <?= json_encode(t('reportes.badge_no')) ?>;
         const LABEL_RESULTADOS = <?= json_encode(t('reportes.detalle_resultados')) ?>;
@@ -447,6 +491,18 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
             return 'badge-success';
         }
 
+        function badgeParaEstadoCamion(estado) {
+            if (estado === 'disponible' || estado === 'en_ruta') return 'badge-success';
+            if (estado === 'de_baja') return 'badge-danger';
+            return 'badge-warning';
+        }
+
+        function badgeParaEstadoMaquinaria(estado) {
+            if (estado === 'operativa') return 'badge-success';
+            if (estado === 'fuera_servicio') return 'badge-danger';
+            return 'badge-warning';
+        }
+
         function formatCelda(row, col) {
             const valor = row[col.key];
             switch (col.fmt) {
@@ -489,6 +545,12 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
                     return LABELS_TIPO_VERTEDERO[valor] ?? valor;
                 case 'estadoVertedero':
                     return `<span class="badge ${badgeParaEstadoVertedero(valor)}">${LABELS_ESTADO_VERTEDERO[valor] ?? valor}</span>`;
+                case 'estadoCamion':
+                    return `<span class="badge ${badgeParaEstadoCamion(valor)}">${LABELS_ESTADO_CAMION[valor] ?? valor}</span>`;
+                case 'estadoMaquinaria':
+                    return `<span class="badge ${badgeParaEstadoMaquinaria(valor)}">${LABELS_ESTADO_MAQUINARIA[valor] ?? valor}</span>`;
+                case 'tipoMaquinaria':
+                    return LABELS_TIPO_MAQUINARIA[valor] ?? (valor ?? LABEL_SIN_DATOS);
                 default:
                     if (valor === null || valor === undefined || valor === '') {
                         return LABEL_SIN_DATOS;
@@ -497,7 +559,7 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
             }
         }
 
-        const TIPOS_CON_FILTRO_RANGO = ['usuarios', 'volumen', 'incidencias'];
+        const TIPOS_CON_FILTRO_RANGO = ['usuarios', 'volumen', 'incidencias', 'camiones'];
         let currentRango = 'siempre';
         let currentTurno = '';
         let currentDia   = '';

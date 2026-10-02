@@ -71,4 +71,12 @@ class reporteController {
     public function getEvolucionUsuarios($rango = 'siempre') {
         return $this->reporteModel->getEvolucionUsuarios($rango);
     }
+
+    public function getDisponibilidadCamiones($rango = 'siempre') {
+        return $this->reporteModel->getDisponibilidadCamiones($rango);
+    }
+
+    public function getDisponibilidadMaquinaria() {
+        return $this->reporteModel->getDisponibilidadMaquinaria();
+    }
 }

@@ -1,6 +1,12 @@
 <?php
     class RutaController {
 
+        // Capacidad de referencia (kg) usada al generar una ruta óptima: un tope conservador
+        // para que la ruta resultante pueda ser cubierta por un camión real de la flota
+        // (equivale al camión de menor capacidad). No depende de qué camión se asigne después
+        // en el levante; solo evita generar rutas que ningún camión podría completar.
+        private const CAPACIDAD_MAXIMA_RUTA_KG = 5000;
+
         private $rutaModel;
 
         public function __construct() {
@@ -232,9 +238,17 @@
 
             $resultado = $this->ejecutarRutas($payload);
 
+            $orden = $this->limitarPorCapacidad($resultado['orden'], $elegibles);
+            if (empty($orden)) {
+                throw new InvalidArgumentException(
+                    "El contenedor más lleno ya excede la capacidad máxima estimada del camión (" .
+                    self::CAPACIDAD_MAXIMA_RUTA_KG . " kg)"
+                );
+            }
+
             $idRuta = $this->rutaModel->insertRuta($circuitoId, $nombre, $actividad);
             $ordenVisita = 1;
-            foreach ($resultado['orden'] as $idContenedor) {
+            foreach ($orden as $idContenedor) {
                 $this->rutaModel->agregarContenedor($idRuta, (int) $idContenedor, $ordenVisita);
                 $ordenVisita++;
             }
@@ -242,7 +256,76 @@
             return [
                 'ruta' => $this->rutaModel->getRuta($idRuta),
                 'contenedores' => $this->rutaModel->obtenerContenedores($idRuta),
-                'distancia_total_km' => $resultado['distancia_total_km']
+                'distancia_total_km' => $this->calcularDistanciaOrden($payload['base'], $orden, $elegibles)
+            ];
+        }
+
+        // Recorre el orden calculado acumulando el peso estimado de cada contenedor
+        // (capacidad * nivel_llenado) y descarta el que, sumado a lo ya recolectado,
+        // superaría la capacidad del camión. Sigue evaluando los siguientes por si
+        // alguno más chico todavía entra.
+        private function limitarPorCapacidad($orden, $elegibles) {
+            $pesoPorContenedor = [];
+            foreach ($elegibles as $c) {
+                $capacidad = $c['capacidad'] !== null ? (float) $c['capacidad'] : 0;
+                $nivelLlenado = (float) $c['nivel_llenado'];
+                $pesoPorContenedor[(int) $c['id_contenedor']] = $capacidad * ($nivelLlenado / 100);
+            }
+
+            $ordenFiltrado = [];
+            $cargaAcumulada = 0;
+            foreach ($orden as $idContenedor) {
+                $idContenedor = (int) $idContenedor;
+                $peso = $pesoPorContenedor[$idContenedor] ?? 0;
+                if ($cargaAcumulada + $peso > self::CAPACIDAD_MAXIMA_RUTA_KG) {
+                    continue;
+                }
+                $cargaAcumulada += $peso;
+                $ordenFiltrado[] = $idContenedor;
+            }
+            return $ordenFiltrado;
+        }
+
+        private function haversineKm($lat1, $lon1, $lat2, $lon2) {
+            $radioTierra = 6371.0;
+            $dLat = deg2rad($lat2 - $lat1);
+            $dLon = deg2rad($lon2 - $lon1);
+            $a = sin($dLat / 2) ** 2 + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * sin($dLon / 2) ** 2;
+            return 2 * $radioTierra * asin(sqrt($a));
+        }
+
+        private function calcularDistanciaOrden($base, $orden, $elegibles) {
+            $coordsPorContenedor = [];
+            foreach ($elegibles as $c) {
+                $coordsPorContenedor[(int) $c['id_contenedor']] = [(float) $c['latitud'], (float) $c['longitud']];
+            }
+
+            $lat = (float) $base[0];
+            $lon = (float) $base[1];
+            $distanciaTotal = 0;
+            foreach ($orden as $idContenedor) {
+                [$latSiguiente, $lonSiguiente] = $coordsPorContenedor[(int) $idContenedor];
+                $distanciaTotal += $this->haversineKm($lat, $lon, $latSiguiente, $lonSiguiente);
+                $lat = $latSiguiente;
+                $lon = $lonSiguiente;
+            }
+            return round($distanciaTotal, 3);
+        }
+
+        // Suma el peso estimado (capacidad * nivel_llenado) de los contenedores de una ruta,
+        // usado para filtrar qué camiones tienen capacidad suficiente al planificar el levante.
+        public function obtenerCargaEstimada($rutaId) {
+            $rutaId = $this->validarId($rutaId);
+            $contenedores = $this->rutaModel->obtenerContenedores($rutaId);
+            $pesoEstimado = 0;
+            foreach ($contenedores as $c) {
+                $capacidad = $c['capacidad'] !== null ? (float) $c['capacidad'] : 0;
+                $nivelLlenado = (float) ($c['nivel_llenado'] ?? 0);
+                $pesoEstimado += $capacidad * ($nivelLlenado / 100);
+            }
+            return [
+                'peso_estimado_kg' => round($pesoEstimado, 2),
+                'contenedores_count' => count($contenedores)
             ];
         }
 

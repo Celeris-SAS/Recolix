@@ -171,8 +171,16 @@
             return $this->camionModel->filtrarTipoCarga($tipoCarga);
         }
 
-        public function filtrarDisponibilidad() {
-            return $this->camionModel->filtrarDisponibilidad();
+        public function filtrarDisponibilidad($capacidadMinima = null) {
+            if ($capacidadMinima !== null && $capacidadMinima !== '') {
+                if (!is_numeric($capacidadMinima) || (float) $capacidadMinima < 0) {
+                    throw new InvalidArgumentException("Capacidad mínima debe ser un número positivo");
+                }
+                $capacidadMinima = (int) ceil((float) $capacidadMinima);
+            } else {
+                $capacidadMinima = null;
+            }
+            return $this->camionModel->filtrarDisponibilidad($capacidadMinima);
         }
 
         public function filtrarMantenimiento() {

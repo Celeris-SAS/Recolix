@@ -86,6 +86,59 @@ final class LevanteModelIntegrationTest extends DbTestCase
         $model->planificarLevante($rutaId, $camionId, $cuadrillaId, '2026-01-10 08:00:00', '2026-01-10');
     }
 
+    public function testPlanificarLevanteGuardaElDestinoFinalEnCentroLevante(): void
+    {
+        $model = new LevanteModel();
+        $rutaId = $this->rutaActiva();
+        $camionId = $this->crearCamion(['estado' => 'disponible']);
+        $cuadrillaId = $this->crearCuadrilla();
+        $centroId = $this->crearCentro();
+
+        $levante = $model->planificarLevante($rutaId, $camionId, $cuadrillaId, '2026-01-10 08:00:00', '2026-01-10', $centroId);
+        $idLevante = (int) $levante['id_levante'];
+
+        $destino = $this->conn()->query("SELECT * FROM centro_levante WHERE id_levante = $idLevante")->fetch_assoc();
+        $this->assertNotNull($destino);
+        $this->assertSame($centroId, (int) $destino['id_centro']);
+    }
+
+    public function testPlanificarLevanteRechazaCentroInexistente(): void
+    {
+        $model = new LevanteModel();
+        $rutaId = $this->rutaActiva();
+        $camionId = $this->crearCamion(['estado' => 'disponible']);
+        $cuadrillaId = $this->crearCuadrilla();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Sitio de disposición final no encontrado');
+        $model->planificarLevante($rutaId, $camionId, $cuadrillaId, '2026-01-10 08:00:00', '2026-01-10', 999999);
+    }
+
+    public function testPlanificarLevanteRechazaCentroNoOperativo(): void
+    {
+        $model = new LevanteModel();
+        $rutaId = $this->rutaActiva();
+        $camionId = $this->crearCamion(['estado' => 'disponible']);
+        $cuadrillaId = $this->crearCuadrilla();
+        $centroId = $this->crearCentro(['estado' => 'cerrado']);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('no está operativo');
+        $model->planificarLevante($rutaId, $camionId, $cuadrillaId, '2026-01-10 08:00:00', '2026-01-10', $centroId);
+    }
+
+    public function testPlanificarLevanteSinCentroNoCreaDestino(): void
+    {
+        $model = new LevanteModel();
+        $rutaId = $this->rutaActiva();
+        $camionId = $this->crearCamion(['estado' => 'disponible']);
+        $cuadrillaId = $this->crearCuadrilla();
+
+        $levante = $model->planificarLevante($rutaId, $camionId, $cuadrillaId, '2026-01-10 08:00:00', '2026-01-10');
+
+        $this->assertSame(0, $this->contarFilas('centro_levante', "id_levante = {$levante['id_levante']}"));
+    }
+
     public function testPlanificarLevantePrecargaLosContenedoresDeLaRuta(): void
     {
         $model = new LevanteModel();
@@ -133,6 +186,30 @@ final class LevanteModelIntegrationTest extends DbTestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('estado pendiente');
         $model->iniciarLevante($idLevante);
+    }
+
+    public function testIniciarLevantePasaAEnCursoLasIncidenciasAsignadasDeLaRuta(): void
+    {
+        [$model, $idLevante, , $contenedorId] = $this->levantePendiente();
+        $ciUsuario = $this->crearUsuario();
+        $idIncidencia = $this->crearIncidencia($ciUsuario, ['estado' => 'asignada']);
+        $this->vincularIncidenciaContenedor($idIncidencia, $contenedorId);
+
+        $model->iniciarLevante($idLevante);
+
+        $this->assertSame(1, $this->contarFilas('incidencia', "id_incidencia = $idIncidencia AND estado = 'en_curso'"));
+    }
+
+    public function testIniciarLevanteNoTocaIncidenciasQueNoEstanAsignadas(): void
+    {
+        [$model, $idLevante, , $contenedorId] = $this->levantePendiente();
+        $ciUsuario = $this->crearUsuario();
+        $idIncidencia = $this->crearIncidencia($ciUsuario, ['estado' => 'abierta']);
+        $this->vincularIncidenciaContenedor($idIncidencia, $contenedorId);
+
+        $model->iniciarLevante($idLevante);
+
+        $this->assertSame(1, $this->contarFilas('incidencia', "id_incidencia = $idIncidencia AND estado = 'abierta'"));
     }
 
     public function testRegistrarContenedorTodoOkRequierePeso(): void
@@ -260,6 +337,41 @@ final class LevanteModelIntegrationTest extends DbTestCase
         $this->assertSame(1, $this->contarFilas('camion', "id_camion = $camionId AND estado = 'disponible'"));
     }
 
+    public function testCompletarLevanteMantieneElDestinoFinalElegido(): void
+    {
+        $model = new LevanteModel();
+        $circuitoId = $this->crearCircuito();
+        $rutaId = $this->crearRuta($circuitoId, ['activa' => 1]);
+        $contenedorId = $this->crearContenedor($circuitoId, ['capacidad' => 100]);
+        $this->agregarContenedorARuta($rutaId, $contenedorId);
+        $camionId = $this->crearCamion();
+        $cuadrillaId = $this->crearCuadrilla();
+        $centroId = $this->crearCentro();
+        $levante = $model->planificarLevante($rutaId, $camionId, $cuadrillaId, '2026-01-10 08:00:00', '2026-01-10', $centroId);
+        $idLevante = (int) $levante['id_levante'];
+
+        $model->iniciarLevante($idLevante);
+        $model->registrarContenedor($idLevante, $contenedorId, 'todo_ok', 42, null);
+        $model->completarLevante($idLevante);
+
+        $this->assertSame(1, $this->contarFilas('centro_levante', "id_levante = $idLevante AND id_centro = $centroId"));
+    }
+
+    public function testCancelarLevanteMantieneElDestinoFinalElegido(): void
+    {
+        $model = new LevanteModel();
+        $rutaId = $this->rutaActiva();
+        $camionId = $this->crearCamion(['estado' => 'disponible']);
+        $cuadrillaId = $this->crearCuadrilla();
+        $centroId = $this->crearCentro();
+        $levante = $model->planificarLevante($rutaId, $camionId, $cuadrillaId, '2026-01-10 08:00:00', '2026-01-10', $centroId);
+        $idLevante = (int) $levante['id_levante'];
+
+        $model->cancelarLevante($idLevante);
+
+        $this->assertSame(1, $this->contarFilas('centro_levante', "id_levante = $idLevante AND id_centro = $centroId"));
+    }
+
     public function testCancelarLevanteRechazaSiYaEstaCompletado(): void
     {
         [$model, $idLevante, , $contenedorId] = $this->levantePendiente();
@@ -293,6 +405,20 @@ final class LevanteModelIntegrationTest extends DbTestCase
 
         $this->assertCount(1, $resultado);
         $this->assertSame($idLevante, (int) $resultado[0]['id_levante']);
+    }
+
+    public function testObtenerPorRutaIncluyeElNombreDelCentroDeDestino(): void
+    {
+        $model = new LevanteModel();
+        $rutaId = $this->rutaActiva();
+        $camionId = $this->crearCamion(['estado' => 'disponible']);
+        $cuadrillaId = $this->crearCuadrilla();
+        $centroId = $this->crearCentro(['nombre' => 'Relleno Test']);
+        $model->planificarLevante($rutaId, $camionId, $cuadrillaId, '2026-01-10 08:00:00', '2026-01-10', $centroId);
+
+        $resultado = $model->obtenerPorRuta($rutaId);
+
+        $this->assertSame('Relleno Test', $resultado[0]['centro_nombre']);
     }
 
     public function testObtenerPendientesVencidosDetectaFechaPasada(): void
