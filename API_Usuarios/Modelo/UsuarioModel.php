@@ -15,7 +15,7 @@ class UsuarioModel {
     public function login($ci, $contrasenia) {
         $stmt = mysqli_prepare(
             $this->conn,
-            "SELECT ci_usuario, primer_nombre, p_apellido, email, tel, rol, acceso, fecha_registro, contrasenia
+            "SELECT ci_usuario, id_cuadrilla, primer_nombre, p_apellido, email, tel, rol, acceso, fecha_registro, contrasenia
              FROM USUARIO WHERE ci_usuario = ?"
         );
         mysqli_stmt_bind_param($stmt, 'i', $ci);
@@ -170,7 +170,7 @@ class UsuarioModel {
     public function filtrarRol($rol) {
         $stmt = mysqli_prepare(
             $this->conn,
-            "SELECT ci_usuario, primer_nombre, p_apellido, email, tel, rol, acceso, fecha_registro
+            "SELECT ci_usuario, id_cuadrilla, id_centro, primer_nombre, p_apellido, email, tel, rol, acceso, fecha_registro
              FROM USUARIO WHERE rol = ? ORDER BY fecha_registro DESC"
         );
         mysqli_stmt_bind_param($stmt, 's', $rol);
@@ -245,6 +245,74 @@ class UsuarioModel {
         mysqli_stmt_close($stmt);
         return $ci;
     }
+    // Usuarios con rol 'cuadrilla' asignados a una cuadrilla puntual (USUARIO.id_cuadrilla, FK real).
+    public function obtenerPorCuadrilla($idCuadrilla) {
+        $stmt = mysqli_prepare(
+            $this->conn,
+            "SELECT ci_usuario, primer_nombre, p_apellido, email, acceso
+             FROM USUARIO WHERE id_cuadrilla = ? AND rol = 'cuadrilla' ORDER BY primer_nombre ASC"
+        );
+        mysqli_stmt_bind_param($stmt, 'i', $idCuadrilla);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $rows = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $rows[] = $row;
+        }
+        mysqli_stmt_close($stmt);
+        return $rows;
+    }
+
+    public function asignarCuadrilla($ci, $idCuadrilla) {
+        $stmt = mysqli_prepare($this->conn, "UPDATE USUARIO SET id_cuadrilla = ? WHERE ci_usuario = ?");
+        mysqli_stmt_bind_param($stmt, 'ii', $idCuadrilla, $ci);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        return true;
+    }
+
+    public function quitarCuadrilla($ci) {
+        $stmt = mysqli_prepare($this->conn, "UPDATE USUARIO SET id_cuadrilla = NULL WHERE ci_usuario = ?");
+        mysqli_stmt_bind_param($stmt, 'i', $ci);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        return true;
+    }
+
+    // Usuarios con rol 'operario' asignados a un centro de acopio puntual (USUARIO.id_centro, FK real).
+    public function obtenerPorCentro($idCentro) {
+        $stmt = mysqli_prepare(
+            $this->conn,
+            "SELECT ci_usuario, primer_nombre, p_apellido, email, acceso
+             FROM USUARIO WHERE id_centro = ? AND rol = 'operario' ORDER BY primer_nombre ASC"
+        );
+        mysqli_stmt_bind_param($stmt, 'i', $idCentro);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $rows = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $rows[] = $row;
+        }
+        mysqli_stmt_close($stmt);
+        return $rows;
+    }
+
+    public function asignarCentro($ci, $idCentro) {
+        $stmt = mysqli_prepare($this->conn, "UPDATE USUARIO SET id_centro = ? WHERE ci_usuario = ?");
+        mysqli_stmt_bind_param($stmt, 'ii', $idCentro, $ci);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        return true;
+    }
+
+    public function quitarCentro($ci) {
+        $stmt = mysqli_prepare($this->conn, "UPDATE USUARIO SET id_centro = NULL WHERE ci_usuario = ?");
+        mysqli_stmt_bind_param($stmt, 'i', $ci);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        return true;
+    }
+
     public function setMunicipio($ci, $municipio) {
 
     $municipioSql = "SELECT id_municipio FROM MUNICIPIO WHERE nombre = ?";

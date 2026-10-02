@@ -1,6 +1,20 @@
 <?php
 $rolesPermitidos = ['operario'];
 require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
+
+// El centro se vuelve a leer de la base en cada carga (no solo de la sesión):
+// si un admin asigna o cambia el centro del usuario mientras ya tenía la sesión
+// abierta, el dato en $_SESSION quedaría viejo (mismo criterio que cuadrilla.php).
+require_once __DIR__ . '/../../conexion.php';
+$conn = new conexion();
+$stmt = mysqli_prepare($conn->getConexion(), "SELECT id_centro FROM USUARIO WHERE ci_usuario = ?");
+mysqli_stmt_bind_param($stmt, "i", $_SESSION['usuario']['ci_usuario']);
+mysqli_stmt_execute($stmt);
+$filaUsuario = mysqli_stmt_get_result($stmt)->fetch_assoc();
+mysqli_stmt_close($stmt);
+
+$idCentro = $filaUsuario['id_centro'] ?? null;
+$_SESSION['usuario']['id_centro'] = $idCentro;
 ?>
 <!DOCTYPE html>
 <html lang="<?= htmlspecialchars($RECOLIX_IDIOMA) ?>">
@@ -61,8 +75,14 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             <p><?= t('operario.page_sub') ?></p>
         </div>
 
+        <!-- Usuario sin id_centro asignado (USUARIO.id_centro) -->
+        <div class="alert-banner alert-banner--info" id="sin-centro-banner" hidden>
+            <span class="alert-banner-icon">ℹ</span>
+            <span><?= t('operario.msg_sin_centro') ?></span>
+        </div>
+
         <!-- RF77: Listado de centros de acopio (el/los que tiene asignados este operario) -->
-        <section class="dash-section">
+        <section class="dash-section" id="seccion-centro">
             <div class="panel-card">
                 <div class="card-header">
                     <span class="card-icon">
@@ -76,22 +96,22 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
 
                 <div class="centro-row">
                     <div class="centro-titulo">
-                        <h3>Ecocentro Buceo</h3>
-                        <span class="badge badge-ok"><?= t('operario.centro_estado_operativo') ?></span>
+                        <h3 id="centro-nombre"></h3>
+                        <span class="badge" id="centro-estado-badge"></span>
                     </div>
                     <div class="centro-datos">
-                        <span class="centro-item"><?= t('operario.centro_tipo_label') ?> <strong><?= t('operario.centro_tipo_ecocentro') ?></strong></span>
-                        <span class="centro-item"><?= t('operario.centro_direccion_label') ?> <strong>Rambla República de México 5589</strong></span>
-                        <span class="centro-item"><?= t('operario.centro_capacidad_label') ?> <strong>500 m³</strong></span>
+                        <span class="centro-item"><?= t('operario.centro_tipo_label') ?> <strong id="centro-tipo"></strong></span>
+                        <span class="centro-item"><?= t('operario.centro_direccion_label') ?> <strong id="centro-direccion"></strong></span>
+                        <span class="centro-item"><?= t('operario.centro_capacidad_label') ?> <strong id="centro-capacidad"></strong></span>
                     </div>
                 </div>
 
-    
+
             </div>
         </section>
 
         <!-- RF78: Consulta de ocupación del centro de acopio -->
-        <section class="dash-section">
+        <section class="dash-section" id="seccion-ocupacion">
             <div class="panel-card">
                 <div class="card-header">
                     <span class="card-icon">
@@ -150,7 +170,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
         <!-- Registro de ingreso de residuos: función descrita para el operario en 2.3
              (no tiene un RF numerado propio en el documento; alimenta los datos que
              RF78 consulta). Ver aclaración en el chat. -->
-        <section class="dash-section">
+        <section class="dash-section" id="seccion-ingreso">
             <div class="panel-card">
                 <div class="card-header">
                     <span class="card-icon">
@@ -201,7 +221,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
         </section>
 
         <!-- RF80: Actualización del estado de la maquinaria -->
-        <section class="dash-section">
+        <section class="dash-section" id="seccion-maquinaria">
             <div class="panel-card">
                 <div class="card-header">
                     <span class="card-icon">
@@ -265,6 +285,14 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             'estadoOperativa' => 'operario.maq_estado_operativa',
             'estadoEnMantenimiento' => 'operario.maq_estado_en_mantenimiento',
             'estadoFueraServicio' => 'operario.maq_estado_fuera_servicio',
+            'centroTipoEcocentro' => 'centrosAcopio.opt_ecocentro',
+            'centroTipoPlanta' => 'centrosAcopio.opt_planta_clasificacion',
+            'centroTipoRelleno' => 'centrosAcopio.opt_relleno_sanitario',
+            'centroTipoVertedero' => 'centrosAcopio.opt_vertedero',
+            'centroEstadoOperativo' => 'centrosAcopio.opt_operativo',
+            'centroEstadoSaturado' => 'centrosAcopio.opt_saturado',
+            'centroEstadoCerrado' => 'centrosAcopio.opt_cerrado',
+            'sinDireccion' => 'operario.centro_sin_direccion',
         ])) ?>;
 
         // Toast
@@ -278,6 +306,64 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             toastTimeout = setTimeout(function () {
                 toast.classList.remove('is-visible');
             }, 3500);
+        }
+
+        // ---- Carga inicial ----
+        // Si el operario no tiene centro asignado, se avisa y no se muestra nada más
+        // (mismo criterio que cuadrilla.php con ID_CUADRILLA).
+        const sinCentroBanner = document.getElementById('sin-centro-banner');
+        const seccionesCentro = ['seccion-centro', 'seccion-ocupacion', 'seccion-ingreso', 'seccion-maquinaria']
+            .map(id => document.getElementById(id));
+
+        const LABELS_TIPO_CENTRO = {
+            ecocentro: I18N.centroTipoEcocentro,
+            planta_clasificacion: I18N.centroTipoPlanta,
+            relleno_sanitario: I18N.centroTipoRelleno,
+            vertedero: I18N.centroTipoVertedero
+        };
+        const LABELS_ESTADO_CENTRO = {
+            operativo: I18N.centroEstadoOperativo,
+            saturado: I18N.centroEstadoSaturado,
+            cerrado: I18N.centroEstadoCerrado
+        };
+        const BADGE_ESTADO_CENTRO = {
+            operativo: 'badge-ok',
+            saturado: 'badge-warning',
+            cerrado: 'badge-danger'
+        };
+
+        async function cargarCentroAsignado() {
+            try {
+                const res = await fetch(`${API_BASE_GESTION}/centros-acopio/${ID_CENTRO}`);
+                const json = await res.json();
+                if (json.status !== 'success' || !json.data) return;
+                const c = json.data;
+
+                document.getElementById('centro-nombre').textContent = c.nombre;
+                const badge = document.getElementById('centro-estado-badge');
+                badge.textContent = LABELS_ESTADO_CENTRO[c.estado] || c.estado;
+                badge.className = 'badge ' + (BADGE_ESTADO_CENTRO[c.estado] || 'badge-neutral');
+                document.getElementById('centro-tipo').textContent = LABELS_TIPO_CENTRO[c.tipo] || c.tipo;
+                const direccion = [c.calle, c.num_calle].filter(Boolean).join(' ');
+                document.getElementById('centro-direccion').textContent = direccion || I18N.sinDireccion;
+                document.getElementById('centro-capacidad').textContent = c.capacidad_total
+                    ? `${c.capacidad_total} m³`
+                    : I18N.sinDireccion;
+            } catch {
+                mostrarToast(I18N.errorConectarApi, 'warning');
+            }
+        }
+
+        async function init() {
+            if (!ID_CENTRO) {
+                sinCentroBanner.hidden = false;
+                seccionesCentro.forEach(s => { s.hidden = true; });
+                return;
+            }
+            sinCentroBanner.hidden = true;
+            seccionesCentro.forEach(s => { s.hidden = false; });
+            await cargarCentroAsignado();
+            await cargarMaquinaria();
         }
 
         // RF78 (datos base) — ocupación por tipo de residuo del centro
@@ -339,8 +425,10 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
 
         // RF80 — Actualización del estado de la maquinaria
         const API_BASE_GESTION = '/recolix/API_Gestion';
-        // TODO: reemplazar por el centro real asignado al operario cuando la página tenga sesión propia.
-        const ID_CENTRO = parseInt(new URLSearchParams(window.location.search).get('centro'), 10) || 1;
+        const API_BASE_USUARIOS = '/recolix/API_Usuarios/api.php';
+        // Centro real asignado al operario (USUARIO.id_centro), leído fresco de la
+        // base en cada carga de la página — ver el bloque PHP del principio del archivo.
+        const ID_CENTRO = <?= json_encode($idCentro) ?>;
 
         const LABELS_TIPO_MAQUINARIA = {
             compactadora: I18N.tipoCompactadora,
@@ -428,7 +516,7 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             }
         }
 
-        cargarMaquinaria();
+        init();
 
         function toggleMobileMenu() {
             document.getElementById('navMobile').classList.toggle('nav-mobile-open');

@@ -13,6 +13,35 @@
   color: var(--moss);
 }
 
+.alert-banner[hidden] {
+  display: none;
+}
+
+.alert-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-radius: var(--radius-sm);
+  background-color: #fff8e1;
+  border: 1px solid var(--status-warn);
+  color: #7a5600;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 18px;
+}
+
+.alert-banner--info {
+  background-color: #e3f2fd;
+  border-color: #90caf9;
+  color: #0d47a1;
+}
+
+.alert-banner-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
 .page-title p {
   margin: 0;
   color: var(--ink-soft);
@@ -326,4 +355,11 @@
 
 .nav-hamburger {
   display: flex !important;
+}
+
+/* .dash-section define display:flex en styles_vecino.css con la misma
+   especificidad que [hidden], así que sin esto el atributo hidden no alcanza
+   a ocultar la sección (mismo problema resuelto antes en cuadrilla.css). */
+.dash-section[hidden] {
+  display: none;
 }

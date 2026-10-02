@@ -278,5 +278,79 @@ class UsuarioController {
 
         return $this->usuarioModel->setMunicipio($ci, $municipio);
     }
+
+    public function obtenerPorCuadrilla($idCuadrilla) {
+        $idCuadrilla = $this->validarId($idCuadrilla);
+        return $this->usuarioModel->obtenerPorCuadrilla($idCuadrilla);
+    }
+
+    public function asignarCuadrilla($ci, $idCuadrilla) {
+        $ci          = $this->validarCI($ci);
+        $idCuadrilla = $this->validarId($idCuadrilla);
+
+        $usuario = $this->usuarioModel->getPerfil($ci);
+        if (!$usuario) {
+            throw new InvalidArgumentException("No existe un usuario con la cédula $ci.");
+        }
+        if ($usuario['rol'] !== 'cuadrilla') {
+            throw new InvalidArgumentException("Solo se puede asignar una cuadrilla a un usuario con rol 'cuadrilla'.");
+        }
+
+        require_once __DIR__ . '/../Modelo/cuadrillaModel.php';
+        $cuadrillaModel = new CuadrillaModel();
+        if (!$cuadrillaModel->getCuadrilla($idCuadrilla)) {
+            throw new InvalidArgumentException("La cuadrilla indicada no existe.");
+        }
+
+        return $this->usuarioModel->asignarCuadrilla($ci, $idCuadrilla);
+    }
+
+    public function quitarCuadrilla($ci) {
+        $ci = $this->validarCI($ci);
+
+        $usuario = $this->usuarioModel->getPerfil($ci);
+        if (!$usuario) {
+            throw new InvalidArgumentException("No existe un usuario con la cédula $ci.");
+        }
+
+        return $this->usuarioModel->quitarCuadrilla($ci);
+    }
+
+    public function obtenerPorCentro($idCentro) {
+        $idCentro = $this->validarId($idCentro);
+        return $this->usuarioModel->obtenerPorCentro($idCentro);
+    }
+
+    public function asignarCentro($ci, $idCentro) {
+        $ci       = $this->validarCI($ci);
+        $idCentro = $this->validarId($idCentro);
+
+        $usuario = $this->usuarioModel->getPerfil($ci);
+        if (!$usuario) {
+            throw new InvalidArgumentException("No existe un usuario con la cédula $ci.");
+        }
+        if ($usuario['rol'] !== 'operario') {
+            throw new InvalidArgumentException("Solo se puede asignar un centro de acopio a un usuario con rol 'operario'.");
+        }
+
+        require_once __DIR__ . '/../../API_Gestion/Modelo/centroAcopioModel.php';
+        $centroModel = new CentroAcopioModel();
+        if (!$centroModel->getCentro($idCentro)) {
+            throw new InvalidArgumentException("El centro de acopio indicado no existe.");
+        }
+
+        return $this->usuarioModel->asignarCentro($ci, $idCentro);
+    }
+
+    public function quitarCentro($ci) {
+        $ci = $this->validarCI($ci);
+
+        $usuario = $this->usuarioModel->getPerfil($ci);
+        if (!$usuario) {
+            throw new InvalidArgumentException("No existe un usuario con la cédula $ci.");
+        }
+
+        return $this->usuarioModel->quitarCentro($ci);
+    }
 }
 ?>

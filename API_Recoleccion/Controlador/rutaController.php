@@ -177,6 +177,11 @@
             return $this->rutaModel->obtenerCuadrillas($rutaId);
         }
 
+        public function obtenerPorCuadrilla($cuadrillaId) {
+            $cuadrillaId = $this->validarId($cuadrillaId);
+            return $this->rutaModel->obtenerPorCuadrilla($cuadrillaId);
+        }
+
         public function obtenerLevantes($rutaId) {
             $rutaId = $this->validarId($rutaId);
             return $this->rutaModel->obtenerLevantes($rutaId);
