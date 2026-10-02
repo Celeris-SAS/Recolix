@@ -265,6 +265,8 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 <select id="levanteCamion" class="ctrl-select"></select>
                 <label><?= t('rutas.field_cuadrilla') ?></label>
                 <select id="levanteCuadrilla" class="ctrl-select"></select>
+                <label><?= t('rutas.field_centro_disposicion') ?></label>
+                <select id="levanteCentro" class="ctrl-select" onchange="actualizarDestinoFinalMapa()"></select>
                 <label><?= t('rutas.field_hora_salida') ?></label>
                 <input type="datetime-local" id="levanteHoraSalida" class="ctrl-input" style="min-width:0">
                 <label><?= t('rutas.field_fecha_levante') ?></label>
@@ -364,12 +366,16 @@ const I18N = <?= json_encode(t_array([
     'estadoCancelado' => 'rutas.estado_cancelado',
     'sinCamionesDisp' => 'rutas.sin_camiones_disp',
     'sinCuadrillasActivas' => 'rutas.sin_cuadrillas_activas',
+    'sinCentrosDisp' => 'rutas.sin_centros_disp',
     'cuadrillaPrefijo' => 'rutas.cuadrilla_prefijo',
     'sinContenedoresAsignados' => 'rutas.sin_contenedores_asignados',
     'popupCapacidad' => 'rutas.popup_capacidad',
+    'popupDestinoFinal' => 'rutas.popup_destino_final',
     'sinLevantesPlanificados' => 'rutas.sin_levantes_planificados',
     'camionPrefijo' => 'rutas.camion_prefijo',
     'salidaPrefijo' => 'rutas.salida_prefijo',
+    'destinoPrefijo' => 'rutas.destino_prefijo',
+    'msgFaltaDestinoFinal' => 'rutas.msg_falta_destino_final',
     'btnCancelarLevante' => 'rutas.btn_cancelar_levante',
     'msgLevanteCancelado' => 'rutas.msg_levante_cancelado',
     'msgErrorCancelarLevante' => 'rutas.msg_error_cancelar_levante',
@@ -391,6 +397,10 @@ let reglas = {};
 let mapaLevante = null;
 let levanteRutaActual = null;
 let marcadoresLevante = [];
+let centrosDisponibles = [];
+let puntosContenedoresLevante = [];
+let marcadorCentroLevante = null;
+let polylineCentroLevante = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
     await cargarReglas();
@@ -581,12 +591,18 @@ async function abrirPlanificarLevante(rutaId) {
 }
 
 async function cargarSelectsLevante() {
-    const [camRes, cuaRes] = await Promise.all([
-        fetch(`${API_BASE}/camiones/filtrarDisponibilidad`),
-        fetch(`${API_BASE}/levantes/obtenerCuadrillas`)
+    const cargaRes = await fetch(`${API_BASE}/rutas/${levanteRutaActual}/obtenerCargaEstimada`);
+    const cargaJson = await cargaRes.json();
+    const capacidadMinima = (cargaJson.status === 'success' && cargaJson.data) ? cargaJson.data.peso_estimado_kg : 0;
+
+    const [camRes, cuaRes, cenRes] = await Promise.all([
+        fetch(`${API_BASE}/camiones/filtrarDisponibilidad?capacidadMinima=${capacidadMinima}`),
+        fetch(`${API_BASE}/levantes/obtenerCuadrillas`),
+        fetch(`${API_BASE}/centros/filtrarOperativos`)
     ]);
     const camiones = (await camRes.json()).data || [];
     const cuadrillas = (await cuaRes.json()).data || [];
+    centrosDisponibles = (await cenRes.json()).data || [];
 
     const selCam = document.getElementById('levanteCamion');
     selCam.innerHTML = camiones.length
@@ -597,6 +613,12 @@ async function cargarSelectsLevante() {
     selCua.innerHTML = cuadrillas.length
         ? cuadrillas.map(c => `<option value="${c.id_cuadrilla}">${I18N.cuadrillaPrefijo}${c.id_cuadrilla}${c.municipio ? ' · ' + c.municipio : ''}</option>`).join('')
         : `<option value="">${I18N.sinCuadrillasActivas}</option>`;
+
+    const selCen = document.getElementById('levanteCentro');
+    selCen.innerHTML = centrosDisponibles.length
+        ? centrosDisponibles.map(c => `<option value="${c.id_centro}">${c.nombre}</option>`).join('')
+        : `<option value="">${I18N.sinCentrosDisp}</option>`;
+    actualizarDestinoFinalMapa();
 
     const ahora = new Date();
     document.getElementById('levanteHoraSalida').value = ahora.toISOString().slice(0, 16);
@@ -613,6 +635,9 @@ async function cargarContenedoresLevante(rutaId) {
         mapaLevante = null;
     }
     marcadoresLevante = [];
+    marcadorCentroLevante = null;
+    polylineCentroLevante = null;
+    puntosContenedoresLevante = [];
 
     mapaLevante = L.map('mapaLevante').setView([-34.9, -56.2], 13);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -645,6 +670,40 @@ async function cargarContenedoresLevante(rutaId) {
     if (puntos.length) {
         mapaLevante.fitBounds(L.latLngBounds(puntos).pad(0.15));
     }
+
+    puntosContenedoresLevante = puntos;
+    actualizarDestinoFinalMapa();
+}
+
+// Dibuja (o redibuja) el sitio de disposición final elegido como último punto
+// de la ruta, con una línea punteada desde el último contenedor hasta ahí.
+function actualizarDestinoFinalMapa() {
+    if (!mapaLevante) return;
+
+    if (marcadorCentroLevante) { mapaLevante.removeLayer(marcadorCentroLevante); marcadorCentroLevante = null; }
+    if (polylineCentroLevante) { mapaLevante.removeLayer(polylineCentroLevante); polylineCentroLevante = null; }
+
+    const selCen = document.getElementById('levanteCentro');
+    const centroId = selCen ? selCen.value : '';
+    if (!centroId) return;
+
+    const centro = centrosDisponibles.find(c => String(c.id_centro) === String(centroId));
+    if (!centro || centro.latitud === null || centro.longitud === null) return;
+
+    const puntoCentro = [parseFloat(centro.latitud), parseFloat(centro.longitud)];
+    marcadorCentroLevante = L.circleMarker(puntoCentro, {
+        radius: 8, color: '#fff', weight: 2, fillColor: '#8a3b12', fillOpacity: 1
+    }).addTo(mapaLevante).bindPopup(`<strong>${centro.nombre}</strong><br><small>${I18N.popupDestinoFinal}</small>`);
+
+    // Nunca se reencuadra el mapa en base al centro (ni aunque todavía no haya
+    // contenedores cargados): el centro suele estar lejos de la ruta y, si esta función
+    // se dispara antes de que cargarContenedoresLevante termine de cargar los contenedores,
+    // reencuadrar acá dejaría el mapa centrado en el centro solo. El encuadre es
+    // responsabilidad exclusiva de cargarContenedoresLevante.
+    if (puntosContenedoresLevante.length) {
+        const ultimo = puntosContenedoresLevante[puntosContenedoresLevante.length - 1];
+        polylineCentroLevante = L.polyline([ultimo, puntoCentro], { color: '#8a3b12', weight: 2, dashArray: '2 8' }).addTo(mapaLevante);
+    }
 }
 
 async function cargarLevantesRuta(rutaId) {
@@ -667,7 +726,8 @@ async function cargarLevantesRuta(rutaId) {
         <li class="resumen-item">
             <span>
                 <strong>#${l.id_levante}</strong> ${l.hora_levante ?? ''}<br>
-                <small>${I18N.camionPrefijo} ${l.matricula ?? '—'} · ${I18N.salidaPrefijo} ${l.hora_salida ? l.hora_salida.slice(11, 16) : '—'}</small>
+                <small>${I18N.camionPrefijo} ${l.matricula ?? '—'} · ${I18N.salidaPrefijo} ${l.hora_salida ? l.hora_salida.slice(11, 16) : '—'}</small><br>
+                <small>${I18N.destinoPrefijo}: ${l.centro_nombre ?? '—'}</small>
             </span>
             <span class="resumen-item-acciones">
                 <span class="badge badge-${estados[l.estado] ?? 'neutral'}">${ESTADOS_LEVANTE[l.estado] ?? l.estado}</span>
@@ -700,6 +760,11 @@ async function planificarLevante() {
         mostrarToast(I18N.msgFaltanCamionCuadrilla, 'warning');
         return;
     }
+    const centroId = document.getElementById('levanteCentro').value;
+    if (!centroId) {
+        mostrarToast(I18N.msgFaltaDestinoFinal, 'warning');
+        return;
+    }
     const horaSalida = document.getElementById('levanteHoraSalida').value.replace('T', ' ');
     const fecha = document.getElementById('levanteFecha').value;
     if (!fecha) { mostrarToast(I18N.msgIngresaFechaLevante, 'warning'); return; }
@@ -708,7 +773,7 @@ async function planificarLevante() {
         const res = await fetch(`${API_BASE}/levantes/planificar`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ rutaId: levanteRutaActual, camionId: parseInt(camionId), cuadrillaId: parseInt(cuadrillaId), horaSalida, horaLevante: fecha })
+            body: JSON.stringify({ rutaId: levanteRutaActual, camionId: parseInt(camionId), cuadrillaId: parseInt(cuadrillaId), horaSalida, horaLevante: fecha, centroId: parseInt(centroId) })
         });
         const json = await res.json();
         if (json.status === 'success') {

@@ -182,4 +182,47 @@ final class CamionControllerTest extends RecoleccionTestCase
         $this->expectException(InvalidArgumentException::class);
         $controller->obtenerHistorial(0);
     }
+
+    public function testFiltrarDisponibilidadRechazaCapacidadMinimaNegativa(): void
+    {
+        $controller = $this->controller();
+        $this->expectException(InvalidArgumentException::class);
+        $controller->filtrarDisponibilidad(-1);
+    }
+
+    public function testFiltrarDisponibilidadSinCapacidadMinimaNoFiltraPorCapacidad(): void
+    {
+        $controller = $this->controller();
+        $capacidadRecibida = 'sin llamar';
+        $stub = new class ($capacidadRecibida) {
+            public $capacidadRecibida;
+            public function __construct(&$capacidadRecibida) { $this->capacidadRecibida = &$capacidadRecibida; }
+            public function filtrarDisponibilidad($capacidadMinima = null) {
+                $this->capacidadRecibida = $capacidadMinima;
+                return [];
+            }
+        };
+        $this->setPrivateProperty($controller, 'camionModel', $stub);
+
+        $controller->filtrarDisponibilidad();
+
+        $this->assertNull($stub->capacidadRecibida);
+    }
+
+    public function testFiltrarDisponibilidadRedondeaCapacidadMinimaHaciaArriba(): void
+    {
+        $controller = $this->controller();
+        $stub = new class {
+            public $capacidadRecibida;
+            public function filtrarDisponibilidad($capacidadMinima = null) {
+                $this->capacidadRecibida = $capacidadMinima;
+                return [];
+            }
+        };
+        $this->setPrivateProperty($controller, 'camionModel', $stub);
+
+        $controller->filtrarDisponibilidad('1234.2');
+
+        $this->assertSame(1235, $stub->capacidadRecibida);
+    }
 }

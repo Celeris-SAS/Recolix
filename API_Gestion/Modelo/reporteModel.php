@@ -469,4 +469,78 @@ class ReporteModel {
         }
         return $filas;
     }
+
+    // Disponibilidad (estado actual) y uso (viajes, kg, horas en ruta y en mantenimiento
+    // dentro del rango elegido) por camión.
+    public function getDisponibilidadCamiones($rango = 'siempre') {
+        $condicionLevante      = $this->condicionRangoFecha('l.hora_levante', $rango);
+        $condicionMantenimiento = $this->condicionRangoFechaHora('m.fecha_inicio', $rango);
+
+        $sql = "SELECT c.matricula, c.modelo, c.tipo_carga, c.estado,
+                       COALESCE(u.viajesCompletados, 0) AS viajesCompletados,
+                       COALESCE(u.kgRecolectados, 0)    AS kgRecolectados,
+                       COALESCE(u.horasEnRuta, 0)        AS horasEnRuta,
+                       COALESCE(mt.horasMantenimiento, 0) AS horasMantenimiento
+                FROM CAMION c
+                LEFT JOIN (
+                    SELECT l.id_camion,
+                           COUNT(*) AS viajesCompletados,
+                           SUM(l.total_recolectado) AS kgRecolectados,
+                           SUM(TIMESTAMPDIFF(MINUTE, l.hora_salida, l.hora_llegada)) / 60 AS horasEnRuta
+                    FROM LEVANTE l
+                    WHERE l.estado = 'completado' AND l.hora_llegada IS NOT NULL AND $condicionLevante
+                    GROUP BY l.id_camion
+                ) u ON u.id_camion = c.id_camion
+                LEFT JOIN (
+                    SELECT m.id_camion,
+                           SUM(TIMESTAMPDIFF(MINUTE, m.fecha_inicio, COALESCE(m.fecha_fin, NOW()))) / 60 AS horasMantenimiento
+                    FROM MANTENIMIENTO m
+                    WHERE m.fecha_inicio IS NOT NULL AND $condicionMantenimiento
+                    GROUP BY m.id_camion
+                ) mt ON mt.id_camion = c.id_camion
+                ORDER BY c.matricula ASC";
+
+        $result = mysqli_query($this->conn->getConexion(), $sql);
+        $filas = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $filas[] = [
+                'matricula'          => $row['matricula'],
+                'modelo'             => $row['modelo'],
+                'tipoCarga'          => $row['tipo_carga'],
+                'estado'             => $row['estado'],
+                'viajesCompletados'  => (int) $row['viajesCompletados'],
+                'kgRecolectados'     => (float) $row['kgRecolectados'],
+                'horasEnRuta'        => round((float) $row['horasEnRuta'], 1),
+                'horasMantenimiento' => round((float) $row['horasMantenimiento'], 1),
+            ];
+        }
+        return $filas;
+    }
+
+    // Disponibilidad (estado actual) de la maquinaria por centro de acopio.
+    // No hay eventos de uso registrados para maquinaria (a diferencia de los
+    // camiones, que tienen LEVANTE), por eso no reporta métricas de uso.
+    public function getDisponibilidadMaquinaria() {
+        $sql = "SELECT mq.nombre, mq.tipo, mq.fecha_adquisicion, mq.estado,
+                       ca.nombre AS centro, mu.nombre AS municipio
+                FROM MAQUINARIA mq
+                LEFT JOIN CENTRO_MAQUINARIA cm ON cm.id_maquinaria = mq.id_maquinaria
+                LEFT JOIN CENTRO_ACOPIO ca ON ca.id_centro = cm.id_centro
+                LEFT JOIN MUNICIPIO mu ON mu.id_municipio = ca.id_municipio
+                ORDER BY mq.nombre ASC";
+
+        $result = mysqli_query($this->conn->getConexion(), $sql);
+        $filas = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $filas[] = [
+                'nombre'            => $row['nombre'],
+                'tipo'              => $row['tipo'],
+                'centro'            => $row['centro'],
+                'municipio'         => $row['municipio'],
+                'estado'            => $row['estado'],
+                'fechaAdquisicion'  => $row['fecha_adquisicion'],
+            ];
+        }
+        return $filas;
+    }
 }
