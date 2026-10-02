@@ -1454,6 +1454,7 @@ INSERT INTO `tipo_residuo` (`id_tipo`, `color`, `descripcion`, `reciclable`) VAL
 CREATE TABLE `usuario` (
   `ci_usuario` int(11) NOT NULL,
   `id_municipio` int(11) DEFAULT NULL,
+  `id_cuadrilla` int(11) DEFAULT NULL,
   `primer_nombre` varchar(50) NOT NULL,
   `p_apellido` varchar(50) NOT NULL,
   `email` varchar(120) NOT NULL,
@@ -1468,17 +1469,17 @@ CREATE TABLE `usuario` (
 -- Dumping data for table `usuario`
 --
 
-INSERT INTO `usuario` (`ci_usuario`, `id_municipio`, `primer_nombre`, `p_apellido`, `email`, `tel`, `contrasenia`, `rol`, `acceso`, `fecha_registro`) VALUES
-(11111111, 1, 'Admin', 'Test', 'admin@recolix.uy', NULL, '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'administrador', 'habilitado', '2026-07-31 13:52:50'),
-(22222222, 1, 'Juan', 'Pérez', 'juan.perez@recolix.uy', '099111222', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'vecino', 'habilitado', '2026-08-28 08:00:00'),
-(33333333, 2, 'María', 'Gómez', 'maria.gomez@recolix.uy', '099222333', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'vecino', 'habilitado', '2026-08-25 10:15:00'),
-(44444444, 3, 'Lucía', 'Fernández', 'lucia.fernandez@recolix.uy', '099333444', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'operario', 'habilitado', '2026-08-10 09:30:00'),
-(55555555, 1, 'Diego', 'Rodríguez', 'diego.rodriguez@recolix.uy', '099444555', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'cuadrilla', 'habilitado', '2026-07-15 07:45:00'),
-(66666666, 4, 'Sofía', 'Martínez', 'sofia.martinez@recolix.uy', '099555666', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'vecino', 'habilitado', '2026-06-01 12:20:00'),
-(77777777, 5, 'Valentina', 'Suárez', 'valentina.suarez@recolix.uy', '099666777', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'vecino', 'habilitado', '2026-05-20 10:00:00'),
-(88888888, 6, 'Martín', 'Silva', 'martin.silva@recolix.uy', '099777888', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'operario', 'habilitado', '2026-04-11 09:00:00'),
-(99999999, 7, 'Camila', 'Torres', 'camila.torres@recolix.uy', '099888999', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'cuadrilla', 'habilitado', '2026-03-05 08:30:00'),
-(10101010, 8, 'Nicolás', 'Castro', 'nicolas.castro@recolix.uy', '099999000', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'vecino', 'pendiente', '2026-08-01 07:00:00');
+INSERT INTO `usuario` (`ci_usuario`, `id_municipio`, `id_cuadrilla`, `primer_nombre`, `p_apellido`, `email`, `tel`, `contrasenia`, `rol`, `acceso`, `fecha_registro`) VALUES
+(11111111, 1, NULL, 'Admin', 'Test', 'admin@recolix.uy', NULL, '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'administrador', 'habilitado', '2026-07-31 13:52:50'),
+(22222222, 1, NULL, 'Juan', 'Pérez', 'juan.perez@recolix.uy', '099111222', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'vecino', 'habilitado', '2026-08-28 08:00:00'),
+(33333333, 2, NULL, 'María', 'Gómez', 'maria.gomez@recolix.uy', '099222333', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'vecino', 'habilitado', '2026-08-25 10:15:00'),
+(44444444, 3, NULL, 'Lucía', 'Fernández', 'lucia.fernandez@recolix.uy', '099333444', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'operario', 'habilitado', '2026-08-10 09:30:00'),
+(55555555, 1, 1, 'Diego', 'Rodríguez', 'diego.rodriguez@recolix.uy', '099444555', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'cuadrilla', 'habilitado', '2026-07-15 07:45:00'),
+(66666666, 4, NULL, 'Sofía', 'Martínez', 'sofia.martinez@recolix.uy', '099555666', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'vecino', 'habilitado', '2026-06-01 12:20:00'),
+(77777777, 5, NULL, 'Valentina', 'Suárez', 'valentina.suarez@recolix.uy', '099666777', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'vecino', 'habilitado', '2026-05-20 10:00:00'),
+(88888888, 6, NULL, 'Martín', 'Silva', 'martin.silva@recolix.uy', '099777888', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'operario', 'habilitado', '2026-04-11 09:00:00'),
+(99999999, 7, 7, 'Camila', 'Torres', 'camila.torres@recolix.uy', '099888999', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'cuadrilla', 'habilitado', '2026-03-05 08:30:00'),
+(10101010, 8, NULL, 'Nicolás', 'Castro', 'nicolas.castro@recolix.uy', '099999000', '$2y$10$0NilhlEC9Y56hpV4G31lLOXAw6QcrJyrNYfeEKZgRo5i1LGB9efKm', 'vecino', 'pendiente', '2026-08-01 07:00:00');
 
 CREATE TABLE `usuario_cuadrilla` (
   `ci_usuario` int(11) NOT NULL,
@@ -1660,7 +1661,8 @@ ALTER TABLE `tipo_residuo`
 --
 ALTER TABLE `usuario`
   ADD PRIMARY KEY (`ci_usuario`),
-  ADD KEY `id_municipio` (`id_municipio`);
+  ADD KEY `id_municipio` (`id_municipio`),
+  ADD KEY `id_cuadrilla` (`id_cuadrilla`);
 
 ALTER TABLE `usuario_cuadrilla`
   ADD PRIMARY KEY (`ci_usuario`,`id_cuadrilla`),
@@ -1894,7 +1896,8 @@ ALTER TABLE `ruta_recoleccion`
 -- Constraints for table `usuario`
 --
 ALTER TABLE `usuario`
-  ADD CONSTRAINT `usuario_ibfk_1` FOREIGN KEY (`id_municipio`) REFERENCES `municipio` (`id_municipio`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `usuario_ibfk_1` FOREIGN KEY (`id_municipio`) REFERENCES `municipio` (`id_municipio`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `usuario_ibfk_2` FOREIGN KEY (`id_cuadrilla`) REFERENCES `cuadrilla` (`id_cuadrilla`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Constraints for table `usuario_cuadrilla`

@@ -223,7 +223,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
 <script>
 const API_GESTION      = '/recolix/API_Gestion';
 const API_RECOLECCION  = '/recolix/API_Recoleccion';
-const API_USUARIOS     = '/recolix/API_Usuarios';
+const API_USUARIOS     = '/recolix/API_Usuarios/api.php';
 const I18N = <?= json_encode(t_array([
     'pendienteSingular' => 'backoffice.index_js_pendiente_singular',
     'pendientePlural' => 'backoffice.index_js_pendiente_plural',

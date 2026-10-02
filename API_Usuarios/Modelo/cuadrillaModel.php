@@ -137,7 +137,7 @@ class CuadrillaModel
         return $cuadrillas;
     }
 
-    public function obtenerHistorial($id) {
+public function obtenerHistorial($id) {
         $historial = [];
 
         $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT 'levante' AS tipo_evento, estado AS descripcion, hora_levante AS fecha FROM levante WHERE id_cuadrilla = ?");

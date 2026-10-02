@@ -102,6 +102,7 @@ $config = [
                 'asignarCuadrilla',
                 'quitarCuadrilla',
                 'obtenerCuadrillas',
+                'obtenerPorCuadrilla',
                 'obtenerLevantes',
                 'generarOptima',
                 'obtenerResumen'
@@ -125,6 +126,7 @@ $config = [
                 'reglasValidacion',
                 'obtenerPorRuta',
                 'obtenerCuadrillas',
+                'obtenerActivoPorCuadrilla',
                 'planificar',
                 'iniciar',
                 'registrarContenedor',

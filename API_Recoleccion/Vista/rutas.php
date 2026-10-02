@@ -432,7 +432,7 @@ async function cargarResumen() {
         renderResumenCard('listaPendientes', 'countPendientes', pendientes);
 
         const prioritarias = rutas
-            .filter(r => r.llenado_promedio !== null)
+            .filter(r => r.llenado_promedio !== null && r.estado !== 'finalizada')
             .sort((a, b) => b.llenado_promedio - a.llenado_promedio)
             .slice(0, 5);
         renderResumenCard('listaPrioritarias', null, prioritarias);

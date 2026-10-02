@@ -74,6 +74,11 @@
             return $this->levanteModel->getLevante($id);
         }
 
+        public function obtenerActivoPorCuadrilla($idCuadrilla) {
+            $idCuadrilla = $this->validarId($idCuadrilla);
+            return $this->levanteModel->obtenerActivoPorCuadrilla($idCuadrilla);
+        }
+
         public function obtenerPorRuta($idRuta) {
             $idRuta = $this->validarId($idRuta);
             return $this->levanteModel->obtenerPorRuta($idRuta);

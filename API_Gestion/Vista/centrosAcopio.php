@@ -327,6 +327,22 @@ require_once __DIR__ . '/../../i18n/i18n.php';
         </div>
     </div>
 
+    <!-- ── MODAL OPERARIOS DEL CENTRO ────────────────────────────────────── -->
+    <div class="modal-overlay" id="modalOperarios" style="display:none" onclick="onOverlayClick(event,'modalOperarios')">
+        <div class="modal">
+            <div class="modal-header">
+                <h3><span id="operariosTituloPrefijo"></span> <span id="operariosCentroNombre"></span></h3>
+                <button class="modal-close" onclick="cerrarModalOperarios()">✕</button>
+            </div>
+            <ul class="miembros-list" id="operariosList"></ul>
+            <p class="empty-state" id="operariosVacio" style="display:none"></p>
+            <div class="miembros-asignar">
+                <select id="operarioSelect" class="form-input"></select>
+                <button type="button" class="btn-secondary" onclick="asignarOperario()"><?= t('crud.btn_asignar') ?></button>
+            </div>
+        </div>
+    </div>
+
     <div id="toast" class="toast"></div>
 
     
@@ -353,7 +369,16 @@ require_once __DIR__ . '/../../i18n/i18n.php';
 
     <script>
         const API_BASE = '/recolix/API_Gestion';
+        const API_USUARIOS = '/recolix/API_Usuarios/api.php';
         const I18N = <?= json_encode(t_array([
+            'titleVerOperarios' => 'centrosAcopio.title_ver_operarios',
+            'operariosTituloPrefijo' => 'centrosAcopio.operarios_titulo_prefijo',
+            'operariosVacio' => 'centrosAcopio.operarios_vacio',
+            'msgOperarioAsignado' => 'centrosAcopio.msg_operario_asignado',
+            'msgOperarioQuitado' => 'centrosAcopio.msg_operario_quitado',
+            'msgErrorAsignarOperario' => 'centrosAcopio.msg_error_asignar_operario',
+            'msgErrorQuitarOperario' => 'centrosAcopio.msg_error_quitar_operario',
+            'msgNoPudoCargarOperarios' => 'centrosAcopio.msg_no_pudo_cargar_operarios',
             'msgNoConectarApi' => 'centrosAcopio.msg_no_conectar_api',
             'msgErrorBuscarCentro' => 'centrosAcopio.msg_error_buscar_centro',
             'msgErrorFiltrar' => 'centrosAcopio.msg_error_filtrar',
@@ -448,6 +473,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 if (btn.dataset.action === 'editar') abrirModalEditar(c);
                 if (btn.dataset.action === 'baja') confirmarBorrar(c.id_centro, c.nombre);
                 if (btn.dataset.action === 'maquinaria') abrirModalMaquinaria(c);
+                if (btn.dataset.action === 'operarios') abrirModalOperarios(c);
             });
             listarCentros();
         });
@@ -534,6 +560,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                     <td><span class="badge ${badgeClaseEstado(c.estado)}">${LABELS_ESTADO_CENTRO[c.estado] ?? c.estado}</span></td>
                     <td class="td-actions">
                         <button class="btn-action" data-action="maquinaria" data-id="${c.id_centro}" title="${I18N.titleVerMaquinaria}">🔧</button>
+                        <button class="btn-action" data-action="operarios" data-id="${c.id_centro}" title="${I18N.titleVerOperarios}">👷</button>
                         <button class="btn-action" data-action="editar" data-id="${c.id_centro}" title="${I18N.crudTitleEditar}">✎</button>
                         <button class="btn-action" data-action="baja" data-id="${c.id_centro}" title="${I18N.modalDeleteTitle}">🗑</button>
                     </td>
@@ -868,6 +895,104 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 }
             } catch {
                 mostrarToast(I18N.msgErrorConexionApi, 'error');
+            }
+        }
+
+        // ── OPERARIOS DEL CENTRO (USUARIO.id_centro) ─────────────────────────
+        // Solo usuarios con rol 'operario' pueden pertenecer a un centro de acopio.
+        // Se gestiona contra API_Usuarios porque id_centro vive en la tabla USUARIO.
+        let operariosCentroActual = null;
+
+        async function abrirModalOperarios(centro) {
+            operariosCentroActual = centro.id_centro;
+            document.getElementById('operariosTituloPrefijo').textContent = I18N.operariosTituloPrefijo;
+            document.getElementById('operariosCentroNombre').textContent = centro.nombre;
+            document.getElementById('modalOperarios').style.display = 'flex';
+            await cargarOperariosDeCentro(centro.id_centro);
+        }
+
+        function cerrarModalOperarios() {
+            document.getElementById('modalOperarios').style.display = 'none';
+        }
+
+        async function cargarOperariosDeCentro(idCentro) {
+            const lista = document.getElementById('operariosList');
+            const vacio = document.getElementById('operariosVacio');
+            const select = document.getElementById('operarioSelect');
+            lista.innerHTML = '';
+            vacio.textContent = I18N.operariosVacio;
+            select.innerHTML = `<option value="">${I18N.msgNoPudoCargarOperarios}</option>`;
+
+            try {
+                const [resOperarios, resCandidatos] = await Promise.all([
+                    fetch(`${API_USUARIOS}/usuarios/obtenerPorCentro/${idCentro}`),
+                    fetch(`${API_USUARIOS}/usuarios/filtrarRol?rol=operario`)
+                ]);
+                const jsonOperarios = await resOperarios.json();
+                const jsonCandidatos = await resCandidatos.json();
+
+                const operarios = jsonOperarios.status === 'success' ? jsonOperarios.data : [];
+                const candidatos = jsonCandidatos.status === 'success' ? jsonCandidatos.data : [];
+
+                vacio.style.display = operarios.length ? 'none' : 'block';
+                lista.innerHTML = operarios.map(o => `
+                    <li class="miembro-item">
+                        <span><span class="miembro-nombre">${o.primer_nombre} ${o.p_apellido}</span>
+                        <span class="miembro-ci"> — CI ${o.ci_usuario}</span></span>
+                        <button type="button" class="btn-action" title="${I18N.msgOperarioQuitado}" onclick="quitarOperario(${o.ci_usuario})">🗑️</button>
+                    </li>
+                `).join('');
+
+                const disponibles = candidatos.filter(c => String(c.id_centro) !== String(idCentro));
+                if (!disponibles.length) {
+                    select.innerHTML = `<option value="">${I18N.operariosVacio}</option>`;
+                } else {
+                    select.innerHTML = disponibles.map(c => {
+                        const etiqueta = c.id_centro
+                            ? `${c.primer_nombre} ${c.p_apellido} (CI ${c.ci_usuario}) — #${c.id_centro}`
+                            : `${c.primer_nombre} ${c.p_apellido} (CI ${c.ci_usuario})`;
+                        return `<option value="${c.ci_usuario}">${etiqueta}</option>`;
+                    }).join('');
+                }
+            } catch {
+                mostrarToast(I18N.msgNoPudoCargarOperarios, 'error');
+            }
+        }
+
+        async function asignarOperario() {
+            const ci = document.getElementById('operarioSelect').value;
+            if (!ci || !operariosCentroActual) return;
+            try {
+                const res = await fetch(`${API_USUARIOS}/usuarios/asignarCentro`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ci: parseInt(ci, 10), idCentro: parseInt(operariosCentroActual, 10) })
+                });
+                const json = await res.json();
+                if (json.status === 'success') {
+                    mostrarToast(I18N.msgOperarioAsignado);
+                    cargarOperariosDeCentro(operariosCentroActual);
+                } else {
+                    mostrarToast(json.message || I18N.msgErrorAsignarOperario, 'error');
+                }
+            } catch {
+                mostrarToast(I18N.msgErrorAsignarOperario, 'error');
+            }
+        }
+
+        async function quitarOperario(ci) {
+            if (!operariosCentroActual) return;
+            try {
+                const res = await fetch(`${API_USUARIOS}/usuarios/quitarCentro/${ci}`, { method: 'POST' });
+                const json = await res.json();
+                if (json.status === 'success') {
+                    mostrarToast(I18N.msgOperarioQuitado);
+                    cargarOperariosDeCentro(operariosCentroActual);
+                } else {
+                    mostrarToast(json.message || I18N.msgErrorQuitarOperario, 'error');
+                }
+            } catch {
+                mostrarToast(I18N.msgErrorQuitarOperario, 'error');
             }
         }
 

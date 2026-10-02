@@ -182,6 +182,38 @@ class RutaModel {
         return $levantes;
     }
 
+    // Rutas asignadas a una cuadrilla (dashboard de cuadrilla.php), con el id y
+    // estado de su levante más reciente en cada ruta para saber si hay uno
+    // pendiente/en_curso que mostrar.
+    public function obtenerPorCuadrilla($idCuadrilla) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "
+            SELECT r.id_ruta, r.nombre, r.actividad, ci.turno,
+                   l.id_levante, l.estado AS estado_levante, l.hora_salida,
+                   ca.id_camion, ca.matricula, ca.estado AS estado_camion
+            FROM ruta_cuadrilla rcu
+            JOIN ruta_recoleccion r ON r.id_ruta = rcu.id_ruta
+            LEFT JOIN circuito ci ON ci.id_circuito = r.id_circuito
+            LEFT JOIN levante l ON l.id_levante = (
+                SELECT l2.id_levante FROM levante l2
+                WHERE l2.id_ruta = r.id_ruta
+                ORDER BY (l2.estado IN ('pendiente', 'en_curso')) DESC, l2.id_levante DESC
+                LIMIT 1
+            )
+            LEFT JOIN camion ca ON ca.id_camion = l.id_camion
+            WHERE rcu.id_cuadrilla = ?
+            ORDER BY r.id_ruta DESC
+        ");
+        mysqli_stmt_bind_param($stmt, "i", $idCuadrilla);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $rutas = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $rutas[] = $row;
+        }
+        mysqli_stmt_close($stmt);
+        return $rutas;
+    }
+
     public function obtenerResumen() {
         $sql = "SELECT r.*, ci.turno,
                 (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta AND l.estado = 'en_curso') AS en_curso_count,
