@@ -13,6 +13,10 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+  max-width: calc(100% - 320px);
+  overflow: hidden;
+  flex-wrap: nowrap;
+  white-space: nowrap;
 }
 
 .nav-links a::after {

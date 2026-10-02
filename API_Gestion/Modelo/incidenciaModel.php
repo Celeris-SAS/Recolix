@@ -181,7 +181,8 @@ class IncidenciaModel {
     // RF11/RF12: contenedores con incidencia urgente, priorizando desbordado y luego nivel_llenado.
     public function listarUrgentes() {
         $stmt = mysqli_prepare($this->conn->getConexion(),
-            "SELECT DISTINCT i.*, c.id_contenedor, c.estado AS estado_contenedor, c.nivel_llenado
+            "SELECT DISTINCT i.*, c.id_contenedor, c.estado AS estado_contenedor, c.nivel_llenado,
+                    c.calle, c.num_calle
              FROM INCIDENCIA i
              JOIN INCIDENCIA_CONTENEDOR ic ON i.id_incidencia = ic.id_incidencia
              JOIN CONTENEDOR c ON ic.id_contenedor = c.id_contenedor

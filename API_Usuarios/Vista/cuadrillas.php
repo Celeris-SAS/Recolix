@@ -9,8 +9,8 @@ require_once __DIR__ . '/../../i18n/i18n.php';
     <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= t('cuadrillas.title') ?></title>
-    <link rel="stylesheet" href="styleCuadrillas.css">
     <link rel="stylesheet" href="../../Backoffice/styleBackoffice.css">
+    <link rel="stylesheet" href="styleCuadrillas.css">
 </head>
 <body>
 
@@ -228,6 +228,18 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 <button type="submit" class="btn-primary">Guardar</button>
             </div>
         </form>
+
+        <div class="miembros-section" id="miembrosSection" style="display:none">
+            <h4 class="miembros-title">Usuarios asignados</h4>
+            <ul class="miembros-list" id="miembrosList"></ul>
+            <p class="empty-state miembros-empty" id="miembrosEmpty" style="display:none">
+                Ningún usuario asignado todavía.
+            </p>
+            <div class="miembros-asignar">
+                <select id="miembroSelect" class="form-input"></select>
+                <button type="button" class="btn-secondary" onclick="asignarMiembro()">Asignar</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -276,17 +288,15 @@ require_once __DIR__ . '/../../i18n/i18n.php';
 
 <script>
 /*
-    Asunciones sobre el backend (ajustar si tu implementación real difiere):
-    - Las cuadrillas se gestionan en API_Recoleccion, igual que camiones:
-        GET  /cuadrillas                     → listado completo
-        GET  /cuadrillas?estado=activa        → filtro por estado
-        GET  /cuadrillas?idMunicipio=3        → filtro por municipio
-        GET  /cuadrillas/filtrarDisponibilidad → solo activas
-        GET  /cuadrillas/{id}                 → una cuadrilla
-        POST /cuadrillas                      → alta
-        PUT  /cuadrillas/{id}                 → modificación
-        DELETE /cuadrillas/{id}               → baja lógica (pasa estado a "inactiva")
-        GET  /cuadrillas/reglasValidacion      → reglas de validación (con fallback si no existe)
+    GET    /cuadrillas                     → listado completo
+    GET    /cuadrillas?estado=activa        → filtro por estado
+    GET    /cuadrillas?idMunicipio=3        → filtro por municipio
+    GET    /cuadrillas/filtrarDisponibilidad → solo activas
+    GET    /cuadrillas/{id}                 → una cuadrilla
+    POST   /cuadrillas                      → alta
+    PUT    /cuadrillas/{id}                 → modificación
+    DELETE /cuadrillas/{id}                 → baja lógica (pasa estado a "inactiva")
+    GET    /cuadrillas/reglasValidacion      → reglas de validación (con fallback si no existe)
     - Los municipios se listan desde API_Gestion: GET /municipios → [{ id_municipio, nombre }, ...]
       Si ese endpoint todavía no existe, se usa una lista fija de los 8 municipios de Montevideo
       (A–G, CH) con IDs de ejemplo 1–8: reemplazá esos IDs por los reales de tu tabla MUNICIPIO
@@ -474,6 +484,7 @@ function abrirModalAgregar() {
     document.getElementById('modalTitle').textContent = 'Agregar Cuadrilla';
     document.getElementById('cuadrillaId').value = '';
     document.getElementById('cuadrillaForm').reset();
+    document.getElementById('miembrosSection').style.display = 'none';
     document.getElementById('modalForm').style.display = 'flex';
 }
 
@@ -489,7 +500,98 @@ function abrirModalEditar(cuadrilla) {
     estadoEl.value = cuadrilla.estado;
     if (!estadoEl.value) estadoEl.selectedIndex = 0;
 
+    document.getElementById('miembrosSection').style.display = 'block';
+    cargarMiembros(cuadrilla.id_cuadrilla);
+
     document.getElementById('modalForm').style.display = 'flex';
+}
+
+// ── MIEMBROS DE LA CUADRILLA (USUARIO.id_cuadrilla) ─────────────────────
+// Solo usuarios con rol 'cuadrilla' pueden pertenecer a una cuadrilla. Se
+// gestiona contra API_Usuarios porque id_cuadrilla vive en la tabla USUARIO.
+async function cargarMiembros(idCuadrilla) {
+    const lista  = document.getElementById('miembrosList');
+    const vacio  = document.getElementById('miembrosEmpty');
+    const select = document.getElementById('miembroSelect');
+    lista.innerHTML = '';
+    select.innerHTML = '<option value="">Cargando...</option>';
+
+    try {
+        const [resMiembros, resCandidatos] = await Promise.all([
+            fetch(`${API_BASE}/usuarios/obtenerPorCuadrilla/${idCuadrilla}`),
+            fetch(`${API_BASE}/usuarios/filtrarRol?rol=cuadrilla`)
+        ]);
+        const jsonMiembros   = await resMiembros.json();
+        const jsonCandidatos = await resCandidatos.json();
+
+        const miembros   = jsonMiembros.status === 'success' ? jsonMiembros.data : [];
+        const candidatos  = jsonCandidatos.status === 'success' ? jsonCandidatos.data : [];
+
+        vacio.style.display = miembros.length ? 'none' : 'block';
+        miembros.forEach(m => {
+            const li = document.createElement('li');
+            li.className = 'miembro-item';
+            li.innerHTML = `
+                <span><span class="miembro-nombre">${m.primer_nombre} ${m.p_apellido}</span>
+                <span class="miembro-ci"> — CI ${m.ci_usuario}</span></span>
+                <button type="button" class="btn-action" title="Quitar de la cuadrilla" onclick="quitarMiembro(${m.ci_usuario}, ${idCuadrilla})">🗑️</button>
+            `;
+            lista.appendChild(li);
+        });
+
+        const disponibles = candidatos.filter(c => String(c.id_cuadrilla) !== String(idCuadrilla));
+        if (!disponibles.length) {
+            select.innerHTML = '<option value="">No hay usuarios disponibles para asignar</option>';
+        } else {
+            select.innerHTML = disponibles.map(c => {
+                const etiqueta = c.id_cuadrilla
+                    ? `${c.primer_nombre} ${c.p_apellido} (CI ${c.ci_usuario}) — ya en cuadrilla #${c.id_cuadrilla}`
+                    : `${c.primer_nombre} ${c.p_apellido} (CI ${c.ci_usuario})`;
+                return `<option value="${c.ci_usuario}">${etiqueta}</option>`;
+            }).join('');
+        }
+    } catch {
+        mostrarToast('Error al cargar los usuarios de la cuadrilla', 'error');
+    }
+}
+
+async function asignarMiembro() {
+    const idCuadrilla = document.getElementById('cuadrillaId').value;
+    const select = document.getElementById('miembroSelect');
+    const ci = select.value;
+    if (!ci) { mostrarToast('Seleccioná un usuario para asignar', 'warning'); return; }
+
+    try {
+        const res = await fetch(`${API_BASE}/usuarios/asignarCuadrilla`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ci: parseInt(ci), idCuadrilla: parseInt(idCuadrilla) })
+        });
+        const json = await res.json();
+        if (json.status === 'success') {
+            mostrarToast('Usuario asignado a la cuadrilla', 'success');
+            cargarMiembros(idCuadrilla);
+        } else {
+            mostrarToast(json.message, 'error');
+        }
+    } catch {
+        mostrarToast('Error al asignar el usuario', 'error');
+    }
+}
+
+async function quitarMiembro(ci, idCuadrilla) {
+    try {
+        const res = await fetch(`${API_BASE}/usuarios/quitarCuadrilla/${ci}`, { method: 'POST' });
+        const json = await res.json();
+        if (json.status === 'success') {
+            mostrarToast('Usuario quitado de la cuadrilla', 'success');
+            cargarMiembros(idCuadrilla);
+        } else {
+            mostrarToast(json.message, 'error');
+        }
+    } catch {
+        mostrarToast('Error al quitar el usuario', 'error');
+    }
 }
 
 // ── GUARDAR (POST / PUT) ────────────────────────────────────────────────

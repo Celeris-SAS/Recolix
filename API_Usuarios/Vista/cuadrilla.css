@@ -22,6 +22,10 @@
    Alerta del sistema (RF52 — levante no completado)
    ========================================================================== */
 
+.alert-banner[hidden] {
+  display: none;
+}
+
 .alert-banner {
   display: flex;
   align-items: center;
@@ -33,6 +37,12 @@
   color: #7a5600;
   font-size: 0.9rem;
   font-weight: 500;
+}
+
+.alert-banner--info {
+  background-color: #e3f2fd;
+  border-color: #90caf9;
+  color: #0d47a1;
 }
 
 .alert-banner-icon {
@@ -49,6 +59,25 @@
   align-items: flex-start;
   gap: 14px;
   margin-bottom: 20px;
+}
+
+.card-header--accion {
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.card-header-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.card-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
 .card-icon {
@@ -79,6 +108,12 @@
 /* ==========================================================================
    Formulario — Registrar levante
    ========================================================================== */
+
+/* .form-grid y .form-group fuerzan display propio, que le gana a [hidden] */
+.form-grid[hidden],
+.form-group[hidden] {
+  display: none;
+}
 
 .form-grid {
   display: grid;
@@ -248,6 +283,70 @@
   flex-shrink: 0;
 }
 
+/* ==========================================================================
+   Contenedores de la ruta del levante activo
+   ========================================================================== */
+
+.contenedores-ruta {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--border);
+}
+
+.contenedores-ruta-titulo {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+
+.contenedores-ruta-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.contenedor-ruta-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  background-color: #eef6ea;
+  border-radius: var(--radius-md);
+  font-size: 0.86rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.contenedor-ruta-item:hover {
+  background-color: #e2efdb;
+}
+
+.contenedor-ruta-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-soft);
+  min-width: 0;
+}
+
+.contenedor-ruta-info strong {
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.contenedor-ruta-ubicacion {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .camion-estado {
   font-family: var(--font-body);
   font-size: 0.85rem;
@@ -264,6 +363,12 @@
 
 .btn-full {
   width: 100%;
+}
+
+/* .btn fuerza display:inline-flex, que le gana a [hidden] del navegador */
+#btn-iniciar-levante[hidden],
+#btn-completar-levante[hidden] {
+  display: none;
 }
 
 /* ==========================================================================
@@ -354,6 +459,11 @@
 .badge-info {
   background-color: #e3f2fd;
   color: #0d47a1;
+}
+
+.badge-neutral {
+  background-color: #eceff1;
+  color: #455a64;
 }
 
 .empty-state {
@@ -482,6 +592,14 @@
     flex-direction: column;
     align-items: flex-start;
   }
+
+  .card-header-actions {
+    width: 100%;
+  }
+
+  .card-header-actions .btn {
+    flex: 1;
+  }
 }
 
 @media (max-width: 320px) {
@@ -492,4 +610,11 @@
   .modal {
     padding: 20px;
   }
+}
+
+/* .dash-section define display:flex en styles_vecino.css con la misma
+   especificidad que [hidden], así que sin esto el atributo hidden no alcanza
+   a ocultar la sección (se ocultaba el contenido interno, pero no la tarjeta). */
+.dash-section[hidden] {
+  display: none;
 }
