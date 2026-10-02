@@ -1029,8 +1029,8 @@
     "label_telefono": "Teléfono",
     "btn_cambiar_contrasenia": "Cambiar contraseña",
 
-    "titulo_editar": "Editar datos de contacto",
-    "nota_editar": "Solo podés modificar tu correo y teléfono. Para otros cambios contactá al administrador.",
+    "titulo_editar": "Editar mis datos",
+    "nota_editar": "Podés modificar tu nombre, apellido, correo y teléfono. Para otros cambios contactá al administrador.",
     "field_email": "Correo electrónico",
     "field_email_ph": "nombre@correo.com",
     "field_tel": "Teléfono",
@@ -1052,7 +1052,18 @@
     "msg_contra_actual_requerida": "Ingresá tu contraseña actual.",
     "msg_contra_nueva_min": "La nueva contraseña debe tener al menos 8 caracteres.",
     "msg_no_pudo_cambiar_contra": "No se pudo cambiar la contraseña.",
-    "msg_contra_actualizada": "Contraseña actualizada correctamente."
+    "msg_contra_actualizada": "Contraseña actualizada correctamente.",
+    "field_nombre": "Nombre",
+    "field_apellido": "Apellido",
+    "msg_nombre_invalido": "Solo letras, entre 2 y 50 caracteres.",
+    "btn_borrar_cuenta": "Borrar cuenta",
+    "titulo_borrar_cuenta": "¿Seguro que querés borrar tu cuenta?",
+    "nota_borrar_cuenta": "Se van a eliminar tus datos y no vas a poder recuperarlos. Si querés volver a usar Recolix vas a tener que registrarte de nuevo. Las incidencias que reportaste se conservan, pero sin tus datos.",
+    "btn_confirmar_borrar": "Sí, borrar mi cuenta",
+    "msg_no_pudo_borrar": "No se pudo borrar la cuenta.",
+    "titulo_borrar_trabajador": "Tu cuenta no se puede borrar",
+    "nota_borrar_trabajador": "Tu cuenta es de personal de Recolix y no podés borrarla vos. Contactá a un administrador para que la dé de baja.",
+    "btn_entendido": "Entendido"
   },
 
   "operario": {
