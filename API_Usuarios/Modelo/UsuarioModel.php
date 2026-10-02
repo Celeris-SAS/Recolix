@@ -51,15 +51,46 @@ class UsuarioModel {
     }
 
 
-    public function updatePerfil($ci, $email, $tel) {
+    public function updatePerfil($ci, $email, $tel, $primerNombre, $pApellido) {
         $stmt = mysqli_prepare(
             $this->conn,
-            "UPDATE USUARIO SET email = ?, tel = ? WHERE ci_usuario = ?"
+            "UPDATE USUARIO SET email = ?, tel = ?, primer_nombre = ?, p_apellido = ? WHERE ci_usuario = ?"
         );
-        mysqli_stmt_bind_param($stmt, 'ssi', $email, $tel, $ci);
+        mysqli_stmt_bind_param($stmt, 'ssssi', $email, $tel, $primerNombre, $pApellido, $ci);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
         return true;
+    }
+
+    // Las incidencias del usuario quedan sin autor (FK ON DELETE SET NULL);
+    // notificaciones y asignaciones se borran en cascada.
+    public function eliminarUsuario($ci) {
+        $stmt = mysqli_prepare($this->conn, "DELETE FROM USUARIO WHERE ci_usuario = ?");
+        mysqli_stmt_bind_param($stmt, 'i', $ci);
+        mysqli_stmt_execute($stmt);
+        $borrados = mysqli_stmt_affected_rows($stmt);
+        mysqli_stmt_close($stmt);
+        return $borrados > 0;
+    }
+
+    public function existeEmail($email) {
+        $stmt = mysqli_prepare($this->conn, "SELECT ci_usuario FROM USUARIO WHERE LOWER(email) = LOWER(?)");
+        mysqli_stmt_bind_param($stmt, 's', $email);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_store_result($stmt);
+        $existe = mysqli_stmt_num_rows($stmt) > 0;
+        mysqli_stmt_close($stmt);
+        return $existe;
+    }
+
+    public function existeTel($tel) {
+        $stmt = mysqli_prepare($this->conn, "SELECT ci_usuario FROM USUARIO WHERE tel = ?");
+        mysqli_stmt_bind_param($stmt, 's', $tel);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_store_result($stmt);
+        $existe = mysqli_stmt_num_rows($stmt) > 0;
+        mysqli_stmt_close($stmt);
+        return $existe;
     }
 
 

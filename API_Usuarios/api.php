@@ -39,7 +39,7 @@ $config = [
             'getMethod'   => 'getPerfil',
             'insertMethod' => 'crearUsuario',
             'updateMethod' => 'updatePerfil',
-            'deleteMethod' => null,
+            'deleteMethod' => 'eliminarCuenta',
             'actions' => [
                 'reglasValidacion',
                 'login',
@@ -173,6 +173,7 @@ if (strpos($uri, $basePath) === 0) {
     }
 
     $resourceConfig = $config['resources'][$resource];
+    require_once __DIR__ . '/Controlador/AccesoDenegadoException.php';
     require_once __DIR__ . '/' . $resourceConfig['file'];
 
     $controllerClass = $resourceConfig['controller'];
@@ -254,7 +255,7 @@ if (strpos($uri, $basePath) === 0) {
             $result = call_user_func_array([$controller, $action], $callParams);
             echo json_encode(['status' => 'success', 'data' => $result]);
         } catch (Throwable $e) {
-            http_response_code(400);
+            http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
         exit;
@@ -290,7 +291,7 @@ if (strpos($uri, $basePath) === 0) {
                         echo json_encode(['status' => 'error', 'message' => $resourceConfig['singular'] . ' no encontrado']);
                     }
                 } catch (Throwable $e) {
-                    http_response_code(400);
+                    http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
                     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
                 }
             } else {
@@ -303,7 +304,7 @@ if (strpos($uri, $basePath) === 0) {
                     $result = $controller->{$resourceConfig['getAllMethod']}();
                     echo json_encode(['status' => 'success', 'data' => $result]);
                 } catch (Throwable $e) {
-                    http_response_code(400);
+                    http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
                     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
                 }
             }
@@ -328,7 +329,7 @@ if (strpos($uri, $basePath) === 0) {
                     http_response_code(201);
                     echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' creado', 'data' => $result]);
                 } catch (Throwable $e) {
-                    http_response_code(400);
+                    http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
                     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
                 }
             }
@@ -352,7 +353,7 @@ if (strpos($uri, $basePath) === 0) {
                         $result = call_user_func_array([$controller, $resourceConfig['updateMethod']], $params);
                         echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' actualizado', 'data' => $result]);
                     } catch (Throwable $e) {
-                        http_response_code(400);
+                        http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
                         echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
                     }
                 }
@@ -371,7 +372,7 @@ if (strpos($uri, $basePath) === 0) {
                     $result = $controller->{$resourceConfig['deleteMethod']}($id);
                     echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' dado de baja', 'data' => $result]);
                 } catch (Throwable $e) {
-                    http_response_code(400);
+                    http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
                     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
                 }
             }

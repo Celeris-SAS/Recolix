@@ -54,6 +54,26 @@ class SolicitudRegistroModel {
         mysqli_stmt_close($stmt);
         return $existe;
     }
+    public function existePorEmail($email) {
+        $stmt = mysqli_prepare($this->conn, "SELECT ci_usuario FROM USUARIO WHERE LOWER(email) = LOWER(?)");
+        mysqli_stmt_bind_param($stmt, 's', $email);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_store_result($stmt);
+        $existe = mysqli_stmt_num_rows($stmt) > 0;
+        mysqli_stmt_close($stmt);
+        return $existe;
+    }
+
+    public function existePorTel($tel) {
+        $stmt = mysqli_prepare($this->conn, "SELECT ci_usuario FROM USUARIO WHERE tel = ?");
+        mysqli_stmt_bind_param($stmt, 's', $tel);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_store_result($stmt);
+        $existe = mysqli_stmt_num_rows($stmt) > 0;
+        mysqli_stmt_close($stmt);
+        return $existe;
+    }
+
     public function getSolicitudesPendientes() {
     $stmt = mysqli_prepare($this->conn,
         "SELECT ci_usuario, primer_nombre, p_apellido, email, tel

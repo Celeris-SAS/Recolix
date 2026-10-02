@@ -1031,8 +1031,8 @@
     "label_telefono": "Phone",
     "btn_cambiar_contrasenia": "Change password",
 
-    "titulo_editar": "Edit contact details",
-    "nota_editar": "You can only update your email and phone. For other changes, contact your administrator.",
+    "titulo_editar": "Edit my details",
+    "nota_editar": "You can change your first name, last name, email and phone. For other changes, contact the administrator.",
     "field_email": "Email address",
     "field_email_ph": "name@email.com",
     "field_tel": "Phone",
@@ -1054,7 +1054,18 @@
     "msg_contra_actual_requerida": "Enter your current password.",
     "msg_contra_nueva_min": "The new password must be at least 8 characters long.",
     "msg_no_pudo_cambiar_contra": "Could not change the password.",
-    "msg_contra_actualizada": "Password updated successfully."
+    "msg_contra_actualizada": "Password updated successfully.",
+    "field_nombre": "First name",
+    "field_apellido": "Last name",
+    "msg_nombre_invalido": "Letters only, between 2 and 50 characters.",
+    "btn_borrar_cuenta": "Delete account",
+    "titulo_borrar_cuenta": "Are you sure you want to delete your account?",
+    "nota_borrar_cuenta": "Your data will be deleted and cannot be recovered. If you want to use Recolix again, you will have to sign up again. The incidents you reported will be kept, but without your data.",
+    "btn_confirmar_borrar": "Yes, delete my account",
+    "msg_no_pudo_borrar": "The account could not be deleted.",
+    "titulo_borrar_trabajador": "Your account cannot be deleted",
+    "nota_borrar_trabajador": "Your account belongs to Recolix staff and you cannot delete it yourself. Contact an administrator to have it deactivated.",
+    "btn_entendido": "Got it"
   },
 
   "operario": {

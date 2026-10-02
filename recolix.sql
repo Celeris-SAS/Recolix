@@ -1036,7 +1036,7 @@ INSERT INTO `cuadrilla` (`id_cuadrilla`, `id_municipio`, `estado`) VALUES
 
 CREATE TABLE `incidencia` (
   `id_incidencia` int(11) NOT NULL,
-  `ci_usuario` int(11) NOT NULL,
+  `ci_usuario` int(11) DEFAULT NULL,
   `id_cuadrilla` int(11) DEFAULT NULL,
   `tipo` enum('rotura','desborde','falta_recoleccion','vandalismo','otro') NOT NULL,
   `descripcion` text DEFAULT NULL,
@@ -1867,7 +1867,7 @@ ALTER TABLE `cuadrilla`
 -- Constraints for table `incidencia`
 --
 ALTER TABLE `incidencia`
-  ADD CONSTRAINT `incidencia_ibfk_1` FOREIGN KEY (`ci_usuario`) REFERENCES `usuario` (`ci_usuario`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `incidencia_ibfk_1` FOREIGN KEY (`ci_usuario`) REFERENCES `usuario` (`ci_usuario`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `incidencia_ibfk_2` FOREIGN KEY (`id_cuadrilla`) REFERENCES `cuadrilla` (`id_cuadrilla`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
