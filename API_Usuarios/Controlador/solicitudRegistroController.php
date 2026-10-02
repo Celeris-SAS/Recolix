@@ -86,6 +86,12 @@ class SolicitudRegistroController {
         if ($this->solicitudModel->existePorCI($ci)) {
             throw new InvalidArgumentException("Ya existe una solicitud registrada con la cédula $ci.");
         }
+        if ($this->solicitudModel->existePorEmail($email)) {
+            throw new InvalidArgumentException('Ya existe una cuenta registrada con ese correo electrónico.');
+        }
+        if ($this->solicitudModel->existePorTel($tel)) {
+            throw new InvalidArgumentException('Ya existe una cuenta registrada con ese teléfono.');
+        }
 
         return $this->solicitudModel->crearSolicitud($ci, $primerNombre, $pApellido, $email, $tel, $idMunicipio, $contrasenia);
     }

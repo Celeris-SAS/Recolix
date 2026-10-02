@@ -37,6 +37,8 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('perfilForm').hidden = false;
         document.getElementById('contraseniaForm').hidden = true;
         document.getElementById('municipioForm').hidden = true;
+        document.getElementById('editNombre').value = perfilActual.primer_nombre || '';
+        document.getElementById('editApellido').value = perfilActual.p_apellido || '';
         document.getElementById('editEmail').value = perfilActual.email || '';
         document.getElementById('editTel').value = perfilActual.tel || '';
     });
@@ -49,18 +51,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     document.getElementById('guardarPerfilBtn').addEventListener('click', async () => {
+        const primerNombre = document.getElementById('editNombre').value.trim();
+        const pApellido = document.getElementById('editApellido').value.trim();
         const email = document.getElementById('editEmail').value.trim();
         const tel = document.getElementById('editTel').value.trim();
 
+        const regexNombre = /^[A-Za-zÁÉÍÓÚÑÜáéíóúñü\s]{2,50}$/;
         const reglas = {
+            primerNombre: [regexNombre, I18N.msgNombreInvalido, 'editNombreError'],
+            pApellido: [regexNombre, I18N.msgNombreInvalido, 'editApellidoError'],
             email: [/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/, I18N.msgEmailInvalido, 'editEmailError'],
             tel: [/^\d{9}$/, I18N.msgTelInvalido, 'editTelError']
         };
+        const valores = { primerNombre, pApellido, email, tel };
 
         let esValido = true;
         for (const campo in reglas) {
             const [regex, mensaje, idError] = reglas[campo];
-            const valor = campo === 'email' ? email : tel;
+            const valor = valores[campo];
             const ok = regex.test(valor);
             document.getElementById(idError).textContent = ok ? '' : mensaje;
             if (!ok) esValido = false;
@@ -70,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const resp = await fetch(`${API}/usuarios/${CI}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, tel })
+            body: JSON.stringify({ email, tel, primerNombre, pApellido })
         });
         const json = await resp.json();
 

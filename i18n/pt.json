@@ -301,7 +301,10 @@
     "login_volver": "← Voltar à página principal",
     "login_error_ci": "Digite seu documento sem pontos ou traços (6 a 8 dígitos).",
     "login_error_contrasenia": "Digite sua senha.",
+    "login_error_credenciales": "Cédula ou senha incorreta.",
     "login_error_conexion": "Erro ao conectar com o servidor. Tente novamente mais tarde.",
+    "login_error_no_autorizado": "Sua conta não tem permissão para acessar o portal de funcionários.",
+    
 
     "mapa_title": "Mapa — Recolix",
     "mapa_titulo": "Mapa operacional",
@@ -1029,8 +1032,8 @@
     "label_telefono": "Telefone",
     "btn_cambiar_contrasenia": "Alterar senha",
 
-    "titulo_editar": "Editar dados de contato",
-    "nota_editar": "Você só pode alterar seu e-mail e telefone. Para outras alterações, entre em contato com o administrador.",
+    "titulo_editar": "Editar meus dados",
+    "nota_editar": "Você pode alterar seu nome, sobrenome, e-mail e telefone. Para outras alterações, entre em contato com o administrador.",
     "field_email": "E-mail",
     "field_email_ph": "nome@email.com",
     "field_tel": "Telefone",
@@ -1052,7 +1055,18 @@
     "msg_contra_actual_requerida": "Digite sua senha atual.",
     "msg_contra_nueva_min": "A nova senha deve ter pelo menos 8 caracteres.",
     "msg_no_pudo_cambiar_contra": "Não foi possível alterar a senha.",
-    "msg_contra_actualizada": "Senha atualizada com sucesso."
+    "msg_contra_actualizada": "Senha atualizada com sucesso.",
+    "field_nombre": "Nome",
+    "field_apellido": "Sobrenome",
+    "msg_nombre_invalido": "Somente letras, entre 2 e 50 caracteres.",
+    "btn_borrar_cuenta": "Excluir conta",
+    "titulo_borrar_cuenta": "Tem certeza de que deseja excluir sua conta?",
+    "nota_borrar_cuenta": "Seus dados serão excluídos e não poderão ser recuperados. Se quiser usar o Recolix novamente, terá que se cadastrar de novo. As ocorrências que você reportou serão mantidas, mas sem seus dados.",
+    "btn_confirmar_borrar": "Sim, excluir minha conta",
+    "msg_no_pudo_borrar": "Não foi possível excluir a conta.",
+    "titulo_borrar_trabajador": "Sua conta não pode ser excluída",
+    "nota_borrar_trabajador": "Sua conta é de funcionário do Recolix e você não pode excluí-la. Entre em contato com um administrador para desativá-la.",
+    "btn_entendido": "Entendi"
   },
 
   "operario": {

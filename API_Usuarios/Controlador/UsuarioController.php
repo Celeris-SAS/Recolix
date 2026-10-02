@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/AccesoDenegadoException.php';
+
 class UsuarioController {
     private $usuarioModel;
 
@@ -84,21 +86,41 @@ class UsuarioController {
         return $municipio;
     }
 
+    // El login de la API guarda $_SESSION['ci_usuario']; el del Backoffice solo $_SESSION['usuario'].
+    private function ciSesion() {
+        return $_SESSION['usuario']['ci_usuario'] ?? $_SESSION['ci_usuario'] ?? null;
+    }
+
+    private function rolSesion() {
+        return $_SESSION['usuario']['rol'] ?? null;
+    }
+
     private function verificarPropioCI($ci) {
-        if (!isset($_SESSION['ci_usuario']) || (int)$_SESSION['ci_usuario'] !== (int)$ci) {
-            throw new InvalidArgumentException('No tenés permiso para acceder a los datos de otro usuario.');
+        if ($this->ciSesion() === null || (int)$this->ciSesion() !== (int)$ci) {
+            throw new AccesoDenegadoException('No tenés permiso para acceder a los datos de otro usuario.');
         }
     }
 
 
     private function verificarAccesoPerfil($ci) {
-        if (isset($_SESSION['ci_usuario']) && (int)$_SESSION['ci_usuario'] === (int)$ci) {
+        if ($this->ciSesion() !== null && (int)$this->ciSesion() === (int)$ci) {
             return;
         }
-        if (isset($_SESSION['usuario']['rol']) && $_SESSION['usuario']['rol'] !== 'vecino') {
-            return;
+        $this->verificarPersonalInterno();
+    }
+
+    // Administrador, cuadrilla u operario (mismo criterio que Backoffice/verificacion_sesion.php).
+    private function verificarPersonalInterno() {
+        $rol = $this->rolSesion();
+        if (empty($rol) || $rol === 'vecino') {
+            throw new AccesoDenegadoException('No tenés permiso para acceder a este recurso.');
         }
-        throw new InvalidArgumentException('No tenés permiso para acceder a los datos de otro usuario.');
+    }
+
+    private function verificarAdministrador() {
+        if ($this->rolSesion() !== 'administrador') {
+            throw new AccesoDenegadoException('Solo un administrador puede realizar esta acción.');
+        }
     }
 
     public function reglasValidacion() {
@@ -147,6 +169,7 @@ class UsuarioController {
 
     public function getPerfil($ci) {
         $ci = $this->validarCI($ci);
+        $this->verificarAccesoPerfil($ci);
         $perfil = $this->usuarioModel->getPerfil($ci);
         if (!$perfil) {
             throw new InvalidArgumentException("No existe un usuario con la cédula $ci.");
@@ -155,10 +178,13 @@ class UsuarioController {
     }
 
 
-    public function updatePerfil($ci, $email, $tel) {
+    // Nombre y apellido son opcionales: el admin (usuarios.php) solo manda email y tel.
+    public function updatePerfil($ci, $email, $tel, $primerNombre = null, $pApellido = null) {
         $ci    = $this->validarCI($ci);
         $email = $this->validarEmail($email);
         $tel   = $this->validarTel($tel);
+        $primerNombre = $primerNombre !== null ? $this->validarNombre($primerNombre, 'Nombre') : null;
+        $pApellido    = $pApellido !== null ? $this->validarNombre($pApellido, 'Apellido') : null;
         $this->verificarAccesoPerfil($ci);
 
         $perfil = $this->usuarioModel->getPerfil($ci);
@@ -166,7 +192,42 @@ class UsuarioController {
             throw new InvalidArgumentException("No existe un usuario con la cédula $ci.");
         }
 
-        return $this->usuarioModel->updatePerfil($ci, $email, $tel);
+        // Solo se controla si el dato cambió, para no bloquear a quien ya tenía un duplicado previo.
+        if (strcasecmp($email, (string)$perfil['email']) !== 0 && $this->usuarioModel->existeEmail($email)) {
+            throw new InvalidArgumentException('Ya existe una cuenta registrada con ese correo electrónico.');
+        }
+        if ($tel !== (string)$perfil['tel'] && $this->usuarioModel->existeTel($tel)) {
+            throw new InvalidArgumentException('Ya existe una cuenta registrada con ese teléfono.');
+        }
+
+        return $this->usuarioModel->updatePerfil(
+            $ci, $email, $tel,
+            $primerNombre ?? $perfil['primer_nombre'],
+            $pApellido ?? $perfil['p_apellido']
+        );
+    }
+
+    // Solo el propio usuario puede borrar su cuenta, y solo si su rol en la base es 'vecino'.
+    // Las cuentas del personal nunca se borran: un administrador las deshabilita desde usuarios.php
+    // (cambiarAcceso) y sus datos quedan en la base.
+    public function eliminarCuenta($ci) {
+        $ci = $this->validarCI($ci);
+        $this->verificarPropioCI($ci);
+
+        $perfil = $this->usuarioModel->getPerfil($ci);
+        if (!$perfil) {
+            throw new InvalidArgumentException("No existe un usuario con la cédula $ci.");
+        }
+        if ($perfil['rol'] !== 'vecino') {
+            throw new AccesoDenegadoException('Tu cuenta es de personal de Recolix y no podés borrarla vos. Contactá a un administrador para que la dé de baja.');
+        }
+
+        $this->usuarioModel->eliminarUsuario($ci);
+
+        $_SESSION = [];
+        session_destroy();
+
+        return ['mensaje' => 'Tu cuenta fue eliminada.'];
     }
 
 
@@ -208,30 +269,34 @@ class UsuarioController {
 
     public function marcarNotificacionLeida($idNotificacion) {
         $idNotificacion = $this->validarId($idNotificacion);
-        if (!isset($_SESSION['ci_usuario'])) {
-            throw new InvalidArgumentException('Sesión inválida.');
+        if ($this->ciSesion() === null) {
+            throw new AccesoDenegadoException('Sesión inválida.');
         }
-        return $this->usuarioModel->marcarNotificacionLeida($idNotificacion, $_SESSION['ci_usuario']);
+        return $this->usuarioModel->marcarNotificacionLeida($idNotificacion, $this->ciSesion());
     }
 
 
 
     public function listarUsuarios() {
+        $this->verificarPersonalInterno();
         return $this->usuarioModel->listarUsuarios();
     }
 
 
     public function filtrarRol($rol) {
+        $this->verificarPersonalInterno();
         $rol = $this->validarRol($rol);
         return $this->usuarioModel->filtrarRol($rol);
     }
 
     public function filtrarAcceso($acceso) {
+        $this->verificarPersonalInterno();
         $acceso = $this->validarAcceso($acceso);
         return $this->usuarioModel->filtrarAcceso($acceso);
     }
 
     public function cambiarRol($ci, $nuevoRol) {
+        $this->verificarAdministrador();
         $ci       = $this->validarCI($ci);
         $nuevoRol = $this->validarRol($nuevoRol);
 
@@ -244,6 +309,7 @@ class UsuarioController {
     }
 
     public function cambiarAcceso($ci, $nuevoAcceso) {
+        $this->verificarAdministrador();
         $ci         = $this->validarCI($ci);
         $nuevoAcceso = $this->validarAcceso($nuevoAcceso);
 
@@ -256,6 +322,7 @@ class UsuarioController {
     }
 
     public function crearUsuario($ci, $primerNombre, $pApellido, $email, $tel, $contrasenia, $rol, $idMunicipio) {
+        $this->verificarAdministrador();
         $ci           = $this->validarCI($ci);
         $primerNombre = $this->validarNombre($primerNombre, 'Nombre');
         $pApellido    = $this->validarNombre($pApellido, 'Apellido');
@@ -280,11 +347,13 @@ class UsuarioController {
     }
 
     public function obtenerPorCuadrilla($idCuadrilla) {
+        $this->verificarPersonalInterno();
         $idCuadrilla = $this->validarId($idCuadrilla);
         return $this->usuarioModel->obtenerPorCuadrilla($idCuadrilla);
     }
 
     public function asignarCuadrilla($ci, $idCuadrilla) {
+        $this->verificarPersonalInterno();
         $ci          = $this->validarCI($ci);
         $idCuadrilla = $this->validarId($idCuadrilla);
 
@@ -306,6 +375,7 @@ class UsuarioController {
     }
 
     public function quitarCuadrilla($ci) {
+        $this->verificarPersonalInterno();
         $ci = $this->validarCI($ci);
 
         $usuario = $this->usuarioModel->getPerfil($ci);
@@ -317,11 +387,13 @@ class UsuarioController {
     }
 
     public function obtenerPorCentro($idCentro) {
+        $this->verificarPersonalInterno();
         $idCentro = $this->validarId($idCentro);
         return $this->usuarioModel->obtenerPorCentro($idCentro);
     }
 
     public function asignarCentro($ci, $idCentro) {
+        $this->verificarPersonalInterno();
         $ci       = $this->validarCI($ci);
         $idCentro = $this->validarId($idCentro);
 
@@ -343,6 +415,7 @@ class UsuarioController {
     }
 
     public function quitarCentro($ci) {
+        $this->verificarPersonalInterno();
         $ci = $this->validarCI($ci);
 
         $usuario = $this->usuarioModel->getPerfil($ci);

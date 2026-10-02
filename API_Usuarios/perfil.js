@@ -1,11 +1,14 @@
 document.addEventListener('DOMContentLoaded', cargarPerfil);
 
+let perfilDatos = {};
+
 async function cargarPerfil() {
     try {
         const res = await fetch(`${API_BASE}/usuarios/${CI}`);
         const json = await res.json();
         if (json.status === 'success' && json.data) {
             const u = json.data;
+            perfilDatos = u;
             document.getElementById('perfilNombre').textContent = `${u.primer_nombre} ${u.p_apellido}`;
             document.getElementById('perfilCI').textContent = u.ci_usuario;
             document.getElementById('perfilEmail').textContent = u.email;
@@ -23,6 +26,8 @@ const perfilForm = document.getElementById('perfilForm');
 const contraseniaForm = document.getElementById('contraseniaForm');
 
 document.getElementById('editarPerfilBtn').addEventListener('click', () => {
+    document.getElementById('editNombre').value = perfilDatos.primer_nombre || '';
+    document.getElementById('editApellido').value = perfilDatos.p_apellido || '';
     document.getElementById('editEmail').value = document.getElementById('perfilEmail').textContent;
     document.getElementById('editTel').value = document.getElementById('perfilTel').textContent;
     perfilVista.hidden = true;
@@ -46,18 +51,29 @@ function mostrarVista() {
 }
 
 document.getElementById('guardarPerfilBtn').addEventListener('click', async () => {
+    const primerNombre = document.getElementById('editNombre').value.trim();
+    const pApellido = document.getElementById('editApellido').value.trim();
     const email = document.getElementById('editEmail').value.trim();
     const tel = document.getElementById('editTel').value.trim();
     const feedback = document.getElementById('perfilFeedback');
+
+    const regexNombre = /^[A-Za-zÁÉÍÓÚÑÜáéíóúñü\s]{2,50}$/;
+    const nombreOk = regexNombre.test(primerNombre);
+    const apellidoOk = regexNombre.test(pApellido);
+    document.getElementById('editNombreError').textContent = nombreOk ? '' : I18N.msgNombreInvalido;
+    document.getElementById('editApellidoError').textContent = apellidoOk ? '' : I18N.msgNombreInvalido;
+    if (!nombreOk || !apellidoOk) return;
 
     try {
         const res = await fetch(`${API_BASE}/usuarios/${CI}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, tel })
+            body: JSON.stringify({ email, tel, primerNombre, pApellido })
         });
         const json = await res.json();
         if (json.status === 'success') {
+            perfilDatos = { ...perfilDatos, primer_nombre: primerNombre, p_apellido: pApellido };
+            document.getElementById('perfilNombre').textContent = `${primerNombre} ${pApellido}`;
             document.getElementById('perfilEmail').textContent = email;
             document.getElementById('perfilTel').textContent = tel;
             mostrarFeedback(feedback, I18N.msgDatosActualizados, true);
