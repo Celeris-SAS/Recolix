@@ -85,6 +85,15 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             <span id="alerta-levante-texto"></span>
         </div>
 
+        <!-- Incidencias asignadas por el administrador (RF10, RF13) -->
+        <section class="dash-section" id="seccion-incidencias">
+            <div class="panel-card">
+                <h2><?= t('cuadrilla.inc_titulo') ?></h2>
+                <p id="incidencias-vacio" hidden><?= t('cuadrilla.inc_vacio') ?></p>
+                <div id="incidencias-lista"></div>
+            </div>
+        </section>
+
         <!-- Registrar levante -->
         <section class="dash-section" id="seccion-levante">
             <div class="panel-card">
@@ -277,6 +286,22 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
         </div>
     </div>
 
+    <!-- Cierre de incidencia con total recolectado (RF14) -->
+    <div class="modal-overlay" id="modal-incidencia">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-incidencia-titulo">
+            <h3 id="modal-incidencia-titulo"><?= t('cuadrilla.inc_modal_titulo') ?></h3>
+            <div class="form-row">
+                <label for="incidencia-kg"><?= t('cuadrilla.inc_kg_label') ?></label>
+                <input type="number" id="incidencia-kg" min="1" step="1">
+                <p class="error-msg" id="incidencia-error"></p>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-outline" id="incidencia-cancelar"><?= t('crud.btn_cancelar') ?></button>
+                <button type="button" class="btn btn-primary" id="incidencia-confirmar"><?= t('cuadrilla.inc_btn_cerrar') ?></button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast de confirmación -->
     <div class="toast" id="toast"></div>
 
@@ -284,6 +309,7 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
 
         const ID_CUADRILLA = <?= json_encode($idCuadrilla) ?>;
         const API_RECOLECCION = '/recolix/API_Recoleccion';
+        const API_GESTION = '/recolix/API_Gestion';
 
         const I18N = <?= json_encode(t_array([
             'placeholderVacio' => 'cuadrilla.levante_seleccionar_placeholder',
@@ -298,6 +324,11 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             'ingresaMotivo' => 'cuadrilla.msg_ingresa_motivo',
             'ingresaPeso' => 'cuadrilla.msg_ingresa_peso',
             'noRecolectado' => 'cuadrilla.msg_no_recolectado',
+            'incIniciar' => 'cuadrilla.inc_btn_iniciar',
+            'incCerrar' => 'cuadrilla.inc_btn_cerrar',
+            'incIniciada' => 'cuadrilla.inc_msg_iniciada',
+            'incCerrada' => 'cuadrilla.inc_msg_cerrada',
+            'incKgError' => 'cuadrilla.inc_kg_error',
             'motivoRegistrado' => 'cuadrilla.msg_motivo_registrado',
             'levanteRegistrado' => 'cuadrilla.msg_levante_registrado',
             'debeIniciarRuta' => 'cuadrilla.msg_levante_pendiente_iniciar',
@@ -407,6 +438,93 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
         // ---- Carga inicial ----
         // ID_CUADRILLA viene de sesión (USUARIO.id_cuadrilla, FK real). Si el
         // usuario no tiene cuadrilla asignada, se avisa y no se carga nada.
+        // Incidencias asignadas por el administrador (RF10, RF13, RF14)
+        const listaIncidencias = document.getElementById('incidencias-lista');
+        const incidenciasVacio = document.getElementById('incidencias-vacio');
+        const modalIncidencia = document.getElementById('modal-incidencia');
+        const incidenciaKg = document.getElementById('incidencia-kg');
+        const incidenciaError = document.getElementById('incidencia-error');
+        let incidenciaCerrandoId = null;
+
+        async function cargarIncidencias() {
+            try {
+                const incidencias = await apiFetch(`${API_GESTION}/incidencias/obtenerPorCuadrilla/${cuadrilla.id_cuadrilla}`);
+                renderIncidencias(incidencias);
+            } catch (e) {
+                listaIncidencias.innerHTML = '';
+                incidenciasVacio.hidden = false;
+                mostrarToast(e.message, 'warning');
+            }
+        }
+
+        function renderIncidencias(incidencias) {
+            listaIncidencias.innerHTML = '';
+            incidenciasVacio.hidden = incidencias.length > 0;
+            incidencias.forEach(function (inc) {
+                const enCurso = inc.estado === 'en_curso';
+                const fila = document.createElement('div');
+                fila.className = 'route-row';
+                fila.innerHTML = `
+                    <div>
+                        <strong>${escapeHtml(inc.tipo)}</strong>
+                        <div>${escapeHtml(inc.descripcion || '')}</div>
+                        <small>${escapeHtml(inc.estado)} · ${escapeHtml(inc.contenedores || '')}</small>
+                    </div>
+                    <button type="button" class="btn ${enCurso ? 'btn-primary' : 'btn-outline'}"
+                        data-accion="${enCurso ? 'cerrar' : 'iniciar'}" data-id="${inc.id_incidencia}">
+                        ${enCurso ? I18N.incCerrar : I18N.incIniciar}
+                    </button>`;
+                listaIncidencias.appendChild(fila);
+            });
+        }
+
+        listaIncidencias.addEventListener('click', async function (e) {
+            const boton = e.target.closest('button[data-accion]');
+            if (!boton) return;
+            if (boton.dataset.accion === 'cerrar') {
+                incidenciaCerrandoId = boton.dataset.id;
+                incidenciaKg.value = '';
+                incidenciaError.textContent = '';
+                modalIncidencia.classList.add('is-open');
+                return;
+            }
+            try {
+                await apiFetch(`${API_GESTION}/incidencias/iniciarAtencion/${boton.dataset.id}`, { method: 'POST' });
+                mostrarToast(I18N.incIniciada, 'success');
+                await cargarIncidencias();
+            } catch (err) {
+                mostrarToast(err.message, 'warning');
+            }
+        });
+
+        document.getElementById('incidencia-cancelar').addEventListener('click', function () {
+            modalIncidencia.classList.remove('is-open');
+        });
+
+        modalIncidencia.addEventListener('click', function (e) {
+            if (e.target === modalIncidencia) modalIncidencia.classList.remove('is-open');
+        });
+
+        document.getElementById('incidencia-confirmar').addEventListener('click', async function () {
+            const kg = parseInt(incidenciaKg.value, 10);
+            if (!kg || kg <= 0) {
+                incidenciaError.textContent = I18N.incKgError;
+                return;
+            }
+            try {
+                await apiFetch(`${API_GESTION}/incidencias/cerrarConPeso/${incidenciaCerrandoId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ kg: kg })
+                });
+                modalIncidencia.classList.remove('is-open');
+                mostrarToast(I18N.incCerrada, 'success');
+                await cargarIncidencias();
+            } catch (err) {
+                incidenciaError.textContent = err.message;
+            }
+        });
+
         async function init() {
             if (!ID_CUADRILLA) {
                 sinCuadrillaBanner.hidden = false;
@@ -417,6 +535,7 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
 
             cuadrilla = { id_cuadrilla: ID_CUADRILLA };
             await cargarRutas();
+            await cargarIncidencias();
         }
 
         // Registrar levante solo tiene sentido si la cuadrilla tiene al menos una

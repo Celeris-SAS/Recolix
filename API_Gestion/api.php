@@ -120,6 +120,9 @@ $config = [
                 'getContenedoresVinculados',
                 'asignarCuadrilla',
                 'cerrar',
+                'obtenerPorCuadrilla',
+                'iniciarAtencion',
+                'cerrarConPeso',
                 'filtrarEstado',
                 'filtrarTipo',
                 'filtrarPrioridad'

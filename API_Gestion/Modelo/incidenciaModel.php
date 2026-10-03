@@ -214,6 +214,45 @@ class IncidenciaModel {
         return $rows;
     }
 
+    // Incidencias asignadas a una cuadrilla que todavía no están resueltas,
+    // con los contenedores vinculados (para que la cuadrilla sepa a dónde ir).
+    public function obtenerPorCuadrilla($idCuadrilla) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "
+            SELECT i.id_incidencia, i.tipo, i.descripcion, i.estado, i.prioridad, i.fecha_apertura,
+                   GROUP_CONCAT(ic.id_contenedor ORDER BY ic.id_contenedor) AS contenedores
+            FROM INCIDENCIA i
+            LEFT JOIN INCIDENCIA_CONTENEDOR ic ON ic.id_incidencia = i.id_incidencia
+            WHERE i.id_cuadrilla = ? AND i.estado IN ('asignada', 'en_curso')
+            GROUP BY i.id_incidencia
+            ORDER BY i.fecha_apertura ASC
+        ");
+        mysqli_stmt_bind_param($stmt, "i", $idCuadrilla);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $rows = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $rows[] = $row;
+        }
+        mysqli_stmt_close($stmt);
+        return $rows;
+    }
+
+    public function iniciarAtencion($id) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE INCIDENCIA SET estado = 'en_curso' WHERE id_incidencia = ? AND estado = 'asignada'");
+        mysqli_stmt_bind_param($stmt, "i", $id);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        return true;
+    }
+
+    public function registrarTotalKg($id, $kg) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE INCIDENCIA SET total_kg = ? WHERE id_incidencia = ?");
+        mysqli_stmt_bind_param($stmt, "ii", $kg, $id);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        return true;
+    }
+
     public function asignarCuadrilla($id, $idCuadrilla) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE INCIDENCIA SET id_cuadrilla = ?, estado = 'asignada' WHERE id_incidencia = ?");
         mysqli_stmt_bind_param($stmt, "ii", $idCuadrilla, $id);

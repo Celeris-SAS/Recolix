@@ -238,5 +238,35 @@ class IncidenciaController {
         }
         return $this->incidenciaModel->cerrar($id);
     }
+
+    // Lista de incidencias asignadas a la cuadrilla (interfaz de la cuadrilla).
+    public function obtenerPorCuadrilla($idCuadrilla) {
+        $idCuadrilla = $this->validarId($idCuadrilla, 'Cuadrilla');
+        return $this->incidenciaModel->obtenerPorCuadrilla($idCuadrilla);
+    }
+
+    // La cuadrilla empieza a atender una incidencia que le fue asignada.
+    public function iniciarAtencion($id) {
+        $id = $this->validarId($id);
+        $incidencia = $this->obtenerOFallar($id);
+        if ($incidencia['estado'] !== 'asignada') {
+            throw new InvalidArgumentException("Solo se puede iniciar la atención de una incidencia asignada. Estado actual: " . $incidencia['estado']);
+        }
+        return $this->incidenciaModel->iniciarAtencion($id);
+    }
+
+    // RF13 + RF14: la cuadrilla cierra la incidencia y registra el total recolectado (kg).
+    public function cerrarConPeso($id, $kg) {
+        $id = $this->validarId($id);
+        $incidencia = $this->obtenerOFallar($id);
+        if ($incidencia['estado'] !== 'en_curso') {
+            throw new InvalidArgumentException("Solo se puede cerrar una incidencia en estado 'en_curso'. Estado actual: " . $incidencia['estado']);
+        }
+        if (!is_numeric($kg) || (int) $kg != $kg || (int) $kg <= 0) {
+            throw new InvalidArgumentException("El total recolectado (kg) debe ser un número entero mayor que cero.");
+        }
+        $this->incidenciaModel->registrarTotalKg($id, (int) $kg);
+        return $this->incidenciaModel->cerrar($id);
+    }
 }
 ?>
