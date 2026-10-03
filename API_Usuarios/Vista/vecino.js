@@ -197,6 +197,13 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
+        const estadosIncidencia = {
+            abierta: I18N.estadoIncAbierta,
+            asignada: I18N.estadoIncAsignada,
+            en_curso: I18N.estadoIncEnCurso,
+            resuelta: I18N.estadoIncResuelta
+        };
+
         contenedor.innerHTML = lista.map(inc => `
         <div class="incidencia-card" data-estado="${inc.estado}">
             <div class="incidencia-info">
@@ -204,7 +211,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <p class="incidencia-fecha">${formatearFecha(inc.fecha_apertura)}</p>
                 ${inc.descripcion ? `<p class="incidencia-desc">${inc.descripcion}</p>` : ''}
             </div>
-            <span class="badge badge-${inc.estado}">${inc.estado}</span>
+            <span class="badge badge-${inc.estado}">${estadosIncidencia[inc.estado] || inc.estado}</span>
         </div>
     `).join('');
     }
@@ -233,7 +240,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('incContenedorError').textContent = '';
         const seleccionado = document.getElementById('incContenedorSeleccionado');
         seleccionado.style.display = '';
-        seleccionado.textContent = `${I18N.contenedorSeleccionado}: #${c.id_contenedor} — ${c.calle} ${c.num_calle}`;
+        seleccionado.textContent = `${I18N.contenedorSeleccionado}: #${c.id_contenedor} — ${[c.calle, c.num_calle].filter(Boolean).join(' ')}`;
 
         if (incMarcadorSeleccionado) incMarcadorSeleccionado.setStyle({ weight: 1.5, radius: 7 });
         marker.setStyle({ weight: 3, radius: 10 });
@@ -271,7 +278,7 @@ document.addEventListener('DOMContentLoaded', function () {
             incMapaMarcadores = await cargarContenedoresEnMapa(incMapa, {
                 apiBase: API_GESTION,
                 radius: 7,
-                tooltip: (c) => `#${c.id_contenedor} — ${c.calle} ${c.num_calle}`,
+                tooltip: (c) => `#${c.id_contenedor} — ${[c.calle, c.num_calle].filter(Boolean).join(' ')}`,
                 onClick: seleccionarIncContenedorEnMapa
             });
         }

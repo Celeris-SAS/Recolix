@@ -27,6 +27,15 @@ $config = [
             'insertMethod' => 'insertContenedor',
             'updateMethod' => 'updateContenedor',
             'deleteMethod' => 'bajaContenedor',
+            'rolesMetodo' => [
+                'GET' => ['*'],
+                'POST' => ['administrador'],
+                'PUT' => ['administrador'],
+                'DELETE' => ['administrador'],
+            ],
+            'rolesAccion' => [
+                'reglasValidacion' => ['*'],
+            ],
                 'actions' => [
                 'reglasValidacion',
                 'cambiarEstado',
@@ -55,6 +64,15 @@ $config = [
             'insertMethod' => 'insertTipoResiduo',
             'updateMethod' => 'updateTipoResiduo',
             'deleteMethod' => 'bajaTipoResiduo',
+            'rolesMetodo' => [
+                'GET' => ['*'],
+                'POST' => ['administrador'],
+                'PUT' => ['administrador'],
+                'DELETE' => ['administrador'],
+            ],
+            'rolesAccion' => [
+                'reglasValidacion' => ['*'],
+            ],
             'actions' => [
                 'reglasValidacion',
                 'filtrarReciclable'
@@ -88,6 +106,15 @@ $config = [
             'insertMethod' => 'insertCentro',
             'updateMethod' => 'updateCentro',
             'deleteMethod' => 'bajaCentro',
+            'rolesMetodo' => [
+                'GET' => ['*'],
+                'POST' => ['administrador'],
+                'PUT' => ['administrador'],
+                'DELETE' => ['administrador'],
+            ],
+            'rolesAccion' => [
+                'reglasValidacion' => ['*'],
+            ],
             'actions' => [
                 'reglasValidacion',
                 'getOcupacion',
@@ -113,6 +140,21 @@ $config = [
             'insertMethod' => 'crearIncidencia',
             'updateMethod' => null,
             'deleteMethod' => null,
+            // Roles por acción, igual que en API_Usuarios. Sin entrada = solo la regla general de personal interno.
+            'rolesMetodo' => [
+                'GET' => ['administrador'],
+                'POST' => ['*'],
+                'PUT' => ['administrador'],
+                'DELETE' => ['administrador'],
+            ],
+            'rolesAccion' => [
+                'reglasValidacion'    => ['*'],
+                'asignarCuadrilla'    => ['administrador'],
+                'cerrar'              => ['administrador'],
+                'obtenerPorCuadrilla' => ['cuadrilla'],
+                'iniciarAtencion'     => ['cuadrilla'],
+                'cerrarPorCuadrilla'  => ['cuadrilla'],
+            ],
             'actions' => [
                 'reglasValidacion',
                 'listarUrgentes',
@@ -122,7 +164,7 @@ $config = [
                 'cerrar',
                 'obtenerPorCuadrilla',
                 'iniciarAtencion',
-                'cerrarConPeso',
+                'cerrarPorCuadrilla',
                 'filtrarEstado',
                 'filtrarTipo',
                 'filtrarPrioridad'
@@ -152,6 +194,7 @@ $config = [
                 'getFrecuenciaRecoleccion',
                 'getCapacidadVertederos',
                 'getClasificacionResiduos',
+                'getReciclaje',
                 'getEvolucionUsuarios',
                 'getDisponibilidadCamiones',
                 'getDisponibilidadMaquinaria'
@@ -167,6 +210,10 @@ $config = [
             'insertMethod' => 'insertMaquinaria',
             'updateMethod' => 'updateMaquinaria',
             'deleteMethod' => 'bajaMaquinaria',
+            'rolesAccion' => [
+                'obtenerPorCentro' => ['administrador', 'operario'],
+                'cambiarEstado' => ['administrador', 'operario'],
+            ],
             'actions' => [
                 'reglasValidacion',
                 'cambiarEstado',
@@ -207,6 +254,7 @@ if (strpos($uri, $basePath) === 0) {
     }
 
     $resourceConfig = $config['resources'][$resource];
+    require_once __DIR__ . '/Controlador/AccesoDenegadoException.php';
     require_once __DIR__ . '/' . $resourceConfig['file'];
 
     $controllerClass = $resourceConfig['controller'];
@@ -243,15 +291,27 @@ if (strpos($uri, $basePath) === 0) {
         $action = $_GET['action'];
     }
 
-    // Control de acceso: todo exige sesión de personal interno (administrador, cuadrilla u operario),
-    // salvo los endpoints listados en $config['publicos'].
+    // Control de acceso (igual que API_Usuarios): sin sesión solo se accede a lo listado en
+    // $config['publicos']. Con sesión, el rol tiene que estar permitido para la acción o, si no
+    // hay acción, para el método. Sin entrada en la lista, solo administrador.
     $claveEndpoint = $method . ' ' . $resource . ($action ? '/' . $action : ($id !== null ? '/:id' : ''));
     $rolSesion     = $_SESSION['usuario']['rol'] ?? '';
-    $esPersonalInterno = $rolSesion !== '' && $rolSesion !== 'vecino';
-    if (!$esPersonalInterno && !in_array($claveEndpoint, $config['publicos'], true)) {
-        http_response_code(403);
-        echo json_encode(['status' => 'error', 'message' => 'No tenés permiso para acceder a este recurso.']);
-        exit;
+    if (!in_array($claveEndpoint, $config['publicos'], true)) {
+        if ($rolSesion === '') {
+            http_response_code(401);
+            echo json_encode(['status' => 'error', 'message' => 'No autenticado']);
+            exit;
+        }
+        if ($action) {
+            $requerido = $resourceConfig['rolesAccion'][$action] ?? ['administrador'];
+        } else {
+            $requerido = $resourceConfig['rolesMetodo'][$method] ?? ['administrador'];
+        }
+        if (!in_array('*', $requerido, true) && !in_array($rolSesion, $requerido, true)) {
+            http_response_code(403);
+            echo json_encode(['status' => 'error', 'message' => 'No tenés permiso para acceder a este recurso.']);
+            exit;
+        }
     }
 
     if ($action && isset($resourceConfig['actions']) && in_array($action, $resourceConfig['actions']) && method_exists($controller, $action)) {
@@ -276,7 +336,7 @@ if (strpos($uri, $basePath) === 0) {
             $result = call_user_func_array([$controller, $action], $callParams);
             echo json_encode(['status' => 'success', 'data' => $result]);
         } catch (Throwable $e) {
-            http_response_code(400);
+            http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
         exit;
@@ -294,7 +354,7 @@ if (strpos($uri, $basePath) === 0) {
                         echo json_encode(['status' => 'error', 'message' => $resourceConfig['singular'] . ' no encontrado']);
                     }
                 } catch (Throwable $e) {
-                    http_response_code(400);
+                    http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
                     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
                 }
             } else {
@@ -315,7 +375,7 @@ if (strpos($uri, $basePath) === 0) {
                                     }
                                     echo json_encode(['status' => 'success', 'data' => $result]);
                                 } catch (Throwable $e) {
-                                    http_response_code(400);
+                                    http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
                                     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
                                 }
                                 $handled = true;
@@ -335,7 +395,7 @@ if (strpos($uri, $basePath) === 0) {
                         $result = $controller->{$resourceConfig['getAllMethod']}();
                         echo json_encode(['status' => 'success', 'data' => $result]);
                     } catch (Throwable $e) {
-                        http_response_code(400);
+                        http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
                         echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
                     }
                 }
@@ -361,7 +421,7 @@ if (strpos($uri, $basePath) === 0) {
                     http_response_code(201);
                     echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' creado', 'data' => $result]);
                 } catch (Throwable $e) {
-                    http_response_code(400);
+                    http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
                     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
                 }
             }
@@ -388,7 +448,7 @@ if (strpos($uri, $basePath) === 0) {
                         );
                         echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' actualizado', 'data' => $result]);
                     } catch (Throwable $e) {
-                        http_response_code(400);
+                        http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
                         echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
                     }
                 }
@@ -407,7 +467,7 @@ if (strpos($uri, $basePath) === 0) {
                     $result = $controller->{$resourceConfig['deleteMethod']}($id);
                     echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' dado de baja']);
                 } catch (Throwable $e) {
-                    http_response_code(400);
+                    http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
                     echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
                 }
             }

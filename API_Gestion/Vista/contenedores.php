@@ -272,6 +272,30 @@ require_once __DIR__ . '/../../i18n/i18n.php';
         </div>
     </div>
 
+    <div class="modal-overlay" id="modalReparar" style="display:none">
+        <div class="modal modal-sm">
+            <div class="modal-header">
+                <h3><?= t('contenedores.reparacion_titulo') ?></h3>
+                <button class="modal-close" onclick="cerrarModalReparar()">✕</button>
+            </div>
+            <p class="delete-msg" id="reparacionMensaje"></p>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="cerrarModalReparar()"><?= t('crud.btn_cancelar') ?></button>
+                <button class="btn-primary" onclick="confirmarReparar()"><?= t('contenedores.reparacion_confirmar') ?></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalHistorial" style="display:none">
+        <div class="modal">
+            <div class="modal-header">
+                <h3><?= t('contenedores.historial_titulo') ?> <span id="historialTitulo"></span></h3>
+                <button class="modal-close" onclick="cerrarModalHistorial()">✕</button>
+            </div>
+            <div id="historialLista" class="historial-lista"></div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="modalDelete" style="display:none" onclick="onOverlayClick(event,'modalDelete')">
         <div class="modal modal-sm">
             <div class="modal-header">
@@ -361,6 +385,15 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             'seleccionarCampoPh' => 'crud.seleccionar_campo_placeholder',
             'crudTitleEditar' => 'crud.title_editar',
             'modalDeleteTitle' => 'contenedores.modal_delete_title',
+            'repararTitle' => 'contenedores.reparar_btn_title',
+            'sinDireccion' => 'contenedores.sin_direccion',
+            'historialTitle' => 'contenedores.historial_btn_title',
+            'reparacionMensaje' => 'contenedores.reparacion_mensaje',
+            'msgReparacionOk' => 'contenedores.msg_reparacion_ok',
+            'historialVacio' => 'contenedores.historial_vacio',
+            'eventoIncidencia' => 'contenedores.evento_incidencia',
+            'eventoLevante' => 'contenedores.evento_levante',
+            'eventoReparacion' => 'contenedores.evento_reparacion',
         ])) ?>;
         let contenedorIdParaEliminar = null;
         let toastTimeout;
@@ -426,7 +459,9 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 const c = contenedoresActuales.find(x => x.id_contenedor == btn.dataset.id);
                 if (!c) return;
                 if (btn.dataset.action === 'editar') abrirModalEditar(c);
-                if (btn.dataset.action === 'baja') confirmarBorrar(c.id_contenedor, `${c.calle} ${c.num_calle}`);
+                if (btn.dataset.action === 'baja') confirmarBorrar(c.id_contenedor, direccionContenedor(c));
+                if (btn.dataset.action === 'reparar') confirmarReparacion(c);
+                if (btn.dataset.action === 'historial') abrirHistorial(c);
             });
             const params = new URLSearchParams(window.location.search);
             if (params.get('vista') === 'criticos') {
@@ -891,7 +926,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 const res = await fetch(`${API_BASE}/contenedores/${id}`);
                 const json = await res.json();
                 if (json.status === 'success' && json.data) {
-                    confirmarBorrar(json.data.id_contenedor, `${json.data.calle} ${json.data.num_calle}`);
+                    confirmarBorrar(json.data.id_contenedor, direccionContenedor(json.data));
                     ocultarControles();
                 } else {
                     mostrarToast(json.message || I18N.msgContenedorNoEncontrado, 'error');
@@ -923,6 +958,12 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             } catch {
                 mostrarToast(I18N.msgErrorDarBaja, 'error');
             }
+        }
+
+        // Dirección para mostrar en títulos. Un contenedor en depósito no tiene calle ni número.
+        function direccionContenedor(c) {
+            const partes = [c.calle, c.num_calle].filter(p => p !== null && p !== undefined && String(p).trim() !== '');
+            return partes.length ? partes.join(' ') : I18N.sinDireccion;
         }
 
         function escapeHtml(str) {
@@ -967,6 +1008,8 @@ require_once __DIR__ . '/../../i18n/i18n.php';
     <td data-label="${I18N.thCircuito}">${escapeHtml(c.id_circuito)}</td>
     <td data-label="${I18N.thEstado}"><span class="badge badge-${badgeClass(c.estado)}">${escapeHtml(formatearEstado(c.estado))}</span></td>
     <td class="td-actions" data-label="${I18N.thAcciones}">
+        ${c.estado === 'roto' ? `<button class="btn-action" data-action="reparar" data-id="${escapeHtml(c.id_contenedor)}" title="${I18N.repararTitle}">🔧</button>` : ''}
+        <button class="btn-action" data-action="historial" data-id="${escapeHtml(c.id_contenedor)}" title="${I18N.historialTitle}">📋</button>
         <button class="btn-action" data-action="editar" data-id="${escapeHtml(c.id_contenedor)}" title="${I18N.crudTitleEditar}">✏️</button>
         <button class="btn-action" data-action="baja" data-id="${escapeHtml(c.id_contenedor)}" title="${I18N.modalDeleteTitle}">🗑️</button>
     </td>
@@ -1065,6 +1108,77 @@ require_once __DIR__ . '/../../i18n/i18n.php';
 
         function cerrarModal() {
             document.getElementById('modalForm').style.display = 'none';
+        }
+
+        let contenedorReparandoId = null;
+
+        function formatearTexto(texto) {
+            const limpio = String(texto ?? '').replace(/_/g, ' ');
+            return limpio.charAt(0).toUpperCase() + limpio.slice(1);
+        }
+
+        // RF27: solo un contenedor roto se puede marcar como reparado.
+        function confirmarReparacion(c) {
+            contenedorReparandoId = c.id_contenedor;
+            document.getElementById('reparacionMensaje').textContent = I18N.reparacionMensaje;
+            document.getElementById('modalReparar').style.display = 'flex';
+        }
+
+        function cerrarModalReparar() {
+            document.getElementById('modalReparar').style.display = 'none';
+            contenedorReparandoId = null;
+        }
+
+        async function confirmarReparar() {
+            try {
+                const res = await fetch(`${API_BASE}/contenedores/registrarReparacion/${contenedorReparandoId}`, { method: 'POST' });
+                const json = await res.json();
+                if (json.status === 'success') {
+                    mostrarToast(I18N.msgReparacionOk, 'success');
+                    cerrarModalReparar();
+                    refrescarListado();
+                } else {
+                    mostrarToast(json.message, 'error');
+                }
+            } catch {
+                mostrarToast(I18N.msgErrorConectar, 'error');
+            }
+        }
+
+        async function abrirHistorial(c) {
+            document.getElementById('historialTitulo').textContent = direccionContenedor(c);
+            document.getElementById('historialLista').innerHTML = '';
+            document.getElementById('modalHistorial').style.display = 'flex';
+            try {
+                const res = await fetch(`${API_BASE}/contenedores/getHistorial/${c.id_contenedor}`);
+                const json = await res.json();
+                renderHistorial(json.data || []);
+            } catch {
+                mostrarToast(I18N.msgErrorConectar, 'error');
+            }
+        }
+
+        function renderHistorial(eventos) {
+            const lista = document.getElementById('historialLista');
+            if (eventos.length === 0) {
+                lista.innerHTML = `<p class="estado-vacio">${escapeHtml(I18N.historialVacio)}</p>`;
+                return;
+            }
+            const etiquetas = {
+                incidencia: I18N.eventoIncidencia,
+                levante: I18N.eventoLevante,
+                reparacion: I18N.eventoReparacion
+            };
+            lista.innerHTML = eventos.map(ev => `
+                <div class="historial-item">
+                    <strong>${escapeHtml(etiquetas[ev.tipo_evento] ?? ev.tipo_evento)}</strong>
+                    · ${escapeHtml(formatearTexto(ev.descripcion))}
+                    <small>${escapeHtml(ev.fecha ?? '')}</small>
+                </div>`).join('');
+        }
+
+        function cerrarModalHistorial() {
+            document.getElementById('modalHistorial').style.display = 'none';
         }
 
         function cerrarModalDelete() {

@@ -59,6 +59,16 @@ class MaquinariaModel {
     }
 
     
+    // Centro de acopio donde está instalada una maquinaria (centro_maquinaria).
+    public function centroDeMaquinaria($idMaquinaria) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT id_centro FROM centro_maquinaria WHERE id_maquinaria = ? LIMIT 1");
+        mysqli_stmt_bind_param($stmt, "i", $idMaquinaria);
+        mysqli_stmt_execute($stmt);
+        $fila = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+        mysqli_stmt_close($stmt);
+        return $fila['id_centro'] ?? null;
+    }
+
     public function getMaquinaria($id) {
         $stmt = mysqli_prepare($this->conn->getConexion(),
             "SELECT m.id_maquinaria, m.nombre, m.tipo, m.fecha_adquisicion, m.estado, cm.id_centro

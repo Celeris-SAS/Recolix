@@ -222,6 +222,7 @@ class LevanteModel {
         mysqli_stmt_close($stmt);
 
         $this->precargarContenedores($idLevante, $idRuta);
+        $this->asignarIncidenciasDeLaRuta($idRuta, $idCuadrilla);
 
         // El destino final elegido queda registrado en centro_levante (no en camion_centro,
         // que es solo para ingresos ya ocurridos con peso y fecha reales): una vez que el
@@ -234,6 +235,24 @@ class LevanteModel {
         }
 
         return $this->getLevante($idLevante);
+    }
+
+    // Al planificar la ruta, las incidencias abiertas de desborde y de falta de recolección de
+    // sus contenedores pasan a la cuadrilla. Las roturas no: la cuadrilla no puede repararlas, y
+    // quedan abiertas para que el administrador las repare y las cierre.
+    private function asignarIncidenciasDeLaRuta($idRuta, $idCuadrilla) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "
+            UPDATE INCIDENCIA i
+            JOIN INCIDENCIA_CONTENEDOR ic ON ic.id_incidencia = i.id_incidencia
+            JOIN ruta_contenedor rc ON rc.id_contenedor = ic.id_contenedor
+            SET i.id_cuadrilla = ?, i.estado = 'asignada'
+            WHERE rc.id_ruta = ?
+              AND i.estado = 'abierta'
+              AND i.tipo IN ('desborde', 'falta_recoleccion')
+        ");
+        mysqli_stmt_bind_param($stmt, "ii", $idCuadrilla, $idRuta);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
     }
 
     private function precargarContenedores($idLevante, $idRuta) {
@@ -317,6 +336,23 @@ class LevanteModel {
         mysqli_stmt_close($stmt);
     }
 
+    // Recolectar un contenedor resuelve por sí solo las incidencias de desborde y de falta de
+    // recolección que la cuadrilla estaba atendiendo. Las roturas, el vandalismo y "otro" no:
+    // requieren reparación o revisión, y se cierran a mano desde la interfaz de la cuadrilla.
+    private function cerrarIncidenciasRecolectadas($idContenedor) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "
+            UPDATE INCIDENCIA i
+            JOIN INCIDENCIA_CONTENEDOR ic ON ic.id_incidencia = i.id_incidencia
+            SET i.estado = 'resuelta', i.fecha_cierre = NOW()
+            WHERE ic.id_contenedor = ?
+              AND i.estado = 'en_curso'
+              AND i.tipo IN ('desborde', 'falta_recoleccion')
+        ");
+        mysqli_stmt_bind_param($stmt, "i", $idContenedor);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+    }
+
     public function registrarContenedor($idLevante, $idContenedor, $estadoEncontrado, $peso, $motivo) {
         $estadosValidos = ['sobrepeso', 'riesgo_de_incendio', 'acceso_bloqueado', 'contenedor_ausente', 'todo_ok', 'otro'];
         if (!in_array($estadoEncontrado, $estadosValidos, true)) {
@@ -370,6 +406,10 @@ class LevanteModel {
 
         if ($pesoVal !== null && $pesoVal > 0) {
             $this->actualizarNivelLlenado($idContenedor, $pesoVal);
+        }
+
+        if ($estadoEncontrado === 'todo_ok') {
+            $this->cerrarIncidenciasRecolectadas($idContenedor);
         }
 
         $contenedor = $this->obtenerContenedor($idLevante, $idContenedor);

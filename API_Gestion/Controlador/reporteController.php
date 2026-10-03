@@ -52,6 +52,10 @@ class reporteController {
         return $this->reporteModel->getVolumenPorTipoYPeriodo($rango);
     }
 
+    public function getReciclaje() {
+        return $this->reporteModel->getReciclaje();
+    }
+
     public function getIncidenciasDetalle($rango = 'siempre') {
         return $this->reporteModel->getIncidenciasDetalle($rango);
     }

@@ -286,22 +286,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
         </div>
     </div>
 
-    <!-- Cierre de incidencia con total recolectado (RF14) -->
-    <div class="modal-overlay" id="modal-incidencia">
-        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-incidencia-titulo">
-            <h3 id="modal-incidencia-titulo"><?= t('cuadrilla.inc_modal_titulo') ?></h3>
-            <div class="form-row">
-                <label for="incidencia-kg"><?= t('cuadrilla.inc_kg_label') ?></label>
-                <input type="number" id="incidencia-kg" min="1" step="1">
-                <p class="error-msg" id="incidencia-error"></p>
-            </div>
-            <div class="modal-actions">
-                <button type="button" class="btn btn-outline" id="incidencia-cancelar"><?= t('crud.btn_cancelar') ?></button>
-                <button type="button" class="btn btn-primary" id="incidencia-confirmar"><?= t('cuadrilla.inc_btn_cerrar') ?></button>
-            </div>
-        </div>
-    </div>
-
     <!-- Toast de confirmación -->
     <div class="toast" id="toast"></div>
 
@@ -328,7 +312,15 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             'incCerrar' => 'cuadrilla.inc_btn_cerrar',
             'incIniciada' => 'cuadrilla.inc_msg_iniciada',
             'incCerrada' => 'cuadrilla.inc_msg_cerrada',
-            'incKgError' => 'cuadrilla.inc_kg_error',
+            'incEstadoAsignada' => 'cuadrilla.inc_estado_asignada',
+            'incEstadoEnCurso' => 'cuadrilla.inc_estado_en_curso',
+            'incContenedor' => 'cuadrilla.inc_contenedor',
+            'incLlenado' => 'cuadrilla.inc_llenado',
+            'incContFuncional' => 'cuadrilla.inc_cont_funcional',
+            'incContRoto' => 'cuadrilla.inc_cont_roto',
+            'incContDesbordado' => 'cuadrilla.inc_cont_desbordado',
+            'incContInactivo' => 'cuadrilla.inc_cont_inactivo',
+            'incContEnDeposito' => 'cuadrilla.inc_cont_en_deposito',
             'motivoRegistrado' => 'cuadrilla.msg_motivo_registrado',
             'levanteRegistrado' => 'cuadrilla.msg_levante_registrado',
             'debeIniciarRuta' => 'cuadrilla.msg_levante_pendiente_iniciar',
@@ -438,13 +430,9 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
         // ---- Carga inicial ----
         // ID_CUADRILLA viene de sesión (USUARIO.id_cuadrilla, FK real). Si el
         // usuario no tiene cuadrilla asignada, se avisa y no se carga nada.
-        // Incidencias asignadas por el administrador (RF10, RF13, RF14)
+        // Incidencias asignadas por el administrador (RF10, RF13)
         const listaIncidencias = document.getElementById('incidencias-lista');
         const incidenciasVacio = document.getElementById('incidencias-vacio');
-        const modalIncidencia = document.getElementById('modal-incidencia');
-        const incidenciaKg = document.getElementById('incidencia-kg');
-        const incidenciaError = document.getElementById('incidencia-error');
-        let incidenciaCerrandoId = null;
 
         async function cargarIncidencias() {
             try {
@@ -457,6 +445,24 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             }
         }
 
+        const estadoIncidencia = {
+            asignada: I18N.incEstadoAsignada,
+            en_curso: I18N.incEstadoEnCurso
+        };
+
+        const estadoContenedor = {
+            funcional: I18N.incContFuncional,
+            roto: I18N.incContRoto,
+            desbordado: I18N.incContDesbordado,
+            inactivo: I18N.incContInactivo,
+            en_deposito: I18N.incContEnDeposito
+        };
+
+        function capitalizar(texto) {
+            if (!texto) return '';
+            return texto.charAt(0).toUpperCase() + texto.slice(1);
+        }
+
         function renderIncidencias(incidencias) {
             listaIncidencias.innerHTML = '';
             incidenciasVacio.hidden = incidencias.length > 0;
@@ -464,11 +470,23 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
                 const enCurso = inc.estado === 'en_curso';
                 const fila = document.createElement('div');
                 fila.className = 'route-row';
+                const contenedores = (inc.contenedores || []).map(function (c) {
+                    const direccion = [c.calle, c.num_calle].filter(Boolean).join(' ') || I18N.sinDatos;
+                    const estado = estadoContenedor[c.estado] || c.estado;
+                    return `<li>
+                        <strong>${I18N.incContenedor} ${escapeHtml(String(c.id_contenedor))}</strong>
+                        · ${escapeHtml(direccion)}
+                        · ${escapeHtml(estado)}
+                        · ${I18N.incLlenado} ${escapeHtml(String(c.nivel_llenado))}%
+                        ${c.tipo_residuo ? '· ' + escapeHtml(c.tipo_residuo) : ''}
+                    </li>`;
+                }).join('');
                 fila.innerHTML = `
                     <div>
-                        <strong>${escapeHtml(inc.tipo)}</strong>
+                        <strong>${escapeHtml(capitalizar(inc.tipo))}</strong>
                         <div>${escapeHtml(inc.descripcion || '')}</div>
-                        <small>${escapeHtml(inc.estado)} · ${escapeHtml(inc.contenedores || '')}</small>
+                        <small>${escapeHtml(estadoIncidencia[inc.estado] || inc.estado)}</small>
+                        <ul class="incidencia-contenedores">${contenedores}</ul>
                     </div>
                     <button type="button" class="btn ${enCurso ? 'btn-primary' : 'btn-outline'}"
                         data-accion="${enCurso ? 'cerrar' : 'iniciar'}" data-id="${inc.id_incidencia}">
@@ -478,50 +496,25 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             });
         }
 
+        async function cerrarIncidencia(id) {
+            await apiFetch(`${API_GESTION}/incidencias/cerrarPorCuadrilla/${id}`, { method: 'POST' });
+        }
+
         listaIncidencias.addEventListener('click', async function (e) {
             const boton = e.target.closest('button[data-accion]');
             if (!boton) return;
-            if (boton.dataset.accion === 'cerrar') {
-                incidenciaCerrandoId = boton.dataset.id;
-                incidenciaKg.value = '';
-                incidenciaError.textContent = '';
-                modalIncidencia.classList.add('is-open');
-                return;
-            }
+
             try {
-                await apiFetch(`${API_GESTION}/incidencias/iniciarAtencion/${boton.dataset.id}`, { method: 'POST' });
-                mostrarToast(I18N.incIniciada, 'success');
+                if (boton.dataset.accion === 'cerrar') {
+                    await cerrarIncidencia(boton.dataset.id);
+                    mostrarToast(I18N.incCerrada, 'success');
+                } else {
+                    await apiFetch(`${API_GESTION}/incidencias/iniciarAtencion/${boton.dataset.id}`, { method: 'POST' });
+                    mostrarToast(I18N.incIniciada, 'success');
+                }
                 await cargarIncidencias();
             } catch (err) {
                 mostrarToast(err.message, 'warning');
-            }
-        });
-
-        document.getElementById('incidencia-cancelar').addEventListener('click', function () {
-            modalIncidencia.classList.remove('is-open');
-        });
-
-        modalIncidencia.addEventListener('click', function (e) {
-            if (e.target === modalIncidencia) modalIncidencia.classList.remove('is-open');
-        });
-
-        document.getElementById('incidencia-confirmar').addEventListener('click', async function () {
-            const kg = parseInt(incidenciaKg.value, 10);
-            if (!kg || kg <= 0) {
-                incidenciaError.textContent = I18N.incKgError;
-                return;
-            }
-            try {
-                await apiFetch(`${API_GESTION}/incidencias/cerrarConPeso/${incidenciaCerrandoId}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ kg: kg })
-                });
-                modalIncidencia.classList.remove('is-open');
-                mostrarToast(I18N.incCerrada, 'success');
-                await cargarIncidencias();
-            } catch (err) {
-                incidenciaError.textContent = err.message;
             }
         });
 
@@ -787,6 +780,9 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
                         motivo: motivoVal
                     })
                 });
+
+                // Si la recolección resolvió alguna incidencia, sale de la lista.
+                await cargarIncidencias();
 
                 let mensaje;
                 let tipoToast;

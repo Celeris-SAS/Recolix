@@ -43,6 +43,16 @@ class CentroAcopioModel {
     }
 
     // RF77 — Obtener un centro de acopio por id.
+    // Centro de acopio al que pertenece un usuario operario (USUARIO.id_centro).
+    public function centroDeUsuario($ci) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT id_centro FROM USUARIO WHERE ci_usuario = ?");
+        mysqli_stmt_bind_param($stmt, "i", $ci);
+        mysqli_stmt_execute($stmt);
+        $fila = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+        mysqli_stmt_close($stmt);
+        return $fila['id_centro'] ?? null;
+    }
+
     public function getCentro($id) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM CENTRO_ACOPIO WHERE id_centro = ?");
         mysqli_stmt_bind_param($stmt, "i", $id);

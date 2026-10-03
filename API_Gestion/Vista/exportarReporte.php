@@ -10,6 +10,7 @@ $tiposExportables = [
     'frecuencia'     => 'Frecuencia de Recolección',
     'vertederos'     => 'Capacidad de los Vertederos',
     'clasificacion'  => 'Clasificación y Reciclaje de Residuos',
+    'reciclaje'      => 'Reciclaje de Residuos',
     'usuarios'       => 'Usuarios Registrados',
     'camiones'       => 'Disponibilidad y Uso de la Flota',
     'maquinaria'     => 'Disponibilidad de Maquinaria',
@@ -137,6 +138,14 @@ switch ($tipo) {
                 $fila['tipoResiduo'], $siNo($fila['reciclable']), $fila['totalContenedores'],
                 $fila['funcionales'], $fila['totalKg'], $fila['porcentaje'] . '%',
             ]);
+        }
+        break;
+
+    case 'reciclaje':
+        fputcsv($salida, ['Concepto', 'Total Recolectado (kg)', '% del Total']);
+        $etiquetasReciclaje = ['reciclable' => 'Reciclable', 'no_reciclable' => 'No reciclable', 'total' => 'Total'];
+        foreach ($reporteModel->getReciclaje() as $fila) {
+            fputcsv($salida, [$etiquetasReciclaje[$fila['concepto']] ?? $fila['concepto'], $fila['totalKg'], $fila['porcentaje'] . '%']);
         }
         break;
 
