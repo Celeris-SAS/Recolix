@@ -1,4 +1,5 @@
 <?php
+session_start();
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
@@ -6,6 +7,11 @@ header('Access-Control-Allow-Headers: Content-Type');
 
 $config = [
     'base_path' => '/recolix/API_Recoleccion/',
+    // Endpoints que pueden usarse sin ser personal interno (landing pública).
+    // Formato: 'METODO recurso', 'METODO recurso/accion' o 'METODO recurso/:id'.
+    'publicos' => [
+        'GET camiones/obtenerEnOperativa',
+    ],
     'resources' => [
         'camiones' => [
             'singular' => 'Camion',
@@ -224,6 +230,17 @@ if (strpos($uri, $basePath) === 0) {
 
     if (isset($_GET['action']) && $_GET['action']) {
         $action = $_GET['action'];
+    }
+
+    // Control de acceso: todo exige sesión de personal interno (administrador, cuadrilla u operario),
+    // salvo los endpoints listados en $config['publicos'].
+    $claveEndpoint = $method . ' ' . $resource . ($action ? '/' . $action : ($id !== null ? '/:id' : ''));
+    $rolSesion     = $_SESSION['usuario']['rol'] ?? '';
+    $esPersonalInterno = $rolSesion !== '' && $rolSesion !== 'vecino';
+    if (!$esPersonalInterno && !in_array($claveEndpoint, $config['publicos'], true)) {
+        http_response_code(403);
+        echo json_encode(['status' => 'error', 'message' => 'No tenés permiso para acceder a este recurso.']);
+        exit;
     }
 
     if ($action && isset($resourceConfig['actions']) && in_array($action, $resourceConfig['actions']) && method_exists($controller, $action)) {

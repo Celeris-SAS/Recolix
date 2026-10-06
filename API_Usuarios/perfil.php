@@ -118,6 +118,16 @@ if (!in_array($rol, $rolesPermitidos)) {
                 <h3><?= t('perfil.titulo_editar') ?></h3>
                 <p class="form-nota"><?= t('perfil.nota_editar') ?></p>
                 <div class="form-row">
+                    <label for="editNombre"><?= t('perfil.field_nombre') ?></label>
+                    <input type="text" id="editNombre" name="nombre" maxlength="50">
+                    <p class="error-msg" id="editNombreError"></p>
+                </div>
+                <div class="form-row">
+                    <label for="editApellido"><?= t('perfil.field_apellido') ?></label>
+                    <input type="text" id="editApellido" name="apellido" maxlength="50">
+                    <p class="error-msg" id="editApellidoError"></p>
+                </div>
+                <div class="form-row">
                     <label for="editEmail"><?= t('perfil.field_email') ?></label>
                     <input type="email" id="editEmail" name="email" placeholder="<?= htmlspecialchars(t('perfil.field_email_ph')) ?>">
                     <p class="error-msg" id="editEmailError"></p>
@@ -153,7 +163,26 @@ if (!in_array($rol, $rolesPermitidos)) {
                 <p class="form-feedback" id="contraFeedback"></p>
             </div>
 
+            <div class="panel-card" id="borrarCuentaConfirm" hidden>
+                <h3><?= t('perfil.titulo_borrar_cuenta') ?></h3>
+                <p class="form-nota"><?= t('perfil.nota_borrar_cuenta') ?></p>
+                <div class="form-actions">
+                    <button class="btn btn-peligro" id="confirmarBorrarBtn"><?= t('perfil.btn_confirmar_borrar') ?></button>
+                    <button class="btn btn-outline btn-sm" id="cancelarBorrarBtn"><?= t('perfil.btn_cancelar') ?></button>
+                </div>
+                <p class="form-feedback" id="borrarFeedback"></p>
+            </div>
+
+            <div class="panel-card" id="borrarCuentaTrabajador" hidden>
+                <h3><?= t('perfil.titulo_borrar_trabajador') ?></h3>
+                <p class="form-nota"><?= t('perfil.nota_borrar_trabajador') ?></p>
+                <div class="form-actions">
+                    <button class="btn btn-outline btn-sm" id="cerrarAvisoTrabajadorBtn"><?= t('perfil.btn_entendido') ?></button>
+                </div>
+            </div>
+
             <div class="logout">
+                <button class="btn btn-peligro btn-sm" id="borrarCuentaBtn" data-ci="<?= htmlspecialchars((string) ($ci)) ?>" data-es-vecino="<?= (false) ? '1' : '0' ?>" data-msg-error="<?= htmlspecialchars(t('perfil.msg_no_pudo_borrar')) ?>"><?= t('perfil.btn_borrar_cuenta') ?></button>
                 <button class="btn btn-outline btn-sm" id="logoutBtn"><?= t('perfil.btn_cerrar_sesion') ?></button>
             </div>
         </section>
@@ -185,6 +214,7 @@ if (!in_array($rol, $rolesPermitidos)) {
         const I18N = <?= json_encode(t_array([
             'msgEmailInvalido' => 'perfil.msg_email_invalido',
             'msgTelInvalido' => 'perfil.msg_tel_invalido',
+            'msgNombreInvalido' => 'perfil.msg_nombre_invalido',
             'msgNoPudoGuardar' => 'perfil.msg_no_pudo_guardar',
             'msgDatosActualizados' => 'perfil.msg_datos_actualizados',
             'msgContraActualRequerida' => 'perfil.msg_contra_actual_requerida',
@@ -199,5 +229,6 @@ function toggleMobileMenu() {
     document.getElementById('navMobile').classList.toggle('nav-mobile-open');
 }
 </script>
+    <script src="Vista/borrarCuenta.js"></script>
 </body>
 </html>
