@@ -154,8 +154,21 @@ class CentroAcopioController {
     }
 
     // RF77 — Obtener un centro de acopio por id.
+    // El operario solo opera sobre el centro de acopio asignado a su usuario.
+    private function verificarCentroPropio($idCentro, $centroModel) {
+        if (($_SESSION['usuario']['rol'] ?? '') !== 'operario') {
+            return;
+        }
+        $ci = $_SESSION['usuario']['ci_usuario'] ?? $_SESSION['ci_usuario'] ?? null;
+        $propio = $ci !== null ? $centroModel->centroDeUsuario($ci) : null;
+        if ($propio === null || $idCentro === null || (int) $propio !== (int) $idCentro) {
+            throw new AccesoDenegadoException('Solo podés operar sobre el centro de acopio asignado a tu usuario.');
+        }
+    }
+
     public function getCentro($id) {
         $id = $this->validarId($id);
+        $this->verificarCentroPropio($id, $this->centroAcopioModel);
         return $this->centroAcopioModel->getCentro($id);
     }
 

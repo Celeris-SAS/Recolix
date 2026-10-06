@@ -82,7 +82,17 @@ require_once __DIR__ . '/../i18n/i18n.php';
     </div>
 
 
-    <p class="form-feedback" id="feedbackGlobal"></p>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <div class="modal-overlay" id="modalConfirmar" hidden>
+      <div class="modal-confirmar" role="dialog" aria-modal="true">
+        <p id="modalConfirmarMensaje"></p>
+        <div class="modal-acciones">
+          <button type="button" class="btn btn-outline btn-sm" id="modalCancelar"><?= t('backoffice.solicitudes_js_btn_cancelar') ?></button>
+          <button type="button" class="btn btn-sm" id="modalAceptar"><?= t('backoffice.solicitudes_js_btn_confirmar') ?></button>
+        </div>
+      </div>
+    </div>
 
 
     <div class="panel-card">

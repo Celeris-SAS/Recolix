@@ -367,6 +367,29 @@ class ReporteModel {
         return $filas;
     }
 
+    // RF68: cuántos kilos recolectados son de tipos reciclables, sobre el total.
+    public function getReciclaje() {
+        $clasificacion = $this->getClasificacionResiduos();
+        $kgReciclable = 0.0;
+        $kgNoReciclable = 0.0;
+        foreach ($clasificacion as $fila) {
+            if ($fila['reciclable']) {
+                $kgReciclable += $fila['totalKg'];
+            } else {
+                $kgNoReciclable += $fila['totalKg'];
+            }
+        }
+        $total = $kgReciclable + $kgNoReciclable;
+        $porcentaje = function ($kg) use ($total) {
+            return $total > 0 ? round($kg / $total * 100, 1) : 0.0;
+        };
+        return [
+            ['concepto' => 'reciclable',    'totalKg' => round($kgReciclable, 1),   'porcentaje' => $porcentaje($kgReciclable)],
+            ['concepto' => 'no_reciclable', 'totalKg' => round($kgNoReciclable, 1), 'porcentaje' => $porcentaje($kgNoReciclable)],
+            ['concepto' => 'total',         'totalKg' => round($total, 1),          'porcentaje' => $total > 0 ? 100.0 : 0.0],
+        ];
+    }
+
     public function getClasificacionResiduos() {
         $sqlContenedores = "SELECT t.id_tipo, t.descripcion AS tipoResiduo, t.color, t.reciclable,
                                    COUNT(c.id_contenedor) AS totalContenedores,

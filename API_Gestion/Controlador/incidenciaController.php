@@ -238,5 +238,43 @@ class IncidenciaController {
         }
         return $this->incidenciaModel->cerrar($id);
     }
+
+    // La sesión solo puede operar sobre su propia cuadrilla (se compara contra la base).
+    private function verificarCuadrillaPropia($idCuadrilla) {
+        $ci = $_SESSION['usuario']['ci_usuario'] ?? $_SESSION['ci_usuario'] ?? null;
+        $real = $ci !== null ? $this->incidenciaModel->cuadrillaDeUsuario($ci) : null;
+        if ($real === null || $idCuadrilla === null || (int) $real !== (int) $idCuadrilla) {
+            throw new AccesoDenegadoException('Solo podés operar sobre incidencias asignadas a tu cuadrilla.');
+        }
+    }
+
+    // Lista de incidencias asignadas a la cuadrilla (interfaz de la cuadrilla).
+    public function obtenerPorCuadrilla($idCuadrilla) {
+        $idCuadrilla = $this->validarId($idCuadrilla, 'Cuadrilla');
+        $this->verificarCuadrillaPropia($idCuadrilla);
+        return $this->incidenciaModel->obtenerPorCuadrilla($idCuadrilla);
+    }
+
+    // La cuadrilla empieza a atender una incidencia que le fue asignada.
+    public function iniciarAtencion($id) {
+        $id = $this->validarId($id);
+        $incidencia = $this->obtenerOFallar($id);
+        $this->verificarCuadrillaPropia($incidencia['id_cuadrilla']);
+        if ($incidencia['estado'] !== 'asignada') {
+            throw new InvalidArgumentException("Solo se puede iniciar la atención de una incidencia asignada. Estado actual: " . $incidencia['estado']);
+        }
+        return $this->incidenciaModel->iniciarAtencion($id);
+    }
+
+    // RF13: la cuadrilla cierra la incidencia que está atendiendo (de 'en_curso' a 'resuelta').
+    public function cerrarPorCuadrilla($id) {
+        $id = $this->validarId($id);
+        $incidencia = $this->obtenerOFallar($id);
+        $this->verificarCuadrillaPropia($incidencia['id_cuadrilla']);
+        if ($incidencia['estado'] !== 'en_curso') {
+            throw new InvalidArgumentException("Solo se puede cerrar una incidencia en estado 'en_curso'. Estado actual: " . $incidencia['estado']);
+        }
+        return $this->incidenciaModel->cerrar($id);
+    }
 }
 ?>

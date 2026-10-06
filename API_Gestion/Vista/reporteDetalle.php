@@ -9,6 +9,7 @@ $tiposReporte = [
     'frecuencia'     => ['titulo' => 'reportes.card_frecuencia_titulo',     'desc' => 'reportes.card_frecuencia_desc',     'implementado' => true],
     'vertederos'     => ['titulo' => 'reportes.card_vertederos_titulo',     'desc' => 'reportes.card_vertederos_desc',     'implementado' => true],
     'clasificacion'  => ['titulo' => 'reportes.card_clasificacion_titulo',  'desc' => 'reportes.card_clasificacion_desc',  'implementado' => true],
+    'reciclaje'      => ['titulo' => 'reportes.card_reciclaje_titulo',      'desc' => 'reportes.card_reciclaje_desc',      'implementado' => true],
     'usuarios'       => ['titulo' => 'reportes.card_usuarios_titulo',       'desc' => 'reportes.card_usuarios_desc',       'implementado' => true],
     'camiones'       => ['titulo' => 'reportes.card_camiones_titulo',       'desc' => 'reportes.card_camiones_desc',       'implementado' => true],
     'maquinaria'     => ['titulo' => 'reportes.card_maquinaria_titulo',     'desc' => 'reportes.card_maquinaria_desc',     'implementado' => true],
@@ -28,6 +29,7 @@ $reportEndpoints = [
     'frecuencia'    => 'getFrecuenciaRecoleccion',
     'vertederos'    => 'getCapacidadVertederos',
     'clasificacion' => 'getClasificacionResiduos',
+    'reciclaje'     => 'getReciclaje',
     'usuarios'      => 'getEvolucionUsuarios',
     'camiones'      => 'getDisponibilidadCamiones',
     'maquinaria'    => 'getDisponibilidadMaquinaria',
@@ -63,6 +65,11 @@ $reportColumns = [
         ['key' => 'capacidadTotal',  'label' => 'reportes.vertederos_th_capacidad',  'fmt' => 'num'],
         ['key' => 'ocupacionActual', 'label' => 'reportes.vertederos_th_ocupacion',  'fmt' => 'num'],
         ['key' => 'porcentaje',      'label' => 'reportes.vertederos_th_porcentaje', 'fmt' => 'porcentajeBadge'],
+    ],
+    'reciclaje' => [
+        ['key' => 'concepto',   'label' => 'reportes.reciclaje_th_concepto',      'fmt' => 'conceptoReciclaje'],
+        ['key' => 'totalKg',    'label' => 'reportes.clasificacion_th_kg',        'fmt' => 'kg'],
+        ['key' => 'porcentaje', 'label' => 'reportes.clasificacion_th_porcentaje', 'fmt' => 'porcentajeBadge'],
     ],
     'clasificacion' => [
         ['key' => 'tipoResiduo',       'label' => 'reportes.clasificacion_th_tipo',        'fmt' => 'tipoResiduo'],
@@ -106,6 +113,7 @@ $reportEmptyKey = [
     'frecuencia'    => 'reportes.frecuencia_empty',
     'vertederos'    => 'reportes.vertederos_empty',
     'clasificacion' => 'reportes.clasificacion_empty',
+    'reciclaje'     => 'reportes.reciclaje_empty',
     'usuarios'      => 'reportes.usuarios_empty',
     'camiones'      => 'reportes.camiones_empty',
     'maquinaria'    => 'reportes.maquinaria_empty',
@@ -449,6 +457,11 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
         };
         const LABEL_SI = <?= json_encode(t('reportes.badge_si')) ?>;
         const LABEL_NO = <?= json_encode(t('reportes.badge_no')) ?>;
+        const LABELS_CONCEPTO_RECICLAJE = {
+            reciclable:    <?= json_encode(t('reportes.reciclaje_concepto_reciclable')) ?>,
+            no_reciclable: <?= json_encode(t('reportes.reciclaje_concepto_no_reciclable')) ?>,
+            total:         <?= json_encode(t('reportes.reciclaje_concepto_total')) ?>
+        };
         const LABEL_RESULTADOS = <?= json_encode(t('reportes.detalle_resultados')) ?>;
         const LABEL_SIN_DATOS = '—';
 
@@ -531,6 +544,8 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
                     }
                     return `<span class="badge ${claseBadge}">${textoBadge}</span>`;
                 }
+                case 'conceptoReciclaje':
+                    return LABELS_CONCEPTO_RECICLAJE[valor] ?? valor;
                 case 'porcentajeBadge':
                     return `<span class="badge ${badgeParaPorcentaje(valor)}">${valor}%</span>`;
                 case 'tipoIncidencia':

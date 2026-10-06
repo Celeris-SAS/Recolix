@@ -116,6 +116,7 @@ class MaquinariaController {
 
     // RF80 — Actualización del estado de la maquinaria.
     public function cambiarEstado($id, $nuevoEstado) {
+        $this->verificarCentroPropio($this->maquinariaModel->centroDeMaquinaria($this->validarId($id)), $this->centroAcopioModel);
         $id = $this->validarId($id);
         $nuevoEstado = $this->validarEstado($nuevoEstado);
 
@@ -153,8 +154,21 @@ class MaquinariaController {
     // ==========================================
 
     // Consulta que reemplaza al listado propio: la maquinaria de un centro puntual.
+    // El operario solo opera sobre el centro de acopio asignado a su usuario.
+    private function verificarCentroPropio($idCentro, $centroModel) {
+        if (($_SESSION['usuario']['rol'] ?? '') !== 'operario') {
+            return;
+        }
+        $ci = $_SESSION['usuario']['ci_usuario'] ?? $_SESSION['ci_usuario'] ?? null;
+        $propio = $ci !== null ? $centroModel->centroDeUsuario($ci) : null;
+        if ($propio === null || $idCentro === null || (int) $propio !== (int) $idCentro) {
+            throw new AccesoDenegadoException('Solo podés operar sobre el centro de acopio asignado a tu usuario.');
+        }
+    }
+
     public function obtenerPorCentro($idCentro) {
         $idCentro = $this->validarId($idCentro);
+        $this->verificarCentroPropio($idCentro, $this->centroAcopioModel);
         return $this->maquinariaModel->obtenerPorCentro($idCentro);
     }
 

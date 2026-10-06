@@ -185,6 +185,14 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 </div>
             </a>
 
+            <a href="reporteDetalle.php?tipo=reciclaje" class="card-operar">
+                <div class="card-content">
+                    <div class="card-icon"><img src="../../Backoffice/img/circuito.svg" alt="" class="card-svg-icon"></div>
+                    <h3><?= t('reportes.card_reciclaje_titulo') ?></h3>
+                    <p><?= t('reportes.card_reciclaje_desc') ?></p>
+                </div>
+            </a>
+
             <a href="reporteDetalle.php?tipo=usuarios" class="card-operar">
                 <div class="card-content">
                     <div class="card-icon"><img src="user.svg" alt="" class="card-svg-icon"></div>

@@ -254,37 +254,77 @@ final class LevanteModelIntegrationTest extends DbTestCase
         $model->registrarContenedor($idLevante, $contenedorId, 'no_existe', 10, null);
     }
 
-    public function testCompletarLevanteRechazaSiHayContenedoresSinResolver(): void
+    public function testCompletarLevanteRechazaSiHayContenedoresPendientes(): void
     {
-        // La precarga de contenedores (al planificar) los marca 'todo_ok' por
-        // defecto, así que la única forma real de dejar uno "sin resolver"
-        // (estado distinto de todo_ok y sin motivo) es vía una escritura
-        // directa -- registrarContenedor() no lo permite. Este test ejercita
-        // esa guarda defensiva de completarLevante() igual.
-        [$model, $idLevante, , $contenedorId] = $this->levantePendiente();
+        // La precarga marca 'todo_ok' a cada contenedor de la ruta, pero un contenedor
+        // al que la cuadrilla todavía no pasó (sin hora_vaciado ni motivo) sigue pendiente.
+        [$model, $idLevante] = $this->levantePendiente();
         $model->iniciarLevante($idLevante);
-        $conn = $this->conn();
-        $stmt = $conn->prepare("UPDATE contenedor_levante SET estado_encontrado = 'contenedor_ausente', motivo = NULL WHERE id_levante = ? AND id_contenedor = ?");
-        $stmt->bind_param('ii', $idLevante, $contenedorId);
-        $stmt->execute();
-        $stmt->close();
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('requiere estado y motivo');
+        $this->expectExceptionMessage('faltan contenedores por registrar');
         $model->completarLevante($idLevante);
     }
 
-    public function testCompletarLevanteCalculaTotalRecolectadoYLiberaElCamion(): void
+    public function testRegistrarUltimoContenedorCierraElLevanteSoloYLiberaElCamion(): void
     {
         [$model, $idLevante, $camionId, $contenedorId] = $this->levantePendiente();
         $model->iniciarLevante($idLevante);
+
         $model->registrarContenedor($idLevante, $contenedorId, 'todo_ok', 42, null);
 
-        $levante = $model->completarLevante($idLevante);
-
+        $levante = $model->getLevante($idLevante);
         $this->assertSame('completado', $levante['estado']);
         $this->assertEqualsWithDelta(42.0, (float) $levante['total_recolectado'], 0.001);
         $this->assertSame(1, $this->contarFilas('camion', "id_camion = $camionId AND estado = 'disponible'"));
+    }
+
+    public function testContenedorNoRecolectadoConMotivoTambienCierraElLevante(): void
+    {
+        [$model, $idLevante, , $contenedorId] = $this->levantePendiente();
+        $model->iniciarLevante($idLevante);
+
+        $model->registrarContenedor($idLevante, $contenedorId, 'acceso_bloqueado', null, 'Calle cortada');
+
+        $levante = $model->getLevante($idLevante);
+        $this->assertSame('completado', $levante['estado']);
+        $this->assertEqualsWithDelta(0.0, (float) $levante['total_recolectado'], 0.001);
+    }
+
+    public function testElLevanteSoloSeCierraAlResolverTodosLosContenedoresYQuitaLaRutaDeLaCuadrilla(): void
+    {
+        $model = new LevanteModel();
+        $circuitoId = $this->crearCircuito();
+        $rutaId = $this->crearRuta($circuitoId, ['activa' => 1]);
+        $primero = $this->crearContenedor($circuitoId, ['capacidad' => 100]);
+        $segundo = $this->crearContenedor($circuitoId, ['capacidad' => 100]);
+        $this->agregarContenedorARuta($rutaId, $primero, 1);
+        $this->agregarContenedorARuta($rutaId, $segundo, 2);
+        $cuadrillaId = $this->crearCuadrilla();
+        $levante = $model->planificarLevante($rutaId, $this->crearCamion(), $cuadrillaId, '2026-01-10 08:00:00', '2026-01-10');
+        $idLevante = (int) $levante['id_levante'];
+        $vinculo = "id_ruta = $rutaId AND id_cuadrilla = $cuadrillaId";
+        $this->assertSame(1, $this->contarFilas('ruta_cuadrilla', $vinculo));
+        $model->iniciarLevante($idLevante);
+
+        $model->registrarContenedor($idLevante, $primero, 'todo_ok', 10, null);
+        $this->assertSame('en_curso', $model->getLevante($idLevante)['estado']);
+        $this->assertSame(1, $this->contarFilas('ruta_cuadrilla', $vinculo));
+
+        $model->registrarContenedor($idLevante, $segundo, 'otro', null, 'No estaba');
+        $this->assertSame('completado', $model->getLevante($idLevante)['estado']);
+        $this->assertSame(0, $this->contarFilas('ruta_cuadrilla', $vinculo));
+    }
+
+    public function testRegistrarContenedorFueraDeLaRutaSeRechaza(): void
+    {
+        [$model, $idLevante] = $this->levantePendiente();
+        $model->iniciarLevante($idLevante);
+        $ajeno = $this->crearContenedor(null, ['capacidad' => 100]);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('no pertenece a la ruta');
+        $model->registrarContenedor($idLevante, $ajeno, 'todo_ok', 10, null);
     }
 
     public function testCancelarLevanteLiberaElCamion(): void
@@ -311,9 +351,10 @@ final class LevanteModelIntegrationTest extends DbTestCase
         $idLevante = (int) $levante['id_levante'];
 
         $model->iniciarLevante($idLevante);
+        // Registrar el último contenedor cierra el levante solo (no hay que llamar a completarLevante).
         $model->registrarContenedor($idLevante, $contenedorId, 'todo_ok', 42, null);
-        $model->completarLevante($idLevante);
 
+        $this->assertSame('completado', $model->getLevante($idLevante)['estado']);
         $this->assertSame(1, $this->contarFilas('centro_levante', "id_levante = $idLevante AND id_centro = $centroId"));
     }
 
@@ -337,7 +378,6 @@ final class LevanteModelIntegrationTest extends DbTestCase
         [$model, $idLevante, , $contenedorId] = $this->levantePendiente();
         $model->iniciarLevante($idLevante);
         $model->registrarContenedor($idLevante, $contenedorId, 'todo_ok', 10, null);
-        $model->completarLevante($idLevante);
 
         $this->expectException(InvalidArgumentException::class);
         $model->cancelarLevante($idLevante);
