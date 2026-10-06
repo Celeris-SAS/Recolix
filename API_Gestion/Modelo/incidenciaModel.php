@@ -214,6 +214,72 @@ class IncidenciaModel {
         return $rows;
     }
 
+    // Incidencias asignadas a una cuadrilla que todavía no están resueltas,
+    // con los contenedores vinculados (para que la cuadrilla sepa a dónde ir).
+    // Cuadrilla a la que pertenece un usuario, leída de la base (no de la sesión).
+    public function cuadrillaDeUsuario($ci) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT id_cuadrilla FROM USUARIO WHERE ci_usuario = ?");
+        mysqli_stmt_bind_param($stmt, "i", $ci);
+        mysqli_stmt_execute($stmt);
+        $fila = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+        mysqli_stmt_close($stmt);
+        return $fila['id_cuadrilla'] ?? null;
+    }
+
+    public function obtenerPorCuadrilla($idCuadrilla) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "
+            SELECT i.id_incidencia, i.tipo, i.descripcion, i.estado, i.prioridad, i.fecha_apertura,
+                   c.id_contenedor, c.calle, c.num_calle, c.estado AS estado_contenedor,
+                   c.nivel_llenado, t.descripcion AS tipo_residuo
+            FROM INCIDENCIA i
+            LEFT JOIN INCIDENCIA_CONTENEDOR ic ON ic.id_incidencia = i.id_incidencia
+            LEFT JOIN CONTENEDOR c ON c.id_contenedor = ic.id_contenedor
+            LEFT JOIN TIPO_RESIDUO t ON t.id_tipo = c.id_tipo
+            WHERE i.id_cuadrilla = ? AND i.estado IN ('asignada', 'en_curso')
+            ORDER BY i.fecha_apertura ASC, c.id_contenedor ASC
+        ");
+        mysqli_stmt_bind_param($stmt, "i", $idCuadrilla);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+
+        // Una fila por contenedor: se agrupan en una sola incidencia con su lista de contenedores.
+        $incidencias = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $id = $row['id_incidencia'];
+            if (!isset($incidencias[$id])) {
+                $incidencias[$id] = [
+                    'id_incidencia' => $row['id_incidencia'],
+                    'tipo' => $row['tipo'],
+                    'descripcion' => $row['descripcion'],
+                    'estado' => $row['estado'],
+                    'prioridad' => $row['prioridad'],
+                    'fecha_apertura' => $row['fecha_apertura'],
+                    'contenedores' => [],
+                ];
+            }
+            if ($row['id_contenedor'] !== null) {
+                $incidencias[$id]['contenedores'][] = [
+                    'id_contenedor' => $row['id_contenedor'],
+                    'calle' => $row['calle'],
+                    'num_calle' => $row['num_calle'],
+                    'estado' => $row['estado_contenedor'],
+                    'nivel_llenado' => (int) $row['nivel_llenado'],
+                    'tipo_residuo' => $row['tipo_residuo'],
+                ];
+            }
+        }
+        mysqli_stmt_close($stmt);
+        return array_values($incidencias);
+    }
+
+    public function iniciarAtencion($id) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE INCIDENCIA SET estado = 'en_curso' WHERE id_incidencia = ? AND estado = 'asignada'");
+        mysqli_stmt_bind_param($stmt, "i", $id);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        return true;
+    }
+
     public function asignarCuadrilla($id, $idCuadrilla) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE INCIDENCIA SET id_cuadrilla = ?, estado = 'asignada' WHERE id_incidencia = ?");
         mysqli_stmt_bind_param($stmt, "ii", $idCuadrilla, $id);

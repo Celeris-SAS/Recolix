@@ -529,7 +529,7 @@
         document.getElementById('repContenedorError').textContent = '';
         const seleccionado = document.getElementById('repContenedorSeleccionado');
         seleccionado.style.display = '';
-        seleccionado.textContent = `${I18N.contenedorSeleccionado}: #${c.id_contenedor} — ${c.calle} ${c.num_calle}`;
+        seleccionado.textContent = `${I18N.contenedorSeleccionado}: #${c.id_contenedor} — ${[c.calle, c.num_calle].filter(Boolean).join(' ')}`;
 
         if (repMarcadorSeleccionado) repMarcadorSeleccionado.setStyle({ weight: 1.5, radius: 7 });
         marker.setStyle({ weight: 3, radius: 10 });
@@ -590,7 +590,7 @@
           repMapaMarcadores = await cargarContenedoresEnMapa(repMapa, {
             apiBase: API_GESTION,
             radius: 7,
-            tooltip: (c) => `#${c.id_contenedor} — ${c.calle} ${c.num_calle}`,
+            tooltip: (c) => `#${c.id_contenedor} — ${[c.calle, c.num_calle].filter(Boolean).join(' ')}`,
             onClick: seleccionarContenedorEnMapa
           });
         }

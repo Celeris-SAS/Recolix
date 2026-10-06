@@ -67,7 +67,7 @@ async function cargarSolicitudes() {
 
 
 async function aprobar(ci) {
-  if (!confirm(I18N.confirmarAprobar)) return;
+  if (!await pedirConfirmacion(I18N.confirmarAprobar)) return;
 
   try {
     const resp = await fetch(`${API}/solicitudes/aprobar`, {
@@ -92,7 +92,7 @@ async function aprobar(ci) {
 
 
 async function rechazar(ci) {
-  if (!confirm(I18N.confirmarRechazar)) return;
+  if (!await pedirConfirmacion(I18N.confirmarRechazar)) return;
 
   try {
     const resp = await fetch(`${API}/solicitudes/rechazar`, {
@@ -130,13 +130,34 @@ function eliminarFila(ci) {
   }
 }
 
+let toastTimeout;
+
 function mostrarFeedback(mensaje, esExito) {
-  const el = document.getElementById('feedbackGlobal');
-  el.textContent = mensaje;
-  el.className = 'form-feedback ' + (esExito ? 'is-success' : 'is-error');
-  
-  setTimeout(() => {
-    el.textContent = '';
-    el.className = 'form-feedback';
-  }, 4000);
+  const toast = document.getElementById('toast');
+  clearTimeout(toastTimeout);
+  toast.textContent = mensaje;
+  toast.className = 'toast ' + (esExito ? 'toast-success' : 'toast-error') + ' toast-show';
+  toastTimeout = setTimeout(() => toast.classList.remove('toast-show'), 3500);
+}
+
+function pedirConfirmacion(mensaje) {
+  return new Promise(resolve => {
+    const modal = document.getElementById('modalConfirmar');
+    const aceptar = document.getElementById('modalAceptar');
+    const cancelar = document.getElementById('modalCancelar');
+    document.getElementById('modalConfirmarMensaje').textContent = mensaje;
+    modal.hidden = false;
+
+    function cerrar(valor) {
+      modal.hidden = true;
+      aceptar.removeEventListener('click', onAceptar);
+      cancelar.removeEventListener('click', onCancelar);
+      resolve(valor);
+    }
+    function onAceptar() { cerrar(true); }
+    function onCancelar() { cerrar(false); }
+
+    aceptar.addEventListener('click', onAceptar);
+    cancelar.addEventListener('click', onCancelar);
+  });
 }

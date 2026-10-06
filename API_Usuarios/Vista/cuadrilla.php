@@ -85,6 +85,15 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             <span id="alerta-levante-texto"></span>
         </div>
 
+        <!-- Incidencias asignadas por el administrador (RF10, RF13) -->
+        <section class="dash-section" id="seccion-incidencias">
+            <div class="panel-card">
+                <h2><?= t('cuadrilla.inc_titulo') ?></h2>
+                <p id="incidencias-vacio" hidden><?= t('cuadrilla.inc_vacio') ?></p>
+                <div id="incidencias-lista"></div>
+            </div>
+        </section>
+
         <!-- Registrar levante -->
         <section class="dash-section" id="seccion-levante">
             <div class="panel-card">
@@ -107,9 +116,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
                     <div class="card-header-actions">
                         <button type="button" class="btn btn-primary" id="btn-iniciar-levante" hidden>
                             <?= t('cuadrilla.btn_iniciar_levante') ?>
-                        </button>
-                        <button type="button" class="btn btn-outline" id="btn-completar-levante" hidden>
-                            <?= t('cuadrilla.btn_completar_levante') ?>
                         </button>
                     </div>
                 </div>
@@ -287,6 +293,7 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
 
         const ID_CUADRILLA = <?= json_encode($idCuadrilla) ?>;
         const API_RECOLECCION = '/recolix/API_Recoleccion';
+        const API_GESTION = '/recolix/API_Gestion';
 
         const I18N = <?= json_encode(t_array([
             'placeholderVacio' => 'cuadrilla.levante_seleccionar_placeholder',
@@ -301,9 +308,21 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             'ingresaMotivo' => 'cuadrilla.msg_ingresa_motivo',
             'ingresaPeso' => 'cuadrilla.msg_ingresa_peso',
             'noRecolectado' => 'cuadrilla.msg_no_recolectado',
+            'incIniciar' => 'cuadrilla.inc_btn_iniciar',
+            'incCerrar' => 'cuadrilla.inc_btn_cerrar',
+            'incIniciada' => 'cuadrilla.inc_msg_iniciada',
+            'incCerrada' => 'cuadrilla.inc_msg_cerrada',
+            'incEstadoAsignada' => 'cuadrilla.inc_estado_asignada',
+            'incEstadoEnCurso' => 'cuadrilla.inc_estado_en_curso',
+            'incContenedor' => 'cuadrilla.inc_contenedor',
+            'incLlenado' => 'cuadrilla.inc_llenado',
+            'incContFuncional' => 'cuadrilla.inc_cont_funcional',
+            'incContRoto' => 'cuadrilla.inc_cont_roto',
+            'incContDesbordado' => 'cuadrilla.inc_cont_desbordado',
+            'incContInactivo' => 'cuadrilla.inc_cont_inactivo',
+            'incContEnDeposito' => 'cuadrilla.inc_cont_en_deposito',
             'motivoRegistrado' => 'cuadrilla.msg_motivo_registrado',
             'levanteRegistrado' => 'cuadrilla.msg_levante_registrado',
-            'confirmarCompletarLevante' => 'cuadrilla.msg_confirmar_completar_levante',
             'debeIniciarRuta' => 'cuadrilla.msg_levante_pendiente_iniciar',
             'camionActualizado' => 'cuadrilla.msg_camion_actualizado',
             'describiDesperfecto' => 'cuadrilla.msg_describi_desperfecto',
@@ -340,7 +359,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
         const infoBox = document.getElementById('contenedor-info');
         const formLevante = document.getElementById('form-levante');
         const btnIniciar = document.getElementById('btn-iniciar-levante');
-        const btnCompletar = document.getElementById('btn-completar-levante');
         const routesList = document.getElementById('routes-list');
         const routesEmpty = document.getElementById('routes-empty');
         const seccionLevante = document.getElementById('seccion-levante');
@@ -412,6 +430,94 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
         // ---- Carga inicial ----
         // ID_CUADRILLA viene de sesión (USUARIO.id_cuadrilla, FK real). Si el
         // usuario no tiene cuadrilla asignada, se avisa y no se carga nada.
+        // Incidencias asignadas por el administrador (RF10, RF13)
+        const listaIncidencias = document.getElementById('incidencias-lista');
+        const incidenciasVacio = document.getElementById('incidencias-vacio');
+
+        async function cargarIncidencias() {
+            try {
+                const incidencias = await apiFetch(`${API_GESTION}/incidencias/obtenerPorCuadrilla/${cuadrilla.id_cuadrilla}`);
+                renderIncidencias(incidencias);
+            } catch (e) {
+                listaIncidencias.innerHTML = '';
+                incidenciasVacio.hidden = false;
+                mostrarToast(e.message, 'warning');
+            }
+        }
+
+        const estadoIncidencia = {
+            asignada: I18N.incEstadoAsignada,
+            en_curso: I18N.incEstadoEnCurso
+        };
+
+        const estadoContenedor = {
+            funcional: I18N.incContFuncional,
+            roto: I18N.incContRoto,
+            desbordado: I18N.incContDesbordado,
+            inactivo: I18N.incContInactivo,
+            en_deposito: I18N.incContEnDeposito
+        };
+
+        function capitalizar(texto) {
+            if (!texto) return '';
+            return texto.charAt(0).toUpperCase() + texto.slice(1);
+        }
+
+        function renderIncidencias(incidencias) {
+            listaIncidencias.innerHTML = '';
+            incidenciasVacio.hidden = incidencias.length > 0;
+            incidencias.forEach(function (inc) {
+                const enCurso = inc.estado === 'en_curso';
+                const fila = document.createElement('div');
+                fila.className = 'route-row';
+                const contenedores = (inc.contenedores || []).map(function (c) {
+                    const direccion = [c.calle, c.num_calle].filter(Boolean).join(' ') || I18N.sinDatos;
+                    const estado = estadoContenedor[c.estado] || c.estado;
+                    return `<li>
+                        <strong>${I18N.incContenedor} ${escapeHtml(String(c.id_contenedor))}</strong>
+                        · ${escapeHtml(direccion)}
+                        · ${escapeHtml(estado)}
+                        · ${I18N.incLlenado} ${escapeHtml(String(c.nivel_llenado))}%
+                        ${c.tipo_residuo ? '· ' + escapeHtml(c.tipo_residuo) : ''}
+                    </li>`;
+                }).join('');
+                fila.innerHTML = `
+                    <div>
+                        <strong>${escapeHtml(capitalizar(inc.tipo))}</strong>
+                        <div>${escapeHtml(inc.descripcion || '')}</div>
+                        <small>${escapeHtml(estadoIncidencia[inc.estado] || inc.estado)}</small>
+                        <ul class="incidencia-contenedores">${contenedores}</ul>
+                    </div>
+                    <button type="button" class="btn ${enCurso ? 'btn-primary' : 'btn-outline'}"
+                        data-accion="${enCurso ? 'cerrar' : 'iniciar'}" data-id="${inc.id_incidencia}">
+                        ${enCurso ? I18N.incCerrar : I18N.incIniciar}
+                    </button>`;
+                listaIncidencias.appendChild(fila);
+            });
+        }
+
+        async function cerrarIncidencia(id) {
+            await apiFetch(`${API_GESTION}/incidencias/cerrarPorCuadrilla/${id}`, { method: 'POST' });
+        }
+
+        listaIncidencias.addEventListener('click', async function (e) {
+            const boton = e.target.closest('button[data-accion]');
+            if (!boton) return;
+
+            try {
+                if (boton.dataset.accion === 'cerrar') {
+                    await cerrarIncidencia(boton.dataset.id);
+                    mostrarToast(I18N.incCerrada, 'success');
+                } else {
+                    await apiFetch(`${API_GESTION}/incidencias/iniciarAtencion/${boton.dataset.id}`, { method: 'POST' });
+                    mostrarToast(I18N.incIniciada, 'success');
+                }
+                await cargarIncidencias();
+            } catch (err) {
+                mostrarToast(err.message, 'warning');
+            }
+        });
+
         async function init() {
             if (!ID_CUADRILLA) {
                 sinCuadrillaBanner.hidden = false;
@@ -422,6 +528,7 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
 
             cuadrilla = { id_cuadrilla: ID_CUADRILLA };
             await cargarRutas();
+            await cargarIncidencias();
         }
 
         // Registrar levante solo tiene sentido si la cuadrilla tiene al menos una
@@ -509,7 +616,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
                 CONTENEDORES = {};
                 listaContenedores.innerHTML = '';
                 btnIniciar.hidden = true;
-                btnCompletar.hidden = true;
                 habilitarFormLevante(false);
                 sinLevanteMsg.hidden = false;
                 levantePendienteMsg.hidden = true;
@@ -576,37 +682,12 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             renderContenedoresRuta(levanteActivo.contenedores || []);
 
             const esPendiente = levanteActivo.estado === 'pendiente';
-            const esEnCurso = levanteActivo.estado === 'en_curso';
-            const contenedoresSinRegistrar = contarContenedoresSinRegistrar(levanteActivo.contenedores || []);
             btnIniciar.hidden = !esPendiente;
-            btnCompletar.hidden = !esEnCurso;
-            // No se puede completar el levante hasta que todos los contenedores de la
-            // ruta tengan un peso o un motivo registrado (el backend lo exige igual,
-            // esto es solo para no dejar tocar el botón antes de tiempo).
-            btnCompletar.disabled = contenedoresSinRegistrar > 0;
             levantePendienteMsg.hidden = !esPendiente;
             // Se puede completar el formulario (tipear, elegir contenedor) aunque la ruta
             // todavía no haya arrancado; solo el envío final queda bloqueado hasta iniciarla
             // (ver validación en el submit de form-levante).
             habilitarFormLevante(true);
-            return contenedoresSinRegistrar;
-        }
-
-        function contarContenedoresSinRegistrar(contenedores) {
-            return contenedores.filter(function (c) {
-                return !c.hora_vaciado && !c.motivo;
-            }).length;
-        }
-
-        async function intentarCompletarLevante() {
-            if (!levanteActivo) return;
-            try {
-                await apiFetch(`${API_RECOLECCION}/levantes/completar/${levanteActivo.id_levante}`, { method: 'POST' });
-                mostrarToast(I18N.badgeCompletado);
-                await cargarRutas();
-            } catch (e) {
-                mostrarToast(e.message, 'warning');
-            }
         }
 
         btnIniciar.addEventListener('click', async function () {
@@ -618,10 +699,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             } catch (e) {
                 mostrarToast(e.message, 'warning');
             }
-        });
-
-        btnCompletar.addEventListener('click', async function () {
-            await intentarCompletarLevante();
         });
 
         // RF71 — Registro de motivo de no recolección
@@ -704,26 +781,31 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
                     })
                 });
 
+                // Si la recolección resolvió alguna incidencia, sale de la lista.
+                await cargarIncidencias();
+
+                let mensaje;
+                let tipoToast;
                 if (fueRecolectado) {
-                    mostrarToast(I18N.levanteRegistrado + ' #' + id + '.');
+                    mensaje = I18N.levanteRegistrado + ' #' + id + '.';
                 } else {
                     const estadoTexto = estadoEncontrado.options[estadoEncontrado.selectedIndex].text;
-                    mostrarToast(I18N.noRecolectado + ' #' + id + ' (' + estadoTexto + '). ' + I18N.motivoRegistrado, 'warning');
+                    mensaje = I18N.noRecolectado + ' #' + id + ' (' + estadoTexto + '). ' + I18N.motivoRegistrado;
+                    tipoToast = 'warning';
                 }
 
                 formLevante.reset();
                 actualizarInfoContenedor('');
                 grupoNoRecolectado.hidden = true;
-                const idLevanteActual = levanteActivo.id_levante;
-                const sinRegistrar = await cargarLevante(idLevanteActual);
+                await cargarLevante(levanteActivo.id_levante);
 
-                // Si ya no queda ningún contenedor pendiente, se le pregunta a la
-                // cuadrilla si quiere completar el levante en el momento.
-                if (levanteActivo && levanteActivo.estado === 'en_curso' && sinRegistrar === 0) {
-                    if (confirm(I18N.confirmarCompletarLevante)) {
-                        await intentarCompletarLevante();
-                    }
+                // Al registrar el último contenedor pendiente el backend cierra el levante
+                // solo: se vuelve a cargar el panel para que la ruta deje de aparecer.
+                if (levanteActivo && levanteActivo.estado === 'completado') {
+                    mensaje += ' ' + I18N.badgeCompletado + '.';
+                    await cargarRutas();
                 }
+                mostrarToast(mensaje, tipoToast);
             } catch (e) {
                 mostrarToast(e.message, 'warning');
             }

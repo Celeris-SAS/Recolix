@@ -87,6 +87,17 @@ class ContenedorModel {
         mysqli_stmt_bind_param($stmt, "si", $fechaHoy, $id);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
+
+        // La reparación resuelve las roturas abiertas del contenedor: ya no hay nada que atender.
+        $stmt = mysqli_prepare($this->conn->getConexion(), "
+            UPDATE INCIDENCIA i
+            JOIN INCIDENCIA_CONTENEDOR ic ON ic.id_incidencia = i.id_incidencia
+            SET i.estado = 'resuelta', i.fecha_cierre = NOW()
+            WHERE ic.id_contenedor = ? AND i.tipo = 'rotura' AND i.estado <> 'resuelta'
+        ");
+        mysqli_stmt_bind_param($stmt, "i", $id);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
         return true;
     }
 

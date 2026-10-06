@@ -618,3 +618,13 @@
 .dash-section[hidden] {
   display: none;
 }
+/* Lista de contenedores dentro de cada incidencia asignada */
+.incidencia-contenedores {
+    margin: 6px 0 0;
+    padding-left: 18px;
+    font-size: 0.9em;
+}
+
+.incidencia-contenedores li + li {
+    margin-top: 4px;
+}
