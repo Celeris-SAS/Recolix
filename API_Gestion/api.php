@@ -191,6 +191,7 @@ $config = [
                 'getZonasCriticas',
                 'getVolumenPorTipoYPeriodo',
                 'getIncidenciasDetalle',
+                'getTiemposResolucion',
                 'getFrecuenciaRecoleccion',
                 'getCapacidadVertederos',
                 'getClasificacionResiduos',

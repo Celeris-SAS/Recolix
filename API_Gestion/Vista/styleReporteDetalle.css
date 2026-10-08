@@ -139,6 +139,34 @@ a { text-decoration: none; color: inherit; }
 .btn-primary:hover { filter: brightness(1.1); }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; filter: none; }
 
+.export-menu { position: relative; }
+.export-menu-list {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    min-width: 100%;
+    background: #fff;
+    border: 1px solid #e4e2de;
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+    z-index: 20;
+}
+.export-menu-list[hidden] { display: none; }
+.export-menu-list button {
+    display: block;
+    width: 100%;
+    padding: 9px 20px;
+    background: none;
+    border: none;
+    text-align: left;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--moss);
+    cursor: pointer;
+}
+.export-menu-list button:hover { background: #f4f3f0; }
+
 
 .table-section { padding: 0 32px 32px; flex: 1; }
 

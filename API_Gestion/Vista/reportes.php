@@ -161,6 +161,14 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 </div>
             </a>
 
+            <a href="reporteDetalle.php?tipo=tiempos_resolucion" class="card-operar">
+                <div class="card-content">
+                    <div class="card-icon"><img src="img/refresh.svg" alt="" class="card-svg-icon"></div>
+                    <h3><?= t('reportes.card_tiempos_resolucion_titulo') ?></h3>
+                    <p><?= t('reportes.card_tiempos_resolucion_desc') ?></p>
+                </div>
+            </a>
+
             <a href="reporteDetalle.php?tipo=frecuencia" class="card-operar">
                 <div class="card-content">
                     <div class="card-icon"><img src="../../API_Recoleccion/Vista/img/truck-svgrepo-com.svg" alt="" class="card-svg-icon"></div>

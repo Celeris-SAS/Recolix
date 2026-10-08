@@ -6,6 +6,7 @@ $tiposReporte = [
     'zonas_criticas' => ['titulo' => 'reportes.card_zonas_criticas_titulo', 'desc' => 'reportes.zonas_hero_sub',    'implementado' => true],
     'volumen'        => ['titulo' => 'reportes.card_volumen_titulo',        'desc' => 'reportes.card_volumen_desc',        'implementado' => true],
     'incidencias'    => ['titulo' => 'reportes.card_incidencias_titulo',    'desc' => 'reportes.card_incidencias_desc',    'implementado' => true],
+    'tiempos_resolucion' => ['titulo' => 'reportes.card_tiempos_resolucion_titulo', 'desc' => 'reportes.card_tiempos_resolucion_desc', 'implementado' => true],
     'frecuencia'     => ['titulo' => 'reportes.card_frecuencia_titulo',     'desc' => 'reportes.card_frecuencia_desc',     'implementado' => true],
     'vertederos'     => ['titulo' => 'reportes.card_vertederos_titulo',     'desc' => 'reportes.card_vertederos_desc',     'implementado' => true],
     'clasificacion'  => ['titulo' => 'reportes.card_clasificacion_titulo',  'desc' => 'reportes.card_clasificacion_desc',  'implementado' => true],
@@ -26,6 +27,7 @@ $config = $tiposReporte[$tipo];
 $reportEndpoints = [
     'volumen'       => 'getVolumenPorTipoYPeriodo',
     'incidencias'   => 'getIncidenciasDetalle',
+    'tiempos_resolucion' => 'getTiemposResolucion',
     'frecuencia'    => 'getFrecuenciaRecoleccion',
     'vertederos'    => 'getCapacidadVertederos',
     'clasificacion' => 'getClasificacionResiduos',
@@ -48,6 +50,14 @@ $reportColumns = [
         ['key' => 'estado',          'label' => 'reportes.incidencias_th_estado',    'fmt' => 'estadoIncidencia'],
         ['key' => 'fechaApertura',   'label' => 'reportes.incidencias_th_fecha',     'fmt' => 'text'],
         ['key' => 'horasResolucion', 'label' => 'reportes.incidencias_th_horas',     'fmt' => 'horas'],
+    ],
+    'tiempos_resolucion' => [
+        ['key' => 'cuadrilla',           'label' => 'reportes.tiempos_th_cuadrilla', 'fmt' => 'cuadrilla'],
+        ['key' => 'municipio',           'label' => 'reportes.tiempos_th_municipio', 'fmt' => 'text'],
+        ['key' => 'incidenciasCerradas', 'label' => 'reportes.tiempos_th_cerradas',  'fmt' => 'num'],
+        ['key' => 'horasPromedio',       'label' => 'reportes.tiempos_th_promedio',  'fmt' => 'horasDec'],
+        ['key' => 'horasMinimo',         'label' => 'reportes.tiempos_th_minimo',    'fmt' => 'horasDec'],
+        ['key' => 'horasMaximo',         'label' => 'reportes.tiempos_th_maximo',    'fmt' => 'horasDec'],
     ],
     'frecuencia' => [
         ['key' => 'circuito',            'label' => 'reportes.frecuencia_th_circuito',   'fmt' => 'text'],
@@ -110,6 +120,7 @@ $reportColumns = [
 $reportEmptyKey = [
     'volumen'       => 'reportes.volumen_empty',
     'incidencias'   => 'reportes.incidencias_empty',
+    'tiempos_resolucion' => 'reportes.tiempos_empty',
     'frecuencia'    => 'reportes.frecuencia_empty',
     'vertederos'    => 'reportes.vertederos_empty',
     'clasificacion' => 'reportes.clasificacion_empty',
@@ -189,7 +200,29 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
     <div class="detalle-toolbar">
         <a href="reportes.php" class="detalle-volver">&larr; <?= t('reportes.detalle_volver') ?></a>
         <?php if ($config['implementado']): ?>
-            <button class="btn-primary" id="btnExportar" onclick="exportarCsv()"><?= t('reportes.detalle_btn_exportar') ?></button>
+            <div class="export-menu" id="exportMenu">
+                <button class="btn-primary" id="btnExportar" type="button" aria-haspopup="true" aria-expanded="false"><?= t('reportes.detalle_btn_exportar') ?> &#9662;</button>
+                <div class="export-menu-list" id="exportMenuList" hidden>
+                    <button type="button" onclick="exportarCsv('pdf')">PDF</button>
+                    <button type="button" onclick="exportarCsv('csv')">CSV</button>
+                </div>
+            </div>
+            <script>
+                (function () {
+                    const menu = document.getElementById('exportMenu');
+                    const btn  = document.getElementById('btnExportar');
+                    const list = document.getElementById('exportMenuList');
+                    function cerrar() { list.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
+                    btn.addEventListener('click', e => {
+                        e.stopPropagation();
+                        list.hidden = !list.hidden;
+                        btn.setAttribute('aria-expanded', String(!list.hidden));
+                    });
+                    list.addEventListener('click', cerrar);
+                    document.addEventListener('click', e => { if (!menu.contains(e.target)) cerrar(); });
+                    document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrar(); });
+                })();
+            </script>
         <?php endif; ?>
     </div>
 
@@ -234,7 +267,7 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
                 <button type="button" class="filtro-btn" data-rango="mes"><?= t('reportes.usuarios_filtro_mes') ?></button>
                 <button type="button" class="filtro-btn filtro-btn-active" data-rango="siempre"><?= t('reportes.usuarios_filtro_siempre') ?></button>
             </div>
-            <?php elseif (in_array($tipo, ['volumen', 'incidencias', 'camiones'], true)): ?>
+            <?php elseif (in_array($tipo, ['volumen', 'incidencias', 'tiempos_resolucion', 'camiones'], true)): ?>
             <div class="filtro-rango" id="filtroRango">
                 <button type="button" class="filtro-btn" data-rango="hoy"><?= t('reportes.filtro_hoy') ?></button>
                 <button type="button" class="filtro-btn" data-rango="semana"><?= t('reportes.filtro_semana') ?></button>
@@ -386,8 +419,8 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
             }
         }
 
-        function exportarCsv() {
-            window.location.href = 'exportarReporte.php?tipo=zonas_criticas';
+        function exportarCsv(formato = 'csv') {
+            window.location.href = `exportarReporte.php?tipo=zonas_criticas&formato=${formato}`;
         }
 
         document.addEventListener('DOMContentLoaded', cargarZonasCriticas);
@@ -531,6 +564,13 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
                         return LABEL_SIN_DATOS;
                     }
                     return `${formatearNumero(valor)} h`;
+                case 'horasDec':
+                    if (valor === null || valor === undefined) {
+                        return LABEL_SIN_DATOS;
+                    }
+                    return `${new Intl.NumberFormat('es-UY', { maximumFractionDigits: 1 }).format(valor)} h`;
+                case 'cuadrilla':
+                    return `#${valor}`;
                 case 'tipoResiduo':
                     return `<span class="color-dot" style="background:${colorParaTipoResiduo(row.color)}"></span>${valor ?? ''}`;
                 case 'reciclableBadge': {
@@ -574,7 +614,7 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
             }
         }
 
-        const TIPOS_CON_FILTRO_RANGO = ['usuarios', 'volumen', 'incidencias', 'camiones'];
+        const TIPOS_CON_FILTRO_RANGO = ['usuarios', 'volumen', 'incidencias', 'tiempos_resolucion', 'camiones'];
         let currentRango = 'siempre';
         let currentTurno = '';
         let currentDia   = '';
@@ -628,8 +668,8 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
             }
         }
 
-        function exportarCsv() {
-            let url = `exportarReporte.php?tipo=${REPORT_TIPO}`;
+        function exportarCsv(formato = 'csv') {
+            let url = `exportarReporte.php?tipo=${REPORT_TIPO}&formato=${formato}`;
             if (TIPOS_CON_FILTRO_RANGO.includes(REPORT_TIPO)) {
                 url += `&rango=${currentRango}`;
             } else if (REPORT_TIPO === 'frecuencia') {

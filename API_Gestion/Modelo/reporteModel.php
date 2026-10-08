@@ -284,6 +284,37 @@ class ReporteModel {
         return $filas;
     }
 
+    // RF61: por cuadrilla, cantidad de incidencias resueltas en el rango y tiempo de resolución
+    // (horas entre apertura y cierre) promedio, mínimo y máximo.
+    public function getTiemposResolucion($rango = 'siempre') {
+        $sql = "SELECT i.id_cuadrilla, m.nombre AS municipio,
+                       COUNT(*) AS incidenciasCerradas,
+                       AVG(TIMESTAMPDIFF(MINUTE, i.fecha_apertura, i.fecha_cierre)) / 60 AS horasPromedio,
+                       MIN(TIMESTAMPDIFF(MINUTE, i.fecha_apertura, i.fecha_cierre)) / 60 AS horasMinimo,
+                       MAX(TIMESTAMPDIFF(MINUTE, i.fecha_apertura, i.fecha_cierre)) / 60 AS horasMaximo
+                FROM INCIDENCIA i
+                JOIN CUADRILLA cu ON cu.id_cuadrilla = i.id_cuadrilla
+                JOIN MUNICIPIO m ON m.id_municipio = cu.id_municipio
+                WHERE i.estado = 'resuelta' AND i.fecha_cierre IS NOT NULL
+                      AND " . $this->condicionRangoFechaHora('i.fecha_apertura', $rango) . "
+                GROUP BY i.id_cuadrilla, m.nombre
+                ORDER BY horasPromedio ASC, i.id_cuadrilla ASC";
+
+        $result = mysqli_query($this->conn->getConexion(), $sql);
+        $filas = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $filas[] = [
+                'cuadrilla'           => (int) $row['id_cuadrilla'],
+                'municipio'           => $row['municipio'],
+                'incidenciasCerradas' => (int) $row['incidenciasCerradas'],
+                'horasPromedio'       => round((float) $row['horasPromedio'], 1),
+                'horasMinimo'         => round((float) $row['horasMinimo'], 1),
+                'horasMaximo'         => round((float) $row['horasMaximo'], 1),
+            ];
+        }
+        return $filas;
+    }
+
     private function condicionTurno($turno) {
         if (!$turno) return '1=1';
         $turnoEsc = mysqli_real_escape_string($this->conn->getConexion(), $turno);

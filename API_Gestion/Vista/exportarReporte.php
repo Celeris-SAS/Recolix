@@ -7,6 +7,7 @@ $tiposExportables = [
     'zonas_criticas' => 'Zonas Urbanas Críticas',
     'volumen'        => 'Volumen de Residuos',
     'incidencias'    => 'Tiempos de Resolución de Incidencias',
+    'tiempos_resolucion' => 'Tiempos de Resolución por Cuadrilla',
     'frecuencia'     => 'Frecuencia de Recolección',
     'vertederos'     => 'Capacidad de los Vertederos',
     'clasificacion'  => 'Clasificación y Reciclaje de Residuos',
@@ -25,13 +26,13 @@ if (!isset($tiposExportables[$tipo])) {
 
 $reporteModel = new ReporteModel();
 
-$nombreArchivo = 'recolix_' . $tipo . '_' . date('Ymd_His') . '.csv';
+$formato = ($_GET['formato'] ?? 'csv') === 'pdf' ? 'pdf' : 'csv';
 
-header('Content-Type: text/csv; charset=utf-8');
-header('Content-Disposition: attachment; filename="' . $nombreArchivo . '"');
-
-$salida = fopen('php://output', 'w');
-fwrite($salida, "\xEF\xBB\xBF");
+// Cada fila (la primera es el encabezado) se acumula y se vuelca al final como CSV o PDF.
+$tabla = [];
+$emitir = function (array $fila) use (&$tabla) {
+    $tabla[] = $fila;
+};
 
 $motivoLabels     = ['incidencias' => 'Incidencias', 'desbordados' => 'Desbordados', 'ambos' => 'Ambos'];
 $tipoIncLabels     = ['rotura' => 'Rotura', 'desborde' => 'Desborde', 'falta_recoleccion' => 'Falta de recolección', 'vandalismo' => 'Vandalismo', 'otro' => 'Otro'];
@@ -58,9 +59,9 @@ $siNo              = function ($valor) {
 
 switch ($tipo) {
     case 'zonas_criticas':
-        fputcsv($salida, ['Municipio', 'Departamento', 'Incidencias (últ. mes)', 'Contenedores Desbordados', 'Total Contenedores', '% Desbordado', 'Motivo']);
+        $emitir(['Municipio', 'Departamento', 'Incidencias (últ. mes)', 'Contenedores Desbordados', 'Total Contenedores', '% Desbordado', 'Motivo']);
         foreach ($reporteModel->getZonasCriticas() as $fila) {
-            fputcsv($salida, [
+            $emitir([
                 $fila['municipio'], $fila['departamento'], $fila['incidenciasMes'], $fila['desbordados'],
                 $fila['totalContenedores'], $fila['porcentaje'] . '%', $motivoLabels[$fila['motivo']] ?? $fila['motivo'],
             ]);
@@ -74,9 +75,9 @@ switch ($tipo) {
         } else {
             $rango = 'siempre';
         }
-        fputcsv($salida, ['Período', 'Tipo de Residuo', 'Total (kg)', 'Recolecciones']);
+        $emitir(['Período', 'Tipo de Residuo', 'Total (kg)', 'Recolecciones']);
         foreach ($reporteModel->getVolumenPorTipoYPeriodo($rango) as $fila) {
-            fputcsv($salida, [$fila['periodo'], $fila['tipoResiduo'], $fila['totalKg'], $fila['totalRecolecciones']]);
+            $emitir([$fila['periodo'], $fila['tipoResiduo'], $fila['totalKg'], $fila['totalRecolecciones']]);
         }
         break;
 
@@ -88,13 +89,29 @@ switch ($tipo) {
             $rango = 'siempre';
         }
         $estadoIncLabels = ['abierta' => 'Abierta', 'asignada' => 'Asignada', 'resuelta' => 'Resuelta'];
-        fputcsv($salida, ['Tipo', 'Prioridad', 'Estado', 'Fecha Apertura', 'Tiempo de Resolución (h)']);
+        $emitir(['Tipo', 'Prioridad', 'Estado', 'Fecha Apertura', 'Tiempo de Resolución (h)']);
         foreach ($reporteModel->getIncidenciasDetalle($rango) as $fila) {
-            fputcsv($salida, [
+            $emitir([
                 $tipoIncLabels[$fila['tipo']] ?? $fila['tipo'],
                 $prioridadLabels[$fila['prioridad']] ?? $fila['prioridad'],
                 $estadoIncLabels[$fila['estado']] ?? $fila['estado'],
                 $fila['fechaApertura'], $fila['horasResolucion'] ?? '',
+            ]);
+        }
+        break;
+
+    case 'tiempos_resolucion':
+        $rangosValidos = ['hoy', 'semana', 'mes', 'siempre'];
+        if (in_array($_GET['rango'] ?? '', $rangosValidos, true)) {
+            $rango = $_GET['rango'];
+        } else {
+            $rango = 'siempre';
+        }
+        $emitir(['Cuadrilla', 'Municipio', 'Incidencias Cerradas', 'Tiempo Promedio (h)', 'Tiempo Mínimo (h)', 'Tiempo Máximo (h)']);
+        foreach ($reporteModel->getTiemposResolucion($rango) as $fila) {
+            $emitir([
+                $fila['cuadrilla'], $fila['municipio'], $fila['incidenciasCerradas'],
+                $fila['horasPromedio'], $fila['horasMinimo'], $fila['horasMaximo'],
             ]);
         }
         break;
@@ -111,9 +128,9 @@ switch ($tipo) {
         } else {
             $dia = null;
         }
-        fputcsv($salida, ['Circuito', 'Código', 'Municipio', 'Turno', 'Frecuencia', 'Levantes Completados']);
+        $emitir(['Circuito', 'Código', 'Municipio', 'Turno', 'Frecuencia', 'Levantes Completados']);
         foreach ($reporteModel->getFrecuenciaRecoleccion($turno, $dia) as $fila) {
-            fputcsv($salida, [
+            $emitir([
                 $fila['circuito'], $fila['codigo'], $fila['municipio'], $fila['turno'],
                 $fila['frecuencia'], $fila['levantesCompletados'],
             ]);
@@ -121,9 +138,9 @@ switch ($tipo) {
         break;
 
     case 'vertederos':
-        fputcsv($salida, ['Nombre', 'Municipio', 'Tipo', 'Estado', 'Capacidad Total', 'Ocupación Actual', '% Ocupación']);
+        $emitir(['Nombre', 'Municipio', 'Tipo', 'Estado', 'Capacidad Total', 'Ocupación Actual', '% Ocupación']);
         foreach ($reporteModel->getCapacidadVertederos() as $fila) {
-            fputcsv($salida, [
+            $emitir([
                 $fila['nombre'], $fila['municipio'], $tipoVertLabels[$fila['tipo']] ?? $fila['tipo'],
                 $estadoVertLabels[$fila['estado']] ?? $fila['estado'], $fila['capacidadTotal'],
                 $fila['ocupacionActual'], $fila['porcentaje'] . '%',
@@ -132,9 +149,9 @@ switch ($tipo) {
         break;
 
     case 'clasificacion':
-        fputcsv($salida, ['Tipo de Residuo', 'Reciclable', 'Total Contenedores', 'Funcionales', 'Total Recolectado (kg)', '% del Total']);
+        $emitir(['Tipo de Residuo', 'Reciclable', 'Total Contenedores', 'Funcionales', 'Total Recolectado (kg)', '% del Total']);
         foreach ($reporteModel->getClasificacionResiduos() as $fila) {
-            fputcsv($salida, [
+            $emitir([
                 $fila['tipoResiduo'], $siNo($fila['reciclable']), $fila['totalContenedores'],
                 $fila['funcionales'], $fila['totalKg'], $fila['porcentaje'] . '%',
             ]);
@@ -142,10 +159,10 @@ switch ($tipo) {
         break;
 
     case 'reciclaje':
-        fputcsv($salida, ['Concepto', 'Total Recolectado (kg)', '% del Total']);
+        $emitir(['Concepto', 'Total Recolectado (kg)', '% del Total']);
         $etiquetasReciclaje = ['reciclable' => 'Reciclable', 'no_reciclable' => 'No reciclable', 'total' => 'Total'];
         foreach ($reporteModel->getReciclaje() as $fila) {
-            fputcsv($salida, [$etiquetasReciclaje[$fila['concepto']] ?? $fila['concepto'], $fila['totalKg'], $fila['porcentaje'] . '%']);
+            $emitir([$etiquetasReciclaje[$fila['concepto']] ?? $fila['concepto'], $fila['totalKg'], $fila['porcentaje'] . '%']);
         }
         break;
 
@@ -156,9 +173,9 @@ switch ($tipo) {
         } else {
             $rango = 'siempre';
         }
-        fputcsv($salida, ['Período', 'Nuevos Usuarios', 'Vecinos', 'Operarios', 'Cuadrillas', 'Administradores']);
+        $emitir(['Período', 'Nuevos Usuarios', 'Vecinos', 'Operarios', 'Cuadrillas', 'Administradores']);
         foreach ($reporteModel->getEvolucionUsuarios($rango) as $fila) {
-            fputcsv($salida, [
+            $emitir([
                 $fila['periodo'], $fila['nuevosUsuarios'], $fila['vecinos'],
                 $fila['operarios'], $fila['cuadrillas'], $fila['administradores'],
             ]);
@@ -172,9 +189,9 @@ switch ($tipo) {
         } else {
             $rango = 'siempre';
         }
-        fputcsv($salida, ['Matrícula', 'Modelo', 'Tipo de Carga', 'Estado', 'Viajes Completados', 'Recolectado (kg)', 'Horas en Ruta', 'Horas en Mantenimiento']);
+        $emitir(['Matrícula', 'Modelo', 'Tipo de Carga', 'Estado', 'Viajes Completados', 'Recolectado (kg)', 'Horas en Ruta', 'Horas en Mantenimiento']);
         foreach ($reporteModel->getDisponibilidadCamiones($rango) as $fila) {
-            fputcsv($salida, [
+            $emitir([
                 $fila['matricula'], $fila['modelo'], $fila['tipoCarga'],
                 $estadoCamionLabels[$fila['estado']] ?? $fila['estado'],
                 $fila['viajesCompletados'], $fila['kgRecolectados'],
@@ -184,9 +201,9 @@ switch ($tipo) {
         break;
 
     case 'maquinaria':
-        fputcsv($salida, ['Nombre', 'Tipo', 'Centro de Acopio', 'Municipio', 'Estado', 'Fecha de Adquisición']);
+        $emitir(['Nombre', 'Tipo', 'Centro de Acopio', 'Municipio', 'Estado', 'Fecha de Adquisición']);
         foreach ($reporteModel->getDisponibilidadMaquinaria() as $fila) {
-            fputcsv($salida, [
+            $emitir([
                 $fila['nombre'], $tipoMaquinariaLabels[$fila['tipo']] ?? $fila['tipo'],
                 $fila['centro'], $fila['municipio'],
                 $estadoMaquinariaLabels[$fila['estado']] ?? $fila['estado'], $fila['fechaAdquisicion'],
@@ -195,6 +212,29 @@ switch ($tipo) {
         break;
 }
 
+$nombreArchivo = 'recolix_' . $tipo . '_' . date('Ymd_His') . '.' . $formato;
+
+if ($formato === 'pdf') {
+    require_once __DIR__ . '/../Util/PdfTabla.php';
+    $encabezados = array_map('strval', array_shift($tabla) ?? []);
+    $filasPdf = array_map(function ($fila) {
+        return array_map(function ($v) { return (string) ($v ?? ''); }, $fila);
+    }, $tabla);
+    $pdf = (new PdfTabla($tiposExportables[$tipo], 'Generado el ' . date('d/m/Y H:i'), $encabezados, $filasPdf))->generar();
+    header('Content-Type: application/pdf');
+    header('Content-Disposition: attachment; filename="' . $nombreArchivo . '"');
+    header('Content-Length: ' . strlen($pdf));
+    echo $pdf;
+    exit;
+}
+
+header('Content-Type: text/csv; charset=utf-8');
+header('Content-Disposition: attachment; filename="' . $nombreArchivo . '"');
+$salida = fopen('php://output', 'w');
+fwrite($salida, "\xEF\xBB\xBF");
+foreach ($tabla as $fila) {
+    fputcsv($salida, $fila);
+}
 fclose($salida);
 
 $conn      = new conexion();

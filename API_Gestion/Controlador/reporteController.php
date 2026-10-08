@@ -60,6 +60,10 @@ class reporteController {
         return $this->reporteModel->getIncidenciasDetalle($rango);
     }
 
+    public function getTiemposResolucion($rango = 'siempre') {
+        return $this->reporteModel->getTiemposResolucion($rango);
+    }
+
     public function getFrecuenciaRecoleccion($turno = null, $dia = null) {
         return $this->reporteModel->getFrecuenciaRecoleccion($turno, $dia);
     }
