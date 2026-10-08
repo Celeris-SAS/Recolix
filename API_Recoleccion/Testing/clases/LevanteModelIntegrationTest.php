@@ -440,4 +440,56 @@ final class LevanteModelIntegrationTest extends DbTestCase
 
         $this->assertCount(1, $vencidos);
     }
+
+    // RF53: un levante de hoy solo vence cuando terminó el turno del circuito.
+    public function testObtenerPendientesVencidosRespetaElFinDelTurnoDelCircuito(): void
+    {
+        $model = new LevanteModel();
+        $camionId = $this->crearCamion();
+        $cuadrillaId = $this->crearCuadrilla();
+        $manana = $this->crearRuta($this->crearCircuito(null, ['turno' => 'mañana']), ['activa' => 1, 'actividad' => 'barrido']);
+        $noche = $this->crearRuta($this->crearCircuito(null, ['turno' => 'noche']), ['activa' => 1, 'actividad' => 'barrido']);
+
+        $conn = $this->conn();
+        foreach ([$manana, $noche] as $rutaId) {
+            $conn->query("INSERT INTO levante (id_camion, id_cuadrilla, id_ruta, hora_salida, hora_levante, estado) VALUES ($camionId, $cuadrillaId, $rutaId, NOW(), CURDATE(), 'pendiente')");
+        }
+        $pasoElTurnoManana = (bool) $conn->query("SELECT CURTIME() >= '12:00:00' AS v")->fetch_assoc()['v'];
+
+        $rutasVencidas = array_map('intval', array_column($model->obtenerPendientesVencidos(), 'id_ruta'));
+
+        $this->assertSame($pasoElTurnoManana, in_array($manana, $rutasVencidas, true));
+        $this->assertNotContains($noche, $rutasVencidas, 'El turno noche termina a las 24 h');
+    }
+
+    public function testObtenerPendientesVencidosNoIncluyeLevantesCompletados(): void
+    {
+        $model = new LevanteModel();
+        $rutaId = $this->crearRuta($this->crearCircuito(), ['activa' => 1, 'actividad' => 'barrido']);
+        $camionId = $this->crearCamion();
+        $cuadrillaId = $this->crearCuadrilla();
+        $this->conn()->query("INSERT INTO levante (id_camion, id_cuadrilla, id_ruta, hora_salida, hora_levante, estado) VALUES ($camionId, $cuadrillaId, $rutaId, NOW(), DATE_SUB(CURDATE(), INTERVAL 3 DAY), 'completado')");
+
+        $this->assertSame([], $model->obtenerPendientesVencidos());
+    }
+
+    // ERR-01: si falla un paso (acá, un destino inexistente en la base) no queda nada a medias.
+    public function testPlanificarLevanteDeshaceTodoSiFallaUnPaso(): void
+    {
+        $model = new LevanteModel();
+        $rutaId = $this->crearRuta($this->crearCircuito(), ['activa' => 1, 'actividad' => 'barrido']);
+        $camionId = $this->crearCamion();
+        $cuadrillaId = $this->crearCuadrilla();
+        $this->conn()->query('DROP TABLE centro_levante');
+
+        try {
+            $model->planificarLevante($rutaId, $camionId, $cuadrillaId, date('Y-m-d H:i:s'), date('Y-m-d'), $this->crearCentro());
+            $this->fail('Debía fallar al no existir centro_levante');
+        } catch (Throwable $e) {
+            $this->assertSame(0, $this->contarFilas('levante'));
+            $this->assertSame('disponible', $this->conn()->query("SELECT estado FROM camion WHERE id_camion = $camionId")->fetch_assoc()['estado']);
+        } finally {
+            $this->conn()->query('CREATE TABLE centro_levante (id_levante int(11) NOT NULL, id_centro int(11) NOT NULL) ENGINE=InnoDB');
+        }
+    }
 }

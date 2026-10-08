@@ -902,5 +902,6 @@ function mostrarToast(msg, tipo = 'info') {
 }
 </script>
 
+    <script src="../../Backoffice/js/paginacion.js"></script>
 </body>
 </html>

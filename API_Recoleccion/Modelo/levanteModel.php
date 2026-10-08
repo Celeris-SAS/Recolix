@@ -197,41 +197,51 @@ class LevanteModel {
             }
         }
 
-        $stmt = mysqli_prepare($this->conn->getConexion(), "
-            INSERT INTO levante (id_camion, id_cuadrilla, id_ruta, hora_salida, hora_levante, estado)
-            VALUES (?, ?, ?, ?, ?, 'pendiente')
-        ");
-        mysqli_stmt_bind_param($stmt, "iisss", $idCamion, $idCuadrilla, $idRuta, $horaSalida, $horaLevante);
-        mysqli_stmt_execute($stmt);
-        $idLevante = mysqli_insert_id($this->conn->getConexion());
-        mysqli_stmt_close($stmt);
+        // Todo o nada: si falla un paso (por ej. el centro de disposición final) no queda un
+        // levante a medias ni el camión en depósito.
+        $conexion = $this->conn->getConexion();
+        mysqli_begin_transaction($conexion);
+        try {
+            $stmt = mysqli_prepare($this->conn->getConexion(), "
+                INSERT INTO levante (id_camion, id_cuadrilla, id_ruta, hora_salida, hora_levante, estado)
+                VALUES (?, ?, ?, ?, ?, 'pendiente')
+            ");
+            mysqli_stmt_bind_param($stmt, "iisss", $idCamion, $idCuadrilla, $idRuta, $horaSalida, $horaLevante);
+            mysqli_stmt_execute($stmt);
+            $idLevante = mysqli_insert_id($this->conn->getConexion());
+            mysqli_stmt_close($stmt);
 
-        $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE camion SET estado = 'en_deposito' WHERE id_camion = ?");
-        mysqli_stmt_bind_param($stmt, "i", $idCamion);
-        mysqli_stmt_execute($stmt);
-        mysqli_stmt_close($stmt);
-
-        // Planificar un levante para una cuadrilla implica que esa cuadrilla queda
-        // asignada a la ruta (ruta_cuadrilla), aunque nadie la haya asignado antes a
-        // mano: si no, el panel de la cuadrilla no mostraría la ruta ni sus contenedores.
-        $stmt = mysqli_prepare($this->conn->getConexion(), "
-            INSERT IGNORE INTO ruta_cuadrilla (id_ruta, id_cuadrilla) VALUES (?, ?)
-        ");
-        mysqli_stmt_bind_param($stmt, "ii", $idRuta, $idCuadrilla);
-        mysqli_stmt_execute($stmt);
-        mysqli_stmt_close($stmt);
-
-        $this->precargarContenedores($idLevante, $idRuta);
-        $this->asignarIncidenciasDeLaRuta($idRuta, $idCuadrilla);
-
-        // El destino final elegido queda registrado en centro_levante (no en camion_centro,
-        // que es solo para ingresos ya ocurridos con peso y fecha reales): una vez que el
-        // camión termina la ruta, debe dirigirse a este centro como última parada.
-        if ($idCentro !== null) {
-            $stmt = mysqli_prepare($this->conn->getConexion(), "INSERT INTO centro_levante (id_levante, id_centro) VALUES (?, ?)");
-            mysqli_stmt_bind_param($stmt, "ii", $idLevante, $idCentro);
+            $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE camion SET estado = 'en_deposito' WHERE id_camion = ?");
+            mysqli_stmt_bind_param($stmt, "i", $idCamion);
             mysqli_stmt_execute($stmt);
             mysqli_stmt_close($stmt);
+
+            // Planificar un levante para una cuadrilla implica que esa cuadrilla queda
+            // asignada a la ruta (ruta_cuadrilla), aunque nadie la haya asignado antes a
+            // mano: si no, el panel de la cuadrilla no mostraría la ruta ni sus contenedores.
+            $stmt = mysqli_prepare($this->conn->getConexion(), "
+                INSERT IGNORE INTO ruta_cuadrilla (id_ruta, id_cuadrilla) VALUES (?, ?)
+            ");
+            mysqli_stmt_bind_param($stmt, "ii", $idRuta, $idCuadrilla);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_close($stmt);
+
+            $this->precargarContenedores($idLevante, $idRuta);
+            $this->asignarIncidenciasDeLaRuta($idRuta, $idCuadrilla);
+
+            // El destino final elegido queda registrado en centro_levante (no en camion_centro,
+            // que es solo para ingresos ya ocurridos con peso y fecha reales): una vez que el
+            // camión termina la ruta, debe dirigirse a este centro como última parada.
+            if ($idCentro !== null) {
+                $stmt = mysqli_prepare($this->conn->getConexion(), "INSERT INTO centro_levante (id_levante, id_centro) VALUES (?, ?)");
+                mysqli_stmt_bind_param($stmt, "ii", $idLevante, $idCentro);
+                mysqli_stmt_execute($stmt);
+                mysqli_stmt_close($stmt);
+            }
+            mysqli_commit($conexion);
+        } catch (Throwable $e) {
+            mysqli_rollback($conexion);
+            throw $e;
         }
 
         return $this->getLevante($idLevante);
@@ -545,16 +555,27 @@ class LevanteModel {
         ];
     }
 
+    // RF53: levantes pendientes o en curso cuyo turno ya terminó. Un levante de un día anterior
+    // siempre está vencido; el de hoy, recién cuando pasó la hora de fin del turno del circuito
+    // (mañana 12:00, tarde 18:00, noche 24:00; sin turno definido, al terminar el día).
     public function obtenerPendientesVencidos() {
         $stmt = mysqli_prepare($this->conn->getConexion(), "
-            SELECT l.*, r.nombre AS ruta_nombre, r.actividad, c.matricula
+            SELECT l.*, r.nombre AS ruta_nombre, r.actividad, c.matricula, ci.turno
             FROM levante l
             JOIN ruta_recoleccion r ON r.id_ruta = l.id_ruta
+            LEFT JOIN circuito ci ON ci.id_circuito = r.id_circuito
             LEFT JOIN camion c ON c.id_camion = l.id_camion
             WHERE l.estado IN ('pendiente', 'en_curso')
               AND r.actividad IS NOT NULL
               AND l.hora_levante IS NOT NULL
-              AND l.hora_levante < CURDATE()
+              AND (
+                    l.hora_levante < CURDATE()
+                    OR (l.hora_levante = CURDATE() AND CURTIME() >= CASE ci.turno
+                            WHEN 'mañana' THEN '12:00:00'
+                            WHEN 'tarde'  THEN '18:00:00'
+                            ELSE '23:59:59'
+                        END)
+              )
             ORDER BY l.hora_levante ASC
         ");
         mysqli_stmt_execute($stmt);

@@ -138,17 +138,17 @@ require_once __DIR__ . '/../../i18n/i18n.php';
     <div class="resumen-card">
         <div class="resumen-card-head"><span class="resumen-dot activas"></span><h3><?= t('rutas.resumen_activas') ?></h3></div>
         <div class="resumen-count" id="countActivas">—</div>
-        <ul class="resumen-list" id="listaActivas"></ul>
+        <ul class="resumen-list" id="listaActivas" data-paginar-lista="compacta"></ul>
     </div>
     <div class="resumen-card">
         <div class="resumen-card-head"><span class="resumen-dot pendientes"></span><h3><?= t('rutas.resumen_pendientes') ?></h3></div>
         <div class="resumen-count" id="countPendientes">—</div>
-        <ul class="resumen-list" id="listaPendientes"></ul>
+        <ul class="resumen-list" id="listaPendientes" data-paginar-lista="compacta"></ul>
     </div>
     <div class="resumen-card">
         <div class="resumen-card-head"><span class="resumen-dot prioritarias"></span><h3><?= t('rutas.resumen_prioritarias') ?></h3></div>
         <p class="resumen-hint"><?= t('rutas.resumen_prioritarias_hint') ?></p>
-        <ul class="resumen-list" id="listaPrioritarias"></ul>
+        <ul class="resumen-list" id="listaPrioritarias" data-paginar-lista="compacta"></ul>
     </div>
 </section>
 
@@ -279,7 +279,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
         </div>
         <div class="levante-historial">
             <h4><?= t('rutas.levantes_de_ruta') ?></h4>
-            <ul class="resumen-list" id="levantesRuta"></ul>
+            <ul class="resumen-list" id="levantesRuta" data-paginar-lista="compacta"></ul>
         </div>
     </div>
 </div>
@@ -967,5 +967,6 @@ function mostrarToast(msg, tipo = 'info') {
 }
 </script>
 
+    <script src="../../Backoffice/js/paginacion.js"></script>
 </body>
 </html>

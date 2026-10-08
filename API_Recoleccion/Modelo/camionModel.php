@@ -271,7 +271,34 @@ class CamionModel
         }
         mysqli_stmt_close($stmt);
 
+        foreach ($this->obtenerEstados($id) as $cambio) {
+            $historial[] = [
+                'tipo_evento' => 'estado',
+                'descripcion' => ($cambio['estado_anterior'] ?? '—') . ' → ' . $cambio['estado_nuevo'],
+                'fecha'       => $cambio['fecha_cambio'],
+            ];
+        }
+
+        usort($historial, function ($a, $b) {
+            return strcmp((string) $b['fecha'], (string) $a['fecha']);
+        });
+
         return $historial;
+    }
+
+    // RF36: cambios de estado del camión (los registran los triggers de la tabla camion).
+    public function obtenerEstados($id)
+    {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT estado_anterior, estado_nuevo, fecha_cambio FROM camion_estado_historial WHERE id_camion = ? ORDER BY fecha_cambio DESC, id DESC");
+        mysqli_stmt_bind_param($stmt, "i", $id);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $estados = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $estados[] = $row;
+        }
+        mysqli_stmt_close($stmt);
+        return $estados;
     }
 
     public function obtenerEnOperativa()

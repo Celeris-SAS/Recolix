@@ -306,7 +306,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                     <select id="estado" class="form-input">
                         <option value="disponible"><?= t('camiones.opt_estado_disponible') ?></option>
                         <option value="en_ruta"><?= t('camiones.opt_estado_en_ruta') ?></option>
-                        <option value="en_mantenimiento"><?= t('camiones.opt_estado_en_mantenimiento') ?></option>
+                        <option value="en_mantenimiento" disabled><?= t('camiones.opt_estado_en_mantenimiento') ?></option>
                         <option value="de_baja"><?= t('camiones.opt_estado_de_baja') ?></option>
                         <option value="en_deposito"><?= t('camiones.opt_estado_en_deposito') ?></option>
                     </select>
@@ -1279,5 +1279,6 @@ function mostrarToast(msg, tipo = 'info') {
 }
 </script>
 
+    <script src="../../Backoffice/js/paginacion.js"></script>
 </body>
 </html>

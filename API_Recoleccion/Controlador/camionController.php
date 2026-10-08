@@ -117,6 +117,9 @@
             if (!in_array($estado, $this->estadosValidos)) {
                 throw new InvalidArgumentException("Estado no válido. Valores: " . implode(', ', $this->estadosValidos));
             }
+            if ($estado === 'en_mantenimiento') {
+                throw new InvalidArgumentException($this->mensajeMantenimientoManual());
+            }
             if ($this->camionModel->getMatricula($matricula)) {
                 throw new InvalidArgumentException("Ya hay un camion con la matricula " . $matricula . ".");
             }
@@ -141,7 +144,18 @@
             if (!in_array($estado, $this->estadosValidos)) {
                 throw new InvalidArgumentException("Estado no válido. Valores: " . implode(', ', $this->estadosValidos));
             }
+            // Un camión solo pasa a en_mantenimiento al registrar o programar un mantenimiento.
+            if ($estado === 'en_mantenimiento') {
+                $actual = $this->camionModel->getCamion($id);
+                if ($actual && $actual['estado'] !== 'en_mantenimiento') {
+                    throw new InvalidArgumentException($this->mensajeMantenimientoManual());
+                }
+            }
             return $this->camionModel->updateCamion($id, $matricula, $tipoCarga, $capacidad, $anio, $modelo, $estado);
+        }
+
+        private function mensajeMantenimientoManual() {
+            return "No se puede pasar un camión a mantenimiento cambiando su estado: registrá o programá un mantenimiento.";
         }
 
         public function deleteCamion($id) {
@@ -206,6 +220,11 @@
         public function obtenerHistorial($camionId) {
             $camionId = $this->validarId($camionId);
             return $this->camionModel->obtenerHistorial($camionId);
+        }
+
+        public function obtenerEstados($camionId) {
+            $camionId = $this->validarId($camionId);
+            return $this->camionModel->obtenerEstados($camionId);
         }
 
         public function obtenerEnOperativa() {

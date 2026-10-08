@@ -151,6 +151,7 @@ function toggleMobileMenu() {
     document.getElementById('navMobile').classList.toggle('nav-mobile-open');
 }
 </script>
+    <script src="js/paginacion.js"></script>
 </body>
 
 </html>

@@ -63,8 +63,8 @@ require_once __DIR__ . '/../../i18n/i18n.php';
     </header>
 
     <section class="hero">
-        <h1 class="hero-title">Incidencias</h1>
-        <p class="hero-sub">Seguí el ciclo de vida de las incidencias reportadas y asigná cuadrillas de recolección.</p>
+        <h1 class="hero-title"><?= t('incidencias.hero_title') ?></h1>
+        <p class="hero-sub"><?= t('incidencias.hero_sub') ?></p>
     </section>
 
     <section class="cards-section">
@@ -73,36 +73,36 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             <div class="card-operar" onclick="toggleFiltros()">
                 <div class="card-content">
                     <div class="card-icon"><img src="img/loupe.svg" alt="" class="card-svg-icon"></div>
-                    <h3>Filtrar</h3>
-                    <p>Buscar por estado, tipo o prioridad...</p>
-                    <button class="card-btn">Filtrar</button>
+                    <h3><?= t('incidencias.card_filtrar_titulo') ?></h3>
+                    <p><?= t('incidencias.card_filtrar_desc') ?></p>
+                    <button class="card-btn"><?= t('incidencias.card_filtrar_titulo') ?></button>
                 </div>
             </div>
 
             <div class="card-operar" onclick="toggleBusquedaId()">
                 <div class="card-content">
                     <div class="card-icon"><img src="img/question.svg" alt="" class="card-svg-icon"></div>
-                    <h3>Buscar por ID</h3>
-                    <p>Obtener una incidencia específica</p>
-                    <button class="card-btn">Buscar</button>
+                    <h3><?= t('incidencias.card_buscar_titulo') ?></h3>
+                    <p><?= t('incidencias.card_buscar_desc') ?></p>
+                    <button class="card-btn"><?= t('incidencias.btn_buscar') ?></button>
                 </div>
             </div>
 
             <div class="card-operar" onclick="listarUrgentes()">
                 <div class="card-content">
                     <div class="card-icon"><img src="img/refresh.svg" alt="" class="card-svg-icon"></div>
-                    <h3>Ver Urgentes</h3>
-                    <p>Contenedores que requieren recolección urgente</p>
-                    <button class="card-btn">Ver Urgentes</button>
+                    <h3><?= t('incidencias.card_urgentes_titulo') ?></h3>
+                    <p><?= t('incidencias.card_urgentes_desc') ?></p>
+                    <button class="card-btn"><?= t('incidencias.card_urgentes_titulo') ?></button>
                 </div>
             </div>
 
             <div class="card-operar" onclick="toggleAsignar()">
                 <div class="card-content">
                     <div class="card-icon"><img src="img/plus.svg" alt="" class="card-svg-icon"></div>
-                    <h3>Asignar Cuadrilla</h3>
-                    <p>Asignar cuadrilla a una incidencia abierta</p>
-                    <button class="card-btn">Asignar</button>
+                    <h3><?= t('incidencias.card_asignar_titulo') ?></h3>
+                    <p><?= t('incidencias.card_asignar_desc') ?></p>
+                    <button class="card-btn"><?= t('incidencias.btn_asignar') ?></button>
                 </div>
             </div>
 
@@ -112,65 +112,65 @@ require_once __DIR__ . '/../../i18n/i18n.php';
     <section class="control-bar" id="filterBar" style="display:none">
         <div class="control-inner">
             <select id="filtroCampo" class="ctrl-select" onchange="actualizarFiltroValor()">
-                <option value="">— Filtrar por —</option>
-                <option value="estado">Estado</option>
-                <option value="tipo">Tipo</option>
-                <option value="prioridad">Prioridad</option>
+                <option value=""><?= t('incidencias.filtrar_por') ?></option>
+                <option value="estado"><?= t('incidencias.th_estado') ?></option>
+                <option value="tipo"><?= t('incidencias.th_tipo') ?></option>
+                <option value="prioridad"><?= t('incidencias.th_prioridad') ?></option>
             </select>
             <select id="filtroValorSelect" class="ctrl-select" style="display:none"></select>
-            <button class="btn-primary" onclick="aplicarFiltro()">Aplicar</button>
-            <button class="btn-secondary" onclick="listarIncidencias()">Limpiar</button>
+            <button class="btn-primary" onclick="aplicarFiltro()"><?= t('incidencias.btn_aplicar') ?></button>
+            <button class="btn-secondary" onclick="listarIncidencias()"><?= t('incidencias.btn_limpiar') ?></button>
         </div>
     </section>
 
     <section class="control-bar" id="searchBar" style="display:none">
         <div class="control-inner">
-            <input type="number" id="buscarId" class="ctrl-input" placeholder="ID de la incidencia..." min="1"
+            <input type="number" id="buscarId" class="ctrl-input" placeholder="<?= htmlspecialchars(t('incidencias.placeholder_id_incidencia')) ?>" min="1"
                 style="max-width:200px">
-            <button class="btn-primary" onclick="buscarPorId()">Buscar</button>
-            <button class="btn-secondary" onclick="listarIncidencias()">Ver Todas</button>
+            <button class="btn-primary" onclick="buscarPorId()"><?= t('incidencias.btn_buscar') ?></button>
+            <button class="btn-secondary" onclick="listarIncidencias()"><?= t('incidencias.btn_ver_todas') ?></button>
         </div>
     </section>
 
     <section class="control-bar" id="asignarBar" style="display:none">
         <div class="control-inner">
-            <input type="number" id="asignarBarraIncidenciaId" class="ctrl-input" placeholder="ID de la incidencia..."
+            <input type="number" id="asignarBarraIncidenciaId" class="ctrl-input" placeholder="<?= htmlspecialchars(t('incidencias.placeholder_id_incidencia')) ?>"
                 min="1" style="max-width:200px">
-            <input type="number" id="asignarBarraIdCuadrilla" class="ctrl-input" placeholder="ID de cuadrilla..."
+            <input type="number" id="asignarBarraIdCuadrilla" class="ctrl-input" placeholder="<?= htmlspecialchars(t('incidencias.placeholder_id_cuadrilla')) ?>"
                 min="1" style="max-width:200px">
-            <button class="btn-primary" onclick="asignarCuadrillaDesdeBarra()">Asignar</button>
-            <button class="btn-secondary" onclick="ocultarControles()">Cancelar</button>
+            <button class="btn-primary" onclick="asignarCuadrillaDesdeBarra()"><?= t('incidencias.btn_asignar') ?></button>
+            <button class="btn-secondary" onclick="ocultarControles()"><?= t('incidencias.btn_cancelar') ?></button>
         </div>
     </section>
 
     <section class="table-section">
         <div class="table-header">
-            <h2 class="table-title" id="tableTitle">Incidencias</h2>
+            <h2 class="table-title" id="tableTitle"><?= t('incidencias.hero_title') ?></h2>
             <span class="table-count" id="tableCount"></span>
-            <button class="btn-secondary" id="btnMostrarTodas" style="display:none" onclick="listarIncidencias()">Mostrar Todas</button>
+            <button class="btn-secondary" id="btnMostrarTodas" style="display:none" onclick="listarIncidencias()"><?= t('incidencias.btn_mostrar_todas') ?></button>
         </div>
         <div class="table-wrapper">
             <table>
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Tipo</th>
-                        <th>Foto</th>
-                        <th>Prioridad</th>
-                        <th>Urgente</th>
-                        <th>Estado</th>
-                        <th>Cuadrilla</th>
-                        <th>Apertura</th>
-                        <th>Acciones</th>
+                        <th><?= t('incidencias.th_id') ?></th>
+                        <th><?= t('incidencias.th_tipo') ?></th>
+                        <th><?= t('incidencias.th_foto') ?></th>
+                        <th><?= t('incidencias.th_prioridad') ?></th>
+                        <th><?= t('incidencias.th_urgente') ?></th>
+                        <th><?= t('incidencias.th_estado') ?></th>
+                        <th><?= t('incidencias.th_cuadrilla') ?></th>
+                        <th><?= t('incidencias.th_apertura') ?></th>
+                        <th><?= t('incidencias.th_acciones') ?></th>
                     </tr>
                 </thead>
                 <tbody id="incidenciasBody"></tbody>
             </table>
             <div id="noResultados" class="empty-state" style="display:none">
-                Sin resultados para mostrar.
+                <?= t('incidencias.sin_resultados') ?>
             </div>
             <div id="loadingState" class="loading-state">
-                Cargando...
+                <?= t('incidencias.cargando') ?>
             </div>
         </div>
     </section>
@@ -178,20 +178,20 @@ require_once __DIR__ . '/../../i18n/i18n.php';
     <div class="modal-overlay" id="modalAsignar" style="display:none" onclick="onOverlayClick(event,'modalAsignar')">
         <div class="modal modal-sm">
             <div class="modal-header">
-                <h3>Asignar cuadrilla</h3>
+                <h3><?= t('incidencias.modal_asignar_titulo') ?></h3>
                 <button class="modal-close" onclick="cerrarModalAsignar()">✕</button>
             </div>
             <form id="asignarForm" onsubmit="guardarAsignacion(event)">
                 <input type="hidden" id="asignarIncidenciaId">
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="asignarIdCuadrilla">ID de cuadrilla</label>
+                        <label for="asignarIdCuadrilla"><?= t('incidencias.label_id_cuadrilla') ?></label>
                         <input type="number" id="asignarIdCuadrilla" class="form-input" placeholder="1" min="1" required>
                     </div>
                 </div>
                 <div class="modal-actions">
-                    <button type="button" class="btn-secondary" onclick="cerrarModalAsignar()">Cancelar</button>
-                    <button type="submit" class="btn-primary">Asignar</button>
+                    <button type="button" class="btn-secondary" onclick="cerrarModalAsignar()"><?= t('incidencias.btn_cancelar') ?></button>
+                    <button type="submit" class="btn-primary"><?= t('incidencias.btn_asignar') ?></button>
                 </div>
             </form>
         </div>
@@ -200,15 +200,15 @@ require_once __DIR__ . '/../../i18n/i18n.php';
     <div class="modal-overlay" id="modalCerrar" style="display:none" onclick="onOverlayClick(event,'modalCerrar')">
         <div class="modal modal-sm">
             <div class="modal-header">
-                <h3>Cerrar incidencia</h3>
+                <h3><?= t('incidencias.cerrar_incidencia') ?></h3>
                 <button class="modal-close" onclick="cerrarModalCerrar()">✕</button>
             </div>
             <p class="delete-msg">
-                ¿Confirmás resolver la incidencia <strong id="cerrarIncidenciaId"></strong>? Esta acción no se puede deshacer.
+                <?= t('incidencias.confirmar_cierre_pre') ?> <strong id="cerrarIncidenciaId"></strong><?= t('incidencias.confirmar_cierre_post') ?>
             </p>
             <div class="modal-actions">
-                <button class="btn-secondary" onclick="cerrarModalCerrar()">Cancelar</button>
-                <button class="btn-danger" onclick="confirmarCierre()">Cerrar incidencia</button>
+                <button class="btn-secondary" onclick="cerrarModalCerrar()"><?= t('incidencias.btn_cancelar') ?></button>
+                <button class="btn-danger" onclick="confirmarCierre()"><?= t('incidencias.cerrar_incidencia') ?></button>
             </div>
         </div>
     </div>
@@ -216,24 +216,24 @@ require_once __DIR__ . '/../../i18n/i18n.php';
     <div class="modal-overlay" id="modalContenedores" style="display:none" onclick="onOverlayClick(event,'modalContenedores')">
         <div class="modal">
             <div class="modal-header">
-                <h3>Contenedores vinculados — Incidencia <span id="contenedoresIncidenciaId"></span></h3>
+                <h3><?= t('incidencias.modal_contenedores_titulo') ?> <span id="contenedoresIncidenciaId"></span></h3>
                 <button class="modal-close" onclick="cerrarModalContenedores()">✕</button>
             </div>
             <div class="table-wrapper">
                 <table>
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Calle</th>
-                            <th>Nº Puerta</th>
-                            <th>Estado</th>
-                            <th>Llenado</th>
+                            <th><?= t('incidencias.th_id') ?></th>
+                            <th><?= t('incidencias.th_calle') ?></th>
+                            <th><?= t('incidencias.th_puerta') ?></th>
+                            <th><?= t('incidencias.th_estado') ?></th>
+                            <th><?= t('incidencias.th_llenado') ?></th>
                         </tr>
                     </thead>
                     <tbody id="contenedoresVinculadosBody"></tbody>
                 </table>
                 <div id="contenedoresVinculadosVacio" class="empty-state" style="display:none">
-                    Esta incidencia no tiene contenedores vinculados.
+                    <?= t('incidencias.sin_contenedores') ?>
                 </div>
             </div>
         </div>
@@ -242,12 +242,12 @@ require_once __DIR__ . '/../../i18n/i18n.php';
     <div class="modal-overlay" id="modalFoto" style="display:none" onclick="onOverlayClick(event,'modalFoto')">
         <div class="modal modal-sm">
             <div class="modal-header">
-                <h3>Foto — Incidencia <span id="fotoIncidenciaId"></span></h3>
+                <h3><?= t('incidencias.modal_foto_titulo') ?> <span id="fotoIncidenciaId"></span></h3>
                 <button class="modal-close" onclick="cerrarModalFoto()">✕</button>
             </div>
-            <img id="fotoIncidenciaImg" src="" alt="Foto de la incidencia" class="modal-foto-img">
+            <img id="fotoIncidenciaImg" src="" alt="<?= htmlspecialchars(t('incidencias.foto_alt')) ?>" class="modal-foto-img">
             <div class="modal-actions">
-                <button class="btn-secondary" onclick="cerrarModalFoto()">Volver</button>
+                <button class="btn-secondary" onclick="cerrarModalFoto()"><?= t('incidencias.btn_volver') ?></button>
             </div>
         </div>
     </div>
@@ -261,21 +261,22 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                     <img src="logoRecolix.png" alt="Recolix" class="footer-logo-img">
                     <span class="footer-logo-name">Recolix</span>
                 </div>
-                <p>Plataforma de gestión de residuos urbanos para Montevideo.</p>
+                <p><?= t('common.footer_desc') ?></p>
             </div>
             <div class="footer-col">
-                <h3>Navegación</h3>
+                <h3><?= t('common.footer_navegacion') ?></h3>
                 <ul>
-                    <li><a href="../../LandingPage/index_LandingPage.html">Página principal</a></li>
-                    <li><a href="../../LandingPage/mapa.html">Mapa público</a></li>
+                    <li><a href="../../LandingPage/index_LandingPage.html"><?= t('backoffice.footer_pagina_principal') ?></a></li>
+                    <li><a href="../../LandingPage/mapa.html"><?= t('backoffice.footer_mapa_publico') ?></a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-hr"></div>
-        <p class="footer-copy">&copy; 2026 Recolix. Todos los derechos reservados.</p>
+        <p class="footer-copy"><?= t('backoffice.footer_copyright') ?></p>
     </footer>
 
     <script>
+        const I18N = <?= json_encode(array_combine(['th_id', 'th_tipo', 'th_foto', 'th_prioridad', 'th_urgente', 'th_estado', 'th_cuadrilla', 'th_apertura', 'th_acciones', 'tipo_rotura', 'tipo_desborde', 'tipo_falta_recoleccion', 'tipo_vandalismo', 'tipo_otro', 'prioridad_baja', 'prioridad_media', 'prioridad_alta', 'prioridad_critica', 'estado_abierta', 'estado_asignada', 'estado_en_curso', 'estado_resuelta', 'si', 'no', 'resultado', 'resultados', 'titulo_todas', 'titulo_abiertas', 'titulo_urgentes', 'titulo_una', 'titulo_filtro', 'api_error', 'ingresa_id', 'no_encontrada', 'selecciona_filtro', 'selecciona_valor', 'valor_minimo', 'cuadrilla_asignada', 'error_asignar', 'incidencia_resuelta', 'error_cerrar', 'error_contenedores', 'ingresa_id_incidencia', 'cuadrilla_invalida', 'ver_contenedores', 'ver_foto', 'foto_alt', 'modal_asignar_titulo', 'cerrar_incidencia', 'locale'], array_map(function ($k) { return t('incidencias.' . $k); }, ['th_id', 'th_tipo', 'th_foto', 'th_prioridad', 'th_urgente', 'th_estado', 'th_cuadrilla', 'th_apertura', 'th_acciones', 'tipo_rotura', 'tipo_desborde', 'tipo_falta_recoleccion', 'tipo_vandalismo', 'tipo_otro', 'prioridad_baja', 'prioridad_media', 'prioridad_alta', 'prioridad_critica', 'estado_abierta', 'estado_asignada', 'estado_en_curso', 'estado_resuelta', 'si', 'no', 'resultado', 'resultados', 'titulo_todas', 'titulo_abiertas', 'titulo_urgentes', 'titulo_una', 'titulo_filtro', 'api_error', 'ingresa_id', 'no_encontrada', 'selecciona_filtro', 'selecciona_valor', 'valor_minimo', 'cuadrilla_asignada', 'error_asignar', 'incidencia_resuelta', 'error_cerrar', 'error_contenedores', 'ingresa_id_incidencia', 'cuadrilla_invalida', 'ver_contenedores', 'ver_foto', 'foto_alt', 'modal_asignar_titulo', 'cerrar_incidencia', 'locale'])), JSON_UNESCAPED_UNICODE) ?>;
         const API_BASE = '/recolix/API_Gestion';
         let toastTimeout;
         let reglas = {};
@@ -283,21 +284,21 @@ require_once __DIR__ . '/../../i18n/i18n.php';
         let vistaActual = 'todas';
 
         const LABELS_TIPO = {
-            rotura: 'Rotura',
-            desborde: 'Desborde',
-            falta_recoleccion: 'Falta de recolección',
-            vandalismo: 'Vandalismo',
-            otro: 'Otro'
+            rotura: I18N.tipo_rotura,
+            desborde: I18N.tipo_desborde,
+            falta_recoleccion: I18N.tipo_falta_recoleccion,
+            vandalismo: I18N.tipo_vandalismo,
+            otro: I18N.tipo_otro
         };
-        const LABELS_PRIORIDAD = { baja: 'Baja', media: 'Media', alta: 'Alta', critica: 'Crítica' };
-        const LABELS_ESTADO = { abierta: 'Abierta', asignada: 'Asignada', en_curso: 'En curso', resuelta: 'Resuelta' };
+        const LABELS_PRIORIDAD = { baja: I18N.prioridad_baja, media: I18N.prioridad_media, alta: I18N.prioridad_alta, critica: I18N.prioridad_critica };
+        const LABELS_ESTADO = { abierta: I18N.estado_abierta, asignada: I18N.estado_asignada, en_curso: I18N.estado_en_curso, resuelta: I18N.estado_resuelta };
 
         function reglasFallback() {
             return {
-                idCuadrilla: { tipo: 'entero', min: 1, label: 'Cuadrilla' },
-                tipo: { valores: Object.keys(LABELS_TIPO), label: 'Tipo' },
-                prioridad: { valores: Object.keys(LABELS_PRIORIDAD), label: 'Prioridad' },
-                estado: { valores: Object.keys(LABELS_ESTADO), label: 'Estado' }
+                idCuadrilla: { tipo: 'entero', min: 1, label: I18N.th_cuadrilla },
+                tipo: { valores: Object.keys(LABELS_TIPO), label: I18N.th_tipo },
+                prioridad: { valores: Object.keys(LABELS_PRIORIDAD), label: I18N.th_prioridad },
+                estado: { valores: Object.keys(LABELS_ESTADO), label: I18N.th_estado }
             };
         }
 
@@ -345,12 +346,12 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 const json = await res.json();
                 if (json.status === 'success') {
                     renderTabla(json.data);
-                    setTableTitle('Todas las Incidencias');
+                    setTableTitle(I18N.titulo_todas);
                 } else {
                     mostrarToast(json.message, 'error');
                 }
             } catch {
-                mostrarToast('Error al conectar con la API', 'error');
+                mostrarToast(I18N.api_error, 'error');
             } finally {
                 setLoading(false);
             }
@@ -366,12 +367,12 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 const json = await res.json();
                 if (json.status === 'success') {
                     renderTabla(json.data);
-                    setTableTitle('Incidencias Abiertas');
+                    setTableTitle(I18N.titulo_abiertas);
                 } else {
                     mostrarToast(json.message, 'error');
                 }
             } catch {
-                mostrarToast('Error al conectar con la API', 'error');
+                mostrarToast(I18N.api_error, 'error');
             } finally {
                 setLoading(false);
             }
@@ -387,12 +388,12 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 const json = await res.json();
                 if (json.status === 'success') {
                     renderTabla(json.data);
-                    setTableTitle('Incidencias Urgentes');
+                    setTableTitle(I18N.titulo_urgentes);
                 } else {
                     mostrarToast(json.message, 'error');
                 }
             } catch {
-                mostrarToast('Error al conectar con la API', 'error');
+                mostrarToast(I18N.api_error, 'error');
             } finally {
                 setLoading(false);
             }
@@ -406,20 +407,20 @@ require_once __DIR__ . '/../../i18n/i18n.php';
 
         async function buscarPorId() {
             const id = document.getElementById('buscarId').value.trim();
-            if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
+            if (!id) { mostrarToast(I18N.ingresa_id, 'warning'); return; }
             setLoading(true);
             try {
                 const res = await fetch(`${API_BASE}/incidencias/${id}`);
                 const json = await res.json();
                 if (json.status === 'success' && json.data) {
                     renderTabla([json.data]);
-                    setTableTitle(`Incidencia #${id}`);
+                    setTableTitle(`${I18N.titulo_una} #${id}`);
                 } else {
                     renderTabla([]);
-                    mostrarToast(json.message || 'Incidencia no encontrada', 'error');
+                    mostrarToast(json.message || I18N.no_encontrada, 'error');
                 }
             } catch {
-                mostrarToast('Error al conectar con la API', 'error');
+                mostrarToast(I18N.api_error, 'error');
             } finally {
                 setLoading(false);
             }
@@ -442,8 +443,8 @@ require_once __DIR__ . '/../../i18n/i18n.php';
         async function aplicarFiltro() {
             const campo = document.getElementById('filtroCampo').value;
             const valor = document.getElementById('filtroValorSelect').value;
-            if (!campo) { mostrarToast('Seleccioná un filtro', 'warning'); return; }
-            if (!valor) { mostrarToast('Seleccioná un valor para el filtro', 'warning'); return; }
+            if (!campo) { mostrarToast(I18N.selecciona_filtro, 'warning'); return; }
+            if (!valor) { mostrarToast(I18N.selecciona_valor, 'warning'); return; }
 
             setLoading(true);
             try {
@@ -452,14 +453,14 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 if (json.status === 'success') {
                     renderTabla(json.data);
                     const labels = { estado: LABELS_ESTADO, tipo: LABELS_TIPO, prioridad: LABELS_PRIORIDAD }[campo];
-                    setTableTitle(`Filtro — ${reglas[campo]?.label || campo}: ${labels[valor] || valor}`);
+                    setTableTitle(`${I18N.titulo_filtro} — ${reglas[campo]?.label || campo}: ${labels[valor] || valor}`);
                     document.getElementById('btnMostrarTodas').style.display = '';
                     vistaActual = 'filtro';
                 } else {
                     mostrarToast(json.message, 'error');
                 }
             } catch {
-                mostrarToast('Error al conectar con la API', 'error');
+                mostrarToast(I18N.api_error, 'error');
             } finally {
                 setLoading(false);
             }
@@ -485,16 +486,16 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             if (!fechaStr) return '—';
             const fecha = new Date(fechaStr.replace(' ', 'T'));
             if (isNaN(fecha)) return fechaStr;
-            return fecha.toLocaleDateString('es-UY', { day: '2-digit', month: '2-digit', year: 'numeric' }) +
-                ' ' + fecha.toLocaleTimeString('es-UY', { hour: '2-digit', minute: '2-digit' });
+            return fecha.toLocaleDateString(I18N.locale, { day: '2-digit', month: '2-digit', year: 'numeric' }) +
+                ' ' + fecha.toLocaleTimeString(I18N.locale, { hour: '2-digit', minute: '2-digit' });
         }
 
         function accionesPorEstado(inc) {
-            const botones = [`<button class="btn-action" data-action="contenedores" data-id="${inc.id_incidencia}" title="Ver contenedores vinculados">🔗</button>`];
+            const botones = [`<button class="btn-action" data-action="contenedores" data-id="${inc.id_incidencia}" title="${I18N.ver_contenedores}">🔗</button>`];
             if (inc.estado === 'abierta') {
-                botones.unshift(`<button class="btn-action" data-action="asignar" data-id="${inc.id_incidencia}" title="Asignar cuadrilla">👷</button>`);
+                botones.unshift(`<button class="btn-action" data-action="asignar" data-id="${inc.id_incidencia}" title="${I18N.modal_asignar_titulo}">👷</button>`);
             } else if (inc.estado === 'en_curso') {
-                botones.unshift(`<button class="btn-action" data-action="cerrar" data-id="${inc.id_incidencia}" title="Cerrar incidencia">✅</button>`);
+                botones.unshift(`<button class="btn-action" data-action="cerrar" data-id="${inc.id_incidencia}" title="${I18N.cerrar_incidencia}">✅</button>`);
             }
             return botones.join('');
         }
@@ -514,26 +515,21 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             }
 
             noRes.style.display = 'none';
-            let sufijoResultado;
-            if (incidenciasActuales.length !== 1) {
-                sufijoResultado = 's';
-            } else {
-                sufijoResultado = '';
-            }
-            count.textContent = `${incidenciasActuales.length} resultado${sufijoResultado}`;
+            const etiquetaResultado = incidenciasActuales.length !== 1 ? I18N.resultados : I18N.resultado;
+            count.textContent = `${incidenciasActuales.length} ${etiquetaResultado}`;
 
             incidenciasActuales.forEach(inc => {
                 let celdaFoto;
                 if (inc.url_imagen) {
-                    celdaFoto = `<button type="button" class="td-thumb-btn" data-action="foto" data-id="${inc.id_incidencia}" title="Ver foto"><img src="${escapeHtml(inc.url_imagen)}" alt="Foto de la incidencia" class="td-thumb"></button>`;
+                    celdaFoto = `<button type="button" class="td-thumb-btn" data-action="foto" data-id="${inc.id_incidencia}" title="${I18N.ver_foto}"><img src="${escapeHtml(inc.url_imagen)}" alt="${I18N.foto_alt}" class="td-thumb"></button>`;
                 } else {
                     celdaFoto = '—';
                 }
                 let celdaUrgente;
                 if (Number(inc.urgencia) === 1) {
-                    celdaUrgente = 'Sí';
+                    celdaUrgente = I18N.si;
                 } else {
-                    celdaUrgente = 'No';
+                    celdaUrgente = I18N.no;
                 }
                 let celdaCuadrilla;
                 if (inc.id_cuadrilla) {
@@ -544,15 +540,15 @@ require_once __DIR__ . '/../../i18n/i18n.php';
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-    <td class="td-id" data-label="ID">${escapeHtml(inc.id_incidencia)}</td>
-    <td data-label="Tipo">${escapeHtml(LABELS_TIPO[inc.tipo] || inc.tipo)}</td>
-    <td data-label="Foto">${celdaFoto}</td>
-    <td data-label="Prioridad"><span class="badge badge-${badgePrioridad(inc.prioridad)}">${escapeHtml(LABELS_PRIORIDAD[inc.prioridad] || inc.prioridad)}</span></td>
-    <td data-label="Urgente">${celdaUrgente}</td>
-    <td data-label="Estado"><span class="badge badge-${badgeEstado(inc.estado)}">${escapeHtml(LABELS_ESTADO[inc.estado] || inc.estado)}</span></td>
-    <td data-label="Cuadrilla">${celdaCuadrilla}</td>
-    <td data-label="Apertura">${formatearFecha(inc.fecha_apertura)}</td>
-    <td class="td-actions" data-label="Acciones">${accionesPorEstado(inc)}</td>
+    <td class="td-id" data-label="${I18N.th_id}">${escapeHtml(inc.id_incidencia)}</td>
+    <td data-label="${I18N.th_tipo}">${escapeHtml(LABELS_TIPO[inc.tipo] || inc.tipo)}</td>
+    <td data-label="${I18N.th_foto}">${celdaFoto}</td>
+    <td data-label="${I18N.th_prioridad}"><span class="badge badge-${badgePrioridad(inc.prioridad)}">${escapeHtml(LABELS_PRIORIDAD[inc.prioridad] || inc.prioridad)}</span></td>
+    <td data-label="${I18N.th_urgente}">${celdaUrgente}</td>
+    <td data-label="${I18N.th_estado}"><span class="badge badge-${badgeEstado(inc.estado)}">${escapeHtml(LABELS_ESTADO[inc.estado] || inc.estado)}</span></td>
+    <td data-label="${I18N.th_cuadrilla}">${celdaCuadrilla}</td>
+    <td data-label="${I18N.th_apertura}">${formatearFecha(inc.fecha_apertura)}</td>
+    <td class="td-actions" data-label="${I18N.th_acciones}">${accionesPorEstado(inc)}</td>
 `;
                 tbody.appendChild(tr);
             });
@@ -575,7 +571,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
 
             const regla = reglas.idCuadrilla;
             if (regla && regla.min !== undefined && idCuadrilla < regla.min) {
-                mostrarToast(`${regla.label} no puede ser menor que ${regla.min}`, 'warning');
+                mostrarToast(I18N.valor_minimo.replace('{campo}', regla.label).replace('{min}', regla.min), 'warning');
                 return;
             }
 
@@ -587,14 +583,14 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 });
                 const json = await res.json();
                 if (json.status === 'success') {
-                    mostrarToast('Cuadrilla asignada', 'success');
+                    mostrarToast(I18N.cuadrilla_asignada, 'success');
                     cerrarModalAsignar();
                     refrescarListado();
                 } else {
                     mostrarToast(json.message, 'error');
                 }
             } catch {
-                mostrarToast('Error al asignar la cuadrilla', 'error');
+                mostrarToast(I18N.error_asignar, 'error');
             }
         }
 
@@ -617,14 +613,14 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 const res = await fetch(`${API_BASE}/incidencias/cerrar/${incidenciaIdParaCerrar}`, { method: 'PUT' });
                 const json = await res.json();
                 if (json.status === 'success') {
-                    mostrarToast('Incidencia resuelta', 'success');
+                    mostrarToast(I18N.incidencia_resuelta, 'success');
                     cerrarModalCerrar();
                     refrescarListado();
                 } else {
                     mostrarToast(json.message, 'error');
                 }
             } catch {
-                mostrarToast('Error al cerrar la incidencia', 'error');
+                mostrarToast(I18N.error_cerrar, 'error');
             }
         }
 
@@ -666,7 +662,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 `;
                 }).join('');
             } catch {
-                mostrarToast('No se pudieron cargar los contenedores vinculados', 'error');
+                mostrarToast(I18N.error_contenedores, 'error');
             }
         }
 
@@ -727,11 +723,11 @@ require_once __DIR__ . '/../../i18n/i18n.php';
         async function asignarCuadrillaDesdeBarra() {
             const id = document.getElementById('asignarBarraIncidenciaId').value.trim();
             const idCuadrilla = parseInt(document.getElementById('asignarBarraIdCuadrilla').value, 10);
-            if (!id) { mostrarToast('Ingresá el ID de la incidencia', 'warning'); return; }
+            if (!id) { mostrarToast(I18N.ingresa_id_incidencia, 'warning'); return; }
 
             const regla = reglas.idCuadrilla;
             if (!idCuadrilla || (regla && regla.min !== undefined && idCuadrilla < regla.min)) {
-                mostrarToast('Ingresá un ID de cuadrilla válido', 'warning');
+                mostrarToast(I18N.cuadrilla_invalida, 'warning');
                 return;
             }
 
@@ -743,14 +739,14 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 });
                 const json = await res.json();
                 if (json.status === 'success') {
-                    mostrarToast('Cuadrilla asignada', 'success');
+                    mostrarToast(I18N.cuadrilla_asignada, 'success');
                     ocultarControles();
                     refrescarListado();
                 } else {
                     mostrarToast(json.message, 'error');
                 }
             } catch {
-                mostrarToast('Error al asignar la cuadrilla', 'error');
+                mostrarToast(I18N.error_asignar, 'error');
             }
         }
 
@@ -787,6 +783,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
         }
     </script>
 
+    <script src="../../Backoffice/js/paginacion.js"></script>
 </body>
 
 </html>

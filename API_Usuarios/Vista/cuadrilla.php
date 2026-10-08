@@ -90,7 +90,7 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             <div class="panel-card">
                 <h2><?= t('cuadrilla.inc_titulo') ?></h2>
                 <p id="incidencias-vacio" hidden><?= t('cuadrilla.inc_vacio') ?></p>
-                <div id="incidencias-lista"></div>
+                <div id="incidencias-lista" data-paginar-lista></div>
             </div>
         </section>
 
@@ -206,7 +206,7 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
                 <!-- Lista de contenedores de la ruta del levante activo: solo estos se pueden registrar -->
                 <div class="contenedores-ruta" id="contenedores-ruta-wrap" hidden>
                     <h3 class="contenedores-ruta-titulo"><?= t('cuadrilla.contenedores_ruta_titulo') ?></h3>
-                    <ul class="contenedores-ruta-list" id="contenedores-ruta-list"></ul>
+                    <ul class="contenedores-ruta-list" id="contenedores-ruta-list" data-paginar-lista></ul>
                 </div>
             </div>
         </section>
@@ -229,7 +229,7 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
                     </div>
                 </div>
 
-                <div class="routes-list" id="routes-list">
+                <div class="routes-list" id="routes-list" data-paginar-lista>
                     <p class="empty-state" id="routes-empty"><?= t('cuadrilla.sin_rutas_asignadas') ?></p>
                 </div>
 
@@ -917,6 +917,7 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
         init();
     </script>
 
+    <script src="../../Backoffice/js/paginacion.js"></script>
 </body>
 
 </html>

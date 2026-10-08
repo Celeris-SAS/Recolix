@@ -208,7 +208,7 @@ if (!isset($_SESSION['ci_usuario'])) {
                 <p class="form-feedback" id="incidenciaFeedback"></p>
             </div>
 
-            <div id="incidenciasLista">
+            <div id="incidenciasLista" data-paginar-lista>
                 <p class="estado-carga"><?= t('vecino.cargando_incidencias') ?></p>
             </div>
         </section>
@@ -220,7 +220,7 @@ if (!isset($_SESSION['ci_usuario'])) {
                     <h2><?= t('vecino.titulo_notificaciones') ?></h2>
                 </div>
             </div>
-            <div id="notificacionesLista">
+            <div id="notificacionesLista" data-paginar-lista>
                 <p class="estado-carga"><?= t('vecino.cargando_notificaciones') ?></p>
             </div>
             <div class="panel-card" id="borrarCuentaConfirm" hidden>
@@ -326,6 +326,7 @@ if (!isset($_SESSION['ci_usuario'])) {
     <script src="../LandingPage/mapaContenedoresBase.js"></script>
     <script src="Vista/vecino.js"></script>
     <script src="Vista/borrarCuenta.js"></script>
+    <script src="../Backoffice/js/paginacion.js"></script>
 </body>
 
 </html>

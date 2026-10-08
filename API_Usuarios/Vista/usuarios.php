@@ -923,6 +923,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
         }
     </script>
 
+    <script src="../../Backoffice/js/paginacion.js"></script>
 </body>
 
 </html>

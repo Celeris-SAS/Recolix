@@ -123,7 +123,7 @@ $_SESSION['usuario']['id_centro'] = $idCentro;
                     </div>
                 </div>
 
-                <div class="ocupacion-list" id="ocupacion-list">
+                <div class="ocupacion-list" id="ocupacion-list" data-paginar-lista>
                     <div class="ocupacion-item" data-tipo="Plástico">
                         <div class="ocupacion-item-header">
                             <span class="tipo-nombre"><?= t('operario.tipo_plastico') ?></span>
@@ -233,7 +233,7 @@ $_SESSION['usuario']['id_centro'] = $idCentro;
                     </div>
                 </div>
 
-                <div class="maquinaria-list" id="maquinaria-list">
+                <div class="maquinaria-list" id="maquinaria-list" data-paginar-lista>
                     <p class="maquinaria-meta" id="maquinaria-cargando"><?= t('operario.maquinaria_cargando') ?></p>
                 </div>
             </div>
@@ -523,5 +523,6 @@ $_SESSION['usuario']['id_centro'] = $idCentro;
         }
     </script>
 
+    <script src="../../Backoffice/js/paginacion.js"></script>
 </body>
 </html>

@@ -32,6 +32,7 @@ abstract class DbTestCase extends RecoleccionTestCase
         'ruta_recoleccion',
         'circuito',
         'cuadrilla',
+        'camion_estado_historial',
         'camion',
         'municipio',
     ];
