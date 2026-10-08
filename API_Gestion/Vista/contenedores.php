@@ -746,21 +746,21 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 const regla = reglas[campo];
                 if (!regla) continue;
                 if (regla.valores && !regla.valores.includes(valor)) {
-                    mostrarToast(`${regla.label} no válido`, 'warning');
+                    mostrarToast(msgValidacion('noValido', campo, regla), 'warning');
                     return;
                 }
                 if (regla.tipo === 'entero' || regla.tipo === 'decimal') {
                     if (isNaN(valor)) {
-                        mostrarToast(`${regla.label} debe ser un número`, 'warning');
+                        mostrarToast(msgValidacion('numero', campo, regla), 'warning');
                         return;
                     }
                     if (regla.min !== undefined && valor < regla.min) {
-                        mostrarToast(`${regla.label} no puede ser menor que ${regla.min}`, 'warning');
+                        mostrarToast(msgValidacion('menor', campo, regla), 'warning');
                         return;
                     }
                 }
                 if (regla.tipo === 'string' && (!valor || valor === '')) {
-                    mostrarToast(`${regla.label} es requerido`, 'warning');
+                    mostrarToast(msgValidacion('requerido', campo, regla), 'warning');
                     return;
                 }
             }
@@ -1223,6 +1223,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
         }
     </script>
 
+    <?php include __DIR__ . '/../../i18n/validacion_js.php'; ?>
     <script src="../../Backoffice/js/paginacion.js"></script>
 </body>
 

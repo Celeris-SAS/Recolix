@@ -64,8 +64,8 @@ require_once __DIR__ . '/../../i18n/i18n.php';
 
 <!-- ── HERO (ENCABEZADO) ───────────────────────────────────────────── -->
 <section class="hero">
-    <h1 class="hero-title">Cuadrillas</h1>
-    <p class="hero-sub">Gestioná las cuadrillas de recolección de residuos.</p>
+    <h1 class="hero-title"><?= t('cuadrillas.hero_title') ?></h1>
+    <p class="hero-sub"><?= t('cuadrillas.hero_sub') ?></p>
 </section>
 
 <!-- ── TARJETAS ─────────────────────────────────────────────────────── -->
@@ -75,45 +75,45 @@ require_once __DIR__ . '/../../i18n/i18n.php';
         <div class="card-operar" onclick="abrirModalAgregar()">
             <div class="card-content">
                 <div class="card-icon"><img src="img/plus.svg" alt="" class="card-svg-icon"></div>
-                <h3>Agregar Cuadrilla</h3>
-                <p>Registrar una nueva cuadrilla</p>
-                <button class="card-btn">Agregar</button>
+                <h3><?= t('cuadrillas.card_agregar_titulo') ?></h3>
+                <p><?= t('cuadrillas.card_agregar_desc') ?></p>
+                <button class="card-btn"><?= t('cuadrillas.btn_agregar') ?></button>
             </div>
         </div>
 
         <div class="card-operar" onclick="toggleFiltros()">
             <div class="card-content">
                 <div class="card-icon"><img src="img/loupe.svg" alt="" class="card-svg-icon"></div>
-                <h3>Filtrar</h3>
-                <p>Buscar por estado o municipio...</p>
-                <button class="card-btn">Filtrar</button>
+                <h3><?= t('cuadrillas.card_filtrar_titulo') ?></h3>
+                <p><?= t('cuadrillas.card_filtrar_desc') ?></p>
+                <button class="card-btn"><?= t('cuadrillas.card_filtrar_titulo') ?></button>
             </div>
         </div>
 
         <div class="card-operar" onclick="toggleBusquedaId()">
             <div class="card-content">
                 <div class="card-icon"><img src="img/question.svg" alt="" class="card-svg-icon"></div>
-                <h3>Buscar por ID</h3>
-                <p>Obtener una cuadrilla específica</p>
-                <button class="card-btn">Buscar</button>
+                <h3><?= t('cuadrillas.card_buscar_titulo') ?></h3>
+                <p><?= t('cuadrillas.card_buscar_desc') ?></p>
+                <button class="card-btn"><?= t('cuadrillas.btn_buscar') ?></button>
             </div>
         </div>
 
         <div class="card-operar" onclick="toggleModificar()">
             <div class="card-content">
                 <div class="card-icon"><img src="img/refresh.svg" alt="" class="card-svg-icon"></div>
-                <h3>Modificar Cuadrilla</h3>
-                <p>Editar datos de una cuadrilla existente</p>
-                <button class="card-btn">Modificar</button>
+                <h3><?= t('cuadrillas.card_modificar_titulo') ?></h3>
+                <p><?= t('cuadrillas.card_modificar_desc') ?></p>
+                <button class="card-btn"><?= t('cuadrillas.btn_modificar') ?></button>
             </div>
         </div>
 
         <div class="card-operar" onclick="toggleDarDeBaja()">
             <div class="card-content">
                 <div class="card-icon"><img src="img/minus.svg" alt="" class="card-svg-icon"></div>
-                <h3>Dar de Baja</h3>
-                <p>Desactivar una cuadrilla del registro</p>
-                <button class="card-btn">Dar de Baja</button>
+                <h3><?= t('cuadrillas.card_baja_titulo') ?></h3>
+                <p><?= t('cuadrillas.card_baja_desc') ?></p>
+                <button class="card-btn"><?= t('cuadrillas.card_baja_titulo') ?></button>
             </div>
         </div>
 
@@ -124,15 +124,15 @@ require_once __DIR__ . '/../../i18n/i18n.php';
 <section class="control-bar" id="filterBar" style="display:none">
     <div class="control-inner">
         <select id="filtroTipo" class="ctrl-select" onchange="actualizarFiltroValor()">
-            <option value="">— Filtrar por —</option>
-            <option value="estado">Estado</option>
-            <option value="municipio">Municipio</option>
-            <option value="disponibilidad">Activas</option>
+            <option value=""><?= t('cuadrillas.filtrar_por') ?></option>
+            <option value="estado"><?= t('cuadrillas.th_estado') ?></option>
+            <option value="municipio"><?= t('cuadrillas.th_municipio') ?></option>
+            <option value="disponibilidad"><?= t('cuadrillas.opt_activas') ?></option>
         </select>
-        <input type="text" id="filtroValor" class="ctrl-input" placeholder="Valor del filtro..." style="display:none">
+        <input type="text" id="filtroValor" class="ctrl-input" placeholder="<?= htmlspecialchars(t('cuadrillas.placeholder_valor_filtro')) ?>" style="display:none">
         <select id="filtroValorSelect" class="ctrl-select" style="display:none"></select>
-        <button class="btn-primary" onclick="aplicarFiltro()">Aplicar</button>
-        <button class="btn-secondary" onclick="listarCuadrillas()">Limpiar</button>
+        <button class="btn-primary" onclick="aplicarFiltro()"><?= t('cuadrillas.btn_aplicar') ?></button>
+        <button class="btn-secondary" onclick="listarCuadrillas()"><?= t('cuadrillas.btn_limpiar') ?></button>
     </div>
 </section>
 
@@ -140,9 +140,9 @@ require_once __DIR__ . '/../../i18n/i18n.php';
 <section class="control-bar" id="searchBar" style="display:none">
     <div class="control-inner">
         <input type="number" id="buscarId" class="ctrl-input"
-               placeholder="ID de la cuadrilla..." min="1" style="max-width:200px">
-        <button class="btn-primary" onclick="buscarPorId()">Buscar</button>
-        <button class="btn-secondary" onclick="listarCuadrillas()">Ver Todas</button>
+               placeholder="<?= htmlspecialchars(t('cuadrillas.placeholder_id_cuadrilla')) ?>" min="1" style="max-width:200px">
+        <button class="btn-primary" onclick="buscarPorId()"><?= t('cuadrillas.btn_buscar') ?></button>
+        <button class="btn-secondary" onclick="listarCuadrillas()"><?= t('cuadrillas.btn_ver_todas') ?></button>
     </div>
 </section>
 
@@ -150,16 +150,16 @@ require_once __DIR__ . '/../../i18n/i18n.php';
 <section class="control-bar" id="modificarBar" style="display:none">
     <div class="control-inner">
         <input type="number" id="modificarId" class="ctrl-input"
-               placeholder="ID de la cuadrilla..." min="1" style="max-width:140px">
+               placeholder="<?= htmlspecialchars(t('cuadrillas.placeholder_id_cuadrilla')) ?>" min="1" style="max-width:140px">
         <select id="modificarCampo" class="ctrl-select" onchange="actualizarPlaceholderModificar()">
-            <option value="">— Campo —</option>
-            <option value="municipio">Municipio</option>
-            <option value="estado">Estado</option>
+            <option value=""><?= t('cuadrillas.opt_campo') ?></option>
+            <option value="municipio"><?= t('cuadrillas.th_municipio') ?></option>
+            <option value="estado"><?= t('cuadrillas.th_estado') ?></option>
         </select>
-        <input type="text" id="modificarValor" class="ctrl-input" style="display:none" placeholder="Seleccioná un campo...">
+        <input type="text" id="modificarValor" class="ctrl-input" style="display:none" placeholder="<?= htmlspecialchars(t('cuadrillas.placeholder_selecciona_campo')) ?>">
         <select id="modificarValorSelect" class="ctrl-select" style="display:none"></select>
-        <button class="btn-primary" onclick="modificarCuadrilla()">Modificar</button>
-        <button class="btn-secondary" onclick="ocultarControles()">Cancelar</button>
+        <button class="btn-primary" onclick="modificarCuadrilla()"><?= t('cuadrillas.btn_modificar') ?></button>
+        <button class="btn-secondary" onclick="ocultarControles()"><?= t('cuadrillas.btn_cancelar') ?></button>
     </div>
 </section>
 
@@ -167,35 +167,35 @@ require_once __DIR__ . '/../../i18n/i18n.php';
 <section class="control-bar" id="deleteBar" style="display:none">
     <div class="control-inner">
         <input type="number" id="deleteId" class="ctrl-input"
-               placeholder="ID de la cuadrilla a dar de baja..." min="1" style="max-width:260px">
-        <button class="btn-danger" onclick="darDeBajaCuadrilla()">Dar de Baja</button>
-        <button class="btn-secondary" onclick="ocultarControles()">Cancelar</button>
+               placeholder="<?= htmlspecialchars(t('cuadrillas.placeholder_id_baja')) ?>" min="1" style="max-width:260px">
+        <button class="btn-danger" onclick="darDeBajaCuadrilla()"><?= t('cuadrillas.card_baja_titulo') ?></button>
+        <button class="btn-secondary" onclick="ocultarControles()"><?= t('cuadrillas.btn_cancelar') ?></button>
     </div>
 </section>
 
 <!-- ── TABLA ────────────────────────────────────────────────────────── -->
 <section class="table-section">
     <div class="table-header">
-        <h2 class="table-title" id="tableTitle">Cuadrillas</h2>
+        <h2 class="table-title" id="tableTitle"><?= t('cuadrillas.hero_title') ?></h2>
         <span class="table-count" id="tableCount"></span>
     </div>
     <div class="table-wrapper">
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Municipio</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
+                    <th><?= t('cuadrillas.th_id') ?></th>
+                    <th><?= t('cuadrillas.th_municipio') ?></th>
+                    <th><?= t('cuadrillas.th_estado') ?></th>
+                    <th><?= t('cuadrillas.th_acciones') ?></th>
                 </tr>
             </thead>
             <tbody id="cuadrillasBody"></tbody>
         </table>
         <div id="noResultados" class="empty-state" style="display:none">
-            Sin resultados para mostrar.
+            <?= t('cuadrillas.sin_resultados') ?>
         </div>
         <div id="loadingState" class="loading-state">
-            Cargando...
+            <?= t('cuadrillas.cargando') ?>
         </div>
     </div>
 </section>
@@ -205,39 +205,39 @@ require_once __DIR__ . '/../../i18n/i18n.php';
      onclick="onOverlayClick(event,'modalForm')">
     <div class="modal">
         <div class="modal-header">
-            <h3 id="modalTitle">Agregar Cuadrilla</h3>
+            <h3 id="modalTitle"><?= t('cuadrillas.card_agregar_titulo') ?></h3>
             <button class="modal-close" onclick="cerrarModal()">✕</button>
         </div>
         <form id="cuadrillaForm" onsubmit="guardarCuadrilla(event)">
             <input type="hidden" id="cuadrillaId">
             <div class="form-row">
                 <div class="form-group">
-                    <label for="municipio">Municipio</label>
+                    <label for="municipio"><?= t('cuadrillas.th_municipio') ?></label>
                     <select id="municipio" class="form-input" required></select>
                 </div>
                 <div class="form-group">
-                    <label for="estado">Estado</label>
+                    <label for="estado"><?= t('cuadrillas.th_estado') ?></label>
                     <select id="estado" class="form-input">
-                        <option value="activa" selected>Activa</option>
-                        <option value="inactiva">Inactiva</option>
+                        <option value="activa" selected><?= t('cuadrillas.estado_activa') ?></option>
+                        <option value="inactiva"><?= t('cuadrillas.estado_inactiva') ?></option>
                     </select>
                 </div>
             </div>
             <div class="modal-actions">
-                <button type="button" class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
-                <button type="submit" class="btn-primary">Guardar</button>
+                <button type="button" class="btn-secondary" onclick="cerrarModal()"><?= t('cuadrillas.btn_cancelar') ?></button>
+                <button type="submit" class="btn-primary"><?= t('cuadrillas.btn_guardar') ?></button>
             </div>
         </form>
 
         <div class="miembros-section" id="miembrosSection" style="display:none">
-            <h4 class="miembros-title">Usuarios asignados</h4>
+            <h4 class="miembros-title"><?= t('cuadrillas.miembros_titulo') ?></h4>
             <ul class="miembros-list" id="miembrosList"></ul>
             <p class="empty-state miembros-empty" id="miembrosEmpty" style="display:none">
-                Ningún usuario asignado todavía.
+                <?= t('cuadrillas.miembros_vacio') ?>
             </p>
             <div class="miembros-asignar">
                 <select id="miembroSelect" class="form-input"></select>
-                <button type="button" class="btn-secondary" onclick="asignarMiembro()">Asignar</button>
+                <button type="button" class="btn-secondary" onclick="asignarMiembro()"><?= t('cuadrillas.btn_asignar') ?></button>
             </div>
         </div>
     </div>
@@ -248,15 +248,15 @@ require_once __DIR__ . '/../../i18n/i18n.php';
      onclick="onOverlayClick(event,'modalDelete')">
     <div class="modal modal-sm">
         <div class="modal-header">
-            <h3>Dar de baja</h3>
+            <h3><?= t('cuadrillas.modal_baja_titulo') ?></h3>
             <button class="modal-close" onclick="cerrarModalDelete()">✕</button>
         </div>
         <p class="delete-msg">
-            ¿Confirmás dar de baja la cuadrilla <strong id="deleteNombre"></strong>?
+            <?= t('cuadrillas.confirmar_baja_pre') ?> <strong id="deleteNombre"></strong>?
         </p>
         <div class="modal-actions">
-            <button class="btn-secondary" onclick="cerrarModalDelete()">Cancelar</button>
-            <button class="btn-danger" onclick="confirmarDelete()">Eliminar</button>
+            <button class="btn-secondary" onclick="cerrarModalDelete()"><?= t('cuadrillas.btn_cancelar') ?></button>
+            <button class="btn-danger" onclick="confirmarDelete()"><?= t('cuadrillas.btn_eliminar') ?></button>
         </div>
     </div>
 </div>
@@ -272,21 +272,23 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 <img src="../../API_Recoleccion/Vista/logoRecolix.png" alt="Recolix" class="footer-logo-img">
                 <span class="footer-logo-name">Recolix</span>
             </div>
-            <p>Plataforma de gestión de residuos urbanos para Montevideo.</p>
+            <p><?= t('common.footer_desc') ?></p>
         </div>
         <div class="footer-col">
-            <h3>Navegación</h3>
+            <h3><?= t('common.footer_navegacion') ?></h3>
             <ul>
-                <li><a href="../../LandingPage/index_LandingPage.html">Página principal</a></li>
-                <li><a href="../../LandingPage/mapa.html">Mapa público</a></li>
+                <li><a href="../../LandingPage/index_LandingPage.html"><?= t('backoffice.footer_pagina_principal') ?></a></li>
+                <li><a href="../../LandingPage/mapa.html"><?= t('backoffice.footer_mapa_publico') ?></a></li>
             </ul>
         </div>
     </div>
     <div class="footer-hr"></div>
-    <p class="footer-copy">&copy; 2026 Recolix. Todos los derechos reservados.</p>
+    <p class="footer-copy"><?= t('backoffice.footer_copyright') ?></p>
 </footer>
 
+<?php include __DIR__ . '/../../i18n/validacion_js.php'; ?>
 <script>
+const I18N = <?= json_encode(array_combine(['hero_title', 'resultado', 'resultados', 'th_acciones', 'th_municipio', 'th_estado', 'opt_activas', 'seleccionar', 'titulo_todas', 'label_estado', 'label_municipio', 'municipio_num', 'quitar_cuadrilla', 'sin_usuarios_disponibles', 'ya_en_cuadrilla', 'titulo_editar_btn', 'btn_eliminar', 'modal_editar', 'card_agregar_titulo', 'cargando', 'placeholder_selecciona_campo', 'estado_activa', 'estado_inactiva', 'api_error', 'ingresa_id', 'no_encontrada', 'selecciona_filtro', 'selecciona_valor', 'selecciona_municipio', 'selecciona_usuario', 'usuario_asignado', 'usuario_quitado', 'error_cargar_usuarios', 'error_asignar_usuario', 'error_quitar_usuario', 'error_guardar', 'error_eliminar', 'error_modificar', 'baja_ok', 'selecciona_campo_modificar', 'ingresa_nuevo_valor'], array_map(function ($k) { return t('cuadrillas.' . $k); }, ['hero_title', 'th_acciones', 'th_municipio', 'th_estado', 'opt_activas', 'seleccionar', 'titulo_todas', 'label_estado', 'label_municipio', 'municipio_num', 'quitar_cuadrilla', 'sin_usuarios_disponibles', 'ya_en_cuadrilla', 'titulo_editar_btn', 'btn_eliminar', 'modal_editar', 'card_agregar_titulo', 'cargando', 'placeholder_selecciona_campo', 'estado_activa', 'estado_inactiva', 'api_error', 'ingresa_id', 'no_encontrada', 'selecciona_filtro', 'selecciona_valor', 'selecciona_municipio', 'selecciona_usuario', 'usuario_asignado', 'usuario_quitado', 'error_cargar_usuarios', 'error_asignar_usuario', 'error_quitar_usuario', 'error_guardar', 'error_eliminar', 'error_modificar', 'baja_ok', 'selecciona_campo_modificar', 'ingresa_nuevo_valor'])), JSON_UNESCAPED_UNICODE) ?>;
 /*
     GET    /cuadrillas                     → listado completo
     GET    /cuadrillas?estado=activa        → filtro por estado
@@ -365,7 +367,7 @@ async function cargarMunicipios() {
 
 function nombreMunicipio(id) {
     const m = municipios.find(m => String(m.id_municipio) === String(id));
-    return m ? m.nombre : `Municipio #${id}`;
+    return m ? m.nombre : `${I18N.municipio_num}${id}`;
 }
 
 // ── LISTAR TODAS ─────────────────────────────────────────────────────────
@@ -377,12 +379,12 @@ async function listarCuadrillas() {
         const json = await res.json();
         if (json.status === 'success') {
             renderTabla(json.data);
-            setTableTitle('Todas las Cuadrillas');
+            setTableTitle(I18N.titulo_todas);
         } else {
             mostrarToast(json.message, 'error');
         }
     } catch {
-        mostrarToast('Error al conectar con la API', 'error');
+        mostrarToast(I18N.api_error, 'error');
     } finally {
         setLoading(false);
     }
@@ -391,7 +393,7 @@ async function listarCuadrillas() {
 // ── BUSCAR POR ID ─────────────────────────────────────────────────────────
 async function buscarPorId() {
     const id = document.getElementById('buscarId').value.trim();
-    if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
+    if (!id) { mostrarToast(I18N.ingresa_id, 'warning'); return; }
     setLoading(true);
     try {
         const res  = await fetch(`${API_BASE}/cuadrillas/${id}`);
@@ -401,10 +403,10 @@ async function buscarPorId() {
             setTableTitle(`Cuadrilla #${id}`);
         } else {
             renderTabla([]);
-            mostrarToast(json.message || 'Cuadrilla no encontrada', 'error');
+            mostrarToast(json.message || I18N.no_encontrada, 'error');
         }
     } catch {
-        mostrarToast('Error al conectar con la API', 'error');
+        mostrarToast(I18N.api_error, 'error');
     } finally {
         setLoading(false);
     }
@@ -425,11 +427,11 @@ function actualizarFiltroValor() {
     if (sinValor.includes(tipo) || !tipo) return;
 
     if (tipo === 'estado') {
-        select.innerHTML = '<option value="">— Seleccionar —</option>' +
+        select.innerHTML = '<option value="">' + I18N.seleccionar + '</option>' +
             ['activa', 'inactiva'].map(v => `<option value="${v}">${formatearValor(v)}</option>`).join('');
         select.style.display = '';
     } else if (tipo === 'municipio') {
-        select.innerHTML = '<option value="">— Seleccionar —</option>' +
+        select.innerHTML = '<option value="">' + I18N.seleccionar + '</option>' +
             municipios.map(m => `<option value="${m.id_municipio}">${m.nombre}</option>`).join('');
         select.style.display = '';
     }
@@ -439,7 +441,7 @@ async function aplicarFiltro() {
     const tipo   = document.getElementById('filtroTipo').value;
     const input  = document.getElementById('filtroValor');
     const select = document.getElementById('filtroValorSelect');
-    if (!tipo) { mostrarToast('Seleccioná un filtro', 'warning'); return; }
+    if (!tipo) { mostrarToast(I18N.selecciona_filtro, 'warning'); return; }
 
     const sinValor  = ['disponibilidad'];
     const accionMap = { estado: 'filtrarEstado', municipio: 'filtrarMunicipio', disponibilidad: 'filtrarDisponibilidad' };
@@ -449,7 +451,7 @@ async function aplicarFiltro() {
         (select.style.display !== 'none' ? select.value : input.value).trim();
 
     if (!sinValor.includes(tipo) && !valor) {
-        mostrarToast('Seleccioná un valor para el filtro', 'warning');
+        mostrarToast(I18N.selecciona_valor, 'warning');
         return;
     }
 
@@ -464,16 +466,16 @@ async function aplicarFiltro() {
         if (json.status === 'success') {
             renderTabla(json.data);
             const labels = {
-                estado: `Estado: ${formatearValor(valor)}`,
-                municipio: `Municipio: ${nombreMunicipio(valor)}`,
-                disponibilidad: 'Activas'
+                estado: `${I18N.label_estado}: ${formatearValor(valor)}`,
+                municipio: `${I18N.label_municipio}: ${nombreMunicipio(valor)}`,
+                disponibilidad: I18N.opt_activas
             };
             setTableTitle(`Filtro — ${labels[tipo] || tipo}`);
         } else {
             mostrarToast(json.message, 'error');
         }
     } catch {
-        mostrarToast('Error al conectar con la API', 'error');
+        mostrarToast(I18N.api_error, 'error');
     } finally {
         setLoading(false);
     }
@@ -481,7 +483,7 @@ async function aplicarFiltro() {
 
 // ── AGREGAR ───────────────────────────────────────────────────────────────
 function abrirModalAgregar() {
-    document.getElementById('modalTitle').textContent = 'Agregar Cuadrilla';
+    document.getElementById('modalTitle').textContent = I18N.card_agregar_titulo;
     document.getElementById('cuadrillaId').value = '';
     document.getElementById('cuadrillaForm').reset();
     document.getElementById('miembrosSection').style.display = 'none';
@@ -490,7 +492,7 @@ function abrirModalAgregar() {
 
 // ── MODAL EDITAR ─────────────────────────────────────────────────────────
 function abrirModalEditar(cuadrilla) {
-    document.getElementById('modalTitle').textContent = 'Editar Cuadrilla';
+    document.getElementById('modalTitle').textContent = I18N.modal_editar;
     document.getElementById('cuadrillaId').value = cuadrilla.id_cuadrilla;
 
     const municipioEl = document.getElementById('municipio');
@@ -514,7 +516,7 @@ async function cargarMiembros(idCuadrilla) {
     const vacio  = document.getElementById('miembrosEmpty');
     const select = document.getElementById('miembroSelect');
     lista.innerHTML = '';
-    select.innerHTML = '<option value="">Cargando...</option>';
+    select.innerHTML = '<option value="">' + I18N.cargando + '</option>';
 
     try {
         const [resMiembros, resCandidatos] = await Promise.all([
@@ -534,24 +536,24 @@ async function cargarMiembros(idCuadrilla) {
             li.innerHTML = `
                 <span><span class="miembro-nombre">${m.primer_nombre} ${m.p_apellido}</span>
                 <span class="miembro-ci"> — CI ${m.ci_usuario}</span></span>
-                <button type="button" class="btn-action" title="Quitar de la cuadrilla" onclick="quitarMiembro(${m.ci_usuario}, ${idCuadrilla})">🗑️</button>
+                <button type="button" class="btn-action" title="${I18N.quitar_cuadrilla}" onclick="quitarMiembro(${m.ci_usuario}, ${idCuadrilla})">🗑️</button>
             `;
             lista.appendChild(li);
         });
 
         const disponibles = candidatos.filter(c => String(c.id_cuadrilla) !== String(idCuadrilla));
         if (!disponibles.length) {
-            select.innerHTML = '<option value="">No hay usuarios disponibles para asignar</option>';
+            select.innerHTML = '<option value="">' + I18N.sin_usuarios_disponibles + '</option>';
         } else {
             select.innerHTML = disponibles.map(c => {
                 const etiqueta = c.id_cuadrilla
-                    ? `${c.primer_nombre} ${c.p_apellido} (CI ${c.ci_usuario}) — ya en cuadrilla #${c.id_cuadrilla}`
+                    ? `${c.primer_nombre} ${c.p_apellido} (CI ${c.ci_usuario}) — ${I18N.ya_en_cuadrilla} #${c.id_cuadrilla}`
                     : `${c.primer_nombre} ${c.p_apellido} (CI ${c.ci_usuario})`;
                 return `<option value="${c.ci_usuario}">${etiqueta}</option>`;
             }).join('');
         }
     } catch {
-        mostrarToast('Error al cargar los usuarios de la cuadrilla', 'error');
+        mostrarToast(I18N.error_cargar_usuarios, 'error');
     }
 }
 
@@ -559,7 +561,7 @@ async function asignarMiembro() {
     const idCuadrilla = document.getElementById('cuadrillaId').value;
     const select = document.getElementById('miembroSelect');
     const ci = select.value;
-    if (!ci) { mostrarToast('Seleccioná un usuario para asignar', 'warning'); return; }
+    if (!ci) { mostrarToast(I18N.selecciona_usuario, 'warning'); return; }
 
     try {
         const res = await fetch(`${API_BASE}/usuarios/asignarCuadrilla`, {
@@ -569,13 +571,13 @@ async function asignarMiembro() {
         });
         const json = await res.json();
         if (json.status === 'success') {
-            mostrarToast('Usuario asignado a la cuadrilla', 'success');
+            mostrarToast(I18N.usuario_asignado, 'success');
             cargarMiembros(idCuadrilla);
         } else {
             mostrarToast(json.message, 'error');
         }
     } catch {
-        mostrarToast('Error al asignar el usuario', 'error');
+        mostrarToast(I18N.error_asignar_usuario, 'error');
     }
 }
 
@@ -584,13 +586,13 @@ async function quitarMiembro(ci, idCuadrilla) {
         const res = await fetch(`${API_BASE}/usuarios/quitarCuadrilla/${ci}`, { method: 'POST' });
         const json = await res.json();
         if (json.status === 'success') {
-            mostrarToast('Usuario quitado de la cuadrilla', 'success');
+            mostrarToast(I18N.usuario_quitado, 'success');
             cargarMiembros(idCuadrilla);
         } else {
             mostrarToast(json.message, 'error');
         }
     } catch {
-        mostrarToast('Error al quitar el usuario', 'error');
+        mostrarToast(I18N.error_quitar_usuario, 'error');
     }
 }
 
@@ -603,7 +605,7 @@ async function guardarCuadrilla(e) {
     const estado      = document.getElementById('estado').value;
 
     if (!idMunicipio) {
-        mostrarToast('Seleccioná un municipio', 'warning');
+        mostrarToast(I18N.selecciona_municipio, 'warning');
         return;
     }
 
@@ -612,17 +614,17 @@ async function guardarCuadrilla(e) {
         const regla = reglas[campo];
         if (!regla) continue;
         if (regla.valores && !regla.valores.includes(valor)) {
-            mostrarToast(`${regla.label} no válido`, 'warning');
+            mostrarToast(msgValidacion('noValido', campo, regla), 'warning');
             return;
         }
         if (regla.tipo === 'entero') {
             const num = parseInt(valor);
             if (isNaN(num)) {
-                mostrarToast(`${regla.label} debe ser un número entero`, 'warning');
+                mostrarToast(msgValidacion('entero', campo, regla), 'warning');
                 return;
             }
             if (regla.min !== undefined && num < regla.min) {
-                mostrarToast(`${regla.label} no puede ser menor que ${regla.min}`, 'warning');
+                mostrarToast(msgValidacion('menor', campo, regla), 'warning');
                 return;
             }
         }
@@ -651,7 +653,7 @@ async function guardarCuadrilla(e) {
             mostrarToast(json.message, 'error');
         }
     } catch {
-        mostrarToast('Error al guardar', 'error');
+        mostrarToast(I18N.error_guardar, 'error');
     }
 }
 
@@ -667,20 +669,20 @@ async function confirmarDelete() {
         const res  = await fetch(`${API_BASE}/cuadrillas/${cuadrillaIdParaEliminar}`, { method: 'DELETE' });
         const json = await res.json();
         if (json.status === 'success') {
-            mostrarToast('Cuadrilla dada de baja correctamente', 'success');
+            mostrarToast(I18N.baja_ok, 'success');
             cerrarModalDelete();
             listarCuadrillas();
         } else {
             mostrarToast(json.message, 'error');
         }
     } catch {
-        mostrarToast('Error al eliminar', 'error');
+        mostrarToast(I18N.error_eliminar, 'error');
     }
 }
 
 async function darDeBajaCuadrilla() {
     const id = document.getElementById('deleteId').value.trim();
-    if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
+    if (!id) { mostrarToast(I18N.ingresa_id, 'warning'); return; }
     setLoading(true);
     try {
         const res  = await fetch(`${API_BASE}/cuadrillas/${id}`);
@@ -689,10 +691,10 @@ async function darDeBajaCuadrilla() {
             confirmarBorrar(json.data.id_cuadrilla, nombreMunicipio(json.data.id_municipio));
             ocultarControles();
         } else {
-            mostrarToast(json.message || 'Cuadrilla no encontrada', 'error');
+            mostrarToast(json.message || I18N.no_encontrada, 'error');
         }
     } catch {
-        mostrarToast('Error al conectar con la API', 'error');
+        mostrarToast(I18N.api_error, 'error');
     } finally {
         setLoading(false);
     }
@@ -720,28 +722,28 @@ function actualizarPlaceholderModificar() {
         ).join('');
         select.style.display = '';
     } else {
-        input.placeholder = 'Seleccioná un campo...';
+        input.placeholder = I18N.placeholder_selecciona_campo;
         input.style.display = '';
     }
 }
 
 async function modificarCuadrilla() {
     const id = document.getElementById('modificarId').value.trim();
-    if (!id) { mostrarToast('Ingresá un ID', 'warning'); return; }
+    if (!id) { mostrarToast(I18N.ingresa_id, 'warning'); return; }
     const campo = document.getElementById('modificarCampo').value;
-    if (!campo) { mostrarToast('Seleccioná un campo a modificar', 'warning'); return; }
+    if (!campo) { mostrarToast(I18N.selecciona_campo_modificar, 'warning'); return; }
 
     const input  = document.getElementById('modificarValor');
     const select = document.getElementById('modificarValorSelect');
     const valor  = (select.style.display !== 'none' ? select : input).value.trim();
-    if (!valor) { mostrarToast('Ingresá el nuevo valor', 'warning'); return; }
+    if (!valor) { mostrarToast(I18N.ingresa_nuevo_valor, 'warning'); return; }
 
     setLoading(true);
     try {
         const res  = await fetch(`${API_BASE}/cuadrillas/${id}`);
         const json = await res.json();
         if (json.status !== 'success' || !json.data) {
-            mostrarToast(json.message || 'Cuadrilla no encontrada', 'error');
+            mostrarToast(json.message || I18N.no_encontrada, 'error');
             return;
         }
         const cuadrilla = json.data;
@@ -766,7 +768,7 @@ async function modificarCuadrilla() {
             mostrarToast(putJson.message, 'error');
         }
     } catch {
-        mostrarToast('Error al modificar', 'error');
+        mostrarToast(I18N.error_modificar, 'error');
     } finally {
         setLoading(false);
     }
@@ -787,17 +789,17 @@ function renderTabla(cuadrillas) {
     }
 
     noRes.style.display = 'none';
-    count.textContent   = `${cuadrillas.length} resultado${cuadrillas.length !== 1 ? 's' : ''}`;
+    count.textContent   = `${cuadrillas.length} ${cuadrillas.length !== 1 ? I18N.resultados : I18N.resultado}`;
 
     cuadrillas.forEach(c => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td class="td-id" data-label="ID">${c.id_cuadrilla}</td>
-            <td data-label="Municipio"><strong>${nombreMunicipio(c.id_municipio)}</strong></td>
-            <td data-label="Estado"><span class="badge badge-${badgeClass(c.estado)}">${formatearValor(c.estado)}</span></td>
-            <td class="td-actions" data-label="Acciones">
-                <button class="btn-action" onclick='abrirModalEditar(${JSON.stringify(c)})' title="Editar">✏️</button>
-                <button class="btn-action" onclick="confirmarBorrar(${c.id_cuadrilla},'${nombreMunicipio(c.id_municipio)}')" title="Eliminar">🗑️</button>
+            <td data-label="${I18N.th_municipio}"><strong>${nombreMunicipio(c.id_municipio)}</strong></td>
+            <td data-label="${I18N.th_estado}"><span class="badge badge-${badgeClass(c.estado)}">${formatearValor(c.estado)}</span></td>
+            <td class="td-actions" data-label="${I18N.th_acciones}">
+                <button class="btn-action" onclick='abrirModalEditar(${JSON.stringify(c)})' title="${I18N.titulo_editar_btn}">✏️</button>
+                <button class="btn-action" onclick="confirmarBorrar(${c.id_cuadrilla},'${nombreMunicipio(c.id_municipio)}')" title="${I18N.btn_eliminar}">🗑️</button>
             </td>
         `;
         tbody.appendChild(tr);
@@ -805,7 +807,8 @@ function renderTabla(cuadrillas) {
 }
 
 function formatearValor(v) {
-    return String(v).replace(/_/g, ' ');
+    const estados = { activa: I18N.estado_activa, inactiva: I18N.estado_inactiva };
+    return estados[v] ?? String(v).replace(/_/g, ' ');
 }
 
 function badgeClass(estado) {

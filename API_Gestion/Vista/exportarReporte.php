@@ -2,28 +2,32 @@
 require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
 require_once __DIR__ . '/../../conexion.php';
 require_once __DIR__ . '/../Modelo/reporteModel.php';
+require_once __DIR__ . '/../../i18n/i18n.php';
+
+// Los archivos exportados salen en el idioma activo de la página (cookie recolix_lang / ?lang=).
+$r = function ($clave) { return t('reportes.' . $clave); };
 
 $tiposExportables = [
-    'zonas_criticas' => 'Zonas Urbanas Críticas',
-    'volumen'        => 'Volumen de Residuos',
-    'incidencias'    => 'Tiempos de Resolución de Incidencias',
-    'tiempos_resolucion' => 'Tiempos de Resolución por Cuadrilla',
-    'alertas'        => 'Alertas por Tiempo sin Recolección',
-    'proyecciones'   => 'Proyecciones de Llenado de Contenedores',
-    'frecuencia'     => 'Frecuencia de Recolección',
-    'vertederos'     => 'Capacidad de los Vertederos',
-    'ingresos'       => 'Ingresos de Residuos por Centro de Acopio',
-    'clasificacion'  => 'Clasificación y Reciclaje de Residuos',
-    'reciclaje'      => 'Reciclaje de Residuos',
-    'usuarios'       => 'Usuarios Registrados',
-    'camiones'       => 'Disponibilidad y Uso de la Flota',
-    'maquinaria'     => 'Disponibilidad de Maquinaria',
+    'zonas_criticas'     => $r('card_zonas_criticas_titulo'),
+    'volumen'            => $r('card_volumen_titulo'),
+    'incidencias'        => $r('card_incidencias_titulo'),
+    'tiempos_resolucion' => $r('card_tiempos_resolucion_titulo'),
+    'alertas'            => $r('card_alertas_titulo'),
+    'proyecciones'       => $r('card_proyecciones_titulo'),
+    'frecuencia'         => $r('card_frecuencia_titulo'),
+    'vertederos'         => $r('card_vertederos_titulo'),
+    'ingresos'           => $r('card_ingresos_titulo'),
+    'clasificacion'      => $r('card_clasificacion_titulo'),
+    'reciclaje'          => $r('card_reciclaje_titulo'),
+    'usuarios'           => $r('card_usuarios_titulo'),
+    'camiones'           => $r('card_camiones_titulo'),
+    'maquinaria'         => $r('card_maquinaria_titulo'),
 ];
 
 $tipo = $_GET['tipo'] ?? '';
 if (!isset($tiposExportables[$tipo])) {
     http_response_code(400);
-    echo 'Tipo de reporte no exportable.';
+    echo t('exportacion.tipo_no_exportable');
     exit;
 }
 
@@ -49,35 +53,37 @@ $emitir = function (array $fila) use (&$tabla) {
     $tabla[] = $fila;
 };
 
-$motivoLabels     = ['incidencias' => 'Incidencias', 'desbordados' => 'Desbordados', 'ambos' => 'Ambos', 'alertas' => 'Alertas sin recolección'];
-$tipoIncLabels     = ['rotura' => 'Rotura', 'desborde' => 'Desborde', 'falta_recoleccion' => 'Falta de recolección', 'vandalismo' => 'Vandalismo', 'otro' => 'Otro'];
-$prioridadLabels   = ['baja' => 'Baja', 'media' => 'Media', 'alta' => 'Alta', 'critica' => 'Crítica'];
-$tipoCentroLabels  = ['vertedero' => 'Vertedero', 'relleno_sanitario' => 'Relleno Sanitario', 'planta_clasificacion' => 'Planta de Clasificación', 'ecocentro' => 'Ecocentro'];
-$tipoVertLabels    = ['vertedero' => 'Vertedero', 'relleno_sanitario' => 'Relleno Sanitario'];
-$estadoVertLabels  = ['operativo' => 'Operativo', 'saturado' => 'Saturado', 'cerrado' => 'Cerrado'];
+$motivoLabels     = ['incidencias' => $r('zonas_motivo_incidencias'), 'desbordados' => $r('zonas_motivo_desbordados'), 'ambos' => $r('zonas_motivo_ambos'), 'alertas' => $r('zonas_motivo_alertas')];
+$tipoIncLabels     = ['rotura' => $r('incidencias_tipo_rotura'), 'desborde' => $r('incidencias_tipo_desborde'), 'falta_recoleccion' => $r('incidencias_tipo_falta_recoleccion'), 'vandalismo' => $r('incidencias_tipo_vandalismo'), 'otro' => $r('incidencias_tipo_otro')];
+$prioridadLabels   = ['baja' => $r('incidencias_prioridad_baja'), 'media' => $r('incidencias_prioridad_media'), 'alta' => $r('incidencias_prioridad_alta'), 'critica' => $r('incidencias_prioridad_critica')];
+$tipoCentroLabels  = ['vertedero' => $r('vertederos_tipo_vertedero'), 'relleno_sanitario' => $r('vertederos_tipo_relleno_sanitario'), 'planta_clasificacion' => $r('ingresos_tipo_planta'), 'ecocentro' => $r('ingresos_tipo_centro')];
+$tipoVertLabels    = ['vertedero' => $r('vertederos_tipo_vertedero'), 'relleno_sanitario' => $r('vertederos_tipo_relleno_sanitario')];
+$estadoVertLabels  = ['operativo' => $r('vertederos_estado_operativo'), 'saturado' => $r('vertederos_estado_saturado'), 'cerrado' => $r('vertederos_estado_cerrado')];
 $estadoCamionLabels = [
-    'disponible' => 'Disponible', 'en_ruta' => 'En Ruta', 'en_mantenimiento' => 'En Mantenimiento',
-    'de_baja' => 'De Baja', 'en_deposito' => 'En Depósito',
+    'disponible' => $r('camiones_estado_disponible'), 'en_ruta' => $r('camiones_estado_en_ruta'), 'en_mantenimiento' => $r('camiones_estado_en_mantenimiento'),
+    'de_baja' => $r('camiones_estado_de_baja'), 'en_deposito' => $r('camiones_estado_en_deposito'),
 ];
 $tipoMaquinariaLabels = [
-    'compactadora' => 'Compactadora', 'cinta' => 'Cinta Transportadora', 'pala' => 'Pala Mecánica',
-    'bascula' => 'Báscula', 'herramienta' => 'Herramienta', 'otro' => 'Otro',
+    'compactadora' => $r('maquinaria_tipo_compactadora'), 'cinta' => $r('maquinaria_tipo_cinta'), 'pala' => $r('maquinaria_tipo_pala'),
+    'bascula' => $r('maquinaria_tipo_bascula'), 'herramienta' => $r('maquinaria_tipo_herramienta'), 'otro' => $r('maquinaria_tipo_otro'),
 ];
 $estadoMaquinariaLabels = [
-    'operativa' => 'Operativa', 'en_mantenimiento' => 'En Mantenimiento', 'fuera_servicio' => 'Fuera de Servicio',
+    'operativa' => $r('maquinaria_estado_operativa'), 'en_mantenimiento' => $r('maquinaria_estado_en_mantenimiento'), 'fuera_servicio' => $r('maquinaria_estado_fuera_servicio'),
 ];
-$siNo              = function ($valor) {
+$tipoCargaLabels = ['carga_lateral' => t('camiones.val_carga_lateral'), 'carga_trasera' => t('camiones.val_carga_trasera'), 'puerta_a_puerta' => t('camiones.val_puerta_a_puerta')];
+$turnoLabels = ['mañana' => $r('frecuencia_turno_manana'), 'tarde' => $r('frecuencia_turno_tarde'), 'noche' => $r('frecuencia_turno_noche')];
+$siNo              = function ($valor) use ($r) {
     if ($valor) {
-        return 'Sí';
+        return $r('badge_si');
     }
-    return 'No';
+    return $r('badge_no');
 };
 
 try {
 switch ($tipo) {
     case 'zonas_criticas':
         $rango = rangoDesdeGet(['hoy', 'semana', 'mes', 'siempre'], 'mes');
-        $emitir(['Municipio', 'Departamento', 'Incidencias (período)', 'Contenedores Desbordados', 'Total Contenedores', '% Desbordado', 'Contenedores en Alerta', 'Motivo']);
+        $emitir([$r('zonas_th_municipio'), $r('zonas_th_departamento'), t('exportacion.zonas_incidencias_periodo'), $r('zonas_th_desbordados'), $r('zonas_th_total'), $r('zonas_th_porcentaje'), $r('zonas_th_alerta'), $r('zonas_th_motivo')]);
         foreach ($reporteModel->getZonasCriticas($rango) as $fila) {
             $emitir([
                 $fila['municipio'], $fila['departamento'], $fila['incidenciasMes'], $fila['desbordados'],
@@ -94,7 +100,7 @@ switch ($tipo) {
         } else {
             $agrupacion = 'mes';
         }
-        $emitir(['Período', 'Tipo de Residuo', 'Total (kg)', 'Recolecciones']);
+        $emitir([$r('volumen_th_periodo'), $r('volumen_th_tipo'), $r('volumen_th_kg'), $r('volumen_th_recolecciones')]);
         foreach ($reporteModel->getVolumenPorTipoYPeriodo($rango, $agrupacion) as $fila) {
             $emitir([$fila['periodo'], $fila['tipoResiduo'], $fila['totalKg'], $fila['totalRecolecciones']]);
         }
@@ -102,8 +108,8 @@ switch ($tipo) {
 
     case 'incidencias':
         $rango = rangoDesdeGet(['hoy', 'semana', 'mes', 'siempre'], 'siempre');
-        $estadoIncLabels = ['abierta' => 'Abierta', 'asignada' => 'Asignada', 'en_curso' => 'En curso', 'resuelta' => 'Resuelta'];
-        $emitir(['Tipo', 'Prioridad', 'Estado', 'Fecha Apertura', 'Tiempo de Resolución (h)']);
+        $estadoIncLabels = ['abierta' => $r('incidencias_estado_abierta'), 'asignada' => $r('incidencias_estado_asignada'), 'en_curso' => t('exportacion.estado_en_curso'), 'resuelta' => $r('incidencias_estado_resuelta')];
+        $emitir([$r('incidencias_th_tipo'), $r('incidencias_th_prioridad'), $r('incidencias_th_estado'), $r('incidencias_th_fecha'), $r('incidencias_th_horas')]);
         $estadosFiltro = ['abiertas', 'resueltas'];
         if (in_array($_GET['estado'] ?? '', $estadosFiltro, true)) {
             $estadoFiltro = $_GET['estado'];
@@ -122,7 +128,7 @@ switch ($tipo) {
 
     case 'tiempos_resolucion':
         $rango = rangoDesdeGet(['hoy', 'semana', 'mes', 'siempre'], 'siempre');
-        $emitir(['Cuadrilla', 'Municipio', 'Incidencias Cerradas', 'Tiempo Promedio (h)', 'Tiempo Mínimo (h)', 'Tiempo Máximo (h)']);
+        $emitir([$r('tiempos_th_cuadrilla'), $r('tiempos_th_municipio'), $r('tiempos_th_cerradas'), $r('tiempos_th_promedio') . ' (h)', $r('tiempos_th_minimo') . ' (h)', $r('tiempos_th_maximo') . ' (h)']);
         foreach ($reporteModel->getTiemposResolucion($rango) as $fila) {
             $emitir([
                 $fila['cuadrilla'], $fila['municipio'], $fila['incidenciasCerradas'],
@@ -132,8 +138,8 @@ switch ($tipo) {
         break;
 
     case 'alertas':
-        $emitir(['Contenedor', 'Dirección', 'Circuito', 'Última Recolección', 'Horas sin Recolección', 'Nivel de Alerta']);
-        $nivelAlertaLabels = ['critica' => 'Crítica', 'maxima' => 'Máxima'];
+        $emitir([$r('alertas_th_contenedor'), $r('alertas_th_direccion'), $r('alertas_th_circuito'), $r('alertas_th_ultima'), $r('alertas_th_horas') . ' (h)', $r('alertas_th_nivel')]);
+        $nivelAlertaLabels = ['critica' => $r('alertas_nivel_critica'), 'maxima' => $r('alertas_nivel_maxima')];
         foreach ($reporteModel->getAlertasContenedores() as $fila) {
             $emitir([
                 '#' . $fila['idContenedor'], $fila['direccion'], $fila['circuito'], $fila['ultimaRecoleccion'],
@@ -143,7 +149,7 @@ switch ($tipo) {
         break;
 
     case 'proyecciones':
-        $emitir(['Contenedor', 'Dirección', 'Circuito', 'Nivel Actual', 'Nivel Proyectado', 'Fecha de Cálculo', 'Riesgo de Sobrecarga']);
+        $emitir([$r('proyecciones_th_contenedor'), $r('proyecciones_th_direccion'), $r('proyecciones_th_circuito'), $r('proyecciones_th_actual'), $r('proyecciones_th_proyectado'), $r('proyecciones_th_fecha'), $r('proyecciones_th_sobrecarga')]);
         foreach ($reporteModel->getProyeccionesLlenado() as $fila) {
             $emitir([
                 '#' . $fila['idContenedor'], $fila['direccion'], $fila['circuito'], $fila['nivelActual'] . '%',
@@ -164,10 +170,10 @@ switch ($tipo) {
         } else {
             $dia = null;
         }
-        $emitir(['Circuito', 'Código', 'Municipio', 'Turno', 'Frecuencia', 'Levantes Completados']);
+        $emitir([$r('frecuencia_th_circuito'), $r('frecuencia_th_codigo'), $r('frecuencia_th_municipio'), $r('frecuencia_th_turno'), $r('frecuencia_th_frecuencia'), $r('frecuencia_th_levantes')]);
         foreach ($reporteModel->getFrecuenciaRecoleccion($turno, $dia, rangoDesdeGet(['hoy', 'semana', 'mes', 'siempre'], 'siempre')) as $fila) {
             $emitir([
-                $fila['circuito'], $fila['codigo'], $fila['municipio'], $fila['turno'],
+                $fila['circuito'], $fila['codigo'], $fila['municipio'], $turnoLabels[$fila['turno']] ?? $fila['turno'],
                 $fila['frecuencia'], $fila['levantesCompletados'],
             ]);
         }
@@ -175,14 +181,14 @@ switch ($tipo) {
 
     case 'ingresos':
         $rango = rangoDesdeGet(['hoy', 'semana', 'mes', 'siempre'], 'mes');
-        $emitir(['Centro de Acopio', 'Municipio', 'Tipo', 'Ingresos', 'Total Ingresado (kg)']);
+        $emitir([$r('ingresos_th_centro'), $r('ingresos_th_municipio'), $r('ingresos_th_tipo'), $r('ingresos_th_ingresos'), $r('ingresos_th_kg')]);
         foreach ($reporteModel->getIngresosPorCentro($rango) as $fila) {
             $emitir([$fila['nombre'], $fila['municipio'], $tipoCentroLabels[$fila['tipo']] ?? $fila['tipo'], $fila['ingresos'], $fila['totalKg']]);
         }
         break;
 
     case 'vertederos':
-        $emitir(['Nombre', 'Municipio', 'Tipo', 'Estado', 'Capacidad Total (t)', 'Ocupación Actual (t)', '% Ocupación']);
+        $emitir([$r('vertederos_th_nombre'), $r('vertederos_th_municipio'), $r('vertederos_th_tipo'), $r('vertederos_th_estado'), $r('vertederos_th_capacidad'), $r('vertederos_th_ocupacion'), $r('vertederos_th_porcentaje')]);
         foreach ($reporteModel->getCapacidadVertederos() as $fila) {
             $emitir([
                 $fila['nombre'], $fila['municipio'], $tipoVertLabels[$fila['tipo']] ?? $fila['tipo'],
@@ -194,7 +200,7 @@ switch ($tipo) {
 
     case 'clasificacion':
         $rango = rangoDesdeGet(['hoy', 'semana', 'mes', 'siempre'], 'siempre');
-        $emitir(['Tipo de Residuo', 'Reciclable', 'Total Contenedores', 'Funcionales', 'Total Recolectado (kg)', '% del Total']);
+        $emitir([$r('clasificacion_th_tipo'), $r('clasificacion_th_reciclable'), $r('clasificacion_th_total'), $r('clasificacion_th_funcionales'), $r('clasificacion_th_kg'), $r('clasificacion_th_porcentaje')]);
         foreach ($reporteModel->getClasificacionResiduos($rango) as $fila) {
             $emitir([
                 $fila['tipoResiduo'], $siNo($fila['reciclable']), $fila['totalContenedores'],
@@ -205,8 +211,8 @@ switch ($tipo) {
 
     case 'reciclaje':
         $rango = rangoDesdeGet(['hoy', 'semana', 'mes', 'siempre'], 'siempre');
-        $emitir(['Concepto', 'Total Recolectado (kg)', '% del Total']);
-        $etiquetasReciclaje = ['reciclable' => 'Reciclable', 'no_reciclable' => 'No reciclable', 'total' => 'Total'];
+        $emitir([$r('reciclaje_th_concepto'), $r('clasificacion_th_kg'), $r('clasificacion_th_porcentaje')]);
+        $etiquetasReciclaje = ['reciclable' => $r('reciclaje_concepto_reciclable'), 'no_reciclable' => $r('reciclaje_concepto_no_reciclable'), 'total' => $r('reciclaje_concepto_total')];
         foreach ($reporteModel->getReciclaje($rango) as $fila) {
             $emitir([$etiquetasReciclaje[$fila['concepto']] ?? $fila['concepto'], $fila['totalKg'], $fila['porcentaje'] . '%']);
         }
@@ -214,7 +220,7 @@ switch ($tipo) {
 
     case 'usuarios':
         $rango = rangoDesdeGet(['24h', 'semana', 'mes', 'siempre'], 'siempre');
-        $emitir(['Período', 'Nuevos Usuarios', 'Vecinos', 'Operarios', 'Cuadrillas', 'Administradores']);
+        $emitir([$r('usuarios_th_periodo'), $r('usuarios_th_nuevos'), $r('usuarios_th_vecinos'), $r('usuarios_th_operarios'), $r('usuarios_th_cuadrillas'), $r('usuarios_th_administradores')]);
         foreach ($reporteModel->getEvolucionUsuarios($rango) as $fila) {
             $emitir([
                 $fila['periodo'], $fila['nuevosUsuarios'], $fila['vecinos'],
@@ -225,10 +231,10 @@ switch ($tipo) {
 
     case 'camiones':
         $rango = rangoDesdeGet(['hoy', 'semana', 'mes', 'siempre'], 'siempre');
-        $emitir(['Matrícula', 'Modelo', 'Tipo de Carga', 'Estado', 'Viajes Completados', 'Recolectado (kg)', 'Horas en Ruta', 'Horas en Mantenimiento']);
+        $emitir([$r('camiones_th_matricula'), $r('camiones_th_modelo'), $r('camiones_th_tipo_carga'), $r('camiones_th_estado'), $r('camiones_th_viajes'), $r('camiones_th_kg'), $r('camiones_th_horas_ruta'), $r('camiones_th_horas_mant')]);
         foreach ($reporteModel->getDisponibilidadCamiones($rango) as $fila) {
             $emitir([
-                $fila['matricula'], $fila['modelo'], $fila['tipoCarga'],
+                $fila['matricula'], $fila['modelo'], $tipoCargaLabels[$fila['tipoCarga']] ?? $fila['tipoCarga'],
                 $estadoCamionLabels[$fila['estado']] ?? $fila['estado'],
                 $fila['viajesCompletados'], $fila['kgRecolectados'],
                 $fila['horasEnRuta'], $fila['horasMantenimiento'],
@@ -237,7 +243,7 @@ switch ($tipo) {
         break;
 
     case 'maquinaria':
-        $emitir(['Nombre', 'Tipo', 'Centro de Acopio', 'Municipio', 'Estado', 'Fecha de Adquisición']);
+        $emitir([$r('maquinaria_th_nombre'), $r('maquinaria_th_tipo'), $r('maquinaria_th_centro'), $r('maquinaria_th_municipio'), $r('maquinaria_th_estado'), $r('maquinaria_th_fecha')]);
         foreach ($reporteModel->getDisponibilidadMaquinaria() as $fila) {
             $emitir([
                 $fila['nombre'], $tipoMaquinariaLabels[$fila['tipo']] ?? $fila['tipo'],
@@ -274,7 +280,13 @@ if ($formato === 'pdf') {
     $filasPdf = array_map(function ($fila) {
         return array_map(function ($v) { return (string) ($v ?? ''); }, $fila);
     }, $tabla);
-    $pdf = (new PdfTabla($tiposExportables[$tipo], 'Generado el ' . date('d/m/Y H:i'), $encabezados, $filasPdf))->generar();
+    $pdf = (new PdfTabla(
+        $tiposExportables[$tipo],
+        str_replace('{fecha}', date('d/m/Y H:i'), t('exportacion.generado_el')),
+        $encabezados,
+        $filasPdf,
+        ['pagina' => t('exportacion.pagina_de'), 'sinDatos' => t('exportacion.sin_datos')]
+    ))->generar();
     header('Content-Type: application/pdf');
     header('Content-Disposition: attachment; filename="' . $nombreArchivo . '"');
     header('Content-Length: ' . strlen($pdf));

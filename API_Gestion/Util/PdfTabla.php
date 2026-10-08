@@ -26,8 +26,11 @@ class PdfTabla {
     private $subtitulo;
     private $encabezados;
     private $filas;
+    private $textos;
 
-    public function __construct($titulo, $subtitulo, array $encabezados, array $filas) {
+    // $textos: ['pagina' => 'Página {n} de {total}', 'sinDatos' => 'Sin datos.']
+    public function __construct($titulo, $subtitulo, array $encabezados, array $filas, array $textos = []) {
+        $this->textos = $textos + ['pagina' => 'Página {n} de {total}', 'sinDatos' => 'Sin datos.'];
         $this->titulo = $titulo;
         $this->subtitulo = $subtitulo;
         $this->encabezados = $encabezados;
@@ -183,13 +186,13 @@ class PdfTabla {
             $y -= $altoFila;
         }
         if (count($this->filas) === 0) {
-            $contenido .= '0.4 0.4 0.4 rg BT /F1 9 Tf ' . sprintf('1 0 0 1 %.2f %.2f Tm (%s) Tj ET ', self::MARGEN, $y - 14, self::escapar('Sin datos.'));
+            $contenido .= '0.4 0.4 0.4 rg BT /F1 9 Tf ' . sprintf('1 0 0 1 %.2f %.2f Tm (%s) Tj ET ', self::MARGEN, $y - 14, self::escapar($this->textos['sinDatos']));
         }
         $paginas[] = $contenido;
 
         $total = count($paginas);
         foreach ($paginas as $k => $c) {
-            $pie = 'Página ' . ($k + 1) . ' de ' . $total;
+            $pie = str_replace(['{n}', '{total}'], [$k + 1, $total], $this->textos['pagina']);
             $x = self::ANCHO - self::MARGEN - self::ancho($pie);
             $paginas[$k] .= '0.4 0.4 0.4 rg BT /F1 8 Tf ' . sprintf('1 0 0 1 %.2f %.2f Tm (%s) Tj ET', $x, self::MARGEN - 10, self::escapar($pie));
         }
