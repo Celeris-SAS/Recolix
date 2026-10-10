@@ -11,12 +11,15 @@ class IncidenciaController {
     private $estadosContenedorUrgentes = ['roto', 'desbordado', 'inactivo'];
 
     private $contenedorModel;
+    private $notificacionModel;
 
     public function __construct() {
         require_once __DIR__ . '/../Modelo/incidenciaModel.php';
         require_once __DIR__ . '/../Modelo/contenedorModel.php';
+        require_once __DIR__ . '/../Modelo/notificacionModel.php';
         $this->incidenciaModel = new IncidenciaModel();
         $this->contenedorModel = new ContenedorModel();
+        $this->notificacionModel = new NotificacionModel();
     }
 
     private function validarId($valor, $nombre = 'ID') {
@@ -171,6 +174,16 @@ class IncidenciaController {
 
         $idIncidencia = $this->incidenciaModel->crearIncidencia($ciUsuario, $tipo, $descripcion, $urlImagen, $urgencia, $prioridad);
         $this->incidenciaModel->vincularContenedor($idIncidencia, $idContenedor);
+
+        // RF94: aviso a los administradores de toda incidencia crítica registrada.
+        if ($prioridad === 'critica') {
+            $this->notificacionModel->crearParaAdministradores(
+                "Nueva incidencia crítica #$idIncidencia ($tipo) en el contenedor #$idContenedor.",
+                'incidencia',
+                'critica'
+            );
+        }
+
         return $this->incidenciaModel->getIncidencia($idIncidencia);
     }
 
@@ -226,7 +239,15 @@ class IncidenciaController {
             throw new InvalidArgumentException("No existe una cuadrilla con el ID $idCuadrilla.");
         }
 
-        return $this->incidenciaModel->asignarCuadrilla($id, $idCuadrilla);
+        $resultado = $this->incidenciaModel->asignarCuadrilla($id, $idCuadrilla);
+        $this->notificacionModel->notificarCambioIncidencias([$incidencia], 'asignada');
+        $this->notificacionModel->crearParaCuadrilla(
+            $idCuadrilla,
+            "Se te asignó la incidencia #$id ({$incidencia['tipo']}).",
+            'incidencia',
+            'informativa'
+        );
+        return $resultado;
     }
 
     // RF13: cierre de la cuadrilla, de 'en_curso' a 'resuelta'.
@@ -236,7 +257,16 @@ class IncidenciaController {
         if ($incidencia['estado'] !== 'en_curso') {
             throw new InvalidArgumentException("Solo se puede cerrar una incidencia en estado 'en_curso'. Estado actual: " . $incidencia['estado']);
         }
-        return $this->incidenciaModel->cerrar($id);
+        return $this->cerrarYNotificar($id);
+    }
+
+    // Cierra $id y en cascada las del mismo contenedor (ver incidenciaModel::cerrar).
+    // Cada vecino afectado recibe el aviso de que su incidencia fue resuelta.
+    private function cerrarYNotificar($id) {
+        $afectadas = $this->incidenciaModel->incidenciasQueSeCerrarian($id);
+        $resultado = $this->incidenciaModel->cerrar($id);
+        $this->notificacionModel->notificarCambioIncidencias($afectadas, 'resuelta');
+        return $resultado;
     }
 
     // La sesión solo puede operar sobre su propia cuadrilla (se compara contra la base).
@@ -263,7 +293,9 @@ class IncidenciaController {
         if ($incidencia['estado'] !== 'asignada') {
             throw new InvalidArgumentException("Solo se puede iniciar la atención de una incidencia asignada. Estado actual: " . $incidencia['estado']);
         }
-        return $this->incidenciaModel->iniciarAtencion($id);
+        $resultado = $this->incidenciaModel->iniciarAtencion($id);
+        $this->notificacionModel->notificarCambioIncidencias([$incidencia], 'en_curso');
+        return $resultado;
     }
 
     // RF13: la cuadrilla cierra la incidencia que está atendiendo (de 'en_curso' a 'resuelta').
@@ -274,7 +306,7 @@ class IncidenciaController {
         if ($incidencia['estado'] !== 'en_curso') {
             throw new InvalidArgumentException("Solo se puede cerrar una incidencia en estado 'en_curso'. Estado actual: " . $incidencia['estado']);
         }
-        return $this->incidenciaModel->cerrar($id);
+        return $this->cerrarYNotificar($id);
     }
 }
 ?>

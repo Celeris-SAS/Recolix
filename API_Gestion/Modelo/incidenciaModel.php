@@ -301,7 +301,33 @@ class IncidenciaModel {
         $stmt = mysqli_prepare($this->conn->getConexion(),
             "UPDATE INCIDENCIA i2
              SET i2.estado = 'resuelta', i2.fecha_cierre = NOW()
-             WHERE i2.estado != 'resuelta'
+             WHERE " . $this->condicionCascadaCierre());
+        mysqli_stmt_bind_param($stmt, "ii", $id, $id);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        return true;
+    }
+
+    // Las mismas incidencias que cerrar($id) va a resolver, tomadas antes del cambio
+    // para poder avisarle a cada vecino. Filas con id_incidencia, ci_usuario y tipo.
+    public function incidenciasQueSeCerrarian($id) {
+        $stmt = mysqli_prepare($this->conn->getConexion(),
+            "SELECT i2.id_incidencia, i2.ci_usuario, i2.tipo FROM INCIDENCIA i2
+             WHERE " . $this->condicionCascadaCierre());
+        mysqli_stmt_bind_param($stmt, "ii", $id, $id);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $rows = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $rows[] = $row;
+        }
+        mysqli_stmt_close($stmt);
+        return $rows;
+    }
+
+    // Condición compartida por cerrar() y incidenciasQueSeCerrarian(); espera 2 parámetros (id, id).
+    private function condicionCascadaCierre() {
+        return "i2.estado != 'resuelta'
                AND (
                    i2.id_incidencia = ?
                    OR i2.id_incidencia IN (
@@ -309,11 +335,7 @@ class IncidenciaModel {
                        JOIN INCIDENCIA_CONTENEDOR ic1 ON ic1.id_contenedor = ic2.id_contenedor
                        WHERE ic1.id_incidencia = ?
                    )
-               )");
-        mysqli_stmt_bind_param($stmt, "ii", $id, $id);
-        mysqli_stmt_execute($stmt);
-        mysqli_stmt_close($stmt);
-        return true;
+               )";
     }
 
     public function cuadrillaExiste($idCuadrilla) {

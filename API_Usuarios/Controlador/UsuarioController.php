@@ -275,6 +275,14 @@ class UsuarioController {
         return $this->usuarioModel->marcarNotificacionLeida($idNotificacion, $this->ciSesion());
     }
 
+    public function borrarNotificacion($idNotificacion) {
+        $idNotificacion = $this->validarId($idNotificacion);
+        if ($this->ciSesion() === null) {
+            throw new AccesoDenegadoException('Sesión inválida.');
+        }
+        return $this->usuarioModel->borrarNotificacion($idNotificacion, $this->ciSesion());
+    }
+
 
 
     public function listarUsuarios() {

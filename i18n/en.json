@@ -1,5 +1,13 @@
 {
   "common": {
+    "campana_titulo": "Notifications",
+    "campana_subtitulo": "All your system alerts, in one place.",
+    "campana_cargando": "Loading...",
+    "campana_vacio": "You don't have any notifications.",
+    "campana_error": "Could not load notifications.",
+    "campana_marcar_leida": "Mark as read",
+    "campana_borrar": "Delete",
+    "campana_volver": "Back",
     "nav_inicio": "Home",
     "nav_mapa": "Map",
     "nav_iniciar_sesion": "Log In",
@@ -900,6 +908,7 @@
     "opt_cambiar_estado": "Change status...",
     "title_ver_maquinaria": "View machinery",
     "title_ver_operarios": "View operators",
+    "title_quitar_operario": "Remove operator from center",
     "operarios_titulo_prefijo": "Operators at",
     "operarios_vacio": "No operator assigned yet.",
     "msg_operario_asignado": "Operator assigned to the center",
@@ -1290,13 +1299,7 @@
     "msg_incidencia_reportada": "Thanks! Your report was sent.",
     "msg_error_reportar_incidencia": "Could not send the report.",
     "msg_foto_tipo_invalido": "The photo must be a JPG or PNG file.",
-    "msg_foto_tamano_invalido": "The photo can't be larger than 5 MB.",
-
-    "eyebrow_notificaciones": "Alerts",
-    "titulo_notificaciones": "Notifications",
-    "cargando_notificaciones": "Loading notifications...",
-    "sin_notificaciones": "You don't have any notifications right now.",
-    "btn_marcar_leida": "Mark as read"
+    "msg_foto_tamano_invalido": "The photo can't be larger than 5 MB."
   },
 
   "reportes": {

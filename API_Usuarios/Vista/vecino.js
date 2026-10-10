@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     cargarPerfil();
     cargarIncidencias();
-    cargarNotificaciones();
 
 
     document.getElementById('logoutBtn').addEventListener('click', () => {
@@ -394,49 +393,6 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('nuevaIncidenciaForm').hidden = true;
         }, 1500);
     });
-
-
-    async function cargarNotificaciones() {
-        const contenedor = document.getElementById('notificacionesLista');
-        const resp = await fetch(`${API}/usuarios/getNotificaciones?ci=${CI}`);
-        const json = await resp.json();
-        const lista = json.data;
-
-        if (!lista.length) {
-            contenedor.innerHTML = `<div class="estado-vacio">${I18N.sinNotificaciones}</div>`;
-            return;
-        } contenedor.innerHTML = lista.map(n => `
-        <div class="notif-card ${n.estado === 'leida' ? 'leida' : 'no-leida'}" id="notif-${n.id_notificacion}">
-            <div class="notif-dot"></div>
-            <div class="notif-cuerpo">
-                <p class="notif-mensaje">${n.mensaje}</p>
-                <div class="notif-meta">
-                    <span>${n.tipo_origen}</span>
-                    <span>${formatearFecha(n.fecha_creacion)}</span>
-                </div>
-            </div>
-            ${n.estado !== 'leida' ? `<button class="btn-marcar-leida" data-id="${n.id_notificacion}">${I18N.btnMarcarLeida}</button>` : ''}
-        </div>
-    `).join(''); contenedor.querySelectorAll('.btn-marcar-leida').forEach(btn => {
-            btn.addEventListener('click', () => marcarLeida(btn.dataset.id));
-        });
-    }
-
-    async function marcarLeida(idNotificacion) {
-        await fetch(`${API}/usuarios/marcarNotificacionLeida`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ idNotificacion })
-        });
-        const tarjeta = document.getElementById(`notif-${idNotificacion}`);
-        if (tarjeta) {
-            tarjeta.classList.remove('no-leida');
-            tarjeta.classList.add('leida');
-            tarjeta.querySelector('.notif-dot').style.background = '#ccc';
-            const btn = tarjeta.querySelector('.btn-marcar-leida');
-            if (btn) btn.remove();
-        }
-    }
 
 
     function formatearFecha(fechaStr) {
