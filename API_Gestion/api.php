@@ -16,6 +16,7 @@ $config = [
         'GET reportes/getIncidenciasDetalle',
         'GET reportes/getResumenGeneral',
         'POST incidencias',
+        'GET predicciones/proyectarLlenadoIA',
     ],
     'resources' => [
         'contenedores' => [
@@ -47,13 +48,17 @@ $config = [
                 'filtrarMunicipio',
                 'filtrarTipoResiduo',
                 'filtrarEstado',
-                'filtrarCriticos'
+                'filtrarCriticos',
+                'filtrarCombinado'
             ],
             'filters' => [
                 'municipio'   => 'filtrarMunicipio',
                 'tipoResiduo' => 'filtrarTipoResiduo',
                 'estado'      => 'filtrarEstado'
-            ]
+            ],
+            // ERR-04: cuando la URL trae más de uno de estos query params a la vez,
+            // el router llama a este método único en lugar de aplicar solo el primero.
+            'combinedFilter' => 'filtrarCombinado'
         ],
         'tipos-residuo' => [
             'singular'    => 'TipoResiduo',
@@ -90,10 +95,15 @@ $config = [
             'insertMethod' => 'calcularPrediccion',
             'updateMethod' => null,
             'deleteMethod' => null,
+            'rolesAccion' => [
+                // Pública: la consume el mapa de contenedores, visible sin iniciar sesión.
+                'proyectarLlenadoIA' => ['*'],
+            ],
             'actions' => [
                 'calcularPrediccion',
                 'getUltimaPrediccion',
-                'getAllPredicciones'
+                'getAllPredicciones',
+                'proyectarLlenadoIA'
             ],
             'filters' => []
         ],
@@ -363,28 +373,48 @@ if (strpos($uri, $basePath) === 0) {
                 $handled = false;
 
                 if (!empty($query) && isset($resourceConfig['filters']) && is_array($resourceConfig['filters'])) {
-                    foreach ($query as $qk => $qv) {
-                        if (isset($resourceConfig['filters'][$qk])) {
-                            $filterMethod = $resourceConfig['filters'][$qk];
-                            if (method_exists($controller, $filterMethod)) {
-                                try {
-                                    if (is_array($qv)) {
-                                        $result = call_user_func_array([$controller, $filterMethod], array_values($qv));
-                                    } else {
-                                        $result = $controller->{$filterMethod}($qv);
+                    $filtrosPresentes = array_intersect_key($query, $resourceConfig['filters']);
+
+                    // Más de un filtro soportado a la vez: si el recurso define un método
+                    // que los combina (AND), se usa ese en lugar de aplicar solo el primero.
+                    if (count($filtrosPresentes) > 1 && isset($resourceConfig['combinedFilter'])) {
+                        $combinedMethod = $resourceConfig['combinedFilter'];
+                        if (method_exists($controller, $combinedMethod)) {
+                            try {
+                                $result = $controller->{$combinedMethod}($filtrosPresentes);
+                                echo json_encode(['status' => 'success', 'data' => $result]);
+                            } catch (Throwable $e) {
+                                http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
+                                echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                            }
+                            $handled = true;
+                        }
+                    }
+
+                    if (!$handled) {
+                        foreach ($query as $qk => $qv) {
+                            if (isset($resourceConfig['filters'][$qk])) {
+                                $filterMethod = $resourceConfig['filters'][$qk];
+                                if (method_exists($controller, $filterMethod)) {
+                                    try {
+                                        if (is_array($qv)) {
+                                            $result = call_user_func_array([$controller, $filterMethod], array_values($qv));
+                                        } else {
+                                            $result = $controller->{$filterMethod}($qv);
+                                        }
+                                        echo json_encode(['status' => 'success', 'data' => $result]);
+                                    } catch (Throwable $e) {
+                                        http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
+                                        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
                                     }
-                                    echo json_encode(['status' => 'success', 'data' => $result]);
-                                } catch (Throwable $e) {
-                                    http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
-                                    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                                    $handled = true;
+                                    break;
+                                } else {
+                                    http_response_code(400);
+                                    echo json_encode(['status' => 'error', 'message' => 'Filtro no soportado por el controller']);
+                                    $handled = true;
+                                    break;
                                 }
-                                $handled = true;
-                                break;
-                            } else {
-                                http_response_code(400);
-                                echo json_encode(['status' => 'error', 'message' => 'Filtro no soportado por el controller']);
-                                $handled = true;
-                                break;
                             }
                         }
                     }

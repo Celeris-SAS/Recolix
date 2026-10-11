@@ -260,7 +260,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                             <option value=""><?= t('crud.seleccionar') ?></option>
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" id="idCircuitoGroup">
                         <label for="idCircuito"><?= t('contenedores.field_idcircuito') ?></label>
                         <input type="number" id="idCircuito" class="form-input" placeholder="1" min="1" required>
                     </div>
@@ -655,6 +655,11 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             ['calle', 'numCalle', 'latitud', 'longitud'].forEach(campo => {
                 document.getElementById(campo).required = !esDeposito;
             });
+            // RNE 26: un contenedor en depósito no pertenece a ningún circuito.
+            document.getElementById('idCircuito').required = !esDeposito;
+            document.getElementById('idCircuito').disabled = esDeposito;
+            if (esDeposito) document.getElementById('idCircuito').value = '';
+            document.getElementById('idCircuitoGroup').style.display = esDeposito ? 'none' : '';
         }
 
         function onEstadoFormChange() {
@@ -697,7 +702,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
 
             const body = esDeposito
                 ? {
-                    idCircuito: parseInt(document.getElementById('idCircuito').value),
+                    idCircuito: null,
                     idTipo: parseInt(document.getElementById('idTipo').value),
                     calle: null,
                     numCalle: null,
@@ -741,7 +746,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 }
             }
 
-            const camposDireccion = ['calle', 'numCalle', 'latitud', 'longitud'];
+            const camposDireccion = ['calle', 'numCalle', 'latitud', 'longitud', 'idCircuito'];
             for (const [campo, valor] of Object.entries(body)) {
                 if (esDeposito && camposDireccion.includes(campo)) continue;
                 const regla = reglas[campo];
