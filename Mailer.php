@@ -8,14 +8,18 @@
 // una "contraseña de aplicación" que genera Google para darle acceso SMTP a esta app sin
 // exponer la contraseña real de la cuenta.
 //
-// Cómo activarlo:
+// Cómo activarlo (dos formas, igual que RECOLIX_DB_* en conexion.php):
 //   1) Activá la verificación en 2 pasos en la cuenta de Gmail que va a enviar los mails
 //      (myaccount.google.com/security).
 //   2) Generá una "contraseña de aplicación": myaccount.google.com/apppasswords
 //      (elegí "Otra" / "Correo" como app, y copiá la contraseña de 16 letras que te da).
-//   3) Pegá el mail y esa contraseña en Comun/mail-config.php (ver ese archivo; no se versiona
-//      en git).
-// Sin esos datos configurados, no se envía nada: solo queda registrado en mail_log.txt.
+//   3a) Variable de entorno (recomendado: anda para todos sin tocar código ni archivos por
+//       persona) — RECOLIX_MAIL_USER y RECOLIX_MAIL_APP_PASSWORD, definidas una vez en el
+//       Apache de cada entorno (SetEnv en httpd-vhosts.conf o httpd.conf) y listo.
+//   3b) O, si preferís no tocar la config de Apache, Comun/mail-config.php (copiá
+//       Comun/mail-config.example.php; ese archivo real no se versiona en git).
+// La variable de entorno tiene prioridad sobre el archivo si ambas existen. Sin ninguna de
+// las dos, no se envía nada: solo queda registrado en mail_log.txt.
 class Mailer {
     public static function enviar($destinatario, $asunto, $mensaje) {
         if (!$destinatario) {
@@ -115,6 +119,12 @@ class Mailer {
     }
 
     private static function cargarConfig() {
+        $envUser = getenv('RECOLIX_MAIL_USER');
+        $envPassword = getenv('RECOLIX_MAIL_APP_PASSWORD');
+        if ($envUser && $envPassword) {
+            return ['gmailUser' => $envUser, 'gmailAppPassword' => $envPassword];
+        }
+
         $archivo = __DIR__ . '/Comun/mail-config.php';
         if (!file_exists($archivo)) {
             return ['gmailUser' => '', 'gmailAppPassword' => ''];
