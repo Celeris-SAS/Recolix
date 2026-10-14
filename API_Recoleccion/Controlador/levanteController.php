@@ -137,5 +137,10 @@
             return $this->levanteModel->obtenerPendientesVencidos();
         }
 
+        // RF53: genera (si no existían ya) las alertas de los levantes vencidos para el admin.
+        public function generarAlertaVencidos() {
+            return ['avisados' => $this->levanteModel->generarAlertaVencidos()];
+        }
+
     }
 ?>

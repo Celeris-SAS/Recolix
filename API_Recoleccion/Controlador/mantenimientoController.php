@@ -3,13 +3,16 @@
 
     private $mantenimientoModel;
     private $camionModel;
+    private $notificacionModel;
     private $tiposValidos = ['preventivo', 'correctivo'];
 
         public function __construct() {
             require_once __DIR__ . '/../Modelo/mantenimientoModel.php';
             require_once __DIR__ . '/../Modelo/camionModel.php';
+            require_once __DIR__ . '/../Modelo/notificacionModel.php';
             $this->mantenimientoModel = new MantenimientoModel();
             $this->camionModel = new CamionModel();
+            $this->notificacionModel = new NotificacionModel();
         }
 
         private function validarId($valor) {
@@ -173,6 +176,23 @@
         public function obtenerCostoTotal($camionId) {
             $camionId = $this->validarId($camionId);
             return $this->mantenimientoModel->obtenerCostoTotal($camionId);
+        }
+
+        // RF37: la cuadrilla avisa a los administradores de un desperfecto mecánico en su camión.
+        public function notificarDesperfecto($camionId, $descripcion) {
+            $camionId    = $this->validarId($camionId);
+            $descripcion = $this->validarString($descripcion, 'Descripción');
+
+            $camion = $this->camionModel->getCamion($camionId);
+            if (!$camion) {
+                throw new InvalidArgumentException("No existe un camión con el ID $camionId.");
+            }
+
+            return $this->notificacionModel->crearParaAdministradores(
+                "Desperfecto mecánico en el camión {$camion['matricula']}: $descripcion",
+                'camion',
+                'advertencia'
+            );
         }
 
     }

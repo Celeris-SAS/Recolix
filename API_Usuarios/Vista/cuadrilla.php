@@ -51,6 +51,7 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             </div>
             <div class="nav-right">
                 <?php include __DIR__ . '/../../i18n/switcher.php'; ?>
+                <?php include $_SERVER['DOCUMENT_ROOT'] . '/recolix/Comun/campana.php'; ?>
                 <a href="../Vista/perfilCuadrilla.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
                     <img src="../../API_Recoleccion/Vista/img/user.svg" alt="Usuario" class="nav-user-icon">
                 </a>
@@ -305,7 +306,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             'badgeContenedorRecolectado' => 'cuadrilla.badge_contenedor_recolectado',
             'badgeContenedorNoRecolectado' => 'cuadrilla.badge_contenedor_no_recolectado',
             'seleccionaEstado' => 'cuadrilla.msg_selecciona_estado',
-            'ingresaMotivo' => 'cuadrilla.msg_ingresa_motivo',
             'ingresaPeso' => 'cuadrilla.msg_ingresa_peso',
             'noRecolectado' => 'cuadrilla.msg_no_recolectado',
             'incIniciar' => 'cuadrilla.inc_btn_iniciar',
@@ -753,13 +753,10 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
                     estadoEncontradoError.textContent = I18N.seleccionaEstado;
                     valido = false;
                 }
-                if (!motivoInput.value.trim()) {
-                    mostrarToast(I18N.ingresaMotivo, 'warning');
-                    valido = false;
-                }
                 if (!valido) return;
                 estadoEncontradoVal = estadoEncontrado.value;
-                motivoVal = motivoInput.value.trim();
+                // El motivo es una nota libre y opcional (ver placeholder del campo): null si no se cargó.
+                motivoVal = motivoInput.value.trim() || null;
             } else {
                 if (!pesoInput.value) {
                     mostrarToast(I18N.ingresaPeso, 'warning');
@@ -790,7 +787,10 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
                     mensaje = I18N.levanteRegistrado + ' #' + id + '.';
                 } else {
                     const estadoTexto = estadoEncontrado.options[estadoEncontrado.selectedIndex].text;
-                    mensaje = I18N.noRecolectado + ' #' + id + ' (' + estadoTexto + '). ' + I18N.motivoRegistrado;
+                    mensaje = I18N.noRecolectado + ' #' + id + ' (' + estadoTexto + ').';
+                    if (motivoVal) {
+                        mensaje += ' ' + I18N.motivoRegistrado;
+                    }
                     tipoToast = 'warning';
                 }
 
@@ -882,6 +882,15 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
                         fechaInicio: ahora,
                         fechaFin: null,
                         costo: 0
+                    })
+                });
+                // RF37: además del mantenimiento, se notifica a los administradores.
+                await apiFetch(`${API_RECOLECCION}/mantenimientos/notificarDesperfecto`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        camionId: parseInt(camionDesperfectoId, 10),
+                        descripcion: desperfectoDescripcion.value.trim()
                     })
                 });
                 modalDesperfecto.classList.remove('is-open');

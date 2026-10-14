@@ -144,7 +144,8 @@ $config = [
                 'obtenerPorCamion',
                 'filtrarPorTipo',
                 'obtenerCostoTotal',
-                'proximos'
+                'proximos',
+                'notificarDesperfecto'
             ],
             'filters' => [
                 'camionId' => 'obtenerPorCamion',
@@ -247,7 +248,8 @@ $config = [
                 'completar',
                 'cancelar',
                 'obtenerResumen',
-                'obtenerPendientesVencidos'
+                'obtenerPendientesVencidos',
+                'generarAlertaVencidos'
             ],
             'filters' => [
                 'rutaId' => 'obtenerPorRuta'

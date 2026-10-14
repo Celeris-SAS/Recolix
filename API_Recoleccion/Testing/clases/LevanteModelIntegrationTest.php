@@ -222,14 +222,16 @@ final class LevanteModelIntegrationTest extends DbTestCase
         $model->registrarContenedor($idLevante, $contenedorId, 'todo_ok', null, null);
     }
 
-    public function testRegistrarContenedorNoRecolectadoRequiereMotivo(): void
+    public function testRegistrarContenedorNoRecolectadoAceptaMotivoVacio(): void
     {
+        // El motivo es una nota libre y opcional: lo único obligatorio es el estado encontrado.
         [$model, $idLevante, , $contenedorId] = $this->levantePendiente();
         $model->iniciarLevante($idLevante);
 
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('motivo es obligatorio');
-        $model->registrarContenedor($idLevante, $contenedorId, 'contenedor_ausente', null, null);
+        $contenedor = $model->registrarContenedor($idLevante, $contenedorId, 'contenedor_ausente', null, null);
+
+        $this->assertSame('contenedor_ausente', $contenedor['estado_encontrado']);
+        $this->assertNull($contenedor['motivo']);
     }
 
     public function testRegistrarContenedorTodoOkActualizaNivelDeLlenado(): void
@@ -491,5 +493,67 @@ final class LevanteModelIntegrationTest extends DbTestCase
         } finally {
             $this->conn()->query('CREATE TABLE centro_levante (id_levante int(11) NOT NULL, id_centro int(11) NOT NULL) ENGINE=InnoDB');
         }
+    // RF53: alerta de levante no completado al vencer el turno.
+    public function testGenerarAlertaVencidosAvisaAlAdministradorUnaSolaVez(): void
+    {
+        $admin = $this->crearUsuario(null, ['rol' => 'administrador', 'acceso' => 'habilitado']);
+        [$model, $idLevante] = $this->levantePendiente(); // hora_levante en el pasado: ya está vencido
+
+        $primera = $model->generarAlertaVencidos();
+        $segunda = $model->generarAlertaVencidos();
+
+        $this->assertSame(1, $primera);
+        $this->assertSame(0, $segunda);
+
+        $stmt = $this->conn()->prepare(
+            "SELECT n.mensaje FROM NOTIFICACION n
+             JOIN NOTIFICACION_USUARIO nu ON nu.id_notificacion = n.id_notificacion
+             WHERE nu.ci_usuario = ?"
+        );
+        $stmt->bind_param('i', $admin);
+        $stmt->execute();
+        $fila = $stmt->get_result()->fetch_assoc();
+        $this->assertNotNull($fila);
+        $this->assertStringContainsString("levante #$idLevante", $fila['mensaje']);
+    }
+
+    public function testGenerarAlertaVencidosNoAvisaSiElLevanteNoEstaVencido(): void
+    {
+        $this->crearUsuario(null, ['rol' => 'administrador', 'acceso' => 'habilitado']);
+        $circuitoId = $this->crearCircuito();
+        $rutaId = $this->crearRuta($circuitoId, ['activa' => 1, 'actividad' => 'barrido']);
+        $camionId = $this->crearCamion();
+        $cuadrillaId = $this->crearCuadrilla();
+        $model = new LevanteModel();
+        // Turno a futuro: no debería generar ninguna alerta.
+        $model->planificarLevante($rutaId, $camionId, $cuadrillaId, '2099-01-10 08:00:00', '2099-01-10');
+
+        $avisados = $model->generarAlertaVencidos();
+
+        $this->assertSame(0, $avisados);
+    }
+
+    // Si se reportó un desperfecto a mitad de ruta (el camión queda "en_mantenimiento"),
+    // terminar o cancelar el levante no debe devolverlo a "disponible" como si nada.
+    public function testCompletarLevanteNoLiberaUnCamionEnMantenimiento(): void
+    {
+        [$model, $idLevante, $camionId, $contenedorId] = $this->levantePendiente();
+        $model->iniciarLevante($idLevante);
+        $this->conn()->query("UPDATE camion SET estado = 'en_mantenimiento' WHERE id_camion = $camionId");
+
+        $model->registrarContenedor($idLevante, $contenedorId, 'todo_ok', 42, null);
+
+        $this->assertSame(1, $this->contarFilas('camion', "id_camion = $camionId AND estado = 'en_mantenimiento'"));
+    }
+
+    public function testCancelarLevanteNoLiberaUnCamionEnMantenimiento(): void
+    {
+        [$model, $idLevante, $camionId] = $this->levantePendiente();
+        $model->iniciarLevante($idLevante);
+        $this->conn()->query("UPDATE camion SET estado = 'en_mantenimiento' WHERE id_camion = $camionId");
+
+        $model->cancelarLevante($idLevante);
+
+        $this->assertSame(1, $this->contarFilas('camion', "id_camion = $camionId AND estado = 'en_mantenimiento'"));
     }
 }

@@ -1,5 +1,13 @@
 {
   "common": {
+    "campana_titulo": "Notificaciones",
+    "campana_subtitulo": "Todos tus avisos del sistema, en un solo lugar.",
+    "campana_cargando": "Cargando...",
+    "campana_vacio": "No tenés notificaciones.",
+    "campana_error": "No se pudieron cargar las notificaciones.",
+    "campana_marcar_leida": "Marcar leída",
+    "campana_borrar": "Borrar",
+    "campana_volver": "Volver",
     "nav_inicio": "Inicio",
     "nav_mapa": "Mapa",
     "nav_iniciar_sesion": "Iniciar Sesión",
@@ -901,6 +909,7 @@
     "opt_cambiar_estado": "Cambiar estado...",
     "title_ver_maquinaria": "Ver maquinaria",
     "title_ver_operarios": "Ver operarios",
+    "title_quitar_operario": "Quitar operario del centro",
     "operarios_titulo_prefijo": "Operarios de",
     "operarios_vacio": "Ningún operario asignado todavía.",
     "msg_operario_asignado": "Operario asignado al centro",
@@ -1497,13 +1506,7 @@
     "msg_incidencia_reportada": "¡Gracias! Tu reporte fue enviado.",
     "msg_error_reportar_incidencia": "No se pudo enviar el reporte.",
     "msg_foto_tipo_invalido": "La foto debe ser un archivo JPG o PNG.",
-    "msg_foto_tamano_invalido": "La foto no puede superar los 5 MB.",
-
-    "eyebrow_notificaciones": "Alertas",
-    "titulo_notificaciones": "Notificaciones",
-    "cargando_notificaciones": "Cargando notificaciones...",
-    "sin_notificaciones": "No tenés notificaciones por el momento.",
-    "btn_marcar_leida": "Marcar leída"
+    "msg_foto_tamano_invalido": "La foto no puede superar los 5 MB."
   },
 
   "reportes": {
