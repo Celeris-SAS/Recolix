@@ -1953,6 +1953,48 @@ ALTER TABLE `usuario_cuadrilla`
   ADD CONSTRAINT `usuario_cuadrilla_ibfk_2` FOREIGN KEY (`id_cuadrilla`) REFERENCES `cuadrilla` (`id_cuadrilla`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
+--
+-- Índice para listar solo las rutas activas
+--
+ALTER TABLE `ruta_recoleccion` ADD INDEX IF NOT EXISTS `idx_ruta_activa_circuito` (`activa`, `id_circuito`);
+
+--
+-- RF36 / RF43: historial de estados de camión (tabla + triggers)
+--
+CREATE TABLE IF NOT EXISTS `camion_estado_historial` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_camion` int(11) NOT NULL,
+  `estado_anterior` varchar(20) DEFAULT NULL,
+  `estado_nuevo` varchar(20) NOT NULL,
+  `fecha_cambio` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_camion_fecha` (`id_camion`, `fecha_cambio`),
+  CONSTRAINT `camion_estado_historial_ibfk_1` FOREIGN KEY (`id_camion`) REFERENCES `camion` (`id_camion`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+DROP TRIGGER IF EXISTS `camion_estado_alta`;
+DROP TRIGGER IF EXISTS `camion_estado_cambio`;
+
+DELIMITER $$
+CREATE TRIGGER `camion_estado_alta` AFTER INSERT ON `camion` FOR EACH ROW
+BEGIN
+  INSERT INTO `camion_estado_historial` (`id_camion`, `estado_anterior`, `estado_nuevo`) VALUES (NEW.`id_camion`, NULL, NEW.`estado`);
+END$$
+
+CREATE TRIGGER `camion_estado_cambio` AFTER UPDATE ON `camion` FOR EACH ROW
+BEGIN
+  IF NOT (OLD.`estado` <=> NEW.`estado`) THEN
+    INSERT INTO `camion_estado_historial` (`id_camion`, `estado_anterior`, `estado_nuevo`) VALUES (NEW.`id_camion`, OLD.`estado`, NEW.`estado`);
+  END IF;
+END$$
+DELIMITER ;
+
+-- Estado inicial de los camiones ya existentes.
+INSERT INTO `camion_estado_historial` (`id_camion`, `estado_anterior`, `estado_nuevo`)
+SELECT c.`id_camion`, NULL, c.`estado` FROM `camion` c
+WHERE NOT EXISTS (SELECT 1 FROM `camion_estado_historial` h WHERE h.`id_camion` = c.`id_camion`);
+
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

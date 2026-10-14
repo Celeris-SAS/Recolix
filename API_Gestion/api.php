@@ -5,6 +5,22 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('Access-Control-Allow-Headers: Content-Type');
 
+// ERR-22: los rechazos por restricciones de la base (clave foránea, duplicados) se muestran
+// con un mensaje de negocio en lugar del texto técnico de MySQL.
+function mensajeError(Throwable $e) {
+    if ($e instanceof mysqli_sql_exception) {
+        switch ((int) $e->getCode()) {
+            case 1452:
+                return 'El registro referenciado no existe. Verificá los datos ingresados.';
+            case 1451:
+                return 'No se puede eliminar o modificar porque tiene registros asociados.';
+            case 1062:
+                return 'Ya existe un registro con esos datos.';
+        }
+    }
+    return $e->getMessage();
+}
+
 $config = [
     'base_path' => '/recolix/API_Gestion/',
     // Endpoints que pueden usarse sin ser personal interno (landing pública y panel del vecino).
@@ -190,9 +206,14 @@ $config = [
                 'getIndicadores',
                 'getZonasCriticas',
                 'getVolumenPorTipoYPeriodo',
+                'getTopZonasIncidencias',
+                'getAlertasContenedores',
+                'getProyeccionesLlenado',
                 'getIncidenciasDetalle',
+                'getTiemposResolucion',
                 'getFrecuenciaRecoleccion',
                 'getCapacidadVertederos',
+                'getIngresosPorCentro',
                 'getClasificacionResiduos',
                 'getReciclaje',
                 'getEvolucionUsuarios',
@@ -337,7 +358,7 @@ if (strpos($uri, $basePath) === 0) {
             echo json_encode(['status' => 'success', 'data' => $result]);
         } catch (Throwable $e) {
             http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
-            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+            echo json_encode(['status' => 'error', 'message' => mensajeError($e)]);
         }
         exit;
     }
@@ -355,7 +376,7 @@ if (strpos($uri, $basePath) === 0) {
                     }
                 } catch (Throwable $e) {
                     http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
-                    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                    echo json_encode(['status' => 'error', 'message' => mensajeError($e)]);
                 }
             } else {
                 $query   = $_GET;
@@ -376,7 +397,7 @@ if (strpos($uri, $basePath) === 0) {
                                     echo json_encode(['status' => 'success', 'data' => $result]);
                                 } catch (Throwable $e) {
                                     http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
-                                    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                                    echo json_encode(['status' => 'error', 'message' => mensajeError($e)]);
                                 }
                                 $handled = true;
                                 break;
@@ -396,7 +417,7 @@ if (strpos($uri, $basePath) === 0) {
                         echo json_encode(['status' => 'success', 'data' => $result]);
                     } catch (Throwable $e) {
                         http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
-                        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                        echo json_encode(['status' => 'error', 'message' => mensajeError($e)]);
                     }
                 }
             }
@@ -422,7 +443,7 @@ if (strpos($uri, $basePath) === 0) {
                     echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' creado', 'data' => $result]);
                 } catch (Throwable $e) {
                     http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
-                    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                    echo json_encode(['status' => 'error', 'message' => mensajeError($e)]);
                 }
             }
             break;
@@ -449,7 +470,7 @@ if (strpos($uri, $basePath) === 0) {
                         echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' actualizado', 'data' => $result]);
                     } catch (Throwable $e) {
                         http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
-                        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                        echo json_encode(['status' => 'error', 'message' => mensajeError($e)]);
                     }
                 }
             }
@@ -468,7 +489,7 @@ if (strpos($uri, $basePath) === 0) {
                     echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' dado de baja']);
                 } catch (Throwable $e) {
                     http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
-                    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                    echo json_encode(['status' => 'error', 'message' => mensajeError($e)]);
                 }
             }
             break;

@@ -764,21 +764,21 @@ async function guardarCircuito(e) {
         const regla = reglas[campo];
         if (!regla) continue;
         if (regla.valores && !regla.valores.includes(valor)) {
-            mostrarToast(`${regla.label} no válido`, 'warning');
+            mostrarToast(msgValidacion('noValido', campo, regla), 'warning');
             return;
         }
         if (regla.max !== undefined && String(valor).length > regla.max) {
-            mostrarToast(`${regla.label} no puede superar los ${regla.max} caracteres`, 'warning');
+            mostrarToast(msgValidacion('maxCaracteres', campo, regla), 'warning');
             return;
         }
         if (regla.tipo === 'entero') {
             const num = parseInt(valor);
             if (isNaN(num)) {
-                mostrarToast(`${regla.label} debe ser un número entero`, 'warning');
+                mostrarToast(msgValidacion('entero', campo, regla), 'warning');
                 return;
             }
             if (regla.min !== undefined && num < regla.min) {
-                mostrarToast(`${regla.label} no puede ser menor que ${regla.min}`, 'warning');
+                mostrarToast(msgValidacion('menor', campo, regla), 'warning');
                 return;
             }
         }
@@ -895,21 +895,21 @@ async function modificarCircuito() {
     const regla = reglas[campo];
     if (regla) {
         if (regla.valores && !regla.valores.includes(valor)) {
-            mostrarToast(`${regla.label} no válido`, 'warning');
+            mostrarToast(msgValidacion('noValido', campo, regla), 'warning');
             return;
         }
         if (regla.max !== undefined && valor.length > regla.max) {
-            mostrarToast(`${regla.label} no puede superar los ${regla.max} caracteres`, 'warning');
+            mostrarToast(msgValidacion('maxCaracteres', campo, regla), 'warning');
             return;
         }
         if (regla.tipo === 'entero') {
             const num = parseInt(valor);
             if (isNaN(num)) {
-                mostrarToast(`${regla.label} debe ser un número entero`, 'warning');
+                mostrarToast(msgValidacion('entero', campo, regla), 'warning');
                 return;
             }
             if (regla.min !== undefined && num < regla.min) {
-                mostrarToast(`${regla.label} no puede ser menor que ${regla.min}`, 'warning');
+                mostrarToast(msgValidacion('menor', campo, regla), 'warning');
                 return;
             }
         }
@@ -1469,5 +1469,7 @@ function mostrarToast(msg, tipo = 'info') {
 }
 </script>
 
+    <?php include __DIR__ . '/../../i18n/validacion_js.php'; ?>
+    <script src="../../Backoffice/js/paginacion.js"></script>
 </body>
 </html>

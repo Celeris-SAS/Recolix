@@ -28,8 +28,9 @@ class RutaModel {
         return $affected > 0;
     }
 
+    // Baja lógica: la ruta queda inactiva y conserva sus contenedores, cuadrillas y levantes.
     public function deleteRuta($id) {
-        $stmt = mysqli_prepare($this->conn->getConexion(), "DELETE FROM ruta_recoleccion WHERE id_ruta = ?");
+        $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE ruta_recoleccion SET activa = 0 WHERE id_ruta = ?");
         mysqli_stmt_bind_param($stmt, "i", $id);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
@@ -40,7 +41,7 @@ class RutaModel {
     // para que la UI pueda mostrar "Asignado"/"Sin asignar" sin importar por qué endpoint
     // haya llegado la fila (listado completo, por id, o filtrada).
     private const SELECT_CON_LEVANTES = "
-        SELECT r.*, ci.turno,
+        SELECT r.*, ci.turno, ci.frecuencia,
                (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta) AS levantes_count,
                (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta AND l.estado = 'en_curso') AS en_curso_count,
                (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta AND l.estado = 'pendiente') AS pendiente_count,
@@ -49,8 +50,10 @@ class RutaModel {
         LEFT JOIN circuito ci ON ci.id_circuito = r.id_circuito
     ";
 
+    // Las rutas dadas de baja (activa = 0) se conservan por el historial (levantes, reportes) pero
+    // no aparecen en ningún listado; solo se llega a ellas por id.
     public function getAllRutas() {
-        $stmt = mysqli_prepare($this->conn->getConexion(), self::SELECT_CON_LEVANTES);
+        $stmt = mysqli_prepare($this->conn->getConexion(), self::SELECT_CON_LEVANTES . " WHERE r.activa = 1");
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
         $rutas = [];
@@ -72,7 +75,7 @@ class RutaModel {
     }
 
     public function obtenerPorCircuito($circuitoId) {
-        $stmt = mysqli_prepare($this->conn->getConexion(), self::SELECT_CON_LEVANTES . " WHERE r.id_circuito = ?");
+        $stmt = mysqli_prepare($this->conn->getConexion(), self::SELECT_CON_LEVANTES . " WHERE r.id_circuito = ? AND r.activa = 1");
         mysqli_stmt_bind_param($stmt, "i", $circuitoId);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
@@ -85,7 +88,7 @@ class RutaModel {
     }
 
     public function filtrarPorActividad($actividad) {
-        $stmt = mysqli_prepare($this->conn->getConexion(), self::SELECT_CON_LEVANTES . " WHERE r.actividad = ?");
+        $stmt = mysqli_prepare($this->conn->getConexion(), self::SELECT_CON_LEVANTES . " WHERE r.actividad = ? AND r.activa = 1");
         mysqli_stmt_bind_param($stmt, "s", $actividad);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
@@ -98,7 +101,7 @@ class RutaModel {
     }
 
     public function filtrarPorNombre($nombre) {
-        $stmt = mysqli_prepare($this->conn->getConexion(), self::SELECT_CON_LEVANTES . " WHERE r.nombre LIKE ?");
+        $stmt = mysqli_prepare($this->conn->getConexion(), self::SELECT_CON_LEVANTES . " WHERE r.nombre LIKE ? AND r.activa = 1");
         $like = '%' . $nombre . '%';
         mysqli_stmt_bind_param($stmt, "s", $like);
         mysqli_stmt_execute($stmt);
@@ -169,6 +172,39 @@ class RutaModel {
         return $cuadrillas;
     }
 
+    // RF54: eventos de la ruta. Cada levante es una ejecución con su cuadrilla, camión y estado
+    // (la asignación a una cuadrilla se conserva ahí aunque después se libere de ruta_cuadrilla);
+    // además se listan las cuadrillas asignadas hoy.
+    public function obtenerHistorial($rutaId) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "
+            SELECT 'ejecucion' AS tipo_evento, l.id_levante, l.hora_levante AS fecha, l.estado,
+                   l.id_cuadrilla, ca.matricula, l.total_recolectado,
+                   (SELECT COUNT(*) FROM contenedor_levante cl WHERE cl.id_levante = l.id_levante AND cl.hora_vaciado IS NOT NULL) AS contenedores_recolectados
+            FROM levante l
+            LEFT JOIN camion ca ON ca.id_camion = l.id_camion
+            WHERE l.id_ruta = ?
+            ORDER BY l.hora_levante DESC, l.id_levante DESC
+        ");
+        mysqli_stmt_bind_param($stmt, "i", $rutaId);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $historial = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $historial[] = $row;
+        }
+        mysqli_stmt_close($stmt);
+
+        foreach ($this->obtenerCuadrillas($rutaId) as $cuadrilla) {
+            $historial[] = [
+                'tipo_evento'  => 'asignacion_vigente',
+                'id_cuadrilla' => (int) $cuadrilla['id_cuadrilla'],
+                'estado'       => 'asignada',
+                'fecha'        => null,
+            ];
+        }
+        return $historial;
+    }
+
     public function obtenerLevantes($rutaId) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM levante WHERE id_ruta = ? ORDER BY hora_salida DESC");
         mysqli_stmt_bind_param($stmt, "i", $rutaId);
@@ -200,7 +236,7 @@ class RutaModel {
                 LIMIT 1
             )
             LEFT JOIN camion ca ON ca.id_camion = l.id_camion
-            WHERE rcu.id_cuadrilla = ?
+            WHERE rcu.id_cuadrilla = ? AND r.activa = 1
             ORDER BY r.id_ruta DESC
         ");
         mysqli_stmt_bind_param($stmt, "i", $idCuadrilla);
@@ -224,6 +260,7 @@ class RutaModel {
                 (SELECT AVG(c.nivel_llenado) FROM ruta_contenedor rc JOIN contenedor c ON c.id_contenedor = rc.id_contenedor WHERE rc.id_ruta = r.id_ruta) AS llenado_promedio
                 FROM ruta_recoleccion r
                 LEFT JOIN circuito ci ON ci.id_circuito = r.id_circuito
+                WHERE r.activa = 1
                 ORDER BY r.id_ruta DESC";
         $stmt = mysqli_prepare($this->conn->getConexion(), $sql);
         mysqli_stmt_execute($stmt);

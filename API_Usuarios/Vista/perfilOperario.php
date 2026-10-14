@@ -306,11 +306,11 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             }
 
             if (!email || !email.includes('@')) {
-                editEmailError.textContent = 'Ingresá un correo electrónico válido.';
+                editEmailError.textContent = <?= json_encode(t('perfil.msg_email_invalido')) ?>;
                 valido = false;
             }
             if (!tel) {
-                editTelError.textContent = 'Ingresá un teléfono de contacto.';
+                editTelError.textContent = <?= json_encode(t('perfil.msg_tel_requerido')) ?>;
                 valido = false;
             }
             if (!valido) return;
@@ -327,15 +327,15 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                     perfilNombreEl.textContent = `${primerNombre} ${pApellido}`;
                     perfilEmailEl.textContent = email;
                     perfilTelEl.textContent = tel;
-                    perfilFeedback.textContent = 'Los datos se actualizaron correctamente.';
+                    perfilFeedback.textContent = <?= json_encode(t('perfil.msg_datos_actualizados')) ?>;
                     perfilFeedback.classList.add('is-success');
                     setTimeout(mostrarVista, 900);
                 } else {
-                    perfilFeedback.textContent = json.message || 'No se pudo guardar.';
+                    perfilFeedback.textContent = json.message || <?= json_encode(t('perfil.msg_no_pudo_guardar')) ?>;
                     perfilFeedback.classList.add('is-error');
                 }
             } catch (err) {
-                perfilFeedback.textContent = 'No se pudo guardar.';
+                perfilFeedback.textContent = <?= json_encode(t('perfil.msg_no_pudo_guardar')) ?>;
                 perfilFeedback.classList.add('is-error');
             }
         });
@@ -348,11 +348,11 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
             let valido = true;
 
             if (!contraActual.value) {
-                contraActualError.textContent = 'Ingresá tu contraseña actual.';
+                contraActualError.textContent = <?= json_encode(t('perfil.msg_contra_actual_requerida')) ?>;
                 valido = false;
             }
             if (contraNueva.value.length < 8) {
-                contraNuevaError.textContent = 'La nueva contraseña debe tener al menos 8 caracteres.';
+                contraNuevaError.textContent = <?= json_encode(t('perfil.msg_contra_nueva_min')) ?>;
                 valido = false;
             }
             if (!valido) return;
@@ -365,15 +365,15 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
                 });
                 const json = await res.json();
                 if (json.status === 'success') {
-                    contraFeedback.textContent = 'Contraseña actualizada correctamente.';
+                    contraFeedback.textContent = <?= json_encode(t('perfil.msg_contra_actualizada')) ?>;
                     contraFeedback.classList.add('is-success');
                     setTimeout(mostrarVista, 900);
                 } else {
-                    contraFeedback.textContent = json.message || 'No se pudo cambiar la contraseña.';
+                    contraFeedback.textContent = json.message || <?= json_encode(t('perfil.msg_no_pudo_cambiar_contra')) ?>;
                     contraFeedback.classList.add('is-error');
                 }
             } catch (err) {
-                contraFeedback.textContent = 'No se pudo cambiar la contraseña.';
+                contraFeedback.textContent = <?= json_encode(t('perfil.msg_no_pudo_cambiar_contra')) ?>;
                 contraFeedback.classList.add('is-error');
             }
         });

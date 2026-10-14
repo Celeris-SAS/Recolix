@@ -464,6 +464,10 @@ a { text-decoration: none; color: inherit; }
 }
 
 .chart-canvas-wrap { position: relative; height: 220px; }
+.reportes-top-pares { grid-template-columns: 1fr 1fr; }
+.chart-canvas-wrap[hidden] { display: none; }
+.chart-empty { color: var(--muted); font-size: 0.9rem; text-align: center; padding: 70px 0; margin: 0; }
+.chart-empty[hidden] { display: none; }
 
 .gauges-card {
     background: var(--card-bg);
@@ -525,7 +529,7 @@ a { text-decoration: none; color: inherit; }
     .nav-inner { padding: 0 20px; }
     .nav-left  { gap: 20px; }
     .hero, .cards-section, .hub-section { padding-left: 20px; padding-right: 20px; }
-    .reportes-top { padding-left: 20px; padding-right: 20px; grid-template-columns: 1fr; }
+    .reportes-top, .reportes-top-pares { padding-left: 20px; padding-right: 20px; grid-template-columns: 1fr; }
     .gauges-card { margin-left: 20px; margin-right: 20px; }
     .footer { padding-left: 20px; padding-right: 20px; }
 }

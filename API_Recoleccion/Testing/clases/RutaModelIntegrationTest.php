@@ -29,15 +29,20 @@ final class RutaModelIntegrationTest extends DbTestCase
         $this->assertSame('Ruta Renombrada', $model->getRuta($id)['nombre']);
     }
 
-    public function testDeleteRutaLaElimina(): void
+    // ERR-09: la baja es lógica; la ruta conserva sus contenedores y cuadrillas.
+    public function testDeleteRutaLaDejaInactivaYConservaSusAsignaciones(): void
     {
         $model = new RutaModel();
         $circuitoId = $this->crearCircuito();
         $id = $model->insertRuta($circuitoId, 'Ruta Centro', 'barrido');
+        $this->agregarContenedorARuta($id, $this->crearContenedor($circuitoId), 1);
+        $model->asignarCuadrilla($id, $this->crearCuadrilla());
 
         $model->deleteRuta($id);
 
-        $this->assertNull($model->getRuta($id));
+        $this->assertSame(0, (int) $model->getRuta($id)['activa']);
+        $this->assertSame(1, $this->contarFilas('ruta_contenedor', "id_ruta = $id"));
+        $this->assertSame(1, $this->contarFilas('ruta_cuadrilla', "id_ruta = $id"));
     }
 
     public function testObtenerPorCircuitoFiltraCorrectamente(): void
@@ -135,5 +140,71 @@ final class RutaModelIntegrationTest extends DbTestCase
         $this->assertSame(1, (int) $fila['en_curso_count']);
         $this->assertSame(1, (int) $fila['contenedores_count']);
         $this->assertEqualsWithDelta(80.0, (float) $fila['llenado_promedio'], 0.001);
+    }
+
+    // RF54
+    public function testObtenerHistorialListaEjecucionesYAsignacionesVigentes(): void
+    {
+        $model = new RutaModel();
+        $circuitoId = $this->crearCircuito();
+        $rutaId = $this->crearRuta($circuitoId);
+        $camionId = $this->crearCamion();
+        $cuadrillaId = $this->crearCuadrilla();
+        $conn = $this->conn();
+        $conn->query("INSERT INTO levante (id_camion, id_cuadrilla, id_ruta, hora_salida, hora_levante, estado, total_recolectado) VALUES ($camionId, $cuadrillaId, $rutaId, NOW(), CURDATE(), 'completado', 120)");
+        $model->asignarCuadrilla($rutaId, $cuadrillaId);
+
+        $historial = $model->obtenerHistorial($rutaId);
+
+        $tipos = array_column($historial, 'tipo_evento');
+        $this->assertSame(['ejecucion', 'asignacion_vigente'], $tipos);
+        $this->assertSame('completado', $historial[0]['estado']);
+        $this->assertSame($cuadrillaId, (int) $historial[0]['id_cuadrilla']);
+        $this->assertSame($cuadrillaId, $historial[1]['id_cuadrilla']);
+    }
+
+    public function testObtenerHistorialDeUnaRutaSinMovimientosEstaVacio(): void
+    {
+        $model = new RutaModel();
+        $rutaId = $this->crearRuta();
+
+        $this->assertSame([], $model->obtenerHistorial($rutaId));
+    }
+
+    // ERR-08: la ruta expone el turno y la frecuencia heredados de su circuito.
+    public function testGetRutaIncluyeTurnoYFrecuenciaDelCircuito(): void
+    {
+        $model = new RutaModel();
+        $circuitoId = $this->crearCircuito(null, ['turno' => 'tarde', 'frecuencia' => 'interdiaria (lunes, miércoles y viernes)']);
+        $id = $model->insertRuta($circuitoId, 'Ruta Centro', 'barrido');
+
+        $ruta = $model->getRuta($id);
+
+        $this->assertSame('tarde', $ruta['turno']);
+        $this->assertSame('interdiaria (lunes, miércoles y viernes)', $ruta['frecuencia']);
+    }
+
+    // Las rutas inactivas se conservan (historial) pero no aparecen en ningún listado.
+    public function testLasRutasInactivasNoAparecenEnLosListados(): void
+    {
+        $model = new RutaModel();
+        $circuitoId = $this->crearCircuito();
+        $activa = $model->insertRuta($circuitoId, 'Ruta Activa', 'barrido');
+        $inactiva = $model->insertRuta($circuitoId, 'Ruta Inactiva', 'barrido');
+        $cuadrillaId = $this->crearCuadrilla();
+        $model->asignarCuadrilla($inactiva, $cuadrillaId);
+        $model->asignarCuadrilla($activa, $cuadrillaId);
+        $model->deleteRuta($inactiva);
+
+        $ids = fn(array $rutas) => array_map('intval', array_column($rutas, 'id_ruta'));
+
+        $this->assertSame([$activa], $ids($model->getAllRutas()));
+        $this->assertSame([$activa], $ids($model->obtenerPorCircuito($circuitoId)));
+        $this->assertSame([$activa], $ids($model->filtrarPorActividad('barrido')));
+        $this->assertSame([$activa], $ids($model->filtrarPorNombre('Ruta')));
+        $this->assertSame([$activa], $ids($model->obtenerResumen()));
+        $this->assertSame([$activa], $ids($model->obtenerPorCuadrilla($cuadrillaId)));
+        $this->assertNotNull($model->getRuta($inactiva), 'Por id sigue disponible para el historial');
+        $this->assertSame(0, (int) $model->getRuta($inactiva)['activa']);
     }
 }

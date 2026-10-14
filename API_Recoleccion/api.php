@@ -5,6 +5,22 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('Access-Control-Allow-Headers: Content-Type');
 
+// ERR-22: los rechazos por restricciones de la base (clave foránea, duplicados) se muestran
+// con un mensaje de negocio en lugar del texto técnico de MySQL.
+function mensajeError(Throwable $e) {
+    if ($e instanceof mysqli_sql_exception) {
+        switch ((int) $e->getCode()) {
+            case 1452:
+                return 'El registro referenciado no existe. Verificá los datos ingresados.';
+            case 1451:
+                return 'No se puede eliminar o modificar porque tiene registros asociados.';
+            case 1062:
+                return 'Ya existe un registro con esos datos.';
+        }
+    }
+    return $e->getMessage();
+}
+
 $config = [
     'base_path' => '/recolix/API_Recoleccion/',
     // Endpoints que pueden usarse sin ser personal interno (landing pública).
@@ -22,6 +38,25 @@ $config = [
             'insertMethod' => 'insertCamion',
             'updateMethod' => 'updateCamion',
             'deleteMethod' => 'deleteCamion',
+            'rolesMetodo' => [
+                'GET' => ['administrador', 'cuadrilla'],
+                'POST' => ['administrador'],
+                'PUT' => ['administrador', 'cuadrilla'],
+                'DELETE' => ['administrador'],
+            ],
+            'rolesAccion' => [
+                'reglasValidacion' => ['administrador', 'cuadrilla', 'operario'],
+                'esDisponible' => ['administrador', 'cuadrilla'],
+                'filtrarEstado' => ['administrador', 'cuadrilla'],
+                'filtrarTipoCarga' => ['administrador', 'cuadrilla'],
+                'filtrarDisponibilidad' => ['administrador', 'cuadrilla'],
+                'filtrarMantenimiento' => ['administrador', 'cuadrilla'],
+                'filtrarAnio' => ['administrador', 'cuadrilla'],
+                'filtrarModelo' => ['administrador', 'cuadrilla'],
+                'filtrarCapacidad' => ['administrador', 'cuadrilla'],
+                'obtenerHistorial' => ['administrador', 'cuadrilla'],
+                'obtenerEstados' => ['administrador', 'cuadrilla'],
+            ],
             'actions' => [
                 'reglasValidacion',
                 'esDisponible',
@@ -33,6 +68,7 @@ $config = [
                 'filtrarModelo',
                 'filtrarCapacidad',
                 'obtenerHistorial',
+                'obtenerEstados',
                 'obtenerEnOperativa'
             ],
             'filters' => [
@@ -52,6 +88,19 @@ $config = [
             'insertMethod' => 'insertTrasladoResiduo',
             'updateMethod' => 'updateTrasladoResiduo',
             'deleteMethod' => 'deleteTrasladoResiduo',
+            'rolesMetodo' => [
+                'GET' => ['administrador', 'cuadrilla', 'operario'],
+                'POST' => ['administrador', 'cuadrilla'],
+                'PUT' => ['administrador'],
+                'DELETE' => ['administrador'],
+            ],
+            'rolesAccion' => [
+                'reglasValidacion' => ['administrador', 'cuadrilla', 'operario'],
+                'obtenerPorCamion' => ['administrador', 'cuadrilla', 'operario'],
+                'obtenerPorCentro' => ['administrador', 'cuadrilla', 'operario'],
+                'filtrarPorFecha' => ['administrador', 'cuadrilla', 'operario'],
+                'obtenerPesoTotal' => ['administrador', 'cuadrilla', 'operario'],
+            ],
             'actions' => [
                 'reglasValidacion',
                 'obtenerPorCamion',
@@ -75,6 +124,20 @@ $config = [
             'insertMethod' => 'insertMantenimiento',
             'updateMethod' => 'updateMantenimiento',
             'deleteMethod' => 'deleteMantenimiento',
+            'rolesMetodo' => [
+                'GET' => ['administrador', 'cuadrilla'],
+                'POST' => ['administrador', 'cuadrilla'],
+                'PUT' => ['administrador'],
+                'DELETE' => ['administrador'],
+            ],
+            'rolesAccion' => [
+                'reglasValidacion' => ['administrador', 'cuadrilla'],
+                'programar' => ['administrador'],
+                'obtenerPorCamion' => ['administrador', 'cuadrilla'],
+                'filtrarPorTipo' => ['administrador', 'cuadrilla'],
+                'obtenerCostoTotal' => ['administrador'],
+                'proximos' => ['administrador', 'cuadrilla'],
+            ],
             'actions' => [
                 'reglasValidacion',
                 'programar',
@@ -98,6 +161,30 @@ $config = [
             'insertMethod' => 'insertRuta',
             'updateMethod' => 'updateRuta',
             'deleteMethod' => 'deleteRuta',
+            'rolesMetodo' => [
+                'GET' => ['administrador', 'cuadrilla'],
+                'POST' => ['administrador'],
+                'PUT' => ['administrador'],
+                'DELETE' => ['administrador'],
+            ],
+            'rolesAccion' => [
+                'reglasValidacion' => ['administrador', 'cuadrilla'],
+                'obtenerPorCircuito' => ['administrador', 'cuadrilla'],
+                'filtrarPorActividad' => ['administrador', 'cuadrilla'],
+                'filtrarPorNombre' => ['administrador', 'cuadrilla'],
+                'agregarContenedor' => ['administrador'],
+                'quitarContenedor' => ['administrador'],
+                'obtenerContenedores' => ['administrador', 'cuadrilla'],
+                'asignarCuadrilla' => ['administrador'],
+                'quitarCuadrilla' => ['administrador'],
+                'obtenerCuadrillas' => ['administrador', 'cuadrilla'],
+                'obtenerPorCuadrilla' => ['administrador', 'cuadrilla'],
+                'obtenerLevantes' => ['administrador', 'cuadrilla'],
+                'generarOptima' => ['administrador'],
+                'obtenerResumen' => ['administrador', 'cuadrilla'],
+                'obtenerCargaEstimada' => ['administrador', 'cuadrilla'],
+                'obtenerHistorial' => ['administrador'],
+            ],
             'actions' => [
                 'reglasValidacion',
                 'obtenerPorCircuito',
@@ -113,7 +200,8 @@ $config = [
                 'obtenerLevantes',
                 'generarOptima',
                 'obtenerResumen',
-                'obtenerCargaEstimada'
+                'obtenerCargaEstimada',
+                'obtenerHistorial'
             ],
             'filters' => [
                 'circuitoId' => 'obtenerPorCircuito',
@@ -130,6 +218,25 @@ $config = [
             'insertMethod' => 'planificar',
             'updateMethod' => 'updateLevante',
             'deleteMethod' => 'deleteLevante',
+            'rolesMetodo' => [
+                'GET' => ['administrador', 'cuadrilla'],
+                'POST' => ['administrador'],
+                'PUT' => ['administrador'],
+                'DELETE' => ['administrador'],
+            ],
+            'rolesAccion' => [
+                'reglasValidacion' => ['administrador', 'cuadrilla'],
+                'obtenerPorRuta' => ['administrador', 'cuadrilla'],
+                'obtenerCuadrillas' => ['administrador', 'cuadrilla'],
+                'obtenerActivoPorCuadrilla' => ['administrador', 'cuadrilla'],
+                'planificar' => ['administrador'],
+                'iniciar' => ['administrador', 'cuadrilla'],
+                'registrarContenedor' => ['administrador', 'cuadrilla'],
+                'completar' => ['administrador', 'cuadrilla'],
+                'cancelar' => ['administrador'],
+                'obtenerResumen' => ['administrador', 'cuadrilla'],
+                'obtenerPendientesVencidos' => ['administrador', 'cuadrilla'],
+            ],
             'actions' => [
                 'reglasValidacion',
                 'obtenerPorRuta',
@@ -157,6 +264,22 @@ $config = [
             'insertMethod' => 'insertCircuito',
             'updateMethod' => 'updateCircuito',
             'deleteMethod' => 'deleteCircuito',
+            'rolesMetodo' => [
+                'GET' => ['administrador', 'cuadrilla'],
+                'POST' => ['administrador'],
+                'PUT' => ['administrador'],
+                'DELETE' => ['administrador'],
+            ],
+            'rolesAccion' => [
+                'reglasValidacion' => ['administrador', 'cuadrilla'],
+                'obtenerPorMunicipio' => ['administrador', 'cuadrilla'],
+                'filtrarPorTurno' => ['administrador', 'cuadrilla'],
+                'filtrarPorActividad' => ['administrador', 'cuadrilla'],
+                'filtrarPorFrecuencia' => ['administrador', 'cuadrilla'],
+                'filtrarPorDia' => ['administrador', 'cuadrilla'],
+                'obtenerRutas' => ['administrador', 'cuadrilla'],
+                'obtenerContenedores' => ['administrador', 'cuadrilla'],
+            ],
             'actions' => [
                 'reglasValidacion',
                 'obtenerPorMunicipio',
@@ -181,6 +304,12 @@ $config = [
             'file' => 'Controlador/centroController.php',
             'getAllMethod' => 'getAllCentros',
             'getMethod' => 'getCentro',
+            'rolesMetodo' => [
+                'GET' => ['administrador', 'cuadrilla', 'operario'],
+            ],
+            'rolesAccion' => [
+                'filtrarOperativos' => ['administrador', 'cuadrilla', 'operario'],
+            ],
             'actions' => [
                 'filtrarOperativos'
             ]
@@ -239,10 +368,23 @@ if (strpos($uri, $basePath) === 0) {
     $claveEndpoint = $method . ' ' . $resource . ($action ? '/' . $action : ($id !== null ? '/:id' : ''));
     $rolSesion     = $_SESSION['usuario']['rol'] ?? '';
     $esPersonalInterno = $rolSesion !== '' && $rolSesion !== 'vecino';
-    if (!$esPersonalInterno && !in_array($claveEndpoint, $config['publicos'], true)) {
-        http_response_code(403);
-        echo json_encode(['status' => 'error', 'message' => 'No tenés permiso para acceder a este recurso.']);
-        exit;
+    if (!in_array($claveEndpoint, $config['publicos'], true)) {
+        if (!$esPersonalInterno) {
+            http_response_code(403);
+            echo json_encode(['status' => 'error', 'message' => 'No tenés permiso para acceder a este recurso.']);
+            exit;
+        }
+        // Permisos por rol: lo que no figura en rolesAccion / rolesMetodo es solo del administrador.
+        if ($action) {
+            $requerido = $resourceConfig['rolesAccion'][$action] ?? ['administrador'];
+        } else {
+            $requerido = $resourceConfig['rolesMetodo'][$method] ?? ['administrador'];
+        }
+        if (!in_array('*', $requerido, true) && !in_array($rolSesion, $requerido, true)) {
+            http_response_code(403);
+            echo json_encode(['status' => 'error', 'message' => 'No tenés permiso para acceder a este recurso.']);
+            exit;
+        }
     }
 
     if ($action && isset($resourceConfig['actions']) && in_array($action, $resourceConfig['actions']) && method_exists($controller, $action)) {
@@ -267,7 +409,7 @@ if (strpos($uri, $basePath) === 0) {
             echo json_encode(['status' => 'success', 'data' => $result]);
         } catch (Throwable $e) {
             http_response_code(400);
-            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+            echo json_encode(['status' => 'error', 'message' => mensajeError($e)]);
         }
         exit;
     }
@@ -285,7 +427,7 @@ if (strpos($uri, $basePath) === 0) {
                     }
                 } catch (Throwable $e) {
                     http_response_code(400);
-                    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                    echo json_encode(['status' => 'error', 'message' => mensajeError($e)]);
                 }
             } else {
                 $query = $_GET;
@@ -307,7 +449,7 @@ if (strpos($uri, $basePath) === 0) {
                                     echo json_encode(['status' => 'success', 'data' => $result]);
                                 } catch (Throwable $e) {
                                     http_response_code(400);
-                                    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                                    echo json_encode(['status' => 'error', 'message' => mensajeError($e)]);
                                 }
                                 $handled = true;
                                 break;
@@ -327,7 +469,7 @@ if (strpos($uri, $basePath) === 0) {
                         echo json_encode(['status' => 'success', 'data' => $result]);
                     } catch (Throwable $e) {
                         http_response_code(400);
-                        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                        echo json_encode(['status' => 'error', 'message' => mensajeError($e)]);
                     }
                 }
             }
@@ -349,7 +491,7 @@ if (strpos($uri, $basePath) === 0) {
                     echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' creado', 'data' => $result]);
                 } catch (Throwable $e) {
                     http_response_code(400);
-                    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                    echo json_encode(['status' => 'error', 'message' => mensajeError($e)]);
                 }
             }
             break;
@@ -374,7 +516,7 @@ if (strpos($uri, $basePath) === 0) {
                         echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' actualizado', 'data' => $result]);
                     } catch (Throwable $e) {
                         http_response_code(400);
-                        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                        echo json_encode(['status' => 'error', 'message' => mensajeError($e)]);
                     }
                 }
             }
@@ -390,7 +532,7 @@ if (strpos($uri, $basePath) === 0) {
                     echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' eliminado']);
                 } catch (Throwable $e) {
                     http_response_code(400);
-                    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                    echo json_encode(['status' => 'error', 'message' => mensajeError($e)]);
                 }
             }
             break;

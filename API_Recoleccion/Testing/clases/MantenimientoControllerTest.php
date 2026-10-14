@@ -114,4 +114,31 @@ final class MantenimientoControllerTest extends RecoleccionTestCase
         $controller = $this->controller();
         $this->assertSame(['preventivo', 'correctivo'], $controller->reglasValidacion()['tipo']['valores']);
     }
+
+    // ERR-16 / RNE 24
+    public function testValidarRangoFechasRechazaFinAnteriorAlInicio(): void
+    {
+        $controller = $this->controller();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->callPrivate($controller, 'validarRangoFechas', ['2026-10-10 08:00:00', '2026-10-09 08:00:00']);
+    }
+
+    public function testValidarRangoFechasAceptaFinIgualOPosteriorYSinFin(): void
+    {
+        $controller = $this->controller();
+
+        $this->callPrivate($controller, 'validarRangoFechas', ['2026-10-12 08:00:00', '2026-10-12 08:00:00']);
+        $this->callPrivate($controller, 'validarRangoFechas', ['2026-10-12 08:00:00', '2026-10-13 08:00:00']);
+        $this->callPrivate($controller, 'validarRangoFechas', ['2026-10-12 08:00:00', null]);
+        $this->addToAssertionCount(3);
+    }
+
+    public function testInsertMantenimientoRechazaFinAnteriorAlInicioSinTocarLaBase(): void
+    {
+        $controller = $this->controller();
+
+        $this->expectException(InvalidArgumentException::class);
+        $controller->insertMantenimiento(1, 'preventivo', 'Cambio de aceite', '2026-10-10 08:00', '2026-10-09 08:00', 100);
+    }
 }

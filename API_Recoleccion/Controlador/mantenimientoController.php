@@ -67,6 +67,13 @@
             return $val;
         }
 
+        // RNE 24: la fecha de fin no puede ser anterior a la de inicio.
+        private function validarRangoFechas($fechaInicio, $fechaFin) {
+            if ($fechaFin !== null && strtotime($fechaFin) < strtotime($fechaInicio)) {
+                throw new InvalidArgumentException("La fecha de fin no puede ser anterior a la fecha de inicio.");
+            }
+        }
+
         public function reglasValidacion() {
             return [
                 'camionId' => ['tipo' => 'entero', 'min' => 1, 'label' => 'ID del camión'],
@@ -111,6 +118,7 @@
                 ? $this->validarFecha($fechaFin, 'Fecha de fin')
                 : null;
             $costo = $this->validarDecimal($costo, 'Costo');
+            $this->validarRangoFechas($fechaInicio, $fechaFin);
             $id = $this->mantenimientoModel->registrar($camionId, $tipo, $descripcion, $fechaInicio, $fechaFin, $costo);
             $this->camionModel->marcarCamionEnMantenimiento($camionId);
             return $id;
@@ -128,6 +136,7 @@
                 ? $this->validarFecha($fechaFin, 'Fecha de fin')
                 : null;
             $costo = $this->validarDecimal($costo, 'Costo');
+            $this->validarRangoFechas($fechaInicio, $fechaFin);
             return $this->mantenimientoModel->actualizarMantenimiento($id, $tipo, $descripcion, $fechaInicio, $fechaFin, $costo);
         }
 
@@ -145,6 +154,7 @@
             $descripcion = $this->validarString($descripcion, 'Descripción');
             $fechaInicio = $this->validarFecha($fechaInicio, 'Fecha de inicio');
             $fechaFin = $this->validarFecha($fechaFin, 'Fecha de fin');
+            $this->validarRangoFechas($fechaInicio, $fechaFin);
             $id = $this->mantenimientoModel->programar($camionId, $tipo, $descripcion, $fechaInicio, $fechaFin);
             $this->camionModel->marcarCamionEnMantenimiento($camionId);
             return $id;

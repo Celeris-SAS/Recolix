@@ -116,7 +116,6 @@ class MaquinariaController {
 
     // RF80 — Actualización del estado de la maquinaria.
     public function cambiarEstado($id, $nuevoEstado) {
-        $this->verificarCentroPropio($this->maquinariaModel->centroDeMaquinaria($this->validarId($id)), $this->centroAcopioModel);
         $id = $this->validarId($id);
         $nuevoEstado = $this->validarEstado($nuevoEstado);
 
@@ -124,6 +123,7 @@ class MaquinariaController {
         if (!$maquinaria) {
             throw new InvalidArgumentException("No existe una maquinaria con el ID $id.");
         }
+        $this->verificarCentroPropio($this->maquinariaModel->centroDeMaquinaria($id), $this->centroAcopioModel);
 
         return $this->maquinariaModel->cambiarEstado($id, $nuevoEstado);
     }

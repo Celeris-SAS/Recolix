@@ -113,4 +113,22 @@ final class CircuitoControllerTest extends RecoleccionTestCase
         sort($ids);
         $this->assertSame([1, 3], $ids);
     }
+
+    /** @dataProvider frecuencias */
+    public function testVecesPorSemanaSeDerivaDeLosDiasDeLaFrecuencia(string $frecuencia, int $esperado): void
+    {
+        $controller = $this->controller();
+        $circuito = $this->callPrivate($controller, 'conVecesPorSemana', [['frecuencia' => $frecuencia]]);
+        $this->assertSame($esperado, $circuito['veces_por_semana']);
+    }
+
+    public static function frecuencias(): array
+    {
+        return [
+            'diaria lunes a viernes' => ['diaria (lunes a viernes)', 5],
+            'interdiaria' => ['interdiaria (lunes, miércoles y viernes)', 3],
+            'un solo día' => ['semanal (sábado)', 1],
+            'sin días' => ['a demanda', 0],
+        ];
+    }
 }

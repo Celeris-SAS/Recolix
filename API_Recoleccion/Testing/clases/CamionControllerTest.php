@@ -225,4 +225,52 @@ final class CamionControllerTest extends RecoleccionTestCase
 
         $this->assertSame(1235, $stub->capacidadRecibida);
     }
+
+    private function camionConEstadoActual(?string $estadoActual): CamionController
+    {
+        $controller = $this->controller();
+        $stub = new class ($estadoActual) {
+            public $actualizado = false;
+            private $estado;
+            public function __construct($estado) { $this->estado = $estado; }
+            public function getCamion($id) { return $this->estado === null ? null : ['id_camion' => $id, 'estado' => $this->estado]; }
+            public function getMatricula($matricula) { return null; }
+            public function updateCamion(...$args) { $this->actualizado = true; return true; }
+            public function insertCamion(...$args) { return 1; }
+        };
+        $this->setPrivateProperty($controller, 'camionModel', $stub);
+        return $controller;
+    }
+
+    // ERR-15: a mantenimiento solo se pasa registrando un mantenimiento.
+    public function testUpdateCamionNoPermitePasarADisponibleAMantenimientoADedo(): void
+    {
+        $controller = $this->camionConEstadoActual('disponible');
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('registrá o programá un mantenimiento');
+        $controller->updateCamion(1, 'ABC1234', 'carga_lateral', 5000, 2020, 'Modelo', 'en_mantenimiento');
+    }
+
+    public function testUpdateCamionPermiteGuardarOtrosDatosSiYaEstabaEnMantenimiento(): void
+    {
+        $controller = $this->camionConEstadoActual('en_mantenimiento');
+
+        $this->assertTrue($controller->updateCamion(1, 'ABC1234', 'carga_lateral', 5000, 2020, 'Modelo', 'en_mantenimiento'));
+    }
+
+    public function testUpdateCamionPermiteOtrosCambiosDeEstado(): void
+    {
+        $controller = $this->camionConEstadoActual('disponible');
+
+        $this->assertTrue($controller->updateCamion(1, 'ABC1234', 'carga_lateral', 5000, 2020, 'Modelo', 'de_baja'));
+    }
+
+    public function testInsertCamionNoPermiteCrearloEnMantenimiento(): void
+    {
+        $controller = $this->camionConEstadoActual(null);
+
+        $this->expectException(InvalidArgumentException::class);
+        $controller->insertCamion('ABC1234', 'carga_lateral', 5000, 2020, 'Modelo', 'en_mantenimiento');
+    }
 }

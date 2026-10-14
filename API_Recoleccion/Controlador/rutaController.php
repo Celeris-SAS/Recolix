@@ -1,4 +1,6 @@
 <?php
+    require_once __DIR__ . '/frecuenciaCircuito.php';
+
     class RutaController {
 
         // Capacidad de referencia (kg) usada al generar una ruta óptima: un tope conservador
@@ -93,6 +95,10 @@
 
             $r['estado'] = $estado;
             $r['estado_levante'] = $estadoLevante;
+            // La ruta hereda turno y frecuencia de su circuito.
+            if (array_key_exists('frecuencia', $r)) {
+                $r['veces_por_semana'] = count(FrecuenciaCircuito::dias($r['frecuencia']));
+            }
             return $r;
         }
 
@@ -123,9 +129,11 @@
 
         public function deleteRuta($id) {
             $id = $this->validarId($id);
-            $levantes = $this->rutaModel->obtenerLevantes($id);
-            if (!empty($levantes)) {
-                throw new InvalidArgumentException("No se puede eliminar una ruta con levante asignado");
+            $levantesActivos = array_filter($this->rutaModel->obtenerLevantes($id), function ($l) {
+                return in_array($l['estado'], ['pendiente', 'en_curso'], true);
+            });
+            if (!empty($levantesActivos)) {
+                throw new InvalidArgumentException("No se puede dar de baja una ruta con un levante pendiente o en curso");
             }
             return $this->rutaModel->deleteRuta($id);
         }
@@ -190,6 +198,11 @@
         public function obtenerPorCuadrilla($cuadrillaId) {
             $cuadrillaId = $this->validarId($cuadrillaId);
             return $this->rutaModel->obtenerPorCuadrilla($cuadrillaId);
+        }
+
+        public function obtenerHistorial($rutaId) {
+            $rutaId = $this->validarId($rutaId);
+            return $this->rutaModel->obtenerHistorial($rutaId);
         }
 
         public function obtenerLevantes($rutaId) {

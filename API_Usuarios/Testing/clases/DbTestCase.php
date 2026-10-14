@@ -24,6 +24,7 @@ abstract class DbTestCase extends UsuarioTestCase
         'incidencia',
         'levante',
         'cuadrilla',
+        'camion_estado_historial',
         'camion',
         'ruta_recoleccion',
         'circuito',
