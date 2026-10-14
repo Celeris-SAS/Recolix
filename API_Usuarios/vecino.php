@@ -37,6 +37,7 @@ if (!isset($_SESSION['ci_usuario'])) {
             </nav>
             <div class="nav-right">
                 <?php include __DIR__ . '/../i18n/switcher.php'; ?>
+                <?php include $_SERVER['DOCUMENT_ROOT'] . '/recolix/Comun/campana.php'; ?>
                 <a href="vecino.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
                     <img src="Vista/img/user.svg" alt="Usuario" class="nav-user-icon">
                 </a>
@@ -213,16 +214,7 @@ if (!isset($_SESSION['ci_usuario'])) {
             </div>
         </section>
 
-        <section class="dash-section" id="seccionNotificaciones">
-            <div class="section-header">
-                <div>
-                    <p class="section-eyebrow"><?= t('vecino.eyebrow_notificaciones') ?></p>
-                    <h2><?= t('vecino.titulo_notificaciones') ?></h2>
-                </div>
-            </div>
-            <div id="notificacionesLista">
-                <p class="estado-carga"><?= t('vecino.cargando_notificaciones') ?></p>
-            </div>
+        <section class="dash-section" id="seccionCuenta">
             <div class="panel-card" id="borrarCuentaConfirm" hidden>
                 <h3><?= t('perfil.titulo_borrar_cuenta') ?></h3>
                 <p class="form-nota"><?= t('perfil.nota_borrar_cuenta') ?></p>
@@ -313,8 +305,6 @@ if (!isset($_SESSION['ci_usuario'])) {
             'ubicacionNoDisponible' => 'vecino.nueva_incidencia_ubicacion_no_disponible',
             'contenedorSeleccionado' => 'vecino.nueva_incidencia_contenedor_seleccionado',
             'tuUbicacion' => 'vecino.nueva_incidencia_tu_ubicacion',
-            'sinNotificaciones' => 'vecino.sin_notificaciones',
-            'btnMarcarLeida' => 'vecino.btn_marcar_leida',
             'msgFotoTipoInvalido' => 'vecino.msg_foto_tipo_invalido',
             'msgFotoTamanoInvalido' => 'vecino.msg_foto_tamano_invalido',
         ])) ?>;

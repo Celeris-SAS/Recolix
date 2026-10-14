@@ -8,10 +8,13 @@
         private const CAPACIDAD_MAXIMA_RUTA_KG = 5000;
 
         private $rutaModel;
+        private $notificacionModel;
 
         public function __construct() {
             require_once __DIR__ . '/../Modelo/rutaModel.php';
+            require_once __DIR__ . '/../Modelo/notificacionModel.php';
             $this->rutaModel = new RutaModel();
+            $this->notificacionModel = new NotificacionModel();
         }
 
         private function validarId($valor) {
@@ -163,7 +166,14 @@
         public function asignarCuadrilla($rutaId, $cuadrillaId) {
             $rutaId = $this->validarId($rutaId);
             $cuadrillaId = $this->validarId($cuadrillaId);
-            return $this->rutaModel->asignarCuadrilla($rutaId, $cuadrillaId);
+            $resultado = $this->rutaModel->asignarCuadrilla($rutaId, $cuadrillaId);
+            $this->notificacionModel->crearParaCuadrilla(
+                $cuadrillaId,
+                "Se te asignó la ruta #$rutaId.",
+                'levante',
+                'informativa'
+            );
+            return $resultado;
         }
 
         public function quitarCuadrilla($rutaId, $cuadrillaId) {

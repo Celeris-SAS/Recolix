@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../../Modelo/mantenimientoModel.php';
+require_once __DIR__ . '/../../Controlador/mantenimientoController.php';
 
 final class MantenimientoModelIntegrationTest extends DbTestCase
 {
@@ -121,5 +122,27 @@ final class MantenimientoModelIntegrationTest extends DbTestCase
         $camionId = $this->crearCamion();
 
         $this->assertSame(0.0, $model->obtenerCostoTotal($camionId));
+    }
+
+    // RF37: la cuadrilla reporta un desperfecto y el administrador recibe la notificación.
+    public function testNotificarDesperfectoAvisaAlAdministrador(): void
+    {
+        $admin = $this->crearUsuario(null, ['rol' => 'administrador', 'acceso' => 'habilitado']);
+        $camionId = $this->crearCamion();
+
+        (new MantenimientoController())->notificarDesperfecto($camionId, 'Pérdida de frenos');
+
+        $like = '%Pérdida de frenos%';
+        $stmt = $this->conn()->prepare(
+            "SELECT COUNT(*) AS n FROM NOTIFICACION n
+             JOIN NOTIFICACION_USUARIO nu ON nu.id_notificacion = n.id_notificacion
+             WHERE nu.ci_usuario = ? AND n.mensaje LIKE ?"
+        );
+        $stmt->bind_param('is', $admin, $like);
+        $stmt->execute();
+        $n = (int) $stmt->get_result()->fetch_assoc()['n'];
+        $stmt->close();
+
+        $this->assertSame(1, $n);
     }
 }
