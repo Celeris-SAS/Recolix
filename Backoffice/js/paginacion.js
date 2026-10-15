@@ -153,9 +153,9 @@
 
             filas.forEach((tr, i) => { tr.style.display = (i >= desde && i < hasta) ? '' : 'none'; });
 
-            // Las tablas y listados completos muestran siempre los controles (si hay filas); los paneles
-            // compactos solo cuando hay más de una página.
-            const visible = this.compacta ? total > TAMANOS[0] : total > 0;
+            // Los controles solo aparecen cuando hay más filas que la página mínima (10): con 10 o
+            // menos todo entra en una sola página y no hace falta paginar.
+            const visible = total > TAMANOS[0];
             [this.barraArriba, this.barraAbajo].forEach(barra => {
                 if (!barra) return;
                 barra.hidden = !visible;
