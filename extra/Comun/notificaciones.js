@@ -1,4 +1,4 @@
-// Lista completa de notificaciones (recolix/Comun/notificaciones.php), para los cuatro
+// Lista completa de notificaciones (recolix/extra/Comun/notificaciones.php), para los cuatro
 // portales. Misma API que usaba la campana: getNotificaciones, marcarNotificacionLeida y
 // borrarNotificacion, todas filtradas por el CI de la sesión.
 function initListaNotificaciones(opts) {

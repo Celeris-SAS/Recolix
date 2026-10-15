@@ -1,7 +1,7 @@
 <?php
 // Campana de notificaciones compartida por los cuatro portales (vecino, admin, cuadrilla,
 // operario). Se incluye una vez en cada navbar, justo antes del link al perfil, con un
-// include de $_SERVER['DOCUMENT_ROOT'] más '/recolix/Comun/campana.php' envuelto en PHP.
+// include de $_SERVER['DOCUMENT_ROOT'] más '/recolix/extra/Comun/campana.php' envuelto en PHP.
 //
 // Es solo un link a notificaciones.php con un contador de no leídas: la lista completa,
 // con marcar leída y borrar, vive en esa página.
@@ -15,8 +15,8 @@ $campanaCiUsuario = (int) ($_SESSION['usuario']['ci_usuario'] ?? $_SESSION['ci_u
 // para que le llegue al admin sin importar en qué página esté cuando abre la campana.
 $campanaEsAdmin = ($_SESSION['usuario']['rol'] ?? '') === 'administrador';
 ?>
-<a href="/recolix/Comun/notificaciones.php" class="campana-btn" id="campanaBtn" aria-label="<?= htmlspecialchars(t('common.campana_titulo')) ?>">
-    <img src="/recolix/Comun/campana-icono.jpg" alt="" class="campana-icono">
+<a href="/recolix/extra/Comun/notificaciones.php" class="campana-btn" id="campanaBtn" aria-label="<?= htmlspecialchars(t('common.campana_titulo')) ?>">
+    <img src="/recolix/extra/Comun/campana-icono.jpg" alt="" class="campana-icono">
     <span class="campana-badge" id="campanaBadge" hidden>0</span>
 </a>
 <style>
@@ -53,7 +53,7 @@ $campanaEsAdmin = ($_SESSION['usuario']['rol'] ?? '') === 'administrador';
         text-align: center;
     }
 </style>
-<script src="/recolix/Comun/campana.js"></script>
+<script src="/recolix/extra/Comun/campana.js"></script>
 <script>
     initCampanaBadge({
         ci: <?= json_encode($campanaCiUsuario) ?>,

@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
-require_once __DIR__ . '/../../i18n/i18n.php';
+require_once __DIR__ . '/../../extra/i18n/i18n.php';
 ?>
 <!DOCTYPE html>
 <html lang="<?= htmlspecialchars($RECOLIX_IDIOMA) ?>">
@@ -37,8 +37,8 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             </nav>
         </div>
         <div class="nav-right">
-            <?php include __DIR__ . '/../../i18n/switcher.php'; ?>
-            <?php include $_SERVER['DOCUMENT_ROOT'] . '/recolix/Comun/campana.php'; ?>
+            <?php include __DIR__ . '/../../extra/i18n/switcher.php'; ?>
+            <?php include $_SERVER['DOCUMENT_ROOT'] . '/recolix/extra/Comun/campana.php'; ?>
             <a href="../perfil.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
                 <img src="../../API_Recoleccion/Vista/img/user.svg" alt="Usuario" class="nav-user-icon">
             </a>
@@ -287,7 +287,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
     <p class="footer-copy"><?= t('backoffice.footer_copyright') ?></p>
 </footer>
 
-<?php include __DIR__ . '/../../i18n/validacion_js.php'; ?>
+<?php include __DIR__ . '/../../extra/i18n/validacion_js.php'; ?>
 <script>
 const I18N = <?= json_encode(array_combine(['hero_title', 'resultado', 'resultados', 'th_acciones', 'th_municipio', 'th_estado', 'opt_activas', 'seleccionar', 'titulo_todas', 'label_estado', 'label_municipio', 'municipio_num', 'quitar_cuadrilla', 'sin_usuarios_disponibles', 'ya_en_cuadrilla', 'titulo_editar_btn', 'btn_eliminar', 'modal_editar', 'card_agregar_titulo', 'cargando', 'placeholder_selecciona_campo', 'estado_activa', 'estado_inactiva', 'api_error', 'ingresa_id', 'no_encontrada', 'selecciona_filtro', 'selecciona_valor', 'selecciona_municipio', 'selecciona_usuario', 'usuario_asignado', 'usuario_quitado', 'error_cargar_usuarios', 'error_asignar_usuario', 'error_quitar_usuario', 'error_guardar', 'error_eliminar', 'error_modificar', 'baja_ok', 'selecciona_campo_modificar', 'ingresa_nuevo_valor'], array_map(function ($k) { return t('cuadrillas.' . $k); }, ['hero_title', 'th_acciones', 'th_municipio', 'th_estado', 'opt_activas', 'seleccionar', 'titulo_todas', 'label_estado', 'label_municipio', 'municipio_num', 'quitar_cuadrilla', 'sin_usuarios_disponibles', 'ya_en_cuadrilla', 'titulo_editar_btn', 'btn_eliminar', 'modal_editar', 'card_agregar_titulo', 'cargando', 'placeholder_selecciona_campo', 'estado_activa', 'estado_inactiva', 'api_error', 'ingresa_id', 'no_encontrada', 'selecciona_filtro', 'selecciona_valor', 'selecciona_municipio', 'selecciona_usuario', 'usuario_asignado', 'usuario_quitado', 'error_cargar_usuarios', 'error_asignar_usuario', 'error_quitar_usuario', 'error_guardar', 'error_eliminar', 'error_modificar', 'baja_ok', 'selecciona_campo_modificar', 'ingresa_nuevo_valor'])), JSON_UNESCAPED_UNICODE) ?>;
 /*

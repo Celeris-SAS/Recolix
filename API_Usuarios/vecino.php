@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once __DIR__ . '/../i18n/i18n.php';
+require_once __DIR__ . '/../extra/i18n/i18n.php';
 
 if (!isset($_SESSION['ci_usuario'])) {
     header("Location: ../LandingPage/login.php");
@@ -36,8 +36,8 @@ if (!isset($_SESSION['ci_usuario'])) {
                 </ul>
             </nav>
             <div class="nav-right">
-                <?php include __DIR__ . '/../i18n/switcher.php'; ?>
-                <?php include $_SERVER['DOCUMENT_ROOT'] . '/recolix/Comun/campana.php'; ?>
+                <?php include __DIR__ . '/../extra/i18n/switcher.php'; ?>
+                <?php include $_SERVER['DOCUMENT_ROOT'] . '/recolix/extra/Comun/campana.php'; ?>
                 <a href="vecino.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
                     <img src="Vista/img/user.svg" alt="Usuario" class="nav-user-icon">
                 </a>

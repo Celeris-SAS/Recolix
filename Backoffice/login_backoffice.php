@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once __DIR__ . '/../i18n/i18n.php';
+require_once __DIR__ . '/../extra/i18n/i18n.php';
 
        if (isset($_SESSION['usuario']) && !empty($_SESSION['usuario']['rol']) && $_SESSION['usuario']['rol'] !== 'vecino') {
     switch ($_SESSION['usuario']['rol']) {
@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="login-wrap">
     <div class="login-card">
 
-        <?php include __DIR__ . '/../i18n/switcher.php'; ?>
+        <?php include __DIR__ . '/../extra/i18n/switcher.php'; ?>
 
         <div class="login-logo">
             <img src="../API_Recoleccion/Vista/logoRecolix.png" alt="Recolix">

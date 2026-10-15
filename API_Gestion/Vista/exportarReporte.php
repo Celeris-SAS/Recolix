@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
 require_once __DIR__ . '/../../conexion.php';
 require_once __DIR__ . '/../Modelo/reporteModel.php';
-require_once __DIR__ . '/../../i18n/i18n.php';
+require_once __DIR__ . '/../../extra/i18n/i18n.php';
 
 // Los archivos exportados salen en el idioma activo de la página (cookie recolix_lang / ?lang=).
 $r = function ($clave) { return t('reportes.' . $clave); };
