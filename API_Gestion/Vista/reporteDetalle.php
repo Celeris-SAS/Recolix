@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
-require_once __DIR__ . '/../../i18n/i18n.php';
+require_once __DIR__ . '/../../extra/i18n/i18n.php';
 
 $tiposReporte = [
     'zonas_criticas' => ['titulo' => 'reportes.card_zonas_criticas_titulo', 'desc' => 'reportes.zonas_hero_sub',    'implementado' => true],
@@ -209,8 +209,8 @@ if ($tipo === 'usuarios') {
                 </nav>
             </div>
             <div class="nav-right">
-                <?php include __DIR__ . '/../../i18n/switcher.php'; ?>
-                <?php include $_SERVER['DOCUMENT_ROOT'] . '/recolix/Comun/campana.php'; ?>
+                <?php include __DIR__ . '/../../extra/i18n/switcher.php'; ?>
+                <?php include $_SERVER['DOCUMENT_ROOT'] . '/recolix/extra/Comun/campana.php'; ?>
                 <a href="/recolix/API_Usuarios/perfil.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
                     <img src="user.svg" alt="Usuario" class="nav-user-icon">
                 </a>

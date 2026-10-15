@@ -4,7 +4,7 @@
 // alcanza para los cuatro en vez de duplicarla por rol como perfil.php/perfilCuadrilla.php/
 // perfilOperario.php (esas sí difieren por rol).
 session_start();
-require_once $_SERVER['DOCUMENT_ROOT'] . '/recolix/i18n/i18n.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/recolix/extra/i18n/i18n.php';
 
 // Mismo fallback de sesión que usa el resto del código: admin/cuadrilla/operario guardan el CI
 // bajo 'usuario', el portal de vecinos lo guarda suelto.
@@ -46,7 +46,7 @@ $enlaces = $enlacesPorRol[$rolSesion] ?? $enlacesPorRol['vecino'];
             </a>
         </div>
         <div class="nav-right">
-            <?php include $_SERVER['DOCUMENT_ROOT'] . '/recolix/i18n/switcher.php'; ?>
+            <?php include $_SERVER['DOCUMENT_ROOT'] . '/recolix/extra/i18n/switcher.php'; ?>
             <a href="<?= htmlspecialchars($enlaces['perfil']) ?>" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
                 <img src="/recolix/API_Recoleccion/Vista/img/user.svg" alt="Usuario" class="nav-user-icon">
             </a>
@@ -185,7 +185,7 @@ $enlaces = $enlacesPorRol[$rolSesion] ?? $enlacesPorRol['vecino'];
         color: #fff;
     }
 </style>
-<script src="/recolix/Comun/notificaciones.js"></script>
+<script src="/recolix/extra/Comun/notificaciones.js"></script>
 <script>
     document.getElementById('volverLink').addEventListener('click', (e) => {
         e.preventDefault();

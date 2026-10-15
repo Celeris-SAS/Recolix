@@ -1,4 +1,4 @@
-<?php require_once __DIR__ . '/../i18n/i18n.php'; ?>
+<?php require_once __DIR__ . '/../extra/i18n/i18n.php'; ?>
 <!DOCTYPE html>
 <html lang="<?= htmlspecialchars($RECOLIX_IDIOMA) ?>">
 
@@ -28,7 +28,7 @@
         <div class="logo-text">Recolix</div>
       </a>
           <div class="header-actions">
-        <?php include __DIR__ . '/../i18n/switcher.php'; ?>
+        <?php include __DIR__ . '/../extra/i18n/switcher.php'; ?>
         <a href="index_LandingPage.html" class="btn btn-outline btn-sm">
           <?= t('common.nav_volver_sitio') ?>
         </a>
