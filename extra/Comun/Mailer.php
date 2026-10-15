@@ -11,7 +11,7 @@
 //   1) Configurar un servidor SMTP real (sendmail_path en php.ini, o un relay accesible
 //      en SMTP/smtp_port).
 //   2) Setear la variable de entorno RECOLIX_MAIL_ENABLED=1 (y opcionalmente
-//      RECOLIX_MAIL_FROM con el remitente).
+//      RECOLIX_MAIL_FROM para cambiar el remitente, por defecto celerisuy@gmail.com).
 class Mailer {
     public static function enviar($destinatario, $asunto, $mensaje) {
         if (!$destinatario) {
@@ -23,8 +23,9 @@ class Mailer {
             return false;
         }
 
-        $remitente = getenv('RECOLIX_MAIL_FROM') ?: 'notificaciones@recolix.uy';
+        $remitente = getenv('RECOLIX_MAIL_FROM') ?: 'celerisuy@gmail.com';
         $headers = "From: Recolix <$remitente>\r\nContent-Type: text/plain; charset=UTF-8";
+        $asunto = '=?UTF-8?B?' . base64_encode($asunto) . '?=';
 
         // Acota el tiempo máximo que puede tardar en fallar la conexión SMTP: sin esto,
         // default_socket_timeout puede llegar a 60s y colgar la request.
