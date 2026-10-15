@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
-require_once __DIR__ . '/../../i18n/i18n.php';
+require_once __DIR__ . '/../../extra/i18n/i18n.php';
 ?>
 <!DOCTYPE html>
 <html lang="<?= htmlspecialchars($RECOLIX_IDIOMA) ?>">
@@ -38,7 +38,8 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 </nav>
             </div>
             <div class="nav-right">
-                <?php include __DIR__ . '/../../i18n/switcher.php'; ?>
+                <?php include __DIR__ . '/../../extra/i18n/switcher.php'; ?>
+                <?php include $_SERVER['DOCUMENT_ROOT'] . '/recolix/extra/Comun/campana.php'; ?>
                 <a href="/recolix/API_Usuarios/perfil.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
                     <img src="user.svg" alt="Usuario" class="nav-user-icon">
                 </a>
@@ -335,7 +336,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 <button class="modal-close" onclick="cerrarModalOperarios()">✕</button>
             </div>
             <ul class="miembros-list" id="operariosList"></ul>
-            <p class="empty-state" id="operariosVacio" style="display:none"></p>
+            <p class="miembros-empty" id="operariosVacio" style="display:none"></p>
             <div class="miembros-asignar">
                 <select id="operarioSelect" class="form-input"></select>
                 <button type="button" class="btn-secondary" onclick="asignarOperario()"><?= t('crud.btn_asignar') ?></button>
@@ -372,6 +373,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
         const API_USUARIOS = '/recolix/API_Usuarios/api.php';
         const I18N = <?= json_encode(t_array([
             'titleVerOperarios' => 'centrosAcopio.title_ver_operarios',
+            'titleQuitarOperario' => 'centrosAcopio.title_quitar_operario',
             'operariosTituloPrefijo' => 'centrosAcopio.operarios_titulo_prefijo',
             'operariosVacio' => 'centrosAcopio.operarios_vacio',
             'msgOperarioAsignado' => 'centrosAcopio.msg_operario_asignado',
@@ -539,6 +541,12 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             if (estado === 'operativo' || estado === 'operativa') return 'badge-success';
             if (estado === 'saturado' || estado === 'en_mantenimiento') return 'badge-warning';
             return 'badge-danger';
+        }
+
+        function escaparTexto(texto) {
+            const div = document.createElement('div');
+            div.textContent = texto ?? '';
+            return div.innerHTML;
         }
 
         function renderCentros(rows) {
@@ -935,11 +943,15 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 const candidatos = jsonCandidatos.status === 'success' ? jsonCandidatos.data : [];
 
                 vacio.style.display = operarios.length ? 'none' : 'block';
+                // Tarjeta por operario, no una lista plana: con muchos asignados, .miembros-list
+                // scrollea internamente (ver CSS) en vez de estirar el modal.
                 lista.innerHTML = operarios.map(o => `
                     <li class="miembro-item">
-                        <span><span class="miembro-nombre">${o.primer_nombre} ${o.p_apellido}</span>
-                        <span class="miembro-ci"> — CI ${o.ci_usuario}</span></span>
-                        <button type="button" class="btn-action" title="${I18N.msgOperarioQuitado}" onclick="quitarOperario(${o.ci_usuario})">🗑️</button>
+                        <span class="miembro-datos">
+                            <span class="miembro-nombre">${escaparTexto(o.primer_nombre)} ${escaparTexto(o.p_apellido)}</span>
+                            <span class="miembro-ci">CI ${o.ci_usuario}</span>
+                        </span>
+                        <button type="button" class="miembro-quitar" title="${I18N.titleQuitarOperario}" aria-label="${I18N.titleQuitarOperario}" onclick="quitarOperario(${o.ci_usuario})">&#10005;</button>
                     </li>
                 `).join('');
 
@@ -1051,6 +1063,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
         }
     </script>
 
+    <script src="../../Backoffice/js/paginacion.js"></script>
 </body>
 
 </html>

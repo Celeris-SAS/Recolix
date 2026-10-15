@@ -286,6 +286,43 @@ final class IncidenciaControllerTest extends GestionTestCase
         $this->assertSame('alta', $incidenciaModelStub->prioridadRecibida);
     }
 
+    public function testCrearIncidenciaCriticaNotificaAAdministradores(): void
+    {
+        $_SESSION['ci_usuario'] = 12345678;
+        $controller = $this->controller();
+
+        $incidenciaModelStub = new class {
+            public function usuarioExiste($ci) { return true; }
+            public function usuarioTieneIncidenciaAbiertaEnContenedor($ci, $idContenedor) { return false; }
+            // 9 incidencias abiertas + la nueva = 10 -> 'critica'.
+            public function contarIncidenciasAbiertasPorContenedor($idContenedor) { return 9; }
+            public function crearIncidencia($ci, $tipo, $descripcion, $urlImagen, $urgencia, $prioridad) { return 99; }
+            public function vincularContenedor($idIncidencia, $idContenedor) {}
+            public function getIncidencia($id) { return ['id_incidencia' => $id]; }
+        };
+        $contenedorModelStub = new class {
+            public function getContenedor($id) { return ['id_contenedor' => $id, 'estado' => 'funcional']; }
+        };
+        $notificacionStub = new class {
+            public $llamadas = [];
+            public function crearParaAdministradores($mensaje, $tipoOrigen, $prioridad) {
+                $this->llamadas[] = [$mensaje, $tipoOrigen, $prioridad];
+                return 1;
+            }
+        };
+        $this->setPrivateProperty($controller, 'incidenciaModel', $incidenciaModelStub);
+        $this->setPrivateProperty($controller, 'contenedorModel', $contenedorModelStub);
+        $this->setPrivateProperty($controller, 'notificacionModel', $notificacionStub);
+
+        $controller->crearIncidencia(1, 'rotura');
+
+        $this->assertCount(1, $notificacionStub->llamadas);
+        [$mensaje, $tipoOrigen, $prioridad] = $notificacionStub->llamadas[0];
+        $this->assertSame('incidencia', $tipoOrigen);
+        $this->assertSame('critica', $prioridad);
+        $this->assertStringContainsString('crítica', $mensaje);
+    }
+
     // --- asignarCuadrilla (RF10) ---
 
     public function testAsignarCuadrillaRechazaSiLaIncidenciaNoEstaAbierta(): void

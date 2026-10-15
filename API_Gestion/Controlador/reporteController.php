@@ -44,32 +44,52 @@ class reporteController {
         ];
     }
 
-    public function getZonasCriticas() {
-        return $this->reporteModel->getZonasCriticas();
+    public function getZonasCriticas($rango = 'mes') {
+        return $this->reporteModel->getZonasCriticas($rango);
     }
 
-    public function getVolumenPorTipoYPeriodo($rango = 'siempre') {
-        return $this->reporteModel->getVolumenPorTipoYPeriodo($rango);
+    public function getVolumenPorTipoYPeriodo($rango = 'siempre', $agrupacion = 'mes') {
+        return $this->reporteModel->getVolumenPorTipoYPeriodo($rango, $agrupacion);
     }
 
-    public function getReciclaje() {
-        return $this->reporteModel->getReciclaje();
+    public function getTopZonasIncidencias($limite = 5, $rango = 'mes') {
+        return $this->reporteModel->getTopZonasIncidencias($limite, $rango);
     }
 
-    public function getIncidenciasDetalle($rango = 'siempre') {
-        return $this->reporteModel->getIncidenciasDetalle($rango);
+    public function getAlertasContenedores() {
+        return $this->reporteModel->getAlertasContenedores();
     }
 
-    public function getFrecuenciaRecoleccion($turno = null, $dia = null) {
-        return $this->reporteModel->getFrecuenciaRecoleccion($turno, $dia);
+    public function getProyeccionesLlenado() {
+        return $this->reporteModel->getProyeccionesLlenado();
+    }
+
+    public function getReciclaje($rango = 'siempre') {
+        return $this->reporteModel->getReciclaje($rango);
+    }
+
+    public function getIncidenciasDetalle($rango = 'siempre', $estado = null) {
+        return $this->reporteModel->getIncidenciasDetalle($rango, $estado);
+    }
+
+    public function getTiemposResolucion($rango = 'siempre') {
+        return $this->reporteModel->getTiemposResolucion($rango);
+    }
+
+    public function getFrecuenciaRecoleccion($turno = null, $dia = null, $rango = 'siempre') {
+        return $this->reporteModel->getFrecuenciaRecoleccion($turno, $dia, $rango);
     }
 
     public function getCapacidadVertederos() {
         return $this->reporteModel->getCapacidadVertederos();
     }
 
-    public function getClasificacionResiduos() {
-        return $this->reporteModel->getClasificacionResiduos();
+    public function getIngresosPorCentro($rango = 'siempre') {
+        return $this->reporteModel->getIngresosPorCentro($rango);
+    }
+
+    public function getClasificacionResiduos($rango = 'siempre') {
+        return $this->reporteModel->getClasificacionResiduos($rango);
     }
 
     public function getEvolucionUsuarios($rango = 'siempre') {

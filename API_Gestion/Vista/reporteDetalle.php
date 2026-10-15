@@ -1,11 +1,15 @@
 <?php
 require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
-require_once __DIR__ . '/../../i18n/i18n.php';
+require_once __DIR__ . '/../../extra/i18n/i18n.php';
 
 $tiposReporte = [
     'zonas_criticas' => ['titulo' => 'reportes.card_zonas_criticas_titulo', 'desc' => 'reportes.zonas_hero_sub',    'implementado' => true],
     'volumen'        => ['titulo' => 'reportes.card_volumen_titulo',        'desc' => 'reportes.card_volumen_desc',        'implementado' => true],
     'incidencias'    => ['titulo' => 'reportes.card_incidencias_titulo',    'desc' => 'reportes.card_incidencias_desc',    'implementado' => true],
+    'alertas'        => ['titulo' => 'reportes.card_alertas_titulo',        'desc' => 'reportes.card_alertas_desc',        'implementado' => true],
+    'proyecciones'   => ['titulo' => 'reportes.card_proyecciones_titulo',   'desc' => 'reportes.card_proyecciones_desc',   'implementado' => true],
+    'ingresos'       => ['titulo' => 'reportes.card_ingresos_titulo',       'desc' => 'reportes.card_ingresos_desc',       'implementado' => true],
+    'tiempos_resolucion' => ['titulo' => 'reportes.card_tiempos_resolucion_titulo', 'desc' => 'reportes.card_tiempos_resolucion_desc', 'implementado' => true],
     'frecuencia'     => ['titulo' => 'reportes.card_frecuencia_titulo',     'desc' => 'reportes.card_frecuencia_desc',     'implementado' => true],
     'vertederos'     => ['titulo' => 'reportes.card_vertederos_titulo',     'desc' => 'reportes.card_vertederos_desc',     'implementado' => true],
     'clasificacion'  => ['titulo' => 'reportes.card_clasificacion_titulo',  'desc' => 'reportes.card_clasificacion_desc',  'implementado' => true],
@@ -26,6 +30,10 @@ $config = $tiposReporte[$tipo];
 $reportEndpoints = [
     'volumen'       => 'getVolumenPorTipoYPeriodo',
     'incidencias'   => 'getIncidenciasDetalle',
+    'tiempos_resolucion' => 'getTiemposResolucion',
+    'alertas'       => 'getAlertasContenedores',
+    'ingresos'      => 'getIngresosPorCentro',
+    'proyecciones'  => 'getProyeccionesLlenado',
     'frecuencia'    => 'getFrecuenciaRecoleccion',
     'vertederos'    => 'getCapacidadVertederos',
     'clasificacion' => 'getClasificacionResiduos',
@@ -48,6 +56,38 @@ $reportColumns = [
         ['key' => 'estado',          'label' => 'reportes.incidencias_th_estado',    'fmt' => 'estadoIncidencia'],
         ['key' => 'fechaApertura',   'label' => 'reportes.incidencias_th_fecha',     'fmt' => 'text'],
         ['key' => 'horasResolucion', 'label' => 'reportes.incidencias_th_horas',     'fmt' => 'horas'],
+    ],
+    'tiempos_resolucion' => [
+        ['key' => 'cuadrilla',           'label' => 'reportes.tiempos_th_cuadrilla', 'fmt' => 'cuadrilla'],
+        ['key' => 'municipio',           'label' => 'reportes.tiempos_th_municipio', 'fmt' => 'text'],
+        ['key' => 'incidenciasCerradas', 'label' => 'reportes.tiempos_th_cerradas',  'fmt' => 'num'],
+        ['key' => 'horasPromedio',       'label' => 'reportes.tiempos_th_promedio',  'fmt' => 'horasDec'],
+        ['key' => 'horasMinimo',         'label' => 'reportes.tiempos_th_minimo',    'fmt' => 'horasDec'],
+        ['key' => 'horasMaximo',         'label' => 'reportes.tiempos_th_maximo',    'fmt' => 'horasDec'],
+    ],
+    'alertas' => [
+        ['key' => 'idContenedor',        'label' => 'reportes.alertas_th_contenedor', 'fmt' => 'idContenedor'],
+        ['key' => 'direccion',           'label' => 'reportes.alertas_th_direccion',  'fmt' => 'text'],
+        ['key' => 'circuito',            'label' => 'reportes.alertas_th_circuito',   'fmt' => 'text'],
+        ['key' => 'ultimaRecoleccion',   'label' => 'reportes.alertas_th_ultima',     'fmt' => 'text'],
+        ['key' => 'horasSinRecoleccion', 'label' => 'reportes.alertas_th_horas',      'fmt' => 'horas'],
+        ['key' => 'nivelAlerta',         'label' => 'reportes.alertas_th_nivel',      'fmt' => 'nivelAlerta'],
+    ],
+    'proyecciones' => [
+        ['key' => 'idContenedor',    'label' => 'reportes.proyecciones_th_contenedor', 'fmt' => 'idContenedor'],
+        ['key' => 'direccion',       'label' => 'reportes.proyecciones_th_direccion',  'fmt' => 'text'],
+        ['key' => 'circuito',        'label' => 'reportes.proyecciones_th_circuito',   'fmt' => 'text'],
+        ['key' => 'nivelActual',     'label' => 'reportes.proyecciones_th_actual',     'fmt' => 'porcentajeBadge'],
+        ['key' => 'nivelProyectado', 'label' => 'reportes.proyecciones_th_proyectado', 'fmt' => 'porcentajeBadge'],
+        ['key' => 'fechaCalculo',    'label' => 'reportes.proyecciones_th_fecha',      'fmt' => 'text'],
+        ['key' => 'sobrecarga',      'label' => 'reportes.proyecciones_th_sobrecarga', 'fmt' => 'sobrecargaBadge'],
+    ],
+    'ingresos' => [
+        ['key' => 'nombre',    'label' => 'reportes.ingresos_th_centro',    'fmt' => 'text'],
+        ['key' => 'municipio', 'label' => 'reportes.ingresos_th_municipio', 'fmt' => 'text'],
+        ['key' => 'tipo',      'label' => 'reportes.ingresos_th_tipo',      'fmt' => 'tipoCentro'],
+        ['key' => 'ingresos',  'label' => 'reportes.ingresos_th_ingresos',  'fmt' => 'num'],
+        ['key' => 'totalKg',   'label' => 'reportes.ingresos_th_kg',        'fmt' => 'kg'],
     ],
     'frecuencia' => [
         ['key' => 'circuito',            'label' => 'reportes.frecuencia_th_circuito',   'fmt' => 'text'],
@@ -110,6 +150,10 @@ $reportColumns = [
 $reportEmptyKey = [
     'volumen'       => 'reportes.volumen_empty',
     'incidencias'   => 'reportes.incidencias_empty',
+    'tiempos_resolucion' => 'reportes.tiempos_empty',
+    'alertas'       => 'reportes.alertas_empty',
+    'ingresos'      => 'reportes.ingresos_empty',
+    'proyecciones'  => 'reportes.proyecciones_empty',
     'frecuencia'    => 'reportes.frecuencia_empty',
     'vertederos'    => 'reportes.vertederos_empty',
     'clasificacion' => 'reportes.clasificacion_empty',
@@ -120,6 +164,15 @@ $reportEmptyKey = [
 ];
 
 $esReporteGenerico = isset($reportEndpoints[$tipo]);
+// RF59: el informe de volumen arranca mostrando el último mes.
+$rangoInicial = in_array($tipo, ['volumen', 'zonas_criticas', 'ingresos'], true) ? 'mes' : 'siempre';
+// Informes con filtro de período (rango fijo o fechas desde/hasta).
+$tiposConPeriodo = ['zonas_criticas', 'volumen', 'incidencias', 'tiempos_resolucion', 'camiones', 'usuarios', 'clasificacion', 'reciclaje', 'frecuencia', 'ingresos'];
+if ($tipo === 'usuarios') {
+    $opcionesPeriodo = [['24h', 'reportes.usuarios_filtro_24h'], ['semana', 'reportes.usuarios_filtro_semana'], ['mes', 'reportes.usuarios_filtro_mes'], ['siempre', 'reportes.usuarios_filtro_siempre']];
+} else {
+    $opcionesPeriodo = [['hoy', 'reportes.filtro_hoy'], ['semana', 'reportes.filtro_semana'], ['mes', 'reportes.filtro_mes'], ['siempre', 'reportes.filtro_siempre']];
+}
 ?>
 <!DOCTYPE html>
 <html lang="<?= htmlspecialchars($RECOLIX_IDIOMA) ?>">
@@ -156,7 +209,8 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
                 </nav>
             </div>
             <div class="nav-right">
-                <?php include __DIR__ . '/../../i18n/switcher.php'; ?>
+                <?php include __DIR__ . '/../../extra/i18n/switcher.php'; ?>
+                <?php include $_SERVER['DOCUMENT_ROOT'] . '/recolix/extra/Comun/campana.php'; ?>
                 <a href="/recolix/API_Usuarios/perfil.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
                     <img src="user.svg" alt="Usuario" class="nav-user-icon">
                 </a>
@@ -189,7 +243,29 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
     <div class="detalle-toolbar">
         <a href="reportes.php" class="detalle-volver">&larr; <?= t('reportes.detalle_volver') ?></a>
         <?php if ($config['implementado']): ?>
-            <button class="btn-primary" id="btnExportar" onclick="exportarCsv()"><?= t('reportes.detalle_btn_exportar') ?></button>
+            <div class="export-menu" id="exportMenu">
+                <button class="btn-primary" id="btnExportar" type="button" aria-haspopup="true" aria-expanded="false"><?= t('reportes.detalle_btn_exportar') ?> &#9662;</button>
+                <div class="export-menu-list" id="exportMenuList" hidden>
+                    <button type="button" onclick="exportarCsv('pdf')">PDF</button>
+                    <button type="button" onclick="exportarCsv('csv')">CSV</button>
+                </div>
+            </div>
+            <script>
+                (function () {
+                    const menu = document.getElementById('exportMenu');
+                    const btn  = document.getElementById('btnExportar');
+                    const list = document.getElementById('exportMenuList');
+                    function cerrar() { list.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
+                    btn.addEventListener('click', e => {
+                        e.stopPropagation();
+                        list.hidden = !list.hidden;
+                        btn.setAttribute('aria-expanded', String(!list.hidden));
+                    });
+                    list.addEventListener('click', cerrar);
+                    document.addEventListener('click', e => { if (!menu.contains(e.target)) cerrar(); });
+                    document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrar(); });
+                })();
+            </script>
         <?php endif; ?>
     </div>
 
@@ -200,6 +276,8 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
                 <h2 class="table-title"><?= t($config['titulo']) ?></h2>
                 <span class="table-count" id="tableCount"></span>
             </div>
+            <?php include __DIR__ . '/filtroPeriodo.php'; ?>
+            <?php include __DIR__ . '/graficoReporte.php'; ?>
             <div class="table-wrapper">
                 <table>
                     <thead>
@@ -210,6 +288,7 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
                             <th><?= t('reportes.zonas_th_desbordados') ?></th>
                             <th><?= t('reportes.zonas_th_total') ?></th>
                             <th><?= t('reportes.zonas_th_porcentaje') ?></th>
+                            <th><?= t('reportes.zonas_th_alerta') ?></th>
                             <th><?= t('reportes.zonas_th_motivo') ?></th>
                         </tr>
                     </thead>
@@ -227,19 +306,28 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
                 <h2 class="table-title"><?= t($config['titulo']) ?></h2>
                 <span class="table-count" id="tableCount"></span>
             </div>
-            <?php if ($tipo === 'usuarios'): ?>
-            <div class="filtro-rango" id="filtroRango">
-                <button type="button" class="filtro-btn" data-rango="24h"><?= t('reportes.usuarios_filtro_24h') ?></button>
-                <button type="button" class="filtro-btn" data-rango="semana"><?= t('reportes.usuarios_filtro_semana') ?></button>
-                <button type="button" class="filtro-btn" data-rango="mes"><?= t('reportes.usuarios_filtro_mes') ?></button>
-                <button type="button" class="filtro-btn filtro-btn-active" data-rango="siempre"><?= t('reportes.usuarios_filtro_siempre') ?></button>
+            <?php ob_start(); ?>
+            <?php if ($tipo === 'volumen'): ?>
+            <div class="filtro-dropdowns" id="filtroAgrupacion">
+                <div class="filtro-dropdown-item">
+                    <label for="selectAgrupacion"><?= t('reportes.volumen_agrupar_por') ?></label>
+                    <select id="selectAgrupacion" class="filtro-select">
+                        <option value="dia"><?= t('reportes.volumen_agrupar_dia') ?></option>
+                        <option value="semana"><?= t('reportes.volumen_agrupar_semana') ?></option>
+                        <option value="mes"><?= t('reportes.volumen_agrupar_mes') ?></option>
+                    </select>
+                </div>
             </div>
-            <?php elseif (in_array($tipo, ['volumen', 'incidencias', 'camiones'], true)): ?>
-            <div class="filtro-rango" id="filtroRango">
-                <button type="button" class="filtro-btn" data-rango="hoy"><?= t('reportes.filtro_hoy') ?></button>
-                <button type="button" class="filtro-btn" data-rango="semana"><?= t('reportes.filtro_semana') ?></button>
-                <button type="button" class="filtro-btn" data-rango="mes"><?= t('reportes.filtro_mes') ?></button>
-                <button type="button" class="filtro-btn filtro-btn-active" data-rango="siempre"><?= t('reportes.filtro_siempre') ?></button>
+            <?php elseif ($tipo === 'incidencias'): ?>
+            <div class="filtro-dropdowns" id="filtroEstado">
+                <div class="filtro-dropdown-item">
+                    <label for="selectEstado"><?= t('reportes.incidencias_filtro_estado') ?></label>
+                    <select id="selectEstado" class="filtro-select">
+                        <option value=""><?= t('reportes.frecuencia_filtro_todos') ?></option>
+                        <option value="abiertas"><?= t('reportes.incidencias_filtro_abiertas') ?></option>
+                        <option value="resueltas"><?= t('reportes.incidencias_filtro_resueltas') ?></option>
+                    </select>
+                </div>
             </div>
             <?php elseif ($tipo === 'frecuencia'): ?>
             <div class="filtro-dropdowns" id="filtroFrecuencia">
@@ -267,6 +355,16 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
                 </div>
             </div>
             <?php endif; ?>
+            <?php
+            // Los filtros propios del informe (agrupación, estado, turno, día) van en la misma línea que el período.
+            $filtrosExtra = ob_get_clean();
+            if (in_array($tipo, $tiposConPeriodo, true)) {
+                include __DIR__ . '/filtroPeriodo.php';
+            } else {
+                echo $filtrosExtra;
+            }
+            ?>
+            <?php include __DIR__ . '/graficoReporte.php'; ?>
             <div class="table-wrapper">
                 <table>
                     <thead>
@@ -315,14 +413,19 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
     </footer>
 
     <?php if ($tipo === 'zonas_criticas'): ?>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script src="periodo.js"></script>
+    <script src="graficoReporte.js"></script>
     <script>
         const API_BASE = '/recolix/API_Gestion';
 
         const MOTIVO_LABELS = {
             incidencias: <?= json_encode(t('reportes.zonas_motivo_incidencias')) ?>,
             desbordados: <?= json_encode(t('reportes.zonas_motivo_desbordados')) ?>,
-            ambos: <?= json_encode(t('reportes.zonas_motivo_ambos')) ?>
+            ambos: <?= json_encode(t('reportes.zonas_motivo_ambos')) ?>,
+            alertas: <?= json_encode(t('reportes.zonas_motivo_alertas')) ?>
         };
+        let rangoZonas = <?= json_encode($rangoInicial) ?>;
 
         function badgeParaPorcentaje(pct) {
             if (pct >= 50) return 'badge-danger';
@@ -348,7 +451,7 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
             tbody.innerHTML = '';
 
             try {
-                const res  = await fetch(`${API_BASE}/reportes/getZonasCriticas`);
+                const res  = await fetch(`${API_BASE}/reportes/getZonasCriticas?rango=${encodeURIComponent(rangoZonas)}`);
                 const json = await res.json();
                 let zonas;
                 if (json.status === 'success') {
@@ -358,6 +461,7 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
                 }
 
                 loading.style.display = 'none';
+                renderGraficoReporte('zonas_criticas', zonas, { titulos: { zonas_criticas: <?= json_encode(t('reportes.grafico_zonas_criticas')) ?> } });
 
                 if (zonas.length === 0) {
                     empty.style.display = 'flex';
@@ -376,6 +480,7 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
                         <td data-label="<?= addslashes(t('reportes.zonas_th_desbordados')) ?>">${z.desbordados}</td>
                         <td data-label="<?= addslashes(t('reportes.zonas_th_total')) ?>">${z.totalContenedores}</td>
                         <td data-label="<?= addslashes(t('reportes.zonas_th_porcentaje')) ?>"><span class="badge ${badgeParaPorcentaje(z.porcentaje)}">${z.porcentaje}%</span></td>
+                        <td data-label="<?= addslashes(t('reportes.zonas_th_alerta')) ?>">${z.contenedoresEnAlerta ?? 0}</td>
                         <td data-label="<?= addslashes(t('reportes.zonas_th_motivo')) ?>"><span class="badge ${badgeParaMotivo(z.motivo)}">${MOTIVO_LABELS[z.motivo]}</span></td>
                     `;
                     tbody.appendChild(tr);
@@ -386,15 +491,21 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
             }
         }
 
-        function exportarCsv() {
-            window.location.href = 'exportarReporte.php?tipo=zonas_criticas';
+        function exportarCsv(formato = 'csv') {
+            window.location.href = `exportarReporte.php?tipo=zonas_criticas&formato=${formato}&rango=${encodeURIComponent(rangoZonas)}`;
         }
 
-        document.addEventListener('DOMContentLoaded', cargarZonasCriticas);
+        document.addEventListener('DOMContentLoaded', () => {
+            initFiltroPeriodo(rango => { rangoZonas = rango; cargarZonasCriticas(); });
+            cargarZonasCriticas();
+        });
     </script>
     <?php endif; ?>
 
     <?php if ($esReporteGenerico): ?>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script src="periodo.js"></script>
+    <script src="graficoReporte.js"></script>
     <script>
         const API_BASE     = '/recolix/API_Gestion';
         const REPORT_TIPO  = <?= json_encode($tipo) ?>;
@@ -425,6 +536,12 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
             'mañana': <?= json_encode(t('reportes.frecuencia_turno_manana')) ?>,
             tarde:    <?= json_encode(t('reportes.frecuencia_turno_tarde')) ?>,
             noche:    <?= json_encode(t('reportes.frecuencia_turno_noche')) ?>
+        };
+        const LABELS_TIPO_CENTRO = {
+            vertedero:            <?= json_encode(t('reportes.vertederos_tipo_vertedero')) ?>,
+            relleno_sanitario:    <?= json_encode(t('reportes.vertederos_tipo_relleno_sanitario')) ?>,
+            planta_clasificacion: <?= json_encode(t('reportes.ingresos_tipo_planta')) ?>,
+            ecocentro:            <?= json_encode(t('reportes.ingresos_tipo_centro')) ?>
         };
         const LABELS_TIPO_VERTEDERO = {
             vertedero:        <?= json_encode(t('reportes.vertederos_tipo_vertedero')) ?>,
@@ -461,6 +578,10 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
             reciclable:    <?= json_encode(t('reportes.reciclaje_concepto_reciclable')) ?>,
             no_reciclable: <?= json_encode(t('reportes.reciclaje_concepto_no_reciclable')) ?>,
             total:         <?= json_encode(t('reportes.reciclaje_concepto_total')) ?>
+        };
+        const LABELS_NIVEL_ALERTA = {
+            critica: <?= json_encode(t('reportes.alertas_nivel_critica')) ?>,
+            maxima:  <?= json_encode(t('reportes.alertas_nivel_maxima')) ?>
         };
         const LABEL_RESULTADOS = <?= json_encode(t('reportes.detalle_resultados')) ?>;
         const LABEL_SIN_DATOS = '—';
@@ -531,6 +652,13 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
                         return LABEL_SIN_DATOS;
                     }
                     return `${formatearNumero(valor)} h`;
+                case 'horasDec':
+                    if (valor === null || valor === undefined) {
+                        return LABEL_SIN_DATOS;
+                    }
+                    return `${new Intl.NumberFormat('es-UY', { maximumFractionDigits: 1 }).format(valor)} h`;
+                case 'cuadrilla':
+                    return `#${valor}`;
                 case 'tipoResiduo':
                     return `<span class="color-dot" style="background:${colorParaTipoResiduo(row.color)}"></span>${valor ?? ''}`;
                 case 'reciclableBadge': {
@@ -554,6 +682,18 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
                     return `<span class="badge ${badgeParaPrioridad(valor)}">${LABELS_PRIORIDAD[valor] ?? valor}</span>`;
                 case 'estadoIncidencia':
                     return `<span class="badge ${badgeParaEstadoIncidencia(valor)}">${LABELS_ESTADO_INCIDENCIA[valor] ?? valor}</span>`;
+                case 'tipoCentro':
+                    return LABELS_TIPO_CENTRO[valor] ?? valor;
+                case 'idContenedor':
+                    return `#${valor}`;
+                case 'nivelAlerta': {
+                    const clase = valor === 'maxima' ? 'badge-danger' : 'badge-warning';
+                    return `<span class="badge ${clase}">${LABELS_NIVEL_ALERTA[valor] ?? valor}</span>`;
+                }
+                case 'sobrecargaBadge': {
+                    const clase = valor ? 'badge-danger' : 'badge-success';
+                    return `<span class="badge ${clase}">${valor ? LABEL_SI : LABEL_NO}</span>`;
+                }
                 case 'turno':
                     return LABELS_TURNO[valor] ?? (valor ?? LABEL_SIN_DATOS);
                 case 'tipoVertedero':
@@ -574,10 +714,23 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
             }
         }
 
-        const TIPOS_CON_FILTRO_RANGO = ['usuarios', 'volumen', 'incidencias', 'camiones'];
-        let currentRango = 'siempre';
+        const TIPOS_CON_FILTRO_RANGO = <?= json_encode(array_values(array_diff($tiposConPeriodo, ['zonas_criticas', 'frecuencia']))) ?>;
+        let currentRango = <?= json_encode($rangoInicial) ?>;
+        let currentAgrupacion = 'dia';
+        let currentEstado = '';
         let currentTurno = '';
         let currentDia   = '';
+
+        const AYUDAS_GRAFICO = {
+            titulos: <?= json_encode(array_combine($tiposConGrafico = ['volumen','incidencias','tiempos_resolucion','frecuencia','vertederos','ingresos','clasificacion','reciclaje','usuarios','camiones','maquinaria','alertas','proyecciones'], array_map(function ($k) { return t('reportes.grafico_' . $k); }, $tiposConGrafico))) ?>,
+            colorTipo: nombre => colorParaTipoResiduo(nombre),
+            etiquetaTipoIncidencia: v => LABELS_TIPO_INCIDENCIA[v] ?? v,
+            etiquetaNivelAlerta: v => LABELS_NIVEL_ALERTA[v] ?? v,
+            etiquetaEstado: v => LABELS_ESTADO_MAQUINARIA[v] ?? v,
+            etiquetaConcepto: v => LABELS_CONCEPTO_RECICLAJE[v] ?? v,
+            etiquetaActual: <?= json_encode(t('reportes.proyecciones_th_actual')) ?>,
+            etiquetaProyectado: <?= json_encode(t('reportes.proyecciones_th_proyectado')) ?>
+        };
 
         async function cargarReporteGenerico() {
             const tbody   = document.getElementById('reporteBody');
@@ -593,8 +746,13 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
                 let url = `${API_BASE}/reportes/${REPORT_ENDPOINT}`;
                 if (TIPOS_CON_FILTRO_RANGO.includes(REPORT_TIPO)) {
                     url += `?rango=${currentRango}`;
+                    if (REPORT_TIPO === 'volumen') {
+                        url += `&agrupacion=${currentAgrupacion}`;
+                    } else if (REPORT_TIPO === 'incidencias' && currentEstado) {
+                        url += `&estado=${currentEstado}`;
+                    }
                 } else if (REPORT_TIPO === 'frecuencia') {
-                    url += `?turno=${encodeURIComponent(currentTurno)}&dia=${encodeURIComponent(currentDia)}`;
+                    url += `?turno=${encodeURIComponent(currentTurno)}&dia=${encodeURIComponent(currentDia)}&rango=${encodeURIComponent(currentRango)}`;
                 }
                 const res  = await fetch(url);
                 const json = await res.json();
@@ -606,6 +764,8 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
                 }
 
                 loading.style.display = 'none';
+
+                renderGraficoReporte(REPORT_TIPO, filas, AYUDAS_GRAFICO);
 
                 if (filas.length === 0) {
                     empty.style.display = 'flex';
@@ -628,25 +788,39 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
             }
         }
 
-        function exportarCsv() {
-            let url = `exportarReporte.php?tipo=${REPORT_TIPO}`;
+        function exportarCsv(formato = 'csv') {
+            let url = `exportarReporte.php?tipo=${REPORT_TIPO}&formato=${formato}`;
             if (TIPOS_CON_FILTRO_RANGO.includes(REPORT_TIPO)) {
                 url += `&rango=${currentRango}`;
+                if (REPORT_TIPO === 'volumen') {
+                    url += `&agrupacion=${currentAgrupacion}`;
+                } else if (REPORT_TIPO === 'incidencias' && currentEstado) {
+                    url += `&estado=${currentEstado}`;
+                }
             } else if (REPORT_TIPO === 'frecuencia') {
-                url += `&turno=${encodeURIComponent(currentTurno)}&dia=${encodeURIComponent(currentDia)}`;
+                url += `&turno=${encodeURIComponent(currentTurno)}&dia=${encodeURIComponent(currentDia)}&rango=${encodeURIComponent(currentRango)}`;
             }
             window.location.href = url;
         }
 
-        if (TIPOS_CON_FILTRO_RANGO.includes(REPORT_TIPO)) {
-            document.querySelectorAll('#filtroRango .filtro-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    if (btn.classList.contains('filtro-btn-active')) return;
-                    document.querySelectorAll('#filtroRango .filtro-btn').forEach(b => b.classList.remove('filtro-btn-active'));
-                    btn.classList.add('filtro-btn-active');
-                    currentRango = btn.dataset.rango;
-                    cargarReporteGenerico();
-                });
+        if (document.getElementById('filtroRango')) {
+            initFiltroPeriodo(rango => {
+                currentRango = rango;
+                cargarReporteGenerico();
+            });
+        }
+
+        if (REPORT_TIPO === 'volumen') {
+            document.getElementById('selectAgrupacion').addEventListener('change', e => {
+                currentAgrupacion = e.target.value;
+                cargarReporteGenerico();
+            });
+        }
+
+        if (REPORT_TIPO === 'incidencias') {
+            document.getElementById('selectEstado').addEventListener('change', e => {
+                currentEstado = e.target.value;
+                cargarReporteGenerico();
             });
         }
 
@@ -671,5 +845,6 @@ $esReporteGenerico = isset($reportEndpoints[$tipo]);
         }
     </script>
 
+    <script src="../../Backoffice/js/paginacion.js"></script>
 </body>
 </html>

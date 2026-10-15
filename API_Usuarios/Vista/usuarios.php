@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
-require_once __DIR__ . '/../../i18n/i18n.php';
+require_once __DIR__ . '/../../extra/i18n/i18n.php';
 ?>
 <!DOCTYPE html>
 <html lang="<?= htmlspecialchars($RECOLIX_IDIOMA) ?>">
@@ -37,7 +37,8 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 </nav>
             </div>
             <div class="nav-right">
-                <?php include __DIR__ . '/../../i18n/switcher.php'; ?>
+                <?php include __DIR__ . '/../../extra/i18n/switcher.php'; ?>
+                <?php include $_SERVER['DOCUMENT_ROOT'] . '/recolix/extra/Comun/campana.php'; ?>
                 <a href="../perfil.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
                     <img src="img/user.svg" alt="Usuario" class="nav-user-icon">
                 </a>
@@ -715,15 +716,15 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             const regla = reglas[campo];
             if (!regla) return true;
             if (regla.valores && !regla.valores.includes(valor)) {
-                mostrarToast(`${regla.label} no válido`, 'warning');
+                mostrarToast(msgValidacion('noValido', campo, regla), 'warning');
                 return false;
             }
             if (campo === 'email' && (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor) || valor.length > (regla.max || 120))) {
-                mostrarToast(`${regla.label} no tiene un formato válido`, 'warning');
+                mostrarToast(msgValidacion('formato', campo, regla), 'warning');
                 return false;
             }
             if (campo === 'tel' && !/^\d{9}$/.test(valor)) {
-                mostrarToast(`${regla.label} debe tener 9 dígitos`, 'warning');
+                mostrarToast(msgValidacion('nueveDigitos', campo, regla), 'warning');
                 return false;
             }
             return true;
@@ -923,6 +924,8 @@ require_once __DIR__ . '/../../i18n/i18n.php';
         }
     </script>
 
+    <?php include __DIR__ . '/../../extra/i18n/validacion_js.php'; ?>
+    <script src="../../Backoffice/js/paginacion.js"></script>
 </body>
 
 </html>

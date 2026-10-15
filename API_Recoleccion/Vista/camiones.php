@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
-require_once __DIR__ . '/../../i18n/i18n.php';
+require_once __DIR__ . '/../../extra/i18n/i18n.php';
 ?>
 <!DOCTYPE html>
 <html lang="<?= htmlspecialchars($RECOLIX_IDIOMA) ?>">
@@ -35,7 +35,8 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             </nav>
         </div>
         <div class="nav-right">
-            <?php include __DIR__ . '/../../i18n/switcher.php'; ?>
+            <?php include __DIR__ . '/../../extra/i18n/switcher.php'; ?>
+            <?php include $_SERVER['DOCUMENT_ROOT'] . '/recolix/extra/Comun/campana.php'; ?>
             <a href="/recolix/API_Usuarios/perfil.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
                 <img src="img/user.svg" alt="Usuario" class="nav-user-icon">
             </a>
@@ -306,7 +307,7 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                     <select id="estado" class="form-input">
                         <option value="disponible"><?= t('camiones.opt_estado_disponible') ?></option>
                         <option value="en_ruta"><?= t('camiones.opt_estado_en_ruta') ?></option>
-                        <option value="en_mantenimiento"><?= t('camiones.opt_estado_en_mantenimiento') ?></option>
+                        <option value="en_mantenimiento" disabled><?= t('camiones.opt_estado_en_mantenimiento') ?></option>
                         <option value="de_baja"><?= t('camiones.opt_estado_de_baja') ?></option>
                         <option value="en_deposito"><?= t('camiones.opt_estado_en_deposito') ?></option>
                     </select>
@@ -670,26 +671,26 @@ async function guardarCamion(e) {
         if (regla.pattern) {
             const re = new RegExp(regla.pattern);
             if (!re.test(valor)) {
-                mostrarToast(regla.mensaje || `${regla.label} no válido`, 'warning');
+                mostrarToast((campo === 'matricula' ? V18N.matricula : null) || msgValidacion('noValido', campo, regla), 'warning');
                 return;
             }
         }
         if (regla.valores && !regla.valores.includes(valor)) {
-            mostrarToast(`${regla.label} no válido`, 'warning');
+            mostrarToast(msgValidacion('noValido', campo, regla), 'warning');
             return;
         }
         if (regla.tipo === 'entero') {
             const num = parseInt(valor);
             if (isNaN(num)) {
-                mostrarToast(`${regla.label} debe ser un número entero`, 'warning');
+                mostrarToast(msgValidacion('entero', campo, regla), 'warning');
                 return;
             }
             if (regla.min !== undefined && num < regla.min) {
-                mostrarToast(`${regla.label} no puede ser menor que ${regla.min}`, 'warning');
+                mostrarToast(msgValidacion('menor', campo, regla), 'warning');
                 return;
             }
             if (regla.max !== undefined && num > regla.max) {
-                mostrarToast(`${regla.label} no puede ser mayor que ${regla.max}`, 'warning');
+                mostrarToast(msgValidacion('mayor', campo, regla), 'warning');
                 return;
             }
         }
@@ -821,26 +822,26 @@ async function modificarCamion() {
         if (regla.pattern) {
             const re = new RegExp(regla.pattern);
             if (!re.test(valorFinal)) {
-                mostrarToast(regla.mensaje || `${regla.label} no válido`, 'warning');
+                mostrarToast((campo === 'matricula' ? V18N.matricula : null) || msgValidacion('noValido', campo, regla), 'warning');
                 return;
             }
         }
         if (regla.valores && !regla.valores.includes(valorFinal)) {
-            mostrarToast(`${regla.label} no válido`, 'warning');
+            mostrarToast(msgValidacion('noValido', campo, regla), 'warning');
             return;
         }
         if (regla.tipo === 'entero') {
             const num = parseInt(valor);
             if (isNaN(num)) {
-                mostrarToast(`${regla.label} debe ser un número entero`, 'warning');
+                mostrarToast(msgValidacion('entero', campo, regla), 'warning');
                 return;
             }
             if (regla.min !== undefined && num < regla.min) {
-                mostrarToast(`${regla.label} no puede ser menor que ${regla.min}`, 'warning');
+                mostrarToast(msgValidacion('menor', campo, regla), 'warning');
                 return;
             }
             if (regla.max !== undefined && num > regla.max) {
-                mostrarToast(`${regla.label} no puede ser mayor que ${regla.max}`, 'warning');
+                mostrarToast(msgValidacion('mayor', campo, regla), 'warning');
                 return;
             }
         }
@@ -1279,5 +1280,7 @@ function mostrarToast(msg, tipo = 'info') {
 }
 </script>
 
+    <?php include __DIR__ . '/../../extra/i18n/validacion_js.php'; ?>
+    <script src="../../Backoffice/js/paginacion.js"></script>
 </body>
 </html>

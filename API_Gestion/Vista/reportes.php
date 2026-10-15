@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
-require_once __DIR__ . '/../../i18n/i18n.php';
+require_once __DIR__ . '/../../extra/i18n/i18n.php';
 ?>
 <!DOCTYPE html>
 <html lang="<?= htmlspecialchars($RECOLIX_IDIOMA) ?>">
@@ -37,7 +37,8 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                 </nav>
             </div>
             <div class="nav-right">
-                <?php include __DIR__ . '/../../i18n/switcher.php'; ?>
+                <?php include __DIR__ . '/../../extra/i18n/switcher.php'; ?>
+                <?php include $_SERVER['DOCUMENT_ROOT'] . '/recolix/extra/Comun/campana.php'; ?>
                 <a href="/recolix/API_Usuarios/perfil.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
                     <img src="user.svg" alt="Usuario" class="nav-user-icon">
                 </a>
@@ -129,6 +130,23 @@ require_once __DIR__ . '/../../i18n/i18n.php';
         </div>
     </section>
 
+    <section class="reportes-top reportes-top-pares">
+        <div class="chart-card">
+            <h2><?= t('reportes.chart_zonas_title') ?></h2>
+            <div class="chart-canvas-wrap" id="wrapZonas">
+                <canvas id="chartZonas"></canvas>
+            </div>
+            <p class="chart-empty" id="chartZonasVacio" hidden><?= t('reportes.chart_zonas_vacio') ?></p>
+        </div>
+        <div class="chart-card">
+            <h2><?= t('reportes.chart_volumen_title') ?></h2>
+            <div class="chart-canvas-wrap" id="wrapVolumenMes">
+                <canvas id="chartVolumenMes"></canvas>
+            </div>
+            <p class="chart-empty" id="chartVolumenVacio" hidden><?= t('reportes.chart_volumen_vacio') ?></p>
+        </div>
+    </section>
+
     <section class="hub-section">
         <h2 class="hub-title"><?= t('reportes.hub_title') ?></h2>
         <p class="hub-sub"><?= t('reportes.hub_sub') ?></p>
@@ -158,6 +176,38 @@ require_once __DIR__ . '/../../i18n/i18n.php';
                     <div class="card-icon"><img src="img/refresh.svg" alt="" class="card-svg-icon"></div>
                     <h3><?= t('reportes.card_incidencias_titulo') ?></h3>
                     <p><?= t('reportes.card_incidencias_desc') ?></p>
+                </div>
+            </a>
+
+            <a href="reporteDetalle.php?tipo=tiempos_resolucion" class="card-operar">
+                <div class="card-content">
+                    <div class="card-icon"><img src="img/refresh.svg" alt="" class="card-svg-icon"></div>
+                    <h3><?= t('reportes.card_tiempos_resolucion_titulo') ?></h3>
+                    <p><?= t('reportes.card_tiempos_resolucion_desc') ?></p>
+                </div>
+            </a>
+
+            <a href="reporteDetalle.php?tipo=ingresos" class="card-operar">
+                <div class="card-content">
+                    <div class="card-icon"><img src="../../Backoffice/img/centroAcopio.png" alt="" class="card-svg-icon"></div>
+                    <h3><?= t('reportes.card_ingresos_titulo') ?></h3>
+                    <p><?= t('reportes.card_ingresos_desc') ?></p>
+                </div>
+            </a>
+
+            <a href="reporteDetalle.php?tipo=alertas" class="card-operar">
+                <div class="card-content">
+                    <div class="card-icon"><img src="../../Backoffice/img/exclamacion.png" alt="" class="card-svg-icon"></div>
+                    <h3><?= t('reportes.card_alertas_titulo') ?></h3>
+                    <p><?= t('reportes.card_alertas_desc') ?></p>
+                </div>
+            </a>
+
+            <a href="reporteDetalle.php?tipo=proyecciones" class="card-operar">
+                <div class="card-content">
+                    <div class="card-icon"><img src="../../Backoffice/img/contenedor.png" alt="" class="card-svg-icon"></div>
+                    <h3><?= t('reportes.card_proyecciones_titulo') ?></h3>
+                    <p><?= t('reportes.card_proyecciones_desc') ?></p>
                 </div>
             </a>
 
@@ -354,10 +404,75 @@ require_once __DIR__ . '/../../i18n/i18n.php';
             });
         }
 
+        // Muestra el gráfico o, si no hay datos, el mensaje de vacío en su lugar.
+        function alternarVacio(wrapId, vacioId, hayDatos) {
+            document.getElementById(wrapId).hidden = !hayDatos;
+            document.getElementById(vacioId).hidden = hayDatos;
+        }
+
+        // RF63: municipios con más incidencias en el período elegido.
+        async function cargarZonasIncidencias() {
+            let filas = [];
+            try {
+                const res  = await fetch(`${API_BASE}/reportes/getTopZonasIncidencias?limite=5&rango=${encodeURIComponent(currentRango)}`);
+                const json = await res.json();
+                if (json.status === 'success') filas = json.data;
+            } catch {}
+            destruirChart('chartZonas');
+            alternarVacio('wrapZonas', 'chartZonasVacio', filas.length > 0);
+            if (!filas.length) return;
+            new Chart(document.getElementById('chartZonas'), {
+                type: 'bar',
+                data: {
+                    labels: filas.map(f => f.municipio),
+                    datasets: [{ data: filas.map(f => f.incidencias), backgroundColor: COLOR_MOSS, borderRadius: 4, maxBarThickness: 28 }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { beginAtZero: true, ticks: { precision: 0 } }, y: { grid: { display: false } } }
+                }
+            });
+        }
+
+        // RF63: volumen recolectado en el período elegido (por día; por mes si es "desde siempre").
+        async function cargarVolumenMes() {
+            let filas = [];
+            const agrupacion = currentRango === 'siempre' ? 'mes' : 'dia';
+            try {
+                const res  = await fetch(`${API_BASE}/reportes/getVolumenPorTipoYPeriodo?rango=${encodeURIComponent(currentRango)}&agrupacion=${agrupacion}`);
+                const json = await res.json();
+                if (json.status === 'success') filas = json.data;
+            } catch {}
+            destruirChart('chartVolumenMes');
+            alternarVacio('wrapVolumenMes', 'chartVolumenVacio', filas.length > 0);
+            if (!filas.length) return;
+            const porPeriodo = {};
+            filas.forEach(f => { porPeriodo[f.periodo] = (porPeriodo[f.periodo] ?? 0) + f.totalKg; });
+            const periodos = Object.keys(porPeriodo).sort();
+            new Chart(document.getElementById('chartVolumenMes'), {
+                type: 'bar',
+                data: {
+                    labels: periodos,
+                    datasets: [{ data: periodos.map(p => porPeriodo[p]), backgroundColor: COLOR_LEAF, borderRadius: 4, maxBarThickness: 40 }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { grid: { display: false } }, y: { beginAtZero: true, title: { display: true, text: 'kg' } } }
+                }
+            });
+        }
+
         function cargarDashboard() {
             cargarResumen();
             cargarIndicadores();
             cargarDistribucionLlenado();
+            cargarZonasIncidencias();
+            cargarVolumenMes();
         }
 
         document.addEventListener('DOMContentLoaded', () => {

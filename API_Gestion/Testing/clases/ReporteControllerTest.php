@@ -55,4 +55,30 @@ final class ReporteControllerTest extends GestionTestCase
         $this->assertSame(2, $resultado['valores'][9]);
         $this->assertSame(3, array_sum($resultado['valores']));
     }
+
+    /** @dataProvider delegaciones */
+    public function testLosInformesNuevosDelegaEnElModelo(string $metodo, array $args): void
+    {
+        $controller = $this->newWithoutConstructor(reporteController::class);
+        $modelStub = new class {
+            public $llamada;
+            public function __call($nombre, $argumentos) { $this->llamada = [$nombre, $argumentos]; return ['ok']; }
+        };
+        $this->setPrivateProperty($controller, 'reporteModel', $modelStub);
+
+        $this->assertSame(['ok'], $controller->$metodo(...$args));
+        $this->assertSame([$metodo, $args], $modelStub->llamada);
+    }
+
+    public static function delegaciones(): array
+    {
+        return [
+            'RF61 tiempos de resolución' => ['getTiemposResolucion', ['mes']],
+            'RF59 volumen agrupado' => ['getVolumenPorTipoYPeriodo', ['mes', 'dia']],
+            'RF57/58 incidencias por estado' => ['getIncidenciasDetalle', ['siempre', 'abiertas']],
+            'RF70 alertas' => ['getAlertasContenedores', []],
+            'RF69 proyecciones' => ['getProyeccionesLlenado', []],
+            'RF63 zonas con más incidencias' => ['getTopZonasIncidencias', [5, 'mes']],
+        ];
+    }
 }

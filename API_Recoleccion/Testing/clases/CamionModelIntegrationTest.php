@@ -143,9 +143,40 @@ final class CamionModelIntegrationTest extends DbTestCase
 
         $historial = $model->obtenerHistorial($id);
 
-        $this->assertCount(2, $historial);
+        // Además del mantenimiento y el traslado, figura el estado inicial del camión.
+        $this->assertCount(3, $historial);
         $tipos = array_column($historial, 'tipo_evento');
         sort($tipos);
-        $this->assertSame(['mantenimiento', 'traslado'], $tipos);
+        $this->assertSame(['estado', 'mantenimiento', 'traslado'], $tipos);
+    }
+
+    // RF36 / RF43: los triggers registran el alta y cada cambio de estado.
+    public function testObtenerEstadosRegistraAltaYCambiosDeEstado(): void
+    {
+        $model = new CamionModel();
+        $id = $this->crearCamion(['estado' => 'disponible']);
+        $conn = $this->conn();
+        $conn->query("UPDATE camion SET estado = 'en_ruta' WHERE id_camion = $id");
+        $conn->query("UPDATE camion SET estado = 'en_ruta' WHERE id_camion = $id");
+        $conn->query("UPDATE camion SET estado = 'en_mantenimiento' WHERE id_camion = $id");
+
+        $estados = $model->obtenerEstados($id);
+
+        $this->assertCount(3, $estados, 'Actualizar al mismo estado no genera un registro');
+        $this->assertSame('en_mantenimiento', $estados[0]['estado_nuevo']);
+        $this->assertSame('en_ruta', $estados[0]['estado_anterior']);
+        $this->assertNull($estados[2]['estado_anterior']);
+        $this->assertSame('disponible', $estados[2]['estado_nuevo']);
+    }
+
+    public function testObtenerHistorialIncluyeLosCambiosDeEstado(): void
+    {
+        $model = new CamionModel();
+        $id = $this->crearCamion(['estado' => 'disponible']);
+        $this->conn()->query("UPDATE camion SET estado = 'de_baja' WHERE id_camion = $id");
+
+        $eventos = array_filter($model->obtenerHistorial($id), fn($e) => $e['tipo_evento'] === 'estado');
+
+        $this->assertCount(2, $eventos);
     }
 }

@@ -130,7 +130,7 @@ class CircuitoModel {
     }
 
     public function obtenerRutas($circuitoId) {
-        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM ruta_recoleccion WHERE id_circuito = ?");
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM ruta_recoleccion WHERE id_circuito = ? AND activa = 1");
         mysqli_stmt_bind_param($stmt, "i", $circuitoId);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);

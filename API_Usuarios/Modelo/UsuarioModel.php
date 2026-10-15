@@ -181,6 +181,19 @@ class UsuarioModel {
         return true;
     }
 
+    // Borra la notificación solo para este usuario: saca su fila de NOTIFICACION_USUARIO,
+    // no la de NOTIFICACION (que puede estar compartida con otros destinatarios).
+    public function borrarNotificacion($idNotificacion, $ci) {
+        $stmt = mysqli_prepare(
+            $this->conn,
+            "DELETE FROM NOTIFICACION_USUARIO WHERE id_notificacion = ? AND ci_usuario = ?"
+        );
+        mysqli_stmt_bind_param($stmt, 'ii', $idNotificacion, $ci);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        return true;
+    }
+
 
     public function listarUsuarios() {
         $stmt = mysqli_prepare(

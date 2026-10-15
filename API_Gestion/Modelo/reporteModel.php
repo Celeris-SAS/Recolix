@@ -16,8 +16,29 @@ class ReporteModel {
         return 0;
     }
 
+    // ERR-17: además de los rangos fijos, se acepta un período por fechas "AAAA-MM-DD_AAAA-MM-DD".
+    // Devuelve [desde, hasta], null si $rango no es un período personalizado, o lanza si es inválido.
+    private function rangoPersonalizado($rango) {
+        if (!is_string($rango) || !preg_match('/^(\d{4}-\d{2}-\d{2})_(\d{4}-\d{2}-\d{2})$/', $rango, $m)) {
+            return null;
+        }
+        foreach ([$m[1], $m[2]] as $fecha) {
+            $d = DateTime::createFromFormat('Y-m-d', $fecha);
+            if (!$d || $d->format('Y-m-d') !== $fecha) {
+                throw new InvalidArgumentException("Fecha inválida: $fecha");
+            }
+        }
+        if ($m[1] > $m[2]) {
+            throw new InvalidArgumentException('La fecha de fin no puede ser anterior a la fecha de inicio.');
+        }
+        return [$m[1], $m[2]];
+    }
+
     // Fragmento SQL para acotar una columna DATE (ej. LEVANTE.hora_levante) al rango elegido.
     private function condicionRangoFecha($columna, $rango) {
+        if ($periodo = $this->rangoPersonalizado($rango)) {
+            return "$columna BETWEEN '{$periodo[0]}' AND '{$periodo[1]}'";
+        }
         switch ($rango) {
             case 'semana':
                 return "$columna >= (CURDATE() - INTERVAL 7 DAY)";
@@ -33,6 +54,9 @@ class ReporteModel {
 
     // Fragmento SQL para acotar una columna DATETIME (ej. USUARIO.fecha_registro) al rango elegido.
     private function condicionRangoFechaHora($columna, $rango) {
+        if ($periodo = $this->rangoPersonalizado($rango)) {
+            return "DATE($columna) BETWEEN '{$periodo[0]}' AND '{$periodo[1]}'";
+        }
         switch ($rango) {
             case 'semana':
                 return "$columna >= (NOW() - INTERVAL 7 DAY)";
@@ -159,14 +183,14 @@ class ReporteModel {
         return $porMunicipio;
     }
 
-    private function getIncidenciasUltimoMesPorMunicipio() {
+    private function getIncidenciasPorMunicipio($rango) {
         $sql = "SELECT m.id_municipio, COUNT(DISTINCT i.id_incidencia) AS incidencias
                 FROM INCIDENCIA i
                 JOIN INCIDENCIA_CONTENEDOR ic ON ic.id_incidencia = i.id_incidencia
                 JOIN CONTENEDOR c ON c.id_contenedor = ic.id_contenedor
                 JOIN CIRCUITO ci ON ci.id_circuito = c.id_circuito
                 JOIN MUNICIPIO m ON m.id_municipio = ci.id_municipio
-                WHERE i.fecha_apertura >= (NOW() - INTERVAL 1 MONTH)
+                WHERE " . $this->condicionRangoFechaHora('i.fecha_apertura', $rango) . "
                 GROUP BY m.id_municipio";
 
         $result = mysqli_query($this->conn->getConexion(), $sql);
@@ -177,9 +201,35 @@ class ReporteModel {
         return $porMunicipio;
     }
 
-    public function getZonasCriticas() {
+    // Contenedores en alerta crítica (24 h) o máxima (48 h) sin recolectar, por municipio (RF70).
+    private function getContenedoresEnAlertaPorMunicipio() {
+        $sql = "SELECT t.id_municipio, COUNT(*) AS enAlerta
+                FROM (
+                    SELECT ci.id_municipio, c.id_contenedor
+                    FROM CONTENEDOR c
+                    JOIN CIRCUITO ci ON ci.id_circuito = c.id_circuito
+                    JOIN CONTENEDOR_LEVANTE cl ON cl.id_contenedor = c.id_contenedor AND cl.hora_vaciado IS NOT NULL
+                    WHERE c.estado NOT IN ('en_deposito', 'inactivo')
+                    GROUP BY ci.id_municipio, c.id_contenedor
+                    HAVING TIMESTAMPDIFF(HOUR, MAX(cl.hora_vaciado), NOW()) >= " . self::HORAS_ALERTA_CRITICA . "
+                ) t
+                GROUP BY t.id_municipio";
+
+        $result = mysqli_query($this->conn->getConexion(), $sql);
+        $porMunicipio = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $porMunicipio[(int) $row['id_municipio']] = (int) $row['enAlerta'];
+        }
+        return $porMunicipio;
+    }
+
+    // Una zona es crítica si supera los umbrales de incidencias en el período (por defecto el último
+    // mes) o de contenedores desbordados, o si más del 20 % de sus contenedores está en alerta
+    // crítica o máxima por tiempo sin recolección.
+    public function getZonasCriticas($rango = 'mes') {
         $contenedores = $this->getContenedoresPorMunicipio();
-        $incidencias  = $this->getIncidenciasUltimoMesPorMunicipio();
+        $incidencias  = $this->getIncidenciasPorMunicipio($rango);
+        $enAlerta     = $this->getContenedoresEnAlertaPorMunicipio();
 
         $zonas = [];
         foreach ($contenedores as $idMunicipio => $datos) {
@@ -192,10 +242,18 @@ class ReporteModel {
             }
             $incidenciasMes     = $incidencias[$idMunicipio] ?? 0;
 
+            $contenedoresEnAlerta = $enAlerta[$idMunicipio] ?? 0;
+            if ($total > 0) {
+                $porcentajeAlerta = round(($contenedoresEnAlerta / $total) * 100, 1);
+            } else {
+                $porcentajeAlerta = 0.0;
+            }
+
             $superaIncidencias  = $incidenciasMes > self::UMBRAL_INCIDENCIAS_MES;
             $superaDesbordados  = $porcentaje > self::UMBRAL_PORCENTAJE_DESBORDADOS;
+            $superaAlertas      = $porcentajeAlerta > self::UMBRAL_PORCENTAJE_DESBORDADOS;
 
-            if (!$superaIncidencias && !$superaDesbordados) {
+            if (!$superaIncidencias && !$superaDesbordados && !$superaAlertas) {
                 continue;
             }
 
@@ -204,6 +262,8 @@ class ReporteModel {
                 $motivo = 'ambos';
             } elseif ($superaIncidencias) {
                 $motivo = 'incidencias';
+            } elseif (!$superaDesbordados) {
+                $motivo = 'alertas';
             }
 
             $zonas[] = [
@@ -213,6 +273,7 @@ class ReporteModel {
                 'totalContenedores'  => $total,
                 'desbordados'        => $desbordados,
                 'porcentaje'         => $porcentaje,
+                'contenedoresEnAlerta' => $contenedoresEnAlerta,
                 'motivo'             => $motivo,
             ];
         }
@@ -228,9 +289,22 @@ class ReporteModel {
         return $zonas;
     }
 
-    public function getVolumenPorTipoYPeriodo($rango = 'siempre') {
+    // RF59: la agregación temporal puede ser por día, semana (ISO) o mes.
+    public function getVolumenPorTipoYPeriodo($rango = 'siempre', $agrupacion = 'mes') {
+        switch ($agrupacion) {
+            case 'dia':
+                $formato = '%Y-%m-%d';
+                break;
+            case 'semana':
+                $formato = '%x-S%v';
+                break;
+            case 'mes':
+            default:
+                $formato = '%Y-%m';
+                break;
+        }
         $sql = "SELECT t.descripcion AS tipoResiduo, t.color,
-                       DATE_FORMAT(l.hora_levante, '%Y-%m') AS periodo,
+                       DATE_FORMAT(l.hora_levante, '$formato') AS periodo,
                        COALESCE(SUM(cl.peso), 0) AS totalKg,
                        COUNT(cl.id_levante) AS totalRecolecciones
                 FROM CONTENEDOR_LEVANTE cl
@@ -256,13 +330,25 @@ class ReporteModel {
         return $filas;
     }
 
-    public function getIncidenciasDetalle($rango = 'siempre') {
+    // RF57 / RF58: $estado 'abiertas' (abierta, asignada o en curso) o 'resueltas'; sin valor, todas.
+    public function getIncidenciasDetalle($rango = 'siempre', $estado = null) {
+        switch ($estado) {
+            case 'abiertas':
+                $condicionEstado = "estado IN ('abierta', 'asignada', 'en_curso')";
+                break;
+            case 'resueltas':
+                $condicionEstado = "estado = 'resuelta'";
+                break;
+            default:
+                $condicionEstado = '1=1';
+                break;
+        }
         $sql = "SELECT tipo, prioridad, estado, fecha_apertura,
                        CASE WHEN estado = 'resuelta' AND fecha_cierre IS NOT NULL
                             THEN ROUND(TIMESTAMPDIFF(HOUR, fecha_apertura, fecha_cierre), 1)
                        END AS horasResolucion
                 FROM INCIDENCIA
-                WHERE " . $this->condicionRangoFechaHora('fecha_apertura', $rango) . "
+                WHERE " . $this->condicionRangoFechaHora('fecha_apertura', $rango) . " AND $condicionEstado
                 ORDER BY fecha_apertura DESC";
 
         $result = mysqli_query($this->conn->getConexion(), $sql);
@@ -279,6 +365,131 @@ class ReporteModel {
                 'estado'           => $row['estado'],
                 'fechaApertura'    => $row['fecha_apertura'],
                 'horasResolucion'  => $horasResolucion,
+            ];
+        }
+        return $filas;
+    }
+
+    // RF61: por cuadrilla, cantidad de incidencias resueltas en el rango y tiempo de resolución
+    // (horas entre apertura y cierre) promedio, mínimo y máximo.
+    public function getTiemposResolucion($rango = 'siempre') {
+        $sql = "SELECT i.id_cuadrilla, m.nombre AS municipio,
+                       COUNT(*) AS incidenciasCerradas,
+                       AVG(TIMESTAMPDIFF(MINUTE, i.fecha_apertura, i.fecha_cierre)) / 60 AS horasPromedio,
+                       MIN(TIMESTAMPDIFF(MINUTE, i.fecha_apertura, i.fecha_cierre)) / 60 AS horasMinimo,
+                       MAX(TIMESTAMPDIFF(MINUTE, i.fecha_apertura, i.fecha_cierre)) / 60 AS horasMaximo
+                FROM INCIDENCIA i
+                JOIN CUADRILLA cu ON cu.id_cuadrilla = i.id_cuadrilla
+                JOIN MUNICIPIO m ON m.id_municipio = cu.id_municipio
+                WHERE i.estado = 'resuelta' AND i.fecha_cierre IS NOT NULL
+                      AND " . $this->condicionRangoFechaHora('i.fecha_apertura', $rango) . "
+                GROUP BY i.id_cuadrilla, m.nombre
+                ORDER BY horasPromedio ASC, i.id_cuadrilla ASC";
+
+        $result = mysqli_query($this->conn->getConexion(), $sql);
+        $filas = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $filas[] = [
+                'cuadrilla'           => (int) $row['id_cuadrilla'],
+                'municipio'           => $row['municipio'],
+                'incidenciasCerradas' => (int) $row['incidenciasCerradas'],
+                'horasPromedio'       => round((float) $row['horasPromedio'], 1),
+                'horasMinimo'         => round((float) $row['horasMinimo'], 1),
+                'horasMaximo'         => round((float) $row['horasMaximo'], 1),
+            ];
+        }
+        return $filas;
+    }
+
+    // RF63: municipios con más incidencias en el período (por defecto el último mes), para el panel.
+    public function getTopZonasIncidencias($limite = 5, $rango = 'mes') {
+        $limite = max(1, min(20, (int) $limite));
+        $sql = "SELECT m.nombre AS municipio, COUNT(DISTINCT i.id_incidencia) AS incidencias
+                FROM INCIDENCIA i
+                JOIN INCIDENCIA_CONTENEDOR ic ON ic.id_incidencia = i.id_incidencia
+                JOIN CONTENEDOR c ON c.id_contenedor = ic.id_contenedor
+                JOIN CIRCUITO ci ON ci.id_circuito = c.id_circuito
+                JOIN MUNICIPIO m ON m.id_municipio = ci.id_municipio
+                WHERE " . $this->condicionRangoFechaHora('i.fecha_apertura', $rango) . "
+                GROUP BY m.id_municipio, m.nombre
+                ORDER BY incidencias DESC, m.nombre ASC
+                LIMIT $limite";
+
+        $result = mysqli_query($this->conn->getConexion(), $sql);
+        $filas = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $filas[] = ['municipio' => $row['municipio'], 'incidencias' => (int) $row['incidencias']];
+        }
+        return $filas;
+    }
+
+    // RF70: contenedores sin recolectar. Crítica a las 24 h desde su último vaciado y máxima a las 48 h.
+    const HORAS_ALERTA_CRITICA = 24;
+    const HORAS_ALERTA_MAXIMA = 48;
+
+    public function getAlertasContenedores() {
+        $sql = "SELECT c.id_contenedor, c.calle, c.num_calle, c.estado, ci.nombre AS circuito,
+                       MAX(cl.hora_vaciado) AS ultimaRecoleccion,
+                       TIMESTAMPDIFF(HOUR, MAX(cl.hora_vaciado), NOW()) AS horasSinRecoleccion
+                FROM CONTENEDOR c
+                JOIN CIRCUITO ci ON ci.id_circuito = c.id_circuito
+                JOIN CONTENEDOR_LEVANTE cl ON cl.id_contenedor = c.id_contenedor AND cl.hora_vaciado IS NOT NULL
+                WHERE c.estado NOT IN ('en_deposito', 'inactivo')
+                GROUP BY c.id_contenedor, c.calle, c.num_calle, c.estado, ci.nombre
+                HAVING horasSinRecoleccion >= " . self::HORAS_ALERTA_CRITICA . "
+                ORDER BY horasSinRecoleccion DESC";
+
+        $result = mysqli_query($this->conn->getConexion(), $sql);
+        $filas = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $horas = (int) $row['horasSinRecoleccion'];
+            if ($horas >= self::HORAS_ALERTA_MAXIMA) {
+                $nivel = 'maxima';
+            } else {
+                $nivel = 'critica';
+            }
+            $filas[] = [
+                'idContenedor'        => (int) $row['id_contenedor'],
+                'direccion'           => trim($row['calle'] . ' ' . $row['num_calle']),
+                'circuito'            => $row['circuito'],
+                'estado'              => $row['estado'],
+                'ultimaRecoleccion'   => $row['ultimaRecoleccion'],
+                'horasSinRecoleccion' => $horas,
+                'nivelAlerta'         => $nivel,
+            ];
+        }
+        return $filas;
+    }
+
+    // RF69: última proyección de llenado calculada por contenedor (PREDICCION_LLENADO), de mayor a
+    // menor nivel proyectado. Con 90 % o más se considera riesgo de sobrecarga.
+    const UMBRAL_SOBRECARGA = 90;
+
+    public function getProyeccionesLlenado() {
+        $sql = "SELECT c.id_contenedor, c.calle, c.num_calle, ci.nombre AS circuito,
+                       c.nivel_llenado AS nivelActual, p.nivel_proyectado AS nivelProyectado, p.fecha_calculo
+                FROM PREDICCION_LLENADO p
+                JOIN CONTENEDOR c ON c.id_contenedor = p.id_contenedor
+                JOIN CIRCUITO ci ON ci.id_circuito = c.id_circuito
+                WHERE p.id_prediccion = (
+                    SELECT p2.id_prediccion FROM PREDICCION_LLENADO p2
+                    WHERE p2.id_contenedor = p.id_contenedor
+                    ORDER BY p2.fecha_calculo DESC, p2.id_prediccion DESC LIMIT 1
+                )
+                ORDER BY p.nivel_proyectado DESC, c.id_contenedor ASC";
+
+        $result = mysqli_query($this->conn->getConexion(), $sql);
+        $filas = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $proyectado = (int) $row['nivelProyectado'];
+            $filas[] = [
+                'idContenedor'    => (int) $row['id_contenedor'],
+                'direccion'       => trim($row['calle'] . ' ' . $row['num_calle']),
+                'circuito'        => $row['circuito'],
+                'nivelActual'     => (int) $row['nivelActual'],
+                'nivelProyectado' => $proyectado,
+                'fechaCalculo'    => $row['fecha_calculo'],
+                'sobrecarga'      => $proyectado >= self::UMBRAL_SOBRECARGA,
             ];
         }
         return $filas;
@@ -307,13 +518,14 @@ class ReporteModel {
         return '(' . implode(' OR ', $condiciones) . ')';
     }
 
-    public function getFrecuenciaRecoleccion($turno = null, $dia = null) {
+    public function getFrecuenciaRecoleccion($turno = null, $dia = null, $rango = 'siempre') {
         $sql = "SELECT ci.nombre AS circuito, ci.codigo, m.nombre AS municipio, ci.turno, ci.frecuencia,
                        COUNT(l.id_levante) AS levantesCompletados
                 FROM CIRCUITO ci
                 JOIN MUNICIPIO m ON m.id_municipio = ci.id_municipio
                 LEFT JOIN RUTA_RECOLECCION r ON r.id_circuito = ci.id_circuito
                 LEFT JOIN LEVANTE l ON l.id_ruta = r.id_ruta AND l.estado = 'completado'
+                     AND " . $this->condicionRangoFecha('l.hora_levante', $rango) . "
                 WHERE " . $this->condicionTurno($turno) . " AND " . $this->condicionDia($dia) . "
                 GROUP BY ci.id_circuito, ci.nombre, ci.codigo, m.nombre, ci.turno, ci.frecuencia
                 ORDER BY levantesCompletados DESC";
@@ -328,6 +540,31 @@ class ReporteModel {
                 'turno'                => $row['turno'],
                 'frecuencia'           => $row['frecuencia'],
                 'levantesCompletados'  => (int) $row['levantesCompletados'],
+            ];
+        }
+        return $filas;
+    }
+
+    // ERR-19: ingresos de residuos por centro de acopio (plantas, vertederos y rellenos) en el período.
+    public function getIngresosPorCentro($rango = 'siempre') {
+        $sql = "SELECT ca.nombre, m.nombre AS municipio, ca.tipo,
+                       COUNT(cc.id) AS ingresos, COALESCE(SUM(cc.peso), 0) AS totalKg
+                FROM CENTRO_ACOPIO ca
+                JOIN MUNICIPIO m ON m.id_municipio = ca.id_municipio
+                LEFT JOIN CAMION_CENTRO cc ON cc.id_centro = ca.id_centro
+                     AND " . $this->condicionRangoFecha('cc.fecha_ingreso', $rango) . "
+                GROUP BY ca.id_centro, ca.nombre, m.nombre, ca.tipo
+                ORDER BY totalKg DESC, ca.nombre ASC";
+
+        $result = mysqli_query($this->conn->getConexion(), $sql);
+        $filas = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $filas[] = [
+                'nombre'    => $row['nombre'],
+                'municipio' => $row['municipio'],
+                'tipo'      => $row['tipo'],
+                'ingresos'  => (int) $row['ingresos'],
+                'totalKg'   => (float) $row['totalKg'],
             ];
         }
         return $filas;
@@ -368,8 +605,8 @@ class ReporteModel {
     }
 
     // RF68: cuántos kilos recolectados son de tipos reciclables, sobre el total.
-    public function getReciclaje() {
-        $clasificacion = $this->getClasificacionResiduos();
+    public function getReciclaje($rango = 'siempre') {
+        $clasificacion = $this->getClasificacionResiduos($rango);
         $kgReciclable = 0.0;
         $kgNoReciclable = 0.0;
         foreach ($clasificacion as $fila) {
@@ -390,7 +627,7 @@ class ReporteModel {
         ];
     }
 
-    public function getClasificacionResiduos() {
+    public function getClasificacionResiduos($rango = 'siempre') {
         $sqlContenedores = "SELECT t.id_tipo, t.descripcion AS tipoResiduo, t.color, t.reciclable,
                                    COUNT(c.id_contenedor) AS totalContenedores,
                                    SUM(CASE WHEN c.estado = 'funcional' THEN 1 ELSE 0 END) AS funcionales
@@ -416,6 +653,7 @@ class ReporteModel {
                   FROM TIPO_RESIDUO t
                   LEFT JOIN CONTENEDOR c ON c.id_tipo = t.id_tipo
                   LEFT JOIN CONTENEDOR_LEVANTE cl ON cl.id_contenedor = c.id_contenedor
+                       AND cl.id_levante IN (SELECT l.id_levante FROM LEVANTE l WHERE " . $this->condicionRangoFecha('l.hora_levante', $rango) . ")
                   GROUP BY t.id_tipo";
 
         $result = mysqli_query($this->conn->getConexion(), $sqlKg);
@@ -447,7 +685,14 @@ class ReporteModel {
     }
 
     public function getEvolucionUsuarios($rango = 'siempre') {
+        if ($periodo = $this->rangoPersonalizado($rango)) {
+            $rango = 'personalizado';
+        }
         switch ($rango) {
+            case 'personalizado':
+                $formato   = '%Y-%m-%d';
+                $condicion = "WHERE DATE(fecha_registro) BETWEEN '{$periodo[0]}' AND '{$periodo[1]}'";
+                break;
             case '24h':
                 $formato   = '%Y-%m-%d %H:00';
                 $condicion = 'WHERE fecha_registro >= (NOW() - INTERVAL 1 DAY)';

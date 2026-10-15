@@ -42,13 +42,13 @@ final class RutaControllerTest extends RecoleccionTestCase
         $this->assertEqualsWithDelta([1.0, 2.0], $base, 0.0001);
     }
 
-    public function testDeleteRutaRechazaSiTieneLevantesAsignados(): void
+    public function testDeleteRutaRechazaSiTieneUnLevantePendienteOEnCurso(): void
     {
         $controller = $this->controller();
         $stub = new class {
             public function obtenerLevantes($id)
             {
-                return [['id_levante' => 1]];
+                return [['id_levante' => 1, 'estado' => 'completado'], ['id_levante' => 2, 'estado' => 'en_curso']];
             }
             public function deleteRuta($id)
             {
@@ -58,8 +58,29 @@ final class RutaControllerTest extends RecoleccionTestCase
         $this->setPrivateProperty($controller, 'rutaModel', $stub);
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('No se puede eliminar una ruta con levante asignado');
+        $this->expectExceptionMessage('No se puede dar de baja una ruta con un levante pendiente o en curso');
         $controller->deleteRuta(1);
+    }
+
+    public function testDeleteRutaPermiteLaBajaSiSoloHayLevantesTerminados(): void
+    {
+        $controller = $this->controller();
+        $stub = new class {
+            public $borrada = null;
+            public function obtenerLevantes($id)
+            {
+                return [['id_levante' => 1, 'estado' => 'completado'], ['id_levante' => 2, 'estado' => 'cancelado']];
+            }
+            public function deleteRuta($id)
+            {
+                $this->borrada = $id;
+                return true;
+            }
+        };
+        $this->setPrivateProperty($controller, 'rutaModel', $stub);
+
+        $this->assertTrue($controller->deleteRuta(3));
+        $this->assertSame(3, $stub->borrada);
     }
 
     public function testDeleteRutaBorraCuandoNoTieneLevantes(): void

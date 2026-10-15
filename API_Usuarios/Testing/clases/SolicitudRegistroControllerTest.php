@@ -98,6 +98,8 @@ final class SolicitudRegistroControllerTest extends UsuarioTestCase
         $controller = $this->controller();
         $modelStub = new class {
             public function existePorCI($ci) { return false; }
+            public function existePorEmail($email) { return false; }
+            public function existePorTel($tel) { return false; }
             public function crearSolicitud($ci, $primerNombre, $pApellido, $email, $tel, $idMunicipio, $contrasenia) {
                 return $idMunicipio;
             }

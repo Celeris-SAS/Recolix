@@ -50,11 +50,12 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
                 </nav>
             </div>
             <div class="nav-right">
-                <?php include __DIR__ . '/../../i18n/switcher.php'; ?>
+                <?php include __DIR__ . '/../../extra/i18n/switcher.php'; ?>
+                <?php include $_SERVER['DOCUMENT_ROOT'] . '/recolix/extra/Comun/campana.php'; ?>
                 <a href="../Vista/perfilCuadrilla.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
                     <img src="../../API_Recoleccion/Vista/img/user.svg" alt="Usuario" class="nav-user-icon">
                 </a>
-                <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="Menú">
+                <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="<?= htmlspecialchars(t('backoffice.nav_menu')) ?>">
                     <span></span><span></span><span></span>
                 </button>
             </div>
@@ -90,7 +91,7 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             <div class="panel-card">
                 <h2><?= t('cuadrilla.inc_titulo') ?></h2>
                 <p id="incidencias-vacio" hidden><?= t('cuadrilla.inc_vacio') ?></p>
-                <div id="incidencias-lista"></div>
+                <div id="incidencias-lista" data-paginar-lista></div>
             </div>
         </section>
 
@@ -206,7 +207,7 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
                 <!-- Lista de contenedores de la ruta del levante activo: solo estos se pueden registrar -->
                 <div class="contenedores-ruta" id="contenedores-ruta-wrap" hidden>
                     <h3 class="contenedores-ruta-titulo"><?= t('cuadrilla.contenedores_ruta_titulo') ?></h3>
-                    <ul class="contenedores-ruta-list" id="contenedores-ruta-list"></ul>
+                    <ul class="contenedores-ruta-list" id="contenedores-ruta-list" data-paginar-lista></ul>
                 </div>
             </div>
         </section>
@@ -229,7 +230,7 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
                     </div>
                 </div>
 
-                <div class="routes-list" id="routes-list">
+                <div class="routes-list" id="routes-list" data-paginar-lista>
                     <p class="empty-state" id="routes-empty"><?= t('cuadrilla.sin_rutas_asignadas') ?></p>
                 </div>
 
@@ -305,7 +306,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             'badgeContenedorRecolectado' => 'cuadrilla.badge_contenedor_recolectado',
             'badgeContenedorNoRecolectado' => 'cuadrilla.badge_contenedor_no_recolectado',
             'seleccionaEstado' => 'cuadrilla.msg_selecciona_estado',
-            'ingresaMotivo' => 'cuadrilla.msg_ingresa_motivo',
             'ingresaPeso' => 'cuadrilla.msg_ingresa_peso',
             'noRecolectado' => 'cuadrilla.msg_no_recolectado',
             'incIniciar' => 'cuadrilla.inc_btn_iniciar',
@@ -753,13 +753,10 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
                     estadoEncontradoError.textContent = I18N.seleccionaEstado;
                     valido = false;
                 }
-                if (!motivoInput.value.trim()) {
-                    mostrarToast(I18N.ingresaMotivo, 'warning');
-                    valido = false;
-                }
                 if (!valido) return;
                 estadoEncontradoVal = estadoEncontrado.value;
-                motivoVal = motivoInput.value.trim();
+                // El motivo es una nota libre y opcional (ver placeholder del campo): null si no se cargó.
+                motivoVal = motivoInput.value.trim() || null;
             } else {
                 if (!pesoInput.value) {
                     mostrarToast(I18N.ingresaPeso, 'warning');
@@ -790,7 +787,10 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
                     mensaje = I18N.levanteRegistrado + ' #' + id + '.';
                 } else {
                     const estadoTexto = estadoEncontrado.options[estadoEncontrado.selectedIndex].text;
-                    mensaje = I18N.noRecolectado + ' #' + id + ' (' + estadoTexto + '). ' + I18N.motivoRegistrado;
+                    mensaje = I18N.noRecolectado + ' #' + id + ' (' + estadoTexto + ').';
+                    if (motivoVal) {
+                        mensaje += ' ' + I18N.motivoRegistrado;
+                    }
                     tipoToast = 'warning';
                 }
 
@@ -884,6 +884,15 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
                         costo: 0
                     })
                 });
+                // RF37: además del mantenimiento, se notifica a los administradores.
+                await apiFetch(`${API_RECOLECCION}/mantenimientos/notificarDesperfecto`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        camionId: parseInt(camionDesperfectoId, 10),
+                        descripcion: desperfectoDescripcion.value.trim()
+                    })
+                });
                 modalDesperfecto.classList.remove('is-open');
                 mostrarToast(I18N.desperfectoNotificado + ' ' + camionDesperfectoMatricula + '.', 'warning');
                 await cargarRutas();
@@ -917,6 +926,7 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
         init();
     </script>
 
+    <script src="../../Backoffice/js/paginacion.js"></script>
 </body>
 
 </html>

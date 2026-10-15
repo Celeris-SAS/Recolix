@@ -1,4 +1,6 @@
 <?php
+    require_once __DIR__ . '/frecuenciaCircuito.php';
+
     class CircuitoController {
 
         private $circuitoModel;
@@ -60,13 +62,21 @@
             ];
         }
 
+        // RF51: la frecuencia se expresa en veces por semana, derivadas de los días del texto.
+        private function conVecesPorSemana($circuito) {
+            if (is_array($circuito)) {
+                $circuito['veces_por_semana'] = count($this->diasDesdeFrecuencia($circuito['frecuencia'] ?? ''));
+            }
+            return $circuito;
+        }
+
         public function getAllCircuitos() {
-            return $this->circuitoModel->getAllCircuitos();
+            return array_map([$this, 'conVecesPorSemana'], $this->circuitoModel->getAllCircuitos());
         }
 
         public function getCircuito($id) {
             $id = $this->validarId($id);
-            return $this->circuitoModel->getCircuito($id);
+            return $this->conVecesPorSemana($this->circuitoModel->getCircuito($id));
         }
 
         public function insertCircuito($municipioId, $nombre, $codigo, $actividad, $turno, $frecuencia, $poligono = null) {
@@ -134,39 +144,11 @@
         }
 
         private function normalizarTexto($texto) {
-            $texto = mb_strtolower($texto, 'UTF-8');
-            return strtr($texto, ['á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u']);
+            return FrecuenciaCircuito::normalizar($texto);
         }
 
-        // La "frecuencia" del circuito es texto libre (ej: "interdiaria (lunes, miércoles y
-        // viernes)", "diaria (lunes a viernes y feriados)"). Esta función extrae qué días de
-        // la semana quedan implicados, incluyendo el caso de rangos ("lunes a viernes").
         private function diasDesdeFrecuencia($frecuencia) {
-            $texto = $this->normalizarTexto((string) $frecuencia);
-            $encontrados = [];
-
-            foreach ($this->diasValidos as $dia) {
-                if (mb_strpos($texto, $dia) !== false) {
-                    $encontrados[$dia] = true;
-                }
-            }
-
-            $patronDias = implode('|', $this->diasValidos);
-            if (preg_match('/(' . $patronDias . ')\s+a\s+(' . $patronDias . ')/', $texto, $m)) {
-                $inicio = array_search($m[1], $this->diasValidos, true);
-                $fin = array_search($m[2], $this->diasValidos, true);
-                if ($inicio !== false && $fin !== false) {
-                    $total = count($this->diasValidos);
-                    $i = $inicio;
-                    while (true) {
-                        $encontrados[$this->diasValidos[$i]] = true;
-                        if ($i === $fin) break;
-                        $i = ($i + 1) % $total;
-                    }
-                }
-            }
-
-            return array_keys($encontrados);
+            return FrecuenciaCircuito::dias($frecuencia);
         }
 
         public function filtrarPorDia($dia) {

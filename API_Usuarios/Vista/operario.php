@@ -54,7 +54,8 @@ $_SESSION['usuario']['id_centro'] = $idCentro;
                 </nav>
             </div>
             <div class="nav-right">
-                <?php include __DIR__ . '/../../i18n/switcher.php'; ?>
+                <?php include __DIR__ . '/../../extra/i18n/switcher.php'; ?>
+                <?php include $_SERVER['DOCUMENT_ROOT'] . '/recolix/extra/Comun/campana.php'; ?>
                 <a href="perfilOperario.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">                    <img src="../../API_Recoleccion/Vista/img/user.svg" alt="Usuario" class="nav-user-icon">
                 </a>
                 <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileMenu()" aria-label="<?= htmlspecialchars(t('backoffice.nav_menu')) ?>">
@@ -123,7 +124,7 @@ $_SESSION['usuario']['id_centro'] = $idCentro;
                     </div>
                 </div>
 
-                <div class="ocupacion-list" id="ocupacion-list">
+                <div class="ocupacion-list" id="ocupacion-list" data-paginar-lista>
                     <div class="ocupacion-item" data-tipo="Plástico">
                         <div class="ocupacion-item-header">
                             <span class="tipo-nombre"><?= t('operario.tipo_plastico') ?></span>
@@ -233,7 +234,7 @@ $_SESSION['usuario']['id_centro'] = $idCentro;
                     </div>
                 </div>
 
-                <div class="maquinaria-list" id="maquinaria-list">
+                <div class="maquinaria-list" id="maquinaria-list" data-paginar-lista>
                     <p class="maquinaria-meta" id="maquinaria-cargando"><?= t('operario.maquinaria_cargando') ?></p>
                 </div>
             </div>
@@ -523,5 +524,6 @@ $_SESSION['usuario']['id_centro'] = $idCentro;
         }
     </script>
 
+    <script src="../../Backoffice/js/paginacion.js"></script>
 </body>
 </html>
