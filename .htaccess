@@ -1,7 +1,7 @@
 # Páginas de error personalizadas (errores/error.php decide el botón según origen y sesión)
-ErrorDocument 400 /Recolix/errores/error.php
-ErrorDocument 401 /Recolix/errores/error.php
-ErrorDocument 403 /Recolix/errores/error.php
-ErrorDocument 404 /Recolix/errores/error.php
-ErrorDocument 500 /Recolix/errores/error.php
-ErrorDocument 503 /Recolix/errores/error.php
+ErrorDocument 400 /Recolix/extra/errores/error.php
+ErrorDocument 401 /Recolix/extra/errores/error.php
+ErrorDocument 403 /Recolix/extra/errores/error.php
+ErrorDocument 404 /Recolix/extra/errores/error.php
+ErrorDocument 500 /Recolix/extra/errores/error.php
+ErrorDocument 503 /Recolix/extra/errores/error.php

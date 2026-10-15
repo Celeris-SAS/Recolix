@@ -10,5 +10,5 @@ API_Usuarios/Testing/.phpunit.cache/
 API_Gestion/Testing/phpunit.phar
 API_Gestion/Testing/.phpunit.cache/
 
-# Registro local del Mailer (ver Mailer.php): nunca se versiona.
+# Registro local del Mailer (ver extra/Comun/Mailer.php): nunca se versiona.
 mail_log.txt
