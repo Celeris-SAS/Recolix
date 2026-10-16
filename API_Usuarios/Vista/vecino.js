@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function () {
             resuelta: I18N.estadoIncResuelta
         };
 
-        contenedor.innerHTML = lista.map(inc => `
+        const tarjeta = inc => `
         <div class="incidencia-card" data-estado="${inc.estado}">
             <div class="incidencia-info">
                 <p class="incidencia-tipo">${inc.tipo.replace('_', ' ')}</p>
@@ -212,8 +212,37 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
             <span class="badge badge-${inc.estado}">${estadosIncidencia[inc.estado] || inc.estado}</span>
         </div>
-    `).join('');
+    `;
+
+        // Las resueltas no se mezclan con las abiertas: quedan detrás del botón "Ver incidencias resueltas".
+        const activas = lista.filter(inc => inc.estado !== 'resuelta');
+        const resueltas = lista.filter(inc => inc.estado === 'resuelta');
+
+        contenedor.innerHTML = activas.length
+            ? activas.map(tarjeta).join('')
+            : `<div class="estado-vacio">${I18N.sinIncidenciasActivas}</div>`;
+
+        const toggle = document.getElementById('incidenciasResueltasToggle');
+        const wrapResueltas = document.getElementById('incidenciasResueltasWrap');
+        const boton = document.getElementById('verResueltasBtn');
+        document.getElementById('incidenciasResueltasLista').innerHTML = resueltas.map(tarjeta).join('');
+        toggle.hidden = resueltas.length === 0;
+        if (!resueltas.length) {
+            wrapResueltas.hidden = true;
+            wrapResueltas.style.display = 'none';
+        }
+        boton.textContent = wrapResueltas.hidden ? I18N.btnVerResueltas : I18N.btnOcultarResueltas;
+        boton.setAttribute('aria-expanded', String(!wrapResueltas.hidden));
     }
+
+    document.getElementById('verResueltasBtn').addEventListener('click', () => {
+        const wrapResueltas = document.getElementById('incidenciasResueltasWrap');
+        const boton = document.getElementById('verResueltasBtn');
+        wrapResueltas.hidden = !wrapResueltas.hidden;
+        wrapResueltas.style.display = wrapResueltas.hidden ? 'none' : '';
+        boton.textContent = wrapResueltas.hidden ? I18N.btnVerResueltas : I18N.btnOcultarResueltas;
+        boton.setAttribute('aria-expanded', String(!wrapResueltas.hidden));
+    });
 
 
     // RF05/RF06 — mapa interactivo: muestra la ubicación del usuario y permite elegir el

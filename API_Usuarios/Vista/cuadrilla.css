@@ -226,6 +226,28 @@
   margin-bottom: 16px;
 }
 
+/* Los botones .btn son inline-flex: dentro de un bloque dejan un hueco bajo la línea de texto y
+   los márgenes no se combinan. Como flex a ancho completo, todos los espacios quedan en 12px. */
+.completadas-toggle {
+  display: flex;
+  margin: 12px 0;
+}
+
+.completadas-toggle .btn,
+.btn-ver-mapa {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+#routes-completed-wrap {
+  margin-bottom: 12px;
+}
+
+#routes-completed-list {
+  margin-bottom: 0;
+}
+
 .route-row {
   padding: 16px 20px;
   background-color: #eef6ea;

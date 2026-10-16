@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../../conexion.php';
 require_once __DIR__ . '/notificacionModel.php';
+require_once __DIR__ . '/../../extra/Comun/Etiquetas.php';
 
 class LevanteModel {
 
@@ -113,6 +114,30 @@ class LevanteModel {
         $row = mysqli_fetch_assoc($result);
         mysqli_stmt_close($stmt);
         return $row ? (int) $row['id_levante'] : null;
+    }
+
+    // Levantes ya completados de una cuadrilla (más recientes primero). Al completarse, la ruta
+    // sale de "rutas asignadas" (ver completarLevante), así que este es su historial.
+    public function obtenerCompletadosPorCuadrilla($idCuadrilla) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "
+            SELECT l.id_levante, l.id_ruta, r.nombre, ci.turno, l.hora_salida, l.hora_llegada,
+                   l.total_recolectado, c.matricula
+            FROM levante l
+            JOIN ruta_recoleccion r ON r.id_ruta = l.id_ruta
+            LEFT JOIN circuito ci ON ci.id_circuito = r.id_circuito
+            LEFT JOIN camion c ON c.id_camion = l.id_camion
+            WHERE l.id_cuadrilla = ? AND l.estado = 'completado'
+            ORDER BY l.hora_llegada DESC, l.id_levante DESC
+        ");
+        mysqli_stmt_bind_param($stmt, "i", $idCuadrilla);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $levantes = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $levantes[] = $row;
+        }
+        mysqli_stmt_close($stmt);
+        return $levantes;
     }
 
     public function obtenerPorRuta($idRuta) {
@@ -268,6 +293,9 @@ class LevanteModel {
         } catch (Throwable $e) {
             mysqli_rollback($conexion);
             throw $e;
+        }
+
+        if ($idCentro !== null) {
             $this->notificacionModel->crearParaOperariosDeCentro(
                 $idCentro,
                 "Tu centro de acopio fue asignado como destino del levante #$idLevante.",
@@ -312,7 +340,7 @@ class LevanteModel {
         foreach ($afectadas as $inc) {
             $this->notificacionModel->crearParaCuadrilla(
                 $idCuadrilla,
-                "Se te asignó el contenedor #{$inc['id_contenedor']} ({$inc['tipo']}) por una incidencia abierta.",
+                "Se te asignó el contenedor #{$inc['id_contenedor']} (" . Etiquetas::legible($inc['tipo']) . ") por una incidencia abierta.",
                 'incidencia',
                 'informativa'
             );
@@ -500,7 +528,7 @@ class LevanteModel {
             // El motivo es opcional: si no lo cargaron, el mensaje no se queda con un ":" colgando.
             $detalle = $motivoVal !== null && $motivoVal !== '' ? ": $motivoVal" : '';
             $this->notificacionModel->crearParaAdministradores(
-                "El levante #$idLevante no pudo recolectar el contenedor #$idContenedor ($estadoEncontrado)$detalle",
+                "El levante #$idLevante no pudo recolectar el contenedor #$idContenedor (" . Etiquetas::legible($estadoEncontrado) . ")$detalle",
                 'contenedor',
                 'advertencia'
             );
@@ -521,12 +549,13 @@ class LevanteModel {
     // El contenedor_levante se precarga con estado_encontrado='todo_ok' por defecto
     // para cada contenedor de la ruta (ver precargarContenedores), así que ese campo
     // solo no alcanza para saber si la cuadrilla ya pasó por él. Se considera
-    // procesado recién cuando tiene hora_vaciado (se recolectó) o motivo (no se
-    // recolectó).
+    // procesado recién cuando tiene hora_vaciado (se recolectó) o cuando el estado
+    // encontrado dejó de ser el 'todo_ok' por defecto (no se recolectó; el motivo es
+    // opcional, así que no se puede exigir).
     private function contenedoresPendientes($idLevante) {
         $pendientes = [];
         foreach ($this->obtenerContenedores($idLevante) as $c) {
-            $fueProcesado = $c['hora_vaciado'] !== null || trim((string) $c['motivo']) !== '';
+            $fueProcesado = $c['hora_vaciado'] !== null || $c['estado_encontrado'] !== 'todo_ok' || trim((string) $c['motivo']) !== '';
             if (!$fueProcesado) {
                 $pendientes[] = $c['id_contenedor'];
             }
@@ -683,7 +712,7 @@ class LevanteModel {
     public function generarAlertaVencidos() {
         $avisados = 0;
         foreach ($this->obtenerPendientesVencidos() as $levante) {
-            $mensaje = "El levante #{$levante['id_levante']} de la ruta \"{$levante['ruta_nombre']}\" quedó {$levante['estado']} al finalizar el turno (programado para el {$levante['hora_levante']}).";
+            $mensaje = "El levante #{$levante['id_levante']} de la ruta \"{$levante['ruta_nombre']}\" quedó " . Etiquetas::legible($levante['estado']) . " al finalizar el turno (programado para el {$levante['hora_levante']}).";
             if ($this->notificacionModel->existeMensaje($mensaje)) {
                 continue;
             }

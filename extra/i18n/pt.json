@@ -1451,6 +1451,11 @@
     "msg_levante_iniciado": "Rota iniciada.",
     "msg_error_cargar": "Erro ao carregar os dados. Tente novamente mais tarde.",
     "sin_rutas_asignadas": "Você não tem rotas atribuídas.",
+    "btn_ver_rutas_completadas": "Ver rotas concluídas",
+    "btn_ocultar_rutas_completadas": "Ocultar rotas concluídas",
+    "sin_rutas_completadas": "Você ainda não concluiu nenhuma rota.",
+    "completada_fin": "Finalizou:",
+    "completada_recolectado": "Coletado:",
     "msg_sin_cuadrillas": "Seu usuário não tem uma equipe atribuída. Entre em contato com um administrador.",
     "msg_sin_levante_activo": "Sua equipe não tem nenhuma coleta pendente ou em andamento no momento. Não há nada para registrar até que uma seja planejada.",
     "msg_levante_pendiente_iniciar": "A coleta ainda não foi iniciada. Toque em \"Iniciar rota\" para habilitar o registro de contêineres."
@@ -1480,6 +1485,9 @@
     "estado_inc_asignada": "Atribuída",
     "estado_inc_en_curso": "Em andamento",
     "estado_inc_resuelta": "Resolvida",
+    "btn_ver_incidencias_resueltas": "Ver ocorrências resolvidas",
+    "btn_ocultar_incidencias_resueltas": "Ocultar ocorrências resolvidas",
+    "sin_incidencias_activas": "Você não tem ocorrências abertas.",
 
     "nueva_incidencia_titulo": "Reportar uma ocorrência",
     "nueva_incidencia_tipo": "Tipo de ocorrência",
