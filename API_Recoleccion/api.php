@@ -100,9 +100,11 @@ $config = [
                 'obtenerPorCentro' => ['administrador', 'cuadrilla', 'operario'],
                 'filtrarPorFecha' => ['administrador', 'cuadrilla', 'operario'],
                 'obtenerPesoTotal' => ['administrador', 'cuadrilla', 'operario'],
+                'registrarIngreso' => ['operario'],
             ],
             'actions' => [
                 'reglasValidacion',
+                'registrarIngreso',
                 'obtenerPorCamion',
                 'obtenerPorCentro',
                 'filtrarPorFecha',
