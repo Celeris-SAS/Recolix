@@ -33,6 +33,7 @@ if (!isset($_SESSION['ci_usuario'])) {
                 <ul>
                     <li><a href="../LandingPage/index_LandingPage.html"><?= t('common.nav_inicio') ?></a></li>
                     <li><a href="../LandingPage/mapa.html"><?= t('common.nav_mapa') ?></a></li>
+                    <li class="nav-perfil-movil"><a href="vecino.php"><?= t('backoffice.nav_perfil_usuario') ?></a></li>
                 </ul>
             </nav>
             <div class="nav-right">
@@ -41,7 +42,9 @@ if (!isset($_SESSION['ci_usuario'])) {
                 <a href="vecino.php" class="btn-user" title="<?= htmlspecialchars(t('backoffice.nav_perfil_usuario')) ?>">
                     <img src="Vista/img/user.svg" alt="Usuario" class="nav-user-icon">
                 </a>
-                
+                <button class="nav-hamburger" id="navHamburger" aria-label="<?= htmlspecialchars(t('backoffice.nav_menu')) ?>" aria-expanded="false" aria-controls="mainNav">
+                    <span></span><span></span><span></span>
+                </button>
             </div>
         </div>
     </header>
@@ -212,6 +215,13 @@ if (!isset($_SESSION['ci_usuario'])) {
             <div id="incidenciasLista" data-paginar-lista>
                 <p class="estado-carga"><?= t('vecino.cargando_incidencias') ?></p>
             </div>
+
+            <div class="resueltas-toggle" id="incidenciasResueltasToggle" hidden>
+                <button type="button" class="btn btn-outline btn-sm" id="verResueltasBtn" aria-expanded="false" aria-controls="incidenciasResueltasWrap"><?= t('vecino.btn_ver_incidencias_resueltas') ?></button>
+            </div>
+            <div id="incidenciasResueltasWrap" hidden style="display:none">
+                <div id="incidenciasResueltasLista" data-paginar-lista></div>
+            </div>
         </section>
 
         <section class="dash-section" id="seccionCuenta">
@@ -292,6 +302,9 @@ if (!isset($_SESSION['ci_usuario'])) {
             'msgMunicipioActualizado' => 'vecino.msg_municipio_actualizado',
             'msgMunicipioAsignado' => 'vecino.msg_municipio_asignado',
             'sinIncidencias' => 'vecino.sin_incidencias',
+            'sinIncidenciasActivas' => 'vecino.sin_incidencias_activas',
+            'btnVerResueltas' => 'vecino.btn_ver_incidencias_resueltas',
+            'btnOcultarResueltas' => 'vecino.btn_ocultar_incidencias_resueltas',
             'estadoIncAbierta' => 'vecino.estado_inc_abierta',
             'estadoIncAsignada' => 'vecino.estado_inc_asignada',
             'estadoIncEnCurso' => 'vecino.estado_inc_en_curso',
@@ -314,6 +327,19 @@ if (!isset($_SESSION['ci_usuario'])) {
     <!-- Mismo helper que usa la Landing Page: garantiza que ambos formularios de "reportar
          incidencia" (y el mapa público) muestren siempre los mismos contenedores. -->
     <script src="../LandingPage/mapaContenedoresBase.js"></script>
+    <script>
+        // Menú hamburguesa del portal de vecinos (el panel #mainNav ya existía, faltaba el botón).
+        (function () {
+            var boton = document.getElementById('navHamburger');
+            var nav = document.getElementById('mainNav');
+            if (!boton || !nav) return;
+            boton.addEventListener('click', function () {
+                var abierto = nav.classList.toggle('is-open');
+                boton.classList.toggle('is-open', abierto);
+                boton.setAttribute('aria-expanded', String(abierto));
+            });
+        })();
+    </script>
     <script src="Vista/vecino.js"></script>
     <script src="Vista/borrarCuenta.js"></script>
     <script src="../Backoffice/js/paginacion.js"></script>

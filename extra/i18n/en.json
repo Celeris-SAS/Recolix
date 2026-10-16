@@ -1450,6 +1450,11 @@
     "msg_levante_iniciado": "Route started.",
     "msg_error_cargar": "Error loading data. Try again later.",
     "sin_rutas_asignadas": "You have no assigned routes.",
+    "btn_ver_rutas_completadas": "View completed routes",
+    "btn_ocultar_rutas_completadas": "Hide completed routes",
+    "sin_rutas_completadas": "You haven't completed any routes yet.",
+    "completada_fin": "Finished:",
+    "completada_recolectado": "Collected:",
     "msg_sin_cuadrillas": "Your account has no crew assigned. Contact an administrator.",
     "msg_sin_levante_activo": "Your crew has no pending or in-progress pickup right now. There's nothing to register until one is scheduled.",
     "msg_levante_pendiente_iniciar": "The pickup hasn't started yet. Tap \"Start route\" to enable registering containers."
@@ -1479,6 +1484,9 @@
     "estado_inc_asignada": "Assigned",
     "estado_inc_en_curso": "In progress",
     "estado_inc_resuelta": "Resolved",
+    "btn_ver_incidencias_resueltas": "View resolved incidents",
+    "btn_ocultar_incidencias_resueltas": "Hide resolved incidents",
+    "sin_incidencias_activas": "You have no open incidents.",
 
     "nueva_incidencia_titulo": "Report an incident",
     "nueva_incidencia_tipo": "Incident type",

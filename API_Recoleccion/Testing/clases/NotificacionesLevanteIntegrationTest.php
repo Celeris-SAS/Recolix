@@ -72,6 +72,34 @@ final class NotificacionesLevanteIntegrationTest extends DbTestCase
         $this->assertSame(0, $this->contarFilas('NOTIFICACION_USUARIO', "ci_usuario = $ci"));
     }
 
+    public function testElAvisoDeContenedorNoRecolectadoMuestraElEstadoLegible(): void
+    {
+        [, , $rutaId, $camionId, $cuadrillaId, $contenedorId] = $this->escenario('desborde');
+        $admin = $this->crearUsuario(null, ['rol' => 'administrador', 'acceso' => 'habilitado']);
+        $model = new LevanteModel();
+        $idLevante = (int) $model->planificarLevante($rutaId, $camionId, $cuadrillaId, '2026-01-10 08:00:00', '2026-01-10')['id_levante'];
+        $model->iniciarLevante($idLevante);
+
+        $model->registrarContenedor($idLevante, $contenedorId, 'acceso_bloqueado', null, null);
+
+        $mensaje = $this->ultimoMensajeDe($admin);
+        $this->assertStringContainsString('(acceso bloqueado)', $mensaje);
+        $this->assertStringNotContainsString('acceso_bloqueado', $mensaje);
+    }
+
+    public function testElAvisoALaCuadrillaMuestraElTipoDeIncidenciaLegible(): void
+    {
+        [, , $rutaId, $camionId, $cuadrillaId] = $this->escenario('falta_recoleccion');
+        $cuadrilla = $this->crearUsuario(null, ['rol' => 'cuadrilla']);
+        $this->conn()->query("UPDATE usuario SET id_cuadrilla = $cuadrillaId WHERE ci_usuario = $cuadrilla");
+
+        (new LevanteModel())->planificarLevante($rutaId, $camionId, $cuadrillaId, '2026-01-10 08:00:00', '2026-01-10');
+
+        $mensaje = $this->ultimoMensajeDe($cuadrilla);
+        $this->assertStringContainsString('(falta de recolección)', $mensaje);
+        $this->assertStringNotContainsString('falta_recoleccion', $mensaje);
+    }
+
     private function ultimoMensajeDe(int $ci): string
     {
         $stmt = $this->conn()->prepare(

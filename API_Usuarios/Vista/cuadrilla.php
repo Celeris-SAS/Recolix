@@ -234,7 +234,14 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
                     <p class="empty-state" id="routes-empty"><?= t('cuadrilla.sin_rutas_asignadas') ?></p>
                 </div>
 
-                <a class="btn btn-outline btn-full" href="../../Backoffice/mapaCuadrilla.php">
+                <div class="completadas-toggle">
+                    <button type="button" class="btn btn-outline btn-full" id="btn-ver-completadas" aria-expanded="false" aria-controls="routes-completed-wrap"><?= t('cuadrilla.btn_ver_rutas_completadas') ?></button>
+                </div>
+                <div id="routes-completed-wrap" hidden style="display:none">
+                    <div class="routes-list" id="routes-completed-list" data-paginar-lista></div>
+                </div>
+
+                <a class="btn btn-outline btn-full btn-ver-mapa" href="../../Backoffice/mapaCuadrilla.php">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
                         <path d="M3 6v15l6-3 6 3 6-3V3l-6 3-6-3-6 3Z" />
@@ -335,6 +342,11 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             'errorCargar' => 'cuadrilla.msg_error_cargar',
             'sinCuadrillas' => 'cuadrilla.msg_sin_cuadrillas',
             'sinRutas' => 'cuadrilla.sin_rutas_asignadas',
+            'sinRutasCompletadas' => 'cuadrilla.sin_rutas_completadas',
+            'btnVerCompletadas' => 'cuadrilla.btn_ver_rutas_completadas',
+            'btnOcultarCompletadas' => 'cuadrilla.btn_ocultar_rutas_completadas',
+            'completadaFin' => 'cuadrilla.completada_fin',
+            'completadaRecolectado' => 'cuadrilla.completada_recolectado',
             'rutaLabel' => 'cuadrilla.ruta_asignada',
             'turnoLabel' => 'cuadrilla.turno',
             'inicioLabel' => 'cuadrilla.inicio',
@@ -541,6 +553,7 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
                 mostrarToast(I18N.errorCargar, 'warning');
             }
             renderRutas(rutas);
+            if (!completadasWrap.hidden) await cargarRutasCompletadas();
 
             const tieneRutaAsignada = rutas.length > 0;
             seccionLevante.hidden = !tieneRutaAsignada;
@@ -549,6 +562,62 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             await actualizarLevanteActivo();
             await cargarAlertaLevante();
         }
+
+        // Las rutas completadas salen de "rutas asignadas" (ver LevanteModel::completarLevante):
+        // se consultan recién al tocar "Ver rutas completadas", y quedan ocultas hasta entonces.
+        const btnVerCompletadas = document.getElementById('btn-ver-completadas');
+        const completadasList = document.getElementById('routes-completed-list');
+        const completadasWrap = document.getElementById('routes-completed-wrap');
+
+        function formatearFechaHora(valor) {
+            if (!valor) return '';
+            return `${valor.slice(8, 10)}/${valor.slice(5, 7)}/${valor.slice(0, 4)} ${valor.slice(11, 16)}`;
+        }
+
+        function renderRutasCompletadas(levantes) {
+            completadasList.innerHTML = '';
+            if (!levantes.length) {
+                const vacio = document.createElement('p');
+                vacio.className = 'empty-state';
+                vacio.textContent = I18N.sinRutasCompletadas;
+                completadasList.appendChild(vacio);
+                return;
+            }
+            levantes.forEach(function (l) {
+                const row = document.createElement('div');
+                row.className = 'route-row';
+                row.innerHTML = `
+                    <div class="route-info">
+                        <span class="route-item">${ICONO_RUTA} ${I18N.rutaLabel} <strong>${escapeHtml(l.nombre)}</strong></span>
+                        ${l.turno ? `<span class="route-item">${I18N.turnoLabel} <strong>${escapeHtml(l.turno)}</strong></span>` : ''}
+                        ${l.hora_llegada ? `<span class="route-item">${I18N.completadaFin} <strong>${formatearFechaHora(l.hora_llegada)}</strong></span>` : ''}
+                        <span class="route-item">${I18N.completadaRecolectado} <strong>${Number(l.total_recolectado || 0)} kg</strong></span>
+                        <span class="badge badge-ok">${I18N.badgeCompletado}</span>
+                    </div>
+                `;
+                completadasList.appendChild(row);
+            });
+        }
+
+        async function cargarRutasCompletadas() {
+            let levantes = [];
+            try {
+                levantes = await apiFetch(`${API_RECOLECCION}/levantes/obtenerCompletadosPorCuadrilla/${cuadrilla.id_cuadrilla}`);
+            } catch (e) {
+                mostrarToast(I18N.errorCargar, 'warning');
+            }
+            renderRutasCompletadas(levantes);
+        }
+
+        btnVerCompletadas.addEventListener('click', async function () {
+            const mostrar = completadasWrap.hidden;
+            if (mostrar) await cargarRutasCompletadas();
+            // El contenedor incluye las barras de paginación, que la lista deja como hermanas.
+            completadasWrap.hidden = !mostrar;
+            completadasWrap.style.display = mostrar ? '' : 'none';
+            btnVerCompletadas.textContent = mostrar ? I18N.btnOcultarCompletadas : I18N.btnVerCompletadas;
+            btnVerCompletadas.setAttribute('aria-expanded', String(mostrar));
+        });
 
         function badgeLevante(estado) {
             if (estado === 'completado') return { clase: 'badge-ok', texto: I18N.badgeCompletado };
