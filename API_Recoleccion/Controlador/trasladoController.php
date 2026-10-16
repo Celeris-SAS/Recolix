@@ -64,6 +64,45 @@
             $centroId = $this->validarId($centroId);
             $peso = $this->validarDecimal($peso, 'Peso');
             $fechaIngreso = $this->validarFecha($fechaIngreso, 'Fecha de ingreso');
+            $this->verificarExistencia($camionId, $centroId);
+            return $this->trasladoModel->insertTrasladoResiduo($camionId, $centroId, $peso, $fechaIngreso);
+        }
+
+        // Mensaje claro en vez del error de clave foránea de MySQL.
+        private function verificarExistencia($camionId, $centroId) {
+            if (!$this->trasladoModel->existeCamion($camionId)) {
+                throw new InvalidArgumentException("No existe un camión con el ID $camionId.");
+            }
+            if (!$this->trasladoModel->existeCentro($centroId)) {
+                throw new InvalidArgumentException("No existe un centro de acopio con el ID $centroId.");
+            }
+        }
+
+        // Ingreso de residuos que registra el operario en su centro: el camión se identifica por
+        // matrícula (debe existir) y el centro sale del usuario de la sesión, nunca del cliente.
+        public function registrarIngreso($matricula, $peso, $fechaIngreso) {
+            if (!is_string($matricula) || trim($matricula) === '') {
+                throw new InvalidArgumentException("La matrícula del camión es obligatoria.");
+            }
+            $matricula = strtoupper(trim($matricula));
+            $peso = $this->validarDecimal($peso, 'Peso');
+            if ($peso <= 0) {
+                throw new InvalidArgumentException("El peso debe ser mayor que 0.");
+            }
+            $fechaIngreso = $this->validarFecha($fechaIngreso, 'Fecha de ingreso');
+
+            $ci = $_SESSION['usuario']['ci_usuario'] ?? $_SESSION['ci_usuario'] ?? null;
+            $centroId = $ci !== null ? $this->trasladoModel->centroDeUsuario((int) $ci) : null;
+            if ($centroId === null) {
+                throw new InvalidArgumentException("Tu usuario no tiene un centro de acopio asignado.");
+            }
+
+            $camionId = $this->trasladoModel->idCamionPorMatricula($matricula);
+            if ($camionId === null) {
+                throw new InvalidArgumentException("No existe un camión con la matrícula $matricula.");
+            }
+
+            $this->verificarExistencia($camionId, $centroId);
             return $this->trasladoModel->insertTrasladoResiduo($camionId, $centroId, $peso, $fechaIngreso);
         }
 
@@ -73,6 +112,7 @@
             $centroId = $this->validarId($centroId);
             $peso = $this->validarDecimal($peso, 'Peso');
             $fechaIngreso = $this->validarFecha($fechaIngreso, 'Fecha de ingreso');
+            $this->verificarExistencia($camionId, $centroId);
             return $this->trasladoModel->updateTrasladoResiduo($id, $camionId, $centroId, $peso, $fechaIngreso);
         }
 
