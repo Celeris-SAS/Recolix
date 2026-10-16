@@ -80,6 +80,11 @@
             return $this->levanteModel->obtenerActivoPorCuadrilla($idCuadrilla);
         }
 
+        public function obtenerCompletadosPorCuadrilla($idCuadrilla) {
+            $idCuadrilla = $this->validarId($idCuadrilla);
+            return $this->levanteModel->obtenerCompletadosPorCuadrilla($idCuadrilla);
+        }
+
         public function obtenerPorRuta($idRuta) {
             $idRuta = $this->validarId($idRuta);
             return $this->levanteModel->obtenerPorRuta($idRuta);

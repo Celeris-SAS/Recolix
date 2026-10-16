@@ -370,6 +370,35 @@ final class LevanteModelIntegrationTest extends DbTestCase
         $this->assertSame(0, $this->contarFilas('ruta_cuadrilla', $vinculo));
     }
 
+    public function testObtenerCompletadosPorCuadrillaListaSoloLosLevantesCompletadosDeEsaCuadrilla(): void
+    {
+        [$model, $idLevante, , $contenedorId] = $this->levantePendiente();
+        $model->iniciarLevante($idLevante);
+        $model->registrarContenedor($idLevante, $contenedorId, 'todo_ok', 30, null);
+        $idCuadrilla = (int) $model->getLevante($idLevante)['id_cuadrilla'];
+
+        // Otra cuadrilla con un levante pendiente (no completado) y una ajena completada.
+        [$otroModel, $otroLevante] = $this->levantePendiente();
+        $ajena = (int) $otroModel->getLevante($otroLevante)['id_cuadrilla'];
+
+        $completados = $model->obtenerCompletadosPorCuadrilla($idCuadrilla);
+
+        $this->assertCount(1, $completados);
+        $this->assertSame($idLevante, (int) $completados[0]['id_levante']);
+        $this->assertEqualsWithDelta(30.0, (float) $completados[0]['total_recolectado'], 0.001);
+        $this->assertNotNull($completados[0]['hora_llegada']);
+        $this->assertSame([], $model->obtenerCompletadosPorCuadrilla($ajena));
+    }
+
+    public function testObtenerCompletadosPorCuadrillaNoIncluyeLevantesEnCurso(): void
+    {
+        [$model, $idLevante] = $this->levantePendiente();
+        $model->iniciarLevante($idLevante);
+        $idCuadrilla = (int) $model->getLevante($idLevante)['id_cuadrilla'];
+
+        $this->assertSame([], $model->obtenerCompletadosPorCuadrilla($idCuadrilla));
+    }
+
     public function testRegistrarContenedorFueraDeLaRutaSeRechaza(): void
     {
         [$model, $idLevante] = $this->levantePendiente();

@@ -1451,6 +1451,11 @@
     "msg_levante_iniciado": "Ruta iniciada.",
     "msg_error_cargar": "Error al cargar los datos. Reintentá más tarde.",
     "sin_rutas_asignadas": "No tenés rutas asignadas.",
+    "btn_ver_rutas_completadas": "Ver rutas completadas",
+    "btn_ocultar_rutas_completadas": "Ocultar rutas completadas",
+    "sin_rutas_completadas": "Todavía no completaste ninguna ruta.",
+    "completada_fin": "Finalizó:",
+    "completada_recolectado": "Recolectado:",
     "msg_sin_cuadrillas": "Tu usuario no tiene una cuadrilla asignada. Contactá a un administrador.",
     "msg_sin_levante_activo": "Tu cuadrilla no tiene ningún levante pendiente o en curso en este momento. No hay nada para registrar hasta que se planifique uno.",
     "msg_levante_pendiente_iniciar": "El levante todavía no se inició. Tocá \"Iniciar ruta\" para habilitar el registro de contenedores."
@@ -1480,6 +1485,9 @@
     "estado_inc_asignada": "Asignada",
     "estado_inc_en_curso": "En curso",
     "estado_inc_resuelta": "Resuelta",
+    "btn_ver_incidencias_resueltas": "Ver incidencias resueltas",
+    "btn_ocultar_incidencias_resueltas": "Ocultar incidencias resueltas",
+    "sin_incidencias_activas": "No tenés incidencias abiertas.",
 
     "nueva_incidencia_titulo": "Reportar una incidencia",
     "nueva_incidencia_tipo": "Tipo de incidencia",

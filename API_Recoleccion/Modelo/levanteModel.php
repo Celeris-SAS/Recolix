@@ -116,6 +116,30 @@ class LevanteModel {
         return $row ? (int) $row['id_levante'] : null;
     }
 
+    // Levantes ya completados de una cuadrilla (más recientes primero). Al completarse, la ruta
+    // sale de "rutas asignadas" (ver completarLevante), así que este es su historial.
+    public function obtenerCompletadosPorCuadrilla($idCuadrilla) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "
+            SELECT l.id_levante, l.id_ruta, r.nombre, ci.turno, l.hora_salida, l.hora_llegada,
+                   l.total_recolectado, c.matricula
+            FROM levante l
+            JOIN ruta_recoleccion r ON r.id_ruta = l.id_ruta
+            LEFT JOIN circuito ci ON ci.id_circuito = r.id_circuito
+            LEFT JOIN camion c ON c.id_camion = l.id_camion
+            WHERE l.id_cuadrilla = ? AND l.estado = 'completado'
+            ORDER BY l.hora_llegada DESC, l.id_levante DESC
+        ");
+        mysqli_stmt_bind_param($stmt, "i", $idCuadrilla);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $levantes = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $levantes[] = $row;
+        }
+        mysqli_stmt_close($stmt);
+        return $levantes;
+    }
+
     public function obtenerPorRuta($idRuta) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "
             SELECT l.*, c.matricula, ce.nombre AS centro_nombre
