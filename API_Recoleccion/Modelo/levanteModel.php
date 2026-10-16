@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../../conexion.php';
 require_once __DIR__ . '/notificacionModel.php';
+require_once __DIR__ . '/../../extra/Comun/Etiquetas.php';
 
 class LevanteModel {
 
@@ -268,6 +269,9 @@ class LevanteModel {
         } catch (Throwable $e) {
             mysqli_rollback($conexion);
             throw $e;
+        }
+
+        if ($idCentro !== null) {
             $this->notificacionModel->crearParaOperariosDeCentro(
                 $idCentro,
                 "Tu centro de acopio fue asignado como destino del levante #$idLevante.",
@@ -312,7 +316,7 @@ class LevanteModel {
         foreach ($afectadas as $inc) {
             $this->notificacionModel->crearParaCuadrilla(
                 $idCuadrilla,
-                "Se te asignó el contenedor #{$inc['id_contenedor']} ({$inc['tipo']}) por una incidencia abierta.",
+                "Se te asignó el contenedor #{$inc['id_contenedor']} (" . Etiquetas::legible($inc['tipo']) . ") por una incidencia abierta.",
                 'incidencia',
                 'informativa'
             );
@@ -500,7 +504,7 @@ class LevanteModel {
             // El motivo es opcional: si no lo cargaron, el mensaje no se queda con un ":" colgando.
             $detalle = $motivoVal !== null && $motivoVal !== '' ? ": $motivoVal" : '';
             $this->notificacionModel->crearParaAdministradores(
-                "El levante #$idLevante no pudo recolectar el contenedor #$idContenedor ($estadoEncontrado)$detalle",
+                "El levante #$idLevante no pudo recolectar el contenedor #$idContenedor (" . Etiquetas::legible($estadoEncontrado) . ")$detalle",
                 'contenedor',
                 'advertencia'
             );
@@ -521,12 +525,13 @@ class LevanteModel {
     // El contenedor_levante se precarga con estado_encontrado='todo_ok' por defecto
     // para cada contenedor de la ruta (ver precargarContenedores), así que ese campo
     // solo no alcanza para saber si la cuadrilla ya pasó por él. Se considera
-    // procesado recién cuando tiene hora_vaciado (se recolectó) o motivo (no se
-    // recolectó).
+    // procesado recién cuando tiene hora_vaciado (se recolectó) o cuando el estado
+    // encontrado dejó de ser el 'todo_ok' por defecto (no se recolectó; el motivo es
+    // opcional, así que no se puede exigir).
     private function contenedoresPendientes($idLevante) {
         $pendientes = [];
         foreach ($this->obtenerContenedores($idLevante) as $c) {
-            $fueProcesado = $c['hora_vaciado'] !== null || trim((string) $c['motivo']) !== '';
+            $fueProcesado = $c['hora_vaciado'] !== null || $c['estado_encontrado'] !== 'todo_ok' || trim((string) $c['motivo']) !== '';
             if (!$fueProcesado) {
                 $pendientes[] = $c['id_contenedor'];
             }
@@ -683,7 +688,7 @@ class LevanteModel {
     public function generarAlertaVencidos() {
         $avisados = 0;
         foreach ($this->obtenerPendientesVencidos() as $levante) {
-            $mensaje = "El levante #{$levante['id_levante']} de la ruta \"{$levante['ruta_nombre']}\" quedó {$levante['estado']} al finalizar el turno (programado para el {$levante['hora_levante']}).";
+            $mensaje = "El levante #{$levante['id_levante']} de la ruta \"{$levante['ruta_nombre']}\" quedó " . Etiquetas::legible($levante['estado']) . " al finalizar el turno (programado para el {$levante['hora_levante']}).";
             if ($this->notificacionModel->existeMensaje($mensaje)) {
                 continue;
             }

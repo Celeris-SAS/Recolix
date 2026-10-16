@@ -293,6 +293,58 @@ final class LevanteModelIntegrationTest extends DbTestCase
         $this->assertEqualsWithDelta(0.0, (float) $levante['total_recolectado'], 0.001);
     }
 
+    public function testContenedorNoRecolectadoSinMotivoTambienCierraElLevante(): void
+    {
+        [$model, $idLevante, , $contenedorId] = $this->levantePendiente();
+        $model->iniciarLevante($idLevante);
+
+        $model->registrarContenedor($idLevante, $contenedorId, 'acceso_bloqueado', null, null);
+
+        $this->assertSame('completado', $model->getLevante($idLevante)['estado']);
+    }
+
+    public function testNoRecolectarElUltimoContenedorSinMotivoCierraLaRutaYLaQuitaDeLaCuadrilla(): void
+    {
+        $model = new LevanteModel();
+        $circuitoId = $this->crearCircuito();
+        $rutaId = $this->crearRuta($circuitoId, ['activa' => 1]);
+        $primero = $this->crearContenedor($circuitoId, ['capacidad' => 100]);
+        $ultimo = $this->crearContenedor($circuitoId, ['capacidad' => 100]);
+        $this->agregarContenedorARuta($rutaId, $primero, 1);
+        $this->agregarContenedorARuta($rutaId, $ultimo, 2);
+        $cuadrillaId = $this->crearCuadrilla();
+        $idLevante = (int) $model->planificarLevante($rutaId, $this->crearCamion(), $cuadrillaId, '2026-01-10 08:00:00', '2026-01-10')['id_levante'];
+        $model->iniciarLevante($idLevante);
+
+        // No levanta el primero (sin motivo) y sigue con la ruta hasta levantar el último.
+        $model->registrarContenedor($idLevante, $primero, 'acceso_bloqueado', null, null);
+        $this->assertSame('en_curso', $model->getLevante($idLevante)['estado']);
+        $model->registrarContenedor($idLevante, $ultimo, 'todo_ok', 20, null);
+
+        $this->assertSame('completado', $model->getLevante($idLevante)['estado']);
+        $this->assertSame(0, $this->contarFilas('ruta_cuadrilla', "id_ruta = $rutaId AND id_cuadrilla = $cuadrillaId"));
+    }
+
+    public function testNoRecolectarUnContenedorSinMotivoNoLoDejaPendienteSiQuedanOtros(): void
+    {
+        $model = new LevanteModel();
+        $circuitoId = $this->crearCircuito();
+        $rutaId = $this->crearRuta($circuitoId, ['activa' => 1]);
+        $primero = $this->crearContenedor($circuitoId, ['capacidad' => 100]);
+        $segundo = $this->crearContenedor($circuitoId, ['capacidad' => 100]);
+        $this->agregarContenedorARuta($rutaId, $primero, 1);
+        $this->agregarContenedorARuta($rutaId, $segundo, 2);
+        $idLevante = (int) $model->planificarLevante($rutaId, $this->crearCamion(), $this->crearCuadrilla(), '2026-01-10 08:00:00', '2026-01-10')['id_levante'];
+        $model->iniciarLevante($idLevante);
+
+        $model->registrarContenedor($idLevante, $primero, 'otro', null, null);
+
+        // Solo el segundo sigue pendiente.
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("#$segundo");
+        $model->completarLevante($idLevante);
+    }
+
     public function testElLevanteSoloSeCierraAlResolverTodosLosContenedoresYQuitaLaRutaDeLaCuadrilla(): void
     {
         $model = new LevanteModel();
@@ -493,6 +545,8 @@ final class LevanteModelIntegrationTest extends DbTestCase
         } finally {
             $this->conn()->query('CREATE TABLE centro_levante (id_levante int(11) NOT NULL, id_centro int(11) NOT NULL) ENGINE=InnoDB');
         }
+    }
+
     // RF53: alerta de levante no completado al vencer el turno.
     public function testGenerarAlertaVencidosAvisaAlAdministradorUnaSolaVez(): void
     {

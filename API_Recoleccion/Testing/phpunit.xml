@@ -10,6 +10,7 @@
         <testsuite name="Unit">
             <directory suffix="ControllerTest.php">clases</directory>
             <directory suffix="ModelTest.php">clases</directory>
+            <file>clases/EtiquetasTest.php</file>
         </testsuite>
         <testsuite name="Integration">
             <directory suffix="IntegrationTest.php">clases</directory>
