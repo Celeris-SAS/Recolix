@@ -2,7 +2,7 @@
 Recolix_class_diagram.mmd
 .DS_Store
 
-# PHPUnit standalone phar (descargado por Testing/install.sh, no se versiona)
+# PHPUnit standalone phar, no versionar
 API_Recoleccion/Testing/phpunit.phar
 API_Recoleccion/Testing/.phpunit.cache/
 API_Usuarios/Testing/phpunit.phar
@@ -10,5 +10,11 @@ API_Usuarios/Testing/.phpunit.cache/
 API_Gestion/Testing/phpunit.phar
 API_Gestion/Testing/.phpunit.cache/
 
-# Registro local del Mailer (ver extra/Comun/Mailer.php): nunca se versiona.
+# Registro local del Mailer (ver extra/Comun/Mailer.php)
 mail_log.txt
+
+# Infraestructura Docker, no versionar
+.env
+certs/*.key
+certs/*.crt
+db/init/*.sql

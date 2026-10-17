@@ -1,0 +1,11 @@
+.git
+.env
+certs/*.key
+.idea
+.vscode
+**/.DS_Store
+*.log
+recolix.sql
+API_Usuarios/Testing
+API_Gestion/Testing
+API_Recoleccion/Testing
