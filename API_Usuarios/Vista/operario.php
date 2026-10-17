@@ -401,7 +401,7 @@ $_SESSION['usuario']['id_centro'] = $idCentro;
         const ingresoFecha = document.getElementById('ingreso-fecha');
         ingresoFecha.valueAsDate = new Date();
 
-        formIngreso.addEventListener('submit', function (e) {
+        formIngreso.addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const camion = document.getElementById('ingreso-camion').value.trim();
@@ -414,12 +414,34 @@ $_SESSION['usuario']['id_centro'] = $idCentro;
                 return;
             }
 
+            // El servidor verifica que el camión exista (por matrícula) y guarda el ingreso en el
+            // centro del operario; solo si lo acepta se actualiza la barra de ocupación.
+            const botonIngreso = formIngreso.querySelector('button[type="submit"]');
+            botonIngreso.disabled = true;
+            try {
+                const res = await fetch('/recolix/API_Recoleccion/traslados/registrarIngreso', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ matricula: camion, peso: peso, fechaIngreso: fecha })
+                });
+                const json = await res.json();
+                if (json.status !== 'success') {
+                    mostrarToast(json.message || I18N.errorConectarApi, 'warning');
+                    return;
+                }
+            } catch {
+                mostrarToast(I18N.errorConectarApi, 'warning');
+                return;
+            } finally {
+                botonIngreso.disabled = false;
+            }
+
             if (OCUPACION[tipo]) {
                 OCUPACION[tipo].actual = Math.min(OCUPACION[tipo].capacidad, OCUPACION[tipo].actual + peso);
                 actualizarBarraOcupacion(tipo);
             }
 
-            mostrarToast(I18N.ingresoRegistrado + ' ' + peso + ' kg — ' + tipo.toLowerCase() + ' (' + camion + ').');
+            mostrarToast(I18N.ingresoRegistrado + ' ' + peso + ' kg — ' + tipo.toLowerCase() + ' (' + camion.toUpperCase() + ').');
             formIngreso.reset();
             ingresoFecha.valueAsDate = new Date();
         });

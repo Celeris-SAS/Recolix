@@ -178,7 +178,7 @@ class IncidenciaController {
         // RF94: aviso a los administradores de toda incidencia crítica registrada.
         if ($prioridad === 'critica') {
             $this->notificacionModel->crearParaAdministradores(
-                "Nueva incidencia crítica #$idIncidencia ($tipo) en el contenedor #$idContenedor.",
+                "Nueva incidencia crítica #$idIncidencia (" . Etiquetas::legible($tipo) . ") en el contenedor #$idContenedor.",
                 'incidencia',
                 'critica'
             );
@@ -243,7 +243,7 @@ class IncidenciaController {
         $this->notificacionModel->notificarCambioIncidencias([$incidencia], 'asignada');
         $this->notificacionModel->crearParaCuadrilla(
             $idCuadrilla,
-            "Se te asignó la incidencia #$id ({$incidencia['tipo']}).",
+            "Se te asignó la incidencia #$id (" . Etiquetas::legible($incidencia['tipo']) . ").",
             'incidencia',
             'informativa'
         );

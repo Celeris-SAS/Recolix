@@ -52,8 +52,31 @@ $campanaEsAdmin = ($_SESSION['usuario']['rol'] ?? '') === 'administrador';
         line-height: 17px;
         text-align: center;
     }
+
+    /* Navbar en mobile: solo logo, idioma (dropdown), campana y hamburguesa. El acceso al perfil
+       pasa al menú hamburguesa (ver el script de abajo / el <li> del portal de vecinos). */
+    .nav-perfil-movil { display: none; }
+    @media (max-width: 768px) {
+        .nav-right .btn-user { display: none; }
+        .nav-right { gap: 8px; }
+        .nav-perfil-movil { display: block; }
+    }
 </style>
 <script src="/recolix/extra/Comun/campana.js"></script>
+<script>
+    // En los portales con menú hamburguesa (#navMobile) se agrega el link al perfil, que en mobile
+    // deja de verse como ícono en la barra. Reusa el href y el título del ícono de usuario.
+    document.addEventListener('DOMContentLoaded', function () {
+        var usuario = document.querySelector('.nav-right .btn-user');
+        var menu = document.getElementById('navMobile');
+        if (!usuario || !menu || menu.querySelector('.nav-perfil-movil')) return;
+        var enlace = document.createElement('a');
+        enlace.href = usuario.getAttribute('href');
+        enlace.className = 'nav-perfil-movil';
+        enlace.textContent = usuario.getAttribute('title') || 'Perfil';
+        menu.appendChild(enlace);
+    });
+</script>
 <script>
     initCampanaBadge({
         ci: <?= json_encode($campanaCiUsuario) ?>,

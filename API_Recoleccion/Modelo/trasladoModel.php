@@ -18,6 +18,44 @@ class TrasladoModel {
         return $id;
     }
 
+    public function existeCamion($camionId) {
+        return $this->existe("SELECT 1 FROM camion WHERE id_camion = ?", "i", $camionId);
+    }
+
+    public function existeCentro($centroId) {
+        return $this->existe("SELECT 1 FROM centro_acopio WHERE id_centro = ?", "i", $centroId);
+    }
+
+    // Id del camión con esa matrícula, o null si no existe.
+    public function idCamionPorMatricula($matricula) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT id_camion FROM camion WHERE matricula = ?");
+        mysqli_stmt_bind_param($stmt, "s", $matricula);
+        mysqli_stmt_execute($stmt);
+        $fila = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+        mysqli_stmt_close($stmt);
+        return $fila ? (int) $fila['id_camion'] : null;
+    }
+
+    // Centro de acopio asignado al usuario (USUARIO.id_centro), o null si no tiene.
+    public function centroDeUsuario($ci) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT id_centro FROM usuario WHERE ci_usuario = ?");
+        mysqli_stmt_bind_param($stmt, "i", $ci);
+        mysqli_stmt_execute($stmt);
+        $fila = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+        mysqli_stmt_close($stmt);
+        return isset($fila['id_centro']) ? (int) $fila['id_centro'] : null;
+    }
+
+    private function existe($sql, $types, $valor) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), $sql);
+        mysqli_stmt_bind_param($stmt, $types, $valor);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_store_result($stmt);
+        $existe = mysqli_stmt_num_rows($stmt) > 0;
+        mysqli_stmt_close($stmt);
+        return $existe;
+    }
+
     public function obtenerPorCamion($camionId) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM camion_centro WHERE id_camion = ? ORDER BY fecha_ingreso DESC");
         mysqli_stmt_bind_param($stmt, "i", $camionId);
