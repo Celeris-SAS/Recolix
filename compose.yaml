@@ -22,6 +22,8 @@ services:
       context: .
       dockerfile: LandingPage/Dockerfile
     image: recolix/landing:${TAG:-1.0}
+    volumes:
+      - php_sessions:/var/www/sessions
 
   backoffice:
     <<: *web
@@ -29,6 +31,8 @@ services:
       context: .
       dockerfile: Backoffice/Dockerfile
     image: recolix/backoffice:${TAG:-1.0}
+    volumes:
+      - php_sessions:/var/www/sessions
 
   api-usuarios:
     <<: *web
@@ -36,6 +40,8 @@ services:
       context: .
       dockerfile: API_Usuarios/Dockerfile
     image: recolix/api-usuarios:${TAG:-1.0}
+    volumes:
+      - php_sessions:/var/www/sessions
 
   api-gestion:
     <<: *web
@@ -43,6 +49,8 @@ services:
       context: .
       dockerfile: API_Gestion/Dockerfile
     image: recolix/api-gestion:${TAG:-1.0}
+    volumes:
+      - php_sessions:/var/www/sessions
 
   api-recoleccion:
     <<: *web
@@ -50,7 +58,12 @@ services:
       context: .
       dockerfile: API_Recoleccion/Dockerfile
     image: recolix/api-recoleccion:${TAG:-1.0}
+    volumes:
+      - php_sessions:/var/www/sessions
 
 networks:
   recolix_red:
     driver: bridge
+
+volumes:
+  php_sessions:

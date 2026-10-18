@@ -12,7 +12,10 @@ COPY API_Gestion/ /var/www/html/
 COPY conexion.php /var/www/conexion.php
 COPY extra/ /var/www/html/recolix/extra/
 COPY extra/ /var/www/extra/
+COPY Backoffice/verificacion_sesion.php /var/www/Backoffice/verificacion_sesion.php
 
-RUN chown -R www-data:www-data /var/www
+RUN mkdir -p /var/www/sessions \
+ && echo "session.save_path = /var/www/sessions" > /usr/local/etc/php/conf.d/session-path.ini \
+ && chown -R www-data:www-data /var/www
 
 EXPOSE 80

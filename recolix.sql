@@ -1956,7 +1956,7 @@ COMMIT;
 --
 -- Índice para listar solo las rutas activas
 --
-ALTER TABLE `ruta_recoleccion` ADD INDEX IF NOT EXISTS `idx_ruta_activa_circuito` (`activa`, `id_circuito`);
+ALTER TABLE `ruta_recoleccion` ADD INDEX `idx_ruta_activa_circuito` (`activa`, `id_circuito`);
 
 --
 -- RF36 / RF43: historial de estados de camión (tabla + triggers)
