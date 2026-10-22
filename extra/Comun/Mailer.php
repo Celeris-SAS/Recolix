@@ -1,48 +1,136 @@
 <?php
-// Envío de mail best-effort para las notificaciones (vecino, admin, cuadrilla, operario).
+// Envío de mail para las notificaciones (vecino, admin, cuadrilla, operario), usando SMTP
+// directo contra Gmail (smtp.gmail.com) en vez de un servicio externo o el mail() nativo de PHP.
 //
-// Deshabilitado por defecto: si RECOLIX_MAIL_ENABLED != '1', no toca la red y solo registra
-// en mail_log.txt lo que se habría enviado. Esto es intencional: este XAMPP no tiene
-// sendmail_path configurado (ver php.ini), así que mail() intenta conectarse a un servidor
-// SMTP que no existe. Aunque se acota el timeout a unos segundos, pagar esa espera en cada
-// notificación -y en cada test que crea notificaciones- no es aceptable.
+// Por qué así: un servicio como Resend/Brevo en su plan gratis, sin un dominio propio
+// verificado, no deja mandar a cualquier destinatario real. Gmail sí, porque es una cuenta de
+// mail real y ya tiene reputación de envío — no depende de verificar nada adicional, solo de
+// una "contraseña de aplicación" que genera Google para darle acceso SMTP a esta app sin
+// exponer la contraseña real de la cuenta.
 //
-// Para enviar mails reales:
-//   1) Configurar un servidor SMTP real (sendmail_path en php.ini, o un relay accesible
-//      en SMTP/smtp_port).
-//   2) Setear la variable de entorno RECOLIX_MAIL_ENABLED=1 (y opcionalmente
-//      RECOLIX_MAIL_FROM para cambiar el remitente, por defecto celerisuy@gmail.com).
+// Cómo activarlo (dos formas, igual que RECOLIX_DB_* en conexion.php):
+//   1) Activá la verificación en 2 pasos en la cuenta de Gmail que va a enviar los mails
+//      (myaccount.google.com/security).
+//   2) Generá una "contraseña de aplicación": myaccount.google.com/apppasswords
+//      (elegí "Otra" / "Correo" como app, y copiá la contraseña de 16 letras que te da).
+//   3a) Variable de entorno (recomendado: anda para todos sin tocar código ni archivos por
+//       persona) — RECOLIX_MAIL_USER y RECOLIX_MAIL_APP_PASSWORD, definidas una vez en el
+//       Apache de cada entorno (SetEnv en httpd-vhosts.conf o httpd.conf) y listo.
+//   3b) O, si preferís no tocar la config de Apache, mail-config.php (copiá
+//       mail-config.example.php; ese archivo real no se versiona en git).
+// La variable de entorno tiene prioridad sobre el archivo si ambas existen. Sin ninguna de
+// las dos, no se envía nada: solo queda registrado en mail_log.txt.
 class Mailer {
     public static function enviar($destinatario, $asunto, $mensaje) {
         if (!$destinatario) {
             return false;
         }
 
-        if (getenv('RECOLIX_MAIL_ENABLED') !== '1') {
+        $config = self::cargarConfig();
+        if (empty($config['gmailUser']) || empty($config['gmailAppPassword'])) {
             self::registrar("[deshabilitado] Para: $destinatario | Asunto: $asunto | $mensaje");
             return false;
         }
 
-        $remitente = getenv('RECOLIX_MAIL_FROM') ?: 'celerisuy@gmail.com';
-        $headers = "From: Recolix <$remitente>\r\nContent-Type: text/plain; charset=UTF-8";
-        $asunto = '=?UTF-8?B?' . base64_encode($asunto) . '?=';
-
-        // Acota el tiempo máximo que puede tardar en fallar la conexión SMTP: sin esto,
-        // default_socket_timeout puede llegar a 60s y colgar la request.
-        $timeoutPrevio = ini_get('default_socket_timeout');
-        ini_set('default_socket_timeout', 3);
         try {
-            $enviado = @mail($destinatario, $asunto, $mensaje, $headers);
-        } catch (\Throwable $e) {
-            $enviado = false;
+            self::enviarPorSmtp($config['gmailUser'], $config['gmailAppPassword'], $destinatario, $asunto, $mensaje);
+            return true;
+        } catch (Exception $e) {
+            self::registrar("[fallo] Para: $destinatario | Asunto: $asunto | " . $e->getMessage());
+            return false;
+        }
+    }
+
+    private static function enviarPorSmtp($usuario, $appPassword, $destinatario, $asunto, $mensaje) {
+        // cafile explícito: el PHP de XAMPP no trae un paquete de certificados CA configurado
+        // (y en esta máquina además hay un antivirus que intercepta el TLS saliente), así que
+        // sin esto la conexión STARTTLS no puede verificar el certificado del servidor.
+        $contexto = stream_context_create([
+            'ssl' => [
+                'cafile'            => __DIR__ . '/cacert.pem',
+                'verify_peer'       => true,
+                'verify_peer_name'  => true,
+            ],
+        ]);
+        $socket = @stream_socket_client(
+            'tcp://smtp.gmail.com:587',
+            $errno,
+            $errstr,
+            10,
+            STREAM_CLIENT_CONNECT,
+            $contexto
+        );
+        if (!$socket) {
+            throw new Exception("No se pudo conectar a smtp.gmail.com: $errstr ($errno)");
+        }
+        stream_set_timeout($socket, 10);
+
+        try {
+            self::leerRespuesta($socket, '220');
+            self::comando($socket, "EHLO recolix.local", '250');
+            self::comando($socket, "STARTTLS", '220');
+
+            if (!stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
+                throw new Exception("No se pudo iniciar TLS con smtp.gmail.com");
+            }
+
+            self::comando($socket, "EHLO recolix.local", '250');
+            self::comando($socket, "AUTH LOGIN", '334');
+            self::comando($socket, base64_encode($usuario), '334');
+            self::comando($socket, base64_encode($appPassword), '235');
+
+            self::comando($socket, "MAIL FROM:<$usuario>", '250');
+            self::comando($socket, "RCPT TO:<$destinatario>", '250');
+            self::comando($socket, "DATA", '354');
+
+            $cabeceras = "From: Recolix <$usuario>\r\n"
+                . "To: <$destinatario>\r\n"
+                . "Subject: $asunto\r\n"
+                . "MIME-Version: 1.0\r\n"
+                . "Content-Type: text/plain; charset=UTF-8\r\n";
+            $cuerpo = str_replace("\n.", "\n..", $mensaje);
+            self::comando($socket, $cabeceras . "\r\n" . $cuerpo . "\r\n.", '250');
+
+            self::comando($socket, "QUIT", '221');
         } finally {
-            ini_set('default_socket_timeout', $timeoutPrevio);
+            fclose($socket);
+        }
+    }
+
+    private static function comando($socket, $linea, $codigoEsperado) {
+        fwrite($socket, $linea . "\r\n");
+        self::leerRespuesta($socket, $codigoEsperado);
+    }
+
+    private static function leerRespuesta($socket, $codigoEsperado) {
+        $respuesta = '';
+        do {
+            $linea = fgets($socket, 1024);
+            if ($linea === false) {
+                throw new Exception("Conexión SMTP cerrada inesperadamente (esperaba $codigoEsperado)");
+            }
+            $respuesta .= $linea;
+        } while (isset($linea[3]) && $linea[3] === '-');
+
+        if (substr($respuesta, 0, 3) !== $codigoEsperado) {
+            throw new Exception("Respuesta SMTP inesperada (esperaba $codigoEsperado): " . trim($respuesta));
+        }
+        return $respuesta;
+    }
+
+    private static function cargarConfig() {
+        $envUser = getenv('RECOLIX_MAIL_USER');
+        $envPassword = getenv('RECOLIX_MAIL_APP_PASSWORD');
+        if ($envUser && $envPassword) {
+            return ['gmailUser' => $envUser, 'gmailAppPassword' => $envPassword];
         }
 
-        if (!$enviado) {
-            self::registrar("[fallo] Para: $destinatario | Asunto: $asunto");
+        $archivo = __DIR__ . '/mail-config.php';
+        if (!file_exists($archivo)) {
+            return ['gmailUser' => '', 'gmailAppPassword' => ''];
         }
-        return $enviado;
+        $config = require $archivo;
+        return is_array($config) ? $config : ['gmailUser' => '', 'gmailAppPassword' => ''];
     }
 
     private static function registrar($linea) {
