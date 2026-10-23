@@ -5,6 +5,8 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('Access-Control-Allow-Headers: Content-Type');
 
+require_once __DIR__ . '/../extra/Comun/ErroresApi.php';
+
 $config = [
     'base_path' => '/recolix/API_Usuarios/api.php/',
     'resources' => [
@@ -228,7 +230,7 @@ if (strpos($uri, $basePath) === 0) {
             echo json_encode(['status' => 'success', 'data' => $result]);
         } catch (Throwable $e) {
             http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
-            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+            echo json_encode(['status' => 'error', 'message' => recolix_mensaje_error($e)]);
         }
         exit;
     } else {
@@ -264,7 +266,7 @@ if (strpos($uri, $basePath) === 0) {
                     }
                 } catch (Throwable $e) {
                     http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
-                    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                    echo json_encode(['status' => 'error', 'message' => recolix_mensaje_error($e)]);
                 }
             } else {
                 if (!$resourceConfig['getAllMethod']) {
@@ -277,7 +279,7 @@ if (strpos($uri, $basePath) === 0) {
                     echo json_encode(['status' => 'success', 'data' => $result]);
                 } catch (Throwable $e) {
                     http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
-                    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                    echo json_encode(['status' => 'error', 'message' => recolix_mensaje_error($e)]);
                 }
             }
             break;
@@ -302,7 +304,7 @@ if (strpos($uri, $basePath) === 0) {
                     echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' creado', 'data' => $result]);
                 } catch (Throwable $e) {
                     http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
-                    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                    echo json_encode(['status' => 'error', 'message' => recolix_mensaje_error($e)]);
                 }
             }
             break;
@@ -326,7 +328,7 @@ if (strpos($uri, $basePath) === 0) {
                         echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' actualizado', 'data' => $result]);
                     } catch (Throwable $e) {
                         http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
-                        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                        echo json_encode(['status' => 'error', 'message' => recolix_mensaje_error($e)]);
                     }
                 }
             }
@@ -345,7 +347,7 @@ if (strpos($uri, $basePath) === 0) {
                     echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' dado de baja', 'data' => $result]);
                 } catch (Throwable $e) {
                     http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
-                    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                    echo json_encode(['status' => 'error', 'message' => recolix_mensaje_error($e)]);
                 }
             }
             break;

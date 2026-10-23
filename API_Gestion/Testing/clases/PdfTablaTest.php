@@ -12,7 +12,7 @@ final class PdfTablaTest extends GestionTestCase
         $this->assertStringStartsWith('%PDF-1.4', $pdf);
         $this->assertStringEndsWith('%%EOF', $pdf);
         $this->assertStringContainsString('/Count 1', $pdf);
-        $this->assertStringContainsString('Tiempos de Resoluci\xF3n', $pdf, 'Los acentos van en WinAnsi');
+        $this->assertStringContainsString("Tiempos de Resoluci\xF3n", $pdf, 'Los acentos van en WinAnsi');
     }
 
     public function testEscapaParentesisYBarras(): void
@@ -31,7 +31,7 @@ final class PdfTablaTest extends GestionTestCase
         $pdf = (new PdfTabla('T', 'S', ['A', 'B'], $filas))->generar();
 
         $this->assertDoesNotMatchRegularExpression('/\/Count 1\b/', $pdf);
-        $this->assertStringContainsString('P\xE1gina 1 de', $pdf);
+        $this->assertStringContainsString("P\xE1gina 1 de", $pdf);
     }
 
     public function testSinFilasMuestraSinDatos(): void

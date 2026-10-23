@@ -5,20 +5,12 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('Access-Control-Allow-Headers: Content-Type');
 
-// ERR-22: los rechazos por restricciones de la base (clave foránea, duplicados) se muestran
-// con un mensaje de negocio en lugar del texto técnico de MySQL.
+require_once __DIR__ . '/../extra/Comun/ErroresApi.php';
+
+// ERR-22: los rechazos por restricciones de la base (clave foránea, duplicados) y los datos que faltan se
+// muestran con un mensaje de negocio en lugar del texto técnico (ver extra/Comun/ErroresApi.php).
 function mensajeError(Throwable $e) {
-    if ($e instanceof mysqli_sql_exception) {
-        switch ((int) $e->getCode()) {
-            case 1452:
-                return 'El registro referenciado no existe. Verificá los datos ingresados.';
-            case 1451:
-                return 'No se puede eliminar o modificar porque tiene registros asociados.';
-            case 1062:
-                return 'Ya existe un registro con esos datos.';
-        }
-    }
-    return $e->getMessage();
+    return recolix_mensaje_error($e);
 }
 
 $config = [
