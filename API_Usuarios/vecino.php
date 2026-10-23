@@ -33,6 +33,7 @@ if (!isset($_SESSION['ci_usuario'])) {
                 <ul>
                     <li><a href="../LandingPage/index_LandingPage.html"><?= t('common.nav_inicio') ?></a></li>
                     <li><a href="../LandingPage/mapa.html"><?= t('common.nav_mapa') ?></a></li>
+                    <li><a href="../LandingPage/reportes.html"><?= t('common.nav_reportes') ?></a></li>
                     <li class="nav-perfil-movil"><a href="vecino.php"><?= t('backoffice.nav_perfil_usuario') ?></a></li>
                 </ul>
             </nav>
@@ -266,6 +267,7 @@ if (!isset($_SESSION['ci_usuario'])) {
           <ul>
             <li><a href="../LandingPage/index_LandingPage.html"><?= t('common.footer_inicio') ?></a></li>
             <li><a href="../LandingPage/mapa.html"><?= t('common.footer_mapa') ?></a></li>
+            <li><a href="../LandingPage/reportes.html"><?= t('common.footer_reportes') ?></a></li>
             <li><a href="../Backoffice/login_backoffice.php"><?= t('common.footer_portal_empleados') ?></a></li>
           </ul>
         </div>

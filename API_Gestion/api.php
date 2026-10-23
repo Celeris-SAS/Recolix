@@ -31,6 +31,7 @@ $config = [
         'GET incidencias/getActivasConUbicacion',
         'GET reportes/getIncidenciasDetalle',
         'GET reportes/getResumenGeneral',
+        'GET reportes/getResumenPublico',
         'POST incidencias',
     ],
     'resources' => [
@@ -202,6 +203,7 @@ $config = [
             'deleteMethod' => null,
             'actions' => [
                 'getResumenGeneral',
+                'getResumenPublico',
                 'getDistribucionLlenado',
                 'getIndicadores',
                 'getZonasCriticas',

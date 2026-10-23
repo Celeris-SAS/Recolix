@@ -10,6 +10,7 @@
     "campana_volver": "Back",
     "nav_inicio": "Home",
     "nav_mapa": "Map",
+    "nav_reportes": "Reports",
     "nav_iniciar_sesion": "Log In",
     "nav_mi_perfil": "My profile",
     "nav_abrir_menu": "Open menu",
@@ -19,6 +20,7 @@
     "footer_navegacion": "Navigation",
     "footer_inicio": "Home",
     "footer_mapa": "Map",
+    "footer_reportes": "Reports",
     "footer_portal_empleados": "Employee portal",
     "footer_canales": "City channels",
     "footer_linea": "Phone: 1950 3000",
@@ -141,6 +143,25 @@
     "feedback_error_conexion": "Error connecting to the server."
   },
 
+  "reportes_publicos": {
+    "title": "Recolix Reports",
+    "meta_description": "Incidents resolved and waste collected by Recolix in Montevideo.",
+    "titulo": "Public reports",
+    "desc": "See how the city is working: incidents resolved and waste collected over different periods.",
+    "resueltas": "Incidents resolved",
+    "volumen": "Waste collected",
+    "periodo_24h": "Last 24 hours",
+    "periodo_semana": "Last week",
+    "periodo_mes": "Last month",
+    "periodo_anio": "Last year",
+    "unidad_incidencias": "incidents",
+    "actualizado": "Last update",
+    "error": "Reports could not be loaded. Please try again later.",
+    "nota": "Incidents are counted by resolution date and volume includes completed collections only.",
+    "th_periodo": "Period",
+    "th_volumen_kg": "Volume collected (kg)",
+    "exportar": "Export"
+  },
   "mapa": {
     "title": "Recolix Map",
     "meta_description": "Interactive map of Recolix containers and collection zones.",

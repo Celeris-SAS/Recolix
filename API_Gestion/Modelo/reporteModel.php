@@ -157,6 +157,42 @@ class ReporteModel {
         return round(($completados / $total) * 100, 1);
     }
 
+    // Resumen para la página pública de reportes: incidencias resueltas y volumen recolectado (kg)
+    // en las últimas 24 horas, semana, mes y año. Se usan ventanas móviles sobre datetime
+    // (hora_salida, no hora_levante, que es solo fecha) para que "24 h" sea real.
+    const PERIODOS_PUBLICOS = [
+        '24h'    => '1 DAY',
+        'semana' => '7 DAY',
+        'mes'    => '1 MONTH',
+        'anio'   => '1 YEAR',
+    ];
+
+    public function getResumenPublico() {
+        $conn = $this->conn->getConexion();
+        $resumen = [];
+        foreach (self::PERIODOS_PUBLICOS as $periodo => $intervalo) {
+            $resueltas = $this->contarFilas("
+                SELECT COUNT(*) FROM INCIDENCIA
+                WHERE estado = 'resuelta' AND fecha_cierre >= (NOW() - INTERVAL $intervalo)
+            ");
+
+            $volumen = 0.0;
+            $result = mysqli_query($conn, "
+                SELECT COALESCE(SUM(total_recolectado), 0) FROM LEVANTE
+                WHERE estado = 'completado' AND hora_salida >= (NOW() - INTERVAL $intervalo)
+            ");
+            if ($result) {
+                $volumen = (float) mysqli_fetch_row($result)[0];
+            }
+
+            $resumen[$periodo] = [
+                'incidenciasResueltas' => $resueltas,
+                'volumenKg'            => round($volumen, 2),
+            ];
+        }
+        return $resumen;
+    }
+
     // Umbrales que definen una zona urbana crítica.
     const UMBRAL_INCIDENCIAS_MES = 10;
     const UMBRAL_PORCENTAJE_DESBORDADOS = 20;

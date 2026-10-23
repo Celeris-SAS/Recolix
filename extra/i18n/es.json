@@ -10,6 +10,7 @@
     "campana_volver": "Volver",
     "nav_inicio": "Inicio",
     "nav_mapa": "Mapa",
+    "nav_reportes": "Informes",
     "nav_iniciar_sesion": "Iniciar Sesión",
     "nav_mi_perfil": "Mi perfil",
     "nav_abrir_menu": "Abrir menú",
@@ -19,6 +20,7 @@
     "footer_navegacion": "Navegación",
     "footer_inicio": "Inicio",
     "footer_mapa": "Mapa",
+    "footer_reportes": "Informes",
     "footer_portal_empleados": "Portal de empleados",
     "footer_canales": "Canales de la Intendencia",
     "footer_linea": "Línea 1950 3000",
@@ -141,6 +143,25 @@
     "feedback_error_conexion": "Error al conectar con el servidor."
   },
 
+  "reportes_publicos": {
+    "title": "Informes Recolix",
+    "meta_description": "Incidencias resueltas y residuos recolectados por Recolix en Montevideo.",
+    "titulo": "Informes públicos",
+    "desc": "Seguí cómo trabaja la ciudad: incidencias resueltas y residuos recolectados en distintos períodos.",
+    "resueltas": "Incidencias resueltas",
+    "volumen": "Residuos recolectados",
+    "periodo_24h": "Últimas 24 horas",
+    "periodo_semana": "Última semana",
+    "periodo_mes": "Último mes",
+    "periodo_anio": "Último año",
+    "unidad_incidencias": "incidencias",
+    "actualizado": "Última actualización",
+    "error": "No se pudieron cargar los informes. Intentá nuevamente más tarde.",
+    "nota": "Las incidencias se cuentan por fecha de resolución y el volumen incluye solo recolecciones completadas.",
+    "th_periodo": "Período",
+    "th_volumen_kg": "Volumen recolectado (kg)",
+    "exportar": "Exportar"
+  },
   "mapa": {
     "title": "Mapa Recolix",
     "meta_description": "Mapa interactivo de contenedores y zonas de recolección de Recolix.",
