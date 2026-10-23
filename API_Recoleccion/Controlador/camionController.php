@@ -144,7 +144,6 @@
             if (!in_array($estado, $this->estadosValidos)) {
                 throw new InvalidArgumentException("Estado no válido. Valores: " . implode(', ', $this->estadosValidos));
             }
-            // Un camión solo pasa a en_mantenimiento al registrar o programar un mantenimiento.
             if ($estado === 'en_mantenimiento') {
                 $actual = $this->camionModel->getCamion($id);
                 if ($actual && $actual['estado'] !== 'en_mantenimiento') {
@@ -228,7 +227,25 @@
         }
 
         public function obtenerEnOperativa() {
-            return $this->camionModel->obtenerEnOperativa();
+            $flota = $this->camionModel->obtenerEnOperativa();
+
+            $rol = $_SESSION['usuario']['rol'] ?? '';
+            if ($rol !== '' && $rol !== 'vecino') {
+                return $flota;
+            }
+            return array_map(function ($camion) {
+                return [
+                    'ubicacion' => [
+                        'latitud'  => $camion['ubicacion']['latitud'],
+                        'longitud' => $camion['ubicacion']['longitud'],
+                    ],
+                    'proxima_parada' => $camion['proxima_parada'] ? [
+                        'calle'     => $camion['proxima_parada']['calle'],
+                        'num_calle' => $camion['proxima_parada']['num_calle'],
+                    ] : null,
+                    'eta' => $camion['eta'] ? ['minutos' => $camion['eta']['minutos']] : null,
+                ];
+            }, $flota);
         }
 
     }

@@ -258,3 +258,11 @@
 .main-nav a:hover {
   color: var(--moss);
 }
+.panel-card .legend-camion::before {
+    background: var(--ink);
+}
+
+.camion-eta-etiqueta {
+    font-family: var(--font-mono);
+    font-weight: 600;
+}

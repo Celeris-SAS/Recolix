@@ -29,8 +29,6 @@ document.addEventListener('DOMContentLoaded', function () {
     popupAnchor: [0, -13]
   });
 
-  // COLORES_CONTENEDOR viene de mapaContenedoresBase.js (fuente única, compartida
-  // también con el hero-mapa y los mapas de selección al reportar una incidencia).
 
   const COLORES_CENTRO = {
     operativo: '#9b59b6',
@@ -177,22 +175,32 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const marker = L.marker([lat, lon], { icon: ICONO_CAMION }).addTo(grupo);
 
-    const filas = [`<b>${I18N.popupCamion} ${camion.matricula}</b>`];
-    if (camion.modelo) filas.push(`<b>${I18N.popupModelo}</b> ${camion.modelo}`);
-    filas.push(`<b>${I18N.popupUltimaPosicion}</b> ${camion.ubicacion.calle || I18N.sinDireccion}${camion.ubicacion.num_calle ? ' ' + camion.ubicacion.num_calle : ''}`);
-    if (camion.proxima_parada) {
-      filas.push(`<b>${I18N.popupProximaParada}</b> ${camion.proxima_parada.calle || I18N.sinDireccion}${camion.proxima_parada.num_calle ? ' ' + camion.proxima_parada.num_calle : ''}`);
-      filas.push(`<b>${I18N.popupTiempoProximo}</b> ${camion.eta.texto} (${camion.eta.distancia_km} km a ${camion.eta.velocidad_kmh} km/h)`);
-    } else {
-      filas.push(`<b>${I18N.popupProximaParada}</b> ${I18N.sinPendientes}`);
+    const escapar = (t) => String(t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+    let tiempo = I18N.sinPendientes;
+    if (camion.eta) {
+      const min = camion.eta.minutos;
+      tiempo = min < 60
+        ? `≈ ${min} ${I18N.min}`
+        : `≈ ${Math.floor(min / 60)} h ${String(min % 60).padStart(2, '0')} ${I18N.min}`;
     }
+
+    let parada = '';
+    if (camion.proxima_parada) {
+      const p = camion.proxima_parada;
+      parada = escapar(`${p.calle || I18N.sinDireccion}${p.num_calle ? ' ' + p.num_calle : ''}`);
+    }
+
+    const etiqueta = parada ? `${parada}<br><b>${tiempo}</b>` : `<b>${tiempo}</b>`;
+    marker.bindTooltip(etiqueta, { permanent: true, direction: 'top', offset: [0, -14], className: 'camion-eta-etiqueta' });
+
+    const filas = [];
+    if (parada) filas.push(`<b>${I18N.popupProximaParada}</b> ${parada}`);
+    filas.push(`<b>${camion.eta ? I18N.popupTiempoProximo : I18N.popupProximaParada}</b> ${tiempo}`);
     marker.bindPopup(filas.join('<br>'), { maxWidth: 260 });
     return [lat, lon];
   };
 
-  // RF72: incidencia activa dibujada como pin de "!" coloreado por prioridad,
-  // distinto de los circleMarker de contenedores para no confundirse aunque
-  // el color coincida (ej. crítica y desbordado comparten rojo).
   const addIncidenciaPoint = (inc) => {
     const lat = parseFloat(inc.latitud);
     const lon = parseFloat(inc.longitud);
@@ -248,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('mapSummaryValue').textContent = `${total} ${etiquetaTotal} · ${hora}`;
   };
 
-  async function cargarVista(vista) {
+  async function cargarVista(vista, silencioso) {
     vistaActual = vista;
     grupo.clearLayers();
     Object.keys(counts[vista]).forEach((k) => { counts[vista][k] = 0; });
@@ -309,7 +317,7 @@ document.addEventListener('DOMContentLoaded', function () {
         bounds.push(addCamionPoint(camion));
       }
       renderSummary('camiones', bounds.length);
-      if (bounds.length) map.fitBounds(bounds, { padding: [40, 40] });
+      if (bounds.length && !silencioso) map.fitBounds(bounds, { padding: [40, 40] });
       return;
     }
 
@@ -345,6 +353,8 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   cargarVista('contenedores');
+
+  setInterval(() => { if (vistaActual === 'camiones') cargarVista('camiones', true); }, 30000);
 
   const btn = document.getElementById('hamburgerBtn');
   const nav = document.getElementById('mainNav');

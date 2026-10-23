@@ -96,8 +96,6 @@ class SolicitudRegistroController {
             throw new InvalidArgumentException('Ya existe una cuenta registrada con ese teléfono.');
         }
 
-        // No se notifica acá: la tarjeta "Usuarios Nuevos" del panel del admin ya cuenta
-        // las solicitudes pendientes, así que sería la misma información duplicada.
         return $this->solicitudModel->crearSolicitud($ci, $primerNombre, $pApellido, $email, $tel, $idMunicipio, $contrasenia);
     }
 

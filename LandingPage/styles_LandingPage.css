@@ -741,9 +741,6 @@ textarea {
   z-index: 0;
 }
 
-/* Pin en forma de gota (estilo Google Maps), distinto de los círculos de los contenedores.
-   Leaflet posiciona el ícono con su propio transform (translate), por eso la rotación va en un
-   span interno (.mapa-marcador-usuario) y no en el div que Leaflet mueve (.mapa-marcador-usuario-wrap). */
 .mapa-marcador-usuario-wrap {
   background: transparent !important;
   border: none !important;

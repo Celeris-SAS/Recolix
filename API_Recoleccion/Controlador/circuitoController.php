@@ -62,7 +62,6 @@
             ];
         }
 
-        // RF51: la frecuencia se expresa en veces por semana, derivadas de los días del texto.
         private function conVecesPorSemana($circuito) {
             if (is_array($circuito)) {
                 $circuito['veces_por_semana'] = count($this->diasDesdeFrecuencia($circuito['frecuencia'] ?? ''));

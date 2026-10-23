@@ -7,6 +7,7 @@
     <meta name="google" content="notranslate">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= t('landing.title') ?></title>
+  <link rel="icon" type="image/png" href="/recolix/LandingPage/img/Logo.png">
   <meta name="description" content="<?= htmlspecialchars(t('landing.meta_description')) ?>">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -336,7 +337,6 @@
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(heroMap);
 
-        // Misma fuente de contenedores y colores que el mapa público y los mapas de reportar incidencia.
         await cargarContenedoresEnMapa(heroMap, { apiBase: API_GESTION, radius: 4 });
 
         setTimeout(() => heroMap.invalidateSize(), 250);
@@ -372,20 +372,17 @@
         };
 
         try {
-          const [contenedores, incidenciasHoy, resumenMes] = await Promise.all([
+          const [contenedores, resumen] = await Promise.all([
             fetchJson(`${API_GESTION}/contenedores`),
-            fetchJson(`${API_GESTION}/reportes/getIncidenciasDetalle?rango=hoy`),
-            fetchJson(`${API_GESTION}/reportes/getResumenGeneral?rango=mes`)
+            fetchJson(`${API_GESTION}/reportes/getResumenPublico`)
           ]);
 
           const totalContenedores = Array.isArray(contenedores) ? contenedores.length : 0;
-          const totalIncidenciasHoy = Array.isArray(incidenciasHoy) ? incidenciasHoy.length : 0;
-          const toneladasMes = resumenMes && resumenMes.residuosRecolectados != null
-            ? resumenMes.residuosRecolectados / 1000
-            : 0;
+          const totalIncidencias24h = resumen ? resumen['24h'].incidenciasReportadas : 0;
+          const toneladasMes = resumen ? resumen.mes.volumenKg / 1000 : 0;
 
           elContenedores.textContent = totalContenedores.toLocaleString(I18N_LOCALE);
-          elIncidencias.textContent = totalIncidenciasHoy.toLocaleString(I18N_LOCALE);
+          elIncidencias.textContent = totalIncidencias24h.toLocaleString(I18N_LOCALE);
           elVolumen.textContent = `${toneladasMes.toLocaleString(I18N_LOCALE, { maximumFractionDigits: 1 })} t`;
 
           const hora = new Date().toLocaleTimeString(I18N_LOCALE, { hour: '2-digit', minute: '2-digit' });
@@ -462,7 +459,6 @@
       });
 
 
-      // RF03: reportar incidencia (usuario autenticado) desde la Landing Page
       const reportarForm = document.getElementById('reportarForm');
       const btnReportar = document.getElementById('btnReportarIncidencia');
 
@@ -481,10 +477,6 @@
         }
       });
 
-      // RF05/RF06: mapa interactivo — muestra la ubicación del usuario y permite elegir el
-      // contenedor de la incidencia tocándolo directamente en el mapa. Los contenedores y sus
-      // colores salen de cargarContenedoresEnMapa() (mapaContenedoresBase.js), la misma fuente
-      // que usan el mini-mapa del hero y el mapa público.
       let repMapa = null;
       let repMapaMarcadores = null;
       let repMarcadorUsuario = null;
@@ -511,8 +503,6 @@
         repMarcadorSeleccionado = marker;
       }
 
-      // Si el usuario no toca ningún contenedor en el mapa, se preselecciona el más cercano
-      // a su ubicación detectada — nunca queda sin elegir uno.
       function preseleccionarMasCercano(latitude, longitude) {
         if (!repMapaMarcadores || !repMapaMarcadores.length) return;
         let masCercano = null;
@@ -528,8 +518,6 @@
         if (masCercano) seleccionarContenedorEnMapa(masCercano, masCercano.contenedor);
       }
 
-      // RF07: adjunto de foto (JPG/PNG, máx 5 MB) — se valida en el cliente y se manda como
-      // data URL base64 dentro del mismo JSON del reporte, ya que el endpoint solo acepta JSON.
       const MAX_FOTO_BYTES = 5 * 1024 * 1024;
       function leerFotoComoBase64(input, errorEl) {
         errorEl.textContent = '';
@@ -641,8 +629,6 @@
         }
 
         try {
-          // Orden posicional: coincide con crearIncidencia($idContenedor, $tipo, $descripcion, $imagen).
-          // La identidad del usuario la resuelve el servidor a partir de la sesión, no se manda acá.
           const resp = await fetch(`${API_GESTION}/incidencias`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

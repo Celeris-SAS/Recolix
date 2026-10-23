@@ -54,11 +54,13 @@ final class UsuarioModelIntegrationTest extends DbTestCase
         $model = new UsuarioModel();
         $ci = $this->crearUsuario();
 
-        $model->updatePerfil($ci, 'nuevo@recolix.uy', '098765432');
+        $model->updatePerfil($ci, 'nuevo@recolix.uy', '098765432', 'Ana', 'Gómez');
 
         $perfil = $model->getPerfil($ci);
         $this->assertSame('nuevo@recolix.uy', $perfil['email']);
         $this->assertSame('098765432', $perfil['tel']);
+        $this->assertSame('Ana', $perfil['primer_nombre']);
+        $this->assertSame('Gómez', $perfil['p_apellido']);
     }
 
     public function testCambiarContraseniaActualizaElHash(): void

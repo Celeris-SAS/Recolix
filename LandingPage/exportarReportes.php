@@ -1,6 +1,4 @@
 <?php
-// Exportación pública (CSV o PDF) del resumen de la página de reportes. Sin sesión: son los mismos
-// totales que muestra reportes.html.
 require_once __DIR__ . '/../extra/i18n/i18n.php';
 require_once __DIR__ . '/../API_Gestion/Modelo/reporteModel.php';
 require_once __DIR__ . '/../API_Gestion/Util/PdfTabla.php';

@@ -10,6 +10,7 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
     <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= t('contenedores.title') ?></title>
+    <link rel="icon" type="image/png" href="/recolix/LandingPage/img/Logo.png">
     <link rel="stylesheet" href="styleContenedores.css">
 </head>
 
@@ -723,11 +724,6 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
                 body.estado = document.getElementById('estado').value;
             }
 
-            // Al editar, el estado no viaja en este PUT (updateContenedor no lo acepta como
-            // parámetro) — se cambia aparte con cambiarEstado, y tiene que ir ANTES del PUT de
-            // datos: updateContenedor decide si nulear o exigir dirección leyendo el estado
-            // actual del contenedor en la base, así que primero hay que dejar el estado nuevo
-            // asentado para que esa regla evalúe correctamente (RF27).
             if (id) {
                 try {
                     const estadoRes = await fetch(`${API_BASE}/contenedores/cambiarEstado/${id}`, {
@@ -966,7 +962,6 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
             }
         }
 
-        // Dirección para mostrar en títulos. Un contenedor en depósito no tiene calle ni número.
         function direccionContenedor(c) {
             const partes = [c.calle, c.num_calle].filter(p => p !== null && p !== undefined && String(p).trim() !== '');
             return partes.length ? partes.join(' ') : I18N.sinDireccion;
@@ -1123,7 +1118,6 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
             return limpio.charAt(0).toUpperCase() + limpio.slice(1);
         }
 
-        // RF27: solo un contenedor roto se puede marcar como reparado.
         function confirmarReparacion(c) {
             contenedorReparandoId = c.id_contenedor;
             document.getElementById('reparacionMensaje').textContent = I18N.reparacionMensaje;

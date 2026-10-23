@@ -2,12 +2,6 @@
 
 require_once __DIR__ . '/../../Controlador/UsuarioController.php';
 
-/**
- * UsuarioController valida todos sus argumentos antes de tocar el Model,
- * así que se puede instanciar sin constructor (sin UsuarioModel real, sin
- * conexión a MySQL) y ejercitar las validaciones directamente, inyectando
- * un stub del Model cuando un método sí necesita delegar en él.
- */
 final class UsuarioControllerTest extends UsuarioTestCase
 {
     private function controller(): UsuarioController
@@ -21,7 +15,6 @@ final class UsuarioControllerTest extends UsuarioTestCase
         parent::tearDown();
     }
 
-    // --- validarCI ---
 
     public function testValidarCIAceptaCedulaDeOchoDigitos(): void
     {
@@ -50,7 +43,6 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $this->callPrivate($controller, 'validarCI', ['123456789']);
     }
 
-    // --- validarNombre ---
 
     public function testValidarNombreAceptaLetrasYEspacios(): void
     {
@@ -72,7 +64,6 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $this->callPrivate($controller, 'validarNombre', ['Juan123', 'Nombre']);
     }
 
-    // --- validarEmail ---
 
     public function testValidarEmailAceptaFormatoValido(): void
     {
@@ -87,7 +78,6 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $this->callPrivate($controller, 'validarEmail', ['no-es-un-email']);
     }
 
-    // --- validarTel ---
 
     public function testValidarTelAceptaNueveDigitos(): void
     {
@@ -109,7 +99,6 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $this->callPrivate($controller, 'validarTel', ['12345']);
     }
 
-    // --- validarContrasenia ---
 
     public function testValidarContraseniaRechazaMenosDeOchoCaracteres(): void
     {
@@ -118,7 +107,6 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $this->callPrivate($controller, 'validarContrasenia', ['abc123']);
     }
 
-    // --- validarId / validarRol / validarAcceso / validarMunicipio ---
 
     public function testValidarIdRechazaCero(): void
     {
@@ -148,7 +136,6 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $this->callPrivate($controller, 'validarMunicipio', ['Municipio Inventado']);
     }
 
-    // --- verificarPropioCI / verificarAccesoPerfil ---
 
     public function testVerificarPropioCIPermiteAlMismoUsuario(): void
     {
@@ -162,7 +149,7 @@ final class UsuarioControllerTest extends UsuarioTestCase
     {
         $controller = $this->controller();
         $_SESSION['ci_usuario'] = 11111111;
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(AccesoDenegadoException::class);
         $this->callPrivate($controller, 'verificarPropioCI', [22222222]);
     }
 
@@ -180,11 +167,55 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $controller = $this->controller();
         $_SESSION['ci_usuario'] = 11111111;
         $_SESSION['usuario'] = ['rol' => 'vecino'];
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(AccesoDenegadoException::class);
         $this->callPrivate($controller, 'verificarAccesoPerfil', [22222222]);
     }
 
-    // --- reglasValidacion ---
+
+    /** @dataProvider rolesInternosNoAdministradores */
+    public function testVerificarAccesoPerfilRechazaAlPersonalNoAdministradorQueMiraOtroPerfil(string $rol): void
+    {
+        $controller = $this->controller();
+        $_SESSION['ci_usuario'] = 11111111;
+        $_SESSION['usuario'] = ['rol' => $rol];
+        $this->expectException(AccesoDenegadoException::class);
+        $this->callPrivate($controller, 'verificarAccesoPerfil', [22222222]);
+    }
+
+    /** @dataProvider rolesInternosNoAdministradores */
+    public function testVerificarAccesoPerfilPermiteAlPersonalVerSuPropioPerfil(string $rol): void
+    {
+        $controller = $this->controller();
+        $_SESSION['ci_usuario'] = 11111111;
+        $_SESSION['usuario'] = ['rol' => $rol];
+        $this->callPrivate($controller, 'verificarAccesoPerfil', [11111111]);
+        $this->addToAssertionCount(1);
+    }
+
+    /** @dataProvider rolesInternosNoAdministradores */
+    public function testListarUsuariosRechazaAlPersonalNoAdministrador(string $rol): void
+    {
+        $controller = $this->controller();
+        $_SESSION['usuario'] = ['rol' => $rol];
+        $this->expectException(AccesoDenegadoException::class);
+        $controller->listarUsuarios();
+    }
+
+    public function testListarUsuariosPermiteAlAdministrador(): void
+    {
+        $controller = $this->controller();
+        $_SESSION['usuario'] = ['rol' => 'administrador'];
+        $this->setPrivateProperty($controller, 'usuarioModel', new class {
+            public function listarUsuarios() { return [['ci_usuario' => 1]]; }
+        });
+        $this->assertCount(1, $controller->listarUsuarios());
+    }
+
+    public static function rolesInternosNoAdministradores(): array
+    {
+        return ['operario' => ['operario'], 'cuadrilla' => ['cuadrilla']];
+    }
+
 
     public function testReglasValidacionExponeValoresValidos(): void
     {
@@ -195,7 +226,6 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $this->assertSame(['pendiente', 'habilitado', 'deshabilitado'], $reglas['acceso']['valores']);
     }
 
-    // --- login ---
 
     public function testLoginRechazaContraseniaVacia(): void
     {
@@ -254,11 +284,11 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $this->assertSame(12345678, $usuario['ci_usuario']);
     }
 
-    // --- getPerfil ---
 
     public function testGetPerfilRechazaCiInexistente(): void
     {
         $controller = $this->controller();
+        $_SESSION['usuario'] = ['rol' => 'administrador'];
         $modelStub = new class {
             public function getPerfil($ci) { return null; }
         };
@@ -268,7 +298,6 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $controller->getPerfil(99999999);
     }
 
-    // --- updatePerfil ---
 
     public function testUpdatePerfilRechazaSiElUsuarioNoExiste(): void
     {
@@ -289,11 +318,10 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $_SESSION['ci_usuario'] = 11111111;
         $_SESSION['usuario'] = ['rol' => 'vecino'];
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(AccesoDenegadoException::class);
         $controller->updatePerfil(22222222, 'test@recolix.uy', '099123456');
     }
 
-    // --- cambiarContrasenia ---
 
     public function testCambiarContraseniaRechazaContraseniaActualIncorrecta(): void
     {
@@ -313,18 +341,17 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $controller = $this->controller();
         $_SESSION['ci_usuario'] = 11111111;
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(AccesoDenegadoException::class);
         $controller->cambiarContrasenia(22222222, 'claveActual123', 'nuevaClave123');
     }
 
-    // --- getIncidencias / getNotificaciones / marcarNotificacionLeida ---
 
     public function testGetIncidenciasRechazaCiAjeno(): void
     {
         $controller = $this->controller();
         $_SESSION['ci_usuario'] = 11111111;
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(AccesoDenegadoException::class);
         $controller->getIncidencias(22222222);
     }
 
@@ -333,7 +360,7 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $controller = $this->controller();
         $_SESSION['ci_usuario'] = 11111111;
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(AccesoDenegadoException::class);
         $controller->getNotificaciones(22222222);
     }
 
@@ -342,15 +369,15 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $controller = $this->controller();
         unset($_SESSION['ci_usuario']);
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(AccesoDenegadoException::class);
         $controller->marcarNotificacionLeida(1);
     }
 
-    // --- filtrarRol / filtrarAcceso ---
 
     public function testFiltrarRolRechazaValorNoListado(): void
     {
         $controller = $this->controller();
+        $_SESSION['usuario'] = ['rol' => 'administrador'];
         $this->expectException(InvalidArgumentException::class);
         $controller->filtrarRol('superadmin');
     }
@@ -358,15 +385,16 @@ final class UsuarioControllerTest extends UsuarioTestCase
     public function testFiltrarAccesoRechazaValorNoListado(): void
     {
         $controller = $this->controller();
+        $_SESSION['usuario'] = ['rol' => 'administrador'];
         $this->expectException(InvalidArgumentException::class);
         $controller->filtrarAcceso('bloqueado');
     }
 
-    // --- cambiarRol / cambiarAcceso ---
 
     public function testCambiarRolRechazaCiInexistente(): void
     {
         $controller = $this->controller();
+        $_SESSION['usuario'] = ['rol' => 'administrador'];
         $modelStub = new class {
             public function getPerfil($ci) { return null; }
         };
@@ -379,6 +407,7 @@ final class UsuarioControllerTest extends UsuarioTestCase
     public function testCambiarAccesoRechazaCiInexistente(): void
     {
         $controller = $this->controller();
+        $_SESSION['usuario'] = ['rol' => 'administrador'];
         $modelStub = new class {
             public function getPerfil($ci) { return null; }
         };
@@ -388,11 +417,11 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $controller->cambiarAcceso(99999999, 'habilitado');
     }
 
-    // --- crearUsuario ---
 
     public function testCrearUsuarioRechazaCiYaExistente(): void
     {
         $controller = $this->controller();
+        $_SESSION['usuario'] = ['rol' => 'administrador'];
         $modelStub = new class {
             public function existeCi($ci) { return true; }
         };
@@ -402,7 +431,6 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $controller->crearUsuario(12345678, 'Juan', 'Pérez', 'juan@recolix.uy', '099123456', 'claveTest123', 'vecino', 1);
     }
 
-    // --- setMunicipio ---
 
     public function testSetMunicipioRechazaMunicipioInvalido(): void
     {
@@ -419,7 +447,7 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $_SESSION['ci_usuario'] = 11111111;
         $_SESSION['usuario'] = ['rol' => 'vecino'];
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(AccesoDenegadoException::class);
         $controller->setMunicipio(22222222, 'Municipio A');
     }
 }

@@ -62,8 +62,6 @@ class UsuarioModel {
         return true;
     }
 
-    // Las incidencias del usuario quedan sin autor (FK ON DELETE SET NULL);
-    // notificaciones y asignaciones se borran en cascada.
     public function eliminarUsuario($ci) {
         $stmt = mysqli_prepare($this->conn, "DELETE FROM USUARIO WHERE ci_usuario = ?");
         mysqli_stmt_bind_param($stmt, 'i', $ci);
@@ -181,8 +179,6 @@ class UsuarioModel {
         return true;
     }
 
-    // Borra la notificación solo para este usuario: saca su fila de NOTIFICACION_USUARIO,
-    // no la de NOTIFICACION (que puede estar compartida con otros destinatarios).
     public function borrarNotificacion($idNotificacion, $ci) {
         $stmt = mysqli_prepare(
             $this->conn,
@@ -289,7 +285,6 @@ class UsuarioModel {
         mysqli_stmt_close($stmt);
         return $ci;
     }
-    // Usuarios con rol 'cuadrilla' asignados a una cuadrilla puntual (USUARIO.id_cuadrilla, FK real).
     public function obtenerPorCuadrilla($idCuadrilla) {
         $stmt = mysqli_prepare(
             $this->conn,
@@ -323,7 +318,6 @@ class UsuarioModel {
         return true;
     }
 
-    // Usuarios con rol 'operario' asignados a un centro de acopio puntual (USUARIO.id_centro, FK real).
     public function obtenerPorCentro($idCentro) {
         $stmt = mysqli_prepare(
             $this->conn,

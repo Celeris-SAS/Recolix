@@ -1,6 +1,4 @@
 <?php
-// Página de error única. Apache llega acá vía ErrorDocument (ver .htaccess de la raíz)
-// y deja en REDIRECT_STATUS el código y en REDIRECT_URL la URL que falló.
 session_start();
 
 $errores = [
@@ -18,7 +16,6 @@ if (!isset($errores[$codigo])) {
 }
 [$titulo, $descripcion] = $errores[$codigo];
 
-// El error viene del portal interno si la URL original es del Backoffice o de las vistas de las APIs.
 $urlOriginal = $_SERVER['REDIRECT_URL'] ?? '';
 $vieneDelBackoffice = preg_match('#^/recolix/(Backoffice|API_[^/]+/Vista)(/|$)#i', $urlOriginal) === 1;
 
@@ -26,7 +23,6 @@ $rol = $_SESSION['usuario']['rol'] ?? '';
 $sesionInterna = isset($_SESSION['usuario']) && $rol !== '' && $rol !== 'vecino';
 
 if ($vieneDelBackoffice && $sesionInterna) {
-    // Mismo destino por rol que usa login_backoffice.php.
     switch ($rol) {
         case 'cuadrilla':
             $destino = '/Recolix/API_Usuarios/Vista/cuadrilla.php';

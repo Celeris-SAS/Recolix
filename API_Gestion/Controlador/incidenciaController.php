@@ -7,7 +7,7 @@ class IncidenciaController {
     private $prioridadesValidas = ['baja', 'media', 'alta', 'critica'];
     private $estadosValidos = ['abierta', 'asignada', 'en_curso', 'resuelta'];
     private $mimesImagenValidos = ['jpeg' => 'jpg', 'jpg' => 'jpg', 'png' => 'png'];
-    private $tamanoMaxImagen = 5242880; // RF07: 5 MB
+    private $tamanoMaxImagen = 5242880;
     private $estadosContenedorUrgentes = ['roto', 'desbordado', 'inactivo'];
 
     private $contenedorModel;
@@ -72,9 +72,6 @@ class IncidenciaController {
         return $descripcion;
     }
 
-    // RF07: recibe la foto como data URL base64 ("data:image/jpeg;base64,...."), formato en el que
-    // la envían tanto la Landing Page como el perfil del vecino junto al resto del JSON del reporte.
-    // Devuelve los bytes decodificados y la extensión, o null si no se adjuntó imagen.
     private function validarImagen($imagenBase64) {
         if ($imagenBase64 === null || $imagenBase64 === '') {
             return null;
@@ -93,9 +90,6 @@ class IncidenciaController {
         return ['datos' => $datos, 'extension' => $extension];
     }
 
-    // Prioridad escalonada: no la elige el usuario ("para los usuarios su incidencia
-    // siempre es urgente"). Escala según cuántas incidencias no resueltas acumula
-    // el contenedor, contando la que se está por crear.
     private function calcularPrioridad($cantidadIncidencias) {
         if ($cantidadIncidencias >= 10) {
             return 'critica';
@@ -130,9 +124,6 @@ class IncidenciaController {
         ];
     }
 
-    // RF03/RF04: registro de una incidencia por un usuario autenticado.
-    // La identidad se toma de la sesión del servidor, nunca de lo que mande el cliente,
-    // para que una incidencia no pueda crearse a nombre de otro usuario.
     public function crearIncidencia($idContenedor, $tipo, $descripcion = null, $imagen = null) {
         if (empty($_SESSION['ci_usuario'])) {
             throw new InvalidArgumentException("Debe iniciar sesión para reportar una incidencia.");
@@ -160,22 +151,18 @@ class IncidenciaController {
             $urlImagen = null;
         }
 
-        // RF09: urgente cuando el contenedor está roto, desbordado o inactivo.
         if (in_array($contenedor['estado'], $this->estadosContenedorUrgentes, true)) {
             $urgencia = 1;
         } else {
             $urgencia = 0;
         }
 
-        // Prioridad escalonada: +1 porque esta incidencia todavía no está insertada
-        // y debe contarse a sí misma.
         $cantidadIncidencias = $this->incidenciaModel->contarIncidenciasAbiertasPorContenedor($idContenedor) + 1;
         $prioridad = $this->calcularPrioridad($cantidadIncidencias);
 
         $idIncidencia = $this->incidenciaModel->crearIncidencia($ciUsuario, $tipo, $descripcion, $urlImagen, $urgencia, $prioridad);
         $this->incidenciaModel->vincularContenedor($idIncidencia, $idContenedor);
 
-        // RF94: aviso a los administradores de toda incidencia crítica registrada.
         if ($prioridad === 'critica') {
             $this->notificacionModel->crearParaAdministradores(
                 "Nueva incidencia crítica #$idIncidencia (" . Etiquetas::legible($tipo) . ") en el contenedor #$idContenedor.",
@@ -215,7 +202,6 @@ class IncidenciaController {
         return $this->incidenciaModel->listarUrgentes();
     }
 
-    // RF72: incidencias activas con ubicación, para el mapa interactivo del backoffice.
     public function getActivasConUbicacion() {
         return $this->incidenciaModel->getActivasConUbicacion();
     }
@@ -226,7 +212,6 @@ class IncidenciaController {
         return $this->incidenciaModel->getContenedoresVinculados($id);
     }
 
-    // RF10: solo se asigna cuadrilla a una incidencia recién abierta.
     public function asignarCuadrilla($id, $idCuadrilla) {
         $id          = $this->validarId($id);
         $idCuadrilla = $this->validarId($idCuadrilla, 'Cuadrilla');
@@ -250,7 +235,6 @@ class IncidenciaController {
         return $resultado;
     }
 
-    // RF13: cierre de la cuadrilla, de 'en_curso' a 'resuelta'.
     public function cerrar($id) {
         $id = $this->validarId($id);
         $incidencia = $this->obtenerOFallar($id);
@@ -260,8 +244,6 @@ class IncidenciaController {
         return $this->cerrarYNotificar($id);
     }
 
-    // Cierra $id y en cascada las del mismo contenedor (ver incidenciaModel::cerrar).
-    // Cada vecino afectado recibe el aviso de que su incidencia fue resuelta.
     private function cerrarYNotificar($id) {
         $afectadas = $this->incidenciaModel->incidenciasQueSeCerrarian($id);
         $resultado = $this->incidenciaModel->cerrar($id);
@@ -269,7 +251,6 @@ class IncidenciaController {
         return $resultado;
     }
 
-    // La sesión solo puede operar sobre su propia cuadrilla (se compara contra la base).
     private function verificarCuadrillaPropia($idCuadrilla) {
         $ci = $_SESSION['usuario']['ci_usuario'] ?? $_SESSION['ci_usuario'] ?? null;
         $real = $ci !== null ? $this->incidenciaModel->cuadrillaDeUsuario($ci) : null;
@@ -278,14 +259,12 @@ class IncidenciaController {
         }
     }
 
-    // Lista de incidencias asignadas a la cuadrilla (interfaz de la cuadrilla).
     public function obtenerPorCuadrilla($idCuadrilla) {
         $idCuadrilla = $this->validarId($idCuadrilla, 'Cuadrilla');
         $this->verificarCuadrillaPropia($idCuadrilla);
         return $this->incidenciaModel->obtenerPorCuadrilla($idCuadrilla);
     }
 
-    // La cuadrilla empieza a atender una incidencia que le fue asignada.
     public function iniciarAtencion($id) {
         $id = $this->validarId($id);
         $incidencia = $this->obtenerOFallar($id);
@@ -298,7 +277,6 @@ class IncidenciaController {
         return $resultado;
     }
 
-    // RF13: la cuadrilla cierra la incidencia que está atendiendo (de 'en_curso' a 'resuelta').
     public function cerrarPorCuadrilla($id) {
         $id = $this->validarId($id);
         $incidencia = $this->obtenerOFallar($id);

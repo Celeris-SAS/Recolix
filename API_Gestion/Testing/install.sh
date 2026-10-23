@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-# Descarga el phpunit.phar oficial (standalone, sin composer) para correr
-# la suite de tests de API_Gestion. Se ejecuta una sola vez (o cuando
-# se borra el .phar), ya que el binario no se versiona en git.
 set -euo pipefail
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

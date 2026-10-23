@@ -1,5 +1,3 @@
-// Filtro de período de los informes (ver filtroPeriodo.php). Llama a alCambiar(rango) con un rango
-// fijo ("hoy", "semana", ...) o con un período por fechas "AAAA-MM-DD_AAAA-MM-DD".
 function initFiltroPeriodo(alCambiar) {
     const botones = document.querySelectorAll('#filtroRango .filtro-btn');
     const contenedor = document.getElementById('filtroFechas');

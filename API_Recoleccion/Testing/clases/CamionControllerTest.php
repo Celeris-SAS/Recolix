@@ -2,13 +2,6 @@
 
 require_once __DIR__ . '/../../Controlador/camionController.php';
 
-/**
- * CamionController valida todos sus argumentos antes de tocar el Model,
- * así que se puede instanciar sin constructor (sin CamionModel real,
- * sin conexión a MySQL) y ejercitar las validaciones directamente: las
- * llamadas inválidas lanzan InvalidArgumentException antes de llegar a
- * $this->camionModel.
- */
 final class CamionControllerTest extends RecoleccionTestCase
 {
     private function controller(): CamionController
@@ -242,7 +235,6 @@ final class CamionControllerTest extends RecoleccionTestCase
         return $controller;
     }
 
-    // ERR-15: a mantenimiento solo se pasa registrando un mantenimiento.
     public function testUpdateCamionNoPermitePasarADisponibleAMantenimientoADedo(): void
     {
         $controller = $this->camionConEstadoActual('disponible');

@@ -2,12 +2,8 @@
 
 require_once __DIR__ . '/../../Modelo/levanteModel.php';
 
-// Verifica contra la base real que los cambios de estado automáticos de las incidencias
-// (al planificar, iniciar y recolectar una ruta) le llegan como notificación al vecino
-// que las reportó (RF94/RF95).
 final class NotificacionesLevanteIntegrationTest extends DbTestCase
 {
-    // Ruta con un contenedor, camión y cuadrilla listos, y una incidencia de $tipo sobre ese contenedor.
     private function escenario(string $tipo): array
     {
         $circuitoId = $this->crearCircuito();
@@ -64,7 +60,6 @@ final class NotificacionesLevanteIntegrationTest extends DbTestCase
 
     public function testUnaRoturaNoGeneraAvisosDeLaRuta(): void
     {
-        // Las roturas no las atiende la cuadrilla: no cambian de estado con el levante.
         [$ci, , $rutaId, $camionId, $cuadrillaId] = $this->escenario('rotura');
 
         (new LevanteModel())->planificarLevante($rutaId, $camionId, $cuadrillaId, '2026-01-10 08:00:00', '2026-01-10');

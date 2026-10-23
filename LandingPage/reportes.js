@@ -17,7 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
   cargarReportes();
 });
 
-// Hasta 1 t se muestra en kg; desde ahí, en toneladas.
 function formatearVolumen(kg) {
   if (kg >= 1000) {
     return `${(kg / 1000).toLocaleString(I18N_LOCALE, { maximumFractionDigits: 1 })} t`;

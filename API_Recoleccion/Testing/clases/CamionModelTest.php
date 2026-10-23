@@ -2,12 +2,6 @@
 
 require_once __DIR__ . '/../../Modelo/camionModel.php';
 
-/**
- * Cubre la parte de CamionModel que es lógica pura (distancia Haversine y
- * cálculo de ETA para el mapa de flota en operativa), sin tocar la base
- * de datos: el modelo se instancia sin constructor (ver RecoleccionTestCase)
- * porque su __construct() abre una conexión mysqli real.
- */
 final class CamionModelTest extends RecoleccionTestCase
 {
     private function model(): CamionModel
@@ -26,7 +20,6 @@ final class CamionModelTest extends RecoleccionTestCase
     {
         $model = $this->model();
         $km = $this->callPrivate($model, 'distanciaHaversineKm', [0, 0, 0, 1]);
-        // Un grado de longitud sobre el ecuador equivale a ~111.19 km.
         $this->assertEqualsWithDelta(111.19492664456, $km, 0.001);
     }
 

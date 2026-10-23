@@ -14,7 +14,6 @@ final class TrasladoModelIntegrationTest extends DbTestCase
         $this->assertGreaterThan(0, $id);
         $traslado = $model->getTrasladoResiduo($id);
         $this->assertSame($camionId, (int) $traslado['id_camion']);
-        // 'peso' es int(11) en el schema, no admite decimales.
         $this->assertSame(500, (int) $traslado['peso']);
     }
 
