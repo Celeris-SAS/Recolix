@@ -2,11 +2,6 @@
 
 require_once __DIR__ . '/../../Controlador/incidenciaController.php';
 
-/**
- * IncidenciaController valida todos sus argumentos antes de tocar el Model,
- * así que se puede instanciar sin constructor (sin IncidenciaModel/ContenedorModel
- * reales, sin conexión a MySQL) y ejercitar las validaciones directamente.
- */
 final class IncidenciaControllerTest extends GestionTestCase
 {
     private function controller(): IncidenciaController
@@ -20,7 +15,6 @@ final class IncidenciaControllerTest extends GestionTestCase
         parent::tearDown();
     }
 
-    // --- validarId / validarEstado / validarTipo / validarPrioridad ---
 
     public function testValidarIdAceptaEnteroPositivo(): void
     {
@@ -56,7 +50,6 @@ final class IncidenciaControllerTest extends GestionTestCase
         $this->callPrivate($controller, 'validarPrioridad', ['urgentisima']);
     }
 
-    // --- validarDescripcion ---
 
     public function testValidarDescripcionNullDevuelveNull(): void
     {
@@ -78,7 +71,6 @@ final class IncidenciaControllerTest extends GestionTestCase
         $this->callPrivate($controller, 'validarDescripcion', [str_repeat('a', 501)]);
     }
 
-    // --- validarImagen (RF07) ---
 
     public function testValidarImagenNullODevuelveNull(): void
     {
@@ -127,7 +119,6 @@ final class IncidenciaControllerTest extends GestionTestCase
     public function testValidarImagenRechazaMasDe5Mb(): void
     {
         $controller = $this->controller();
-        // 5 MB + 1 byte antes de codificar en base64.
         $binarioGrande = str_repeat('a', 5 * 1024 * 1024 + 1);
         $dataUrl = 'data:image/png;base64,' . base64_encode($binarioGrande);
 
@@ -136,7 +127,6 @@ final class IncidenciaControllerTest extends GestionTestCase
         $this->callPrivate($controller, 'validarImagen', [$dataUrl]);
     }
 
-    // --- crearIncidencia (RF03/RF04/RF09) ---
 
     public function testCrearIncidenciaRechazaSinSesionIniciada(): void
     {
@@ -163,8 +153,6 @@ final class IncidenciaControllerTest extends GestionTestCase
         $controller->crearIncidencia(1, 'rotura', null, 'no-es-una-imagen');
     }
 
-    // No se puede ser "pesado": si el usuario ya tiene una incidencia suya sin
-    // resolver sobre este mismo contenedor, se rechaza antes de crear nada nuevo.
     public function testCrearIncidenciaRechazaSegundoReporteDelMismoUsuarioSobreElMismoContenedor(): void
     {
         $_SESSION['ci_usuario'] = 12345678;
@@ -185,13 +173,7 @@ final class IncidenciaControllerTest extends GestionTestCase
         $controller->crearIncidencia(1, 'rotura');
     }
 
-    /**
-     * RF09: la urgencia se calcula a partir del estado del contenedor, no la
-     * decide el cliente. Se inyectan dobles de Model/Contenedor para llegar
-     * hasta ese cálculo sin necesitar una base de datos real.
-     *
-     * @dataProvider estadosContenedorYUrgenciaEsperada
-     */
+    /** @dataProvider estadosContenedorYUrgenciaEsperada */
     public function testCrearIncidenciaCalculaUrgenciaSegunEstadoDelContenedor(string $estadoContenedor, int $urgenciaEsperada): void
     {
         $_SESSION['ci_usuario'] = 12345678;
@@ -234,8 +216,6 @@ final class IncidenciaControllerTest extends GestionTestCase
         ];
     }
 
-    // --- Prioridad escalonada: no la elige el usuario, depende de cuántas
-    // incidencias no resueltas ya tiene el contenedor (contando la nueva). ---
 
     /** @dataProvider cantidadesYPrioridadEsperada */
     public function testCalcularPrioridadEscalaSegunCantidad(int $cantidad, string $esperado): void
@@ -266,7 +246,6 @@ final class IncidenciaControllerTest extends GestionTestCase
             public $prioridadRecibida = null;
             public function usuarioExiste($ci) { return true; }
             public function usuarioTieneIncidenciaAbiertaEnContenedor($ci, $idContenedor) { return false; }
-            // El contenedor ya tiene 4 incidencias no resueltas: esta sería la 5ta -> 'alta'.
             public function contarIncidenciasAbiertasPorContenedor($idContenedor) { return 4; }
             public function crearIncidencia($ci, $tipo, $descripcion, $urlImagen, $urgencia, $prioridad) {
                 $this->prioridadRecibida = $prioridad;
@@ -294,7 +273,6 @@ final class IncidenciaControllerTest extends GestionTestCase
         $incidenciaModelStub = new class {
             public function usuarioExiste($ci) { return true; }
             public function usuarioTieneIncidenciaAbiertaEnContenedor($ci, $idContenedor) { return false; }
-            // 9 incidencias abiertas + la nueva = 10 -> 'critica'.
             public function contarIncidenciasAbiertasPorContenedor($idContenedor) { return 9; }
             public function crearIncidencia($ci, $tipo, $descripcion, $urlImagen, $urgencia, $prioridad) { return 99; }
             public function vincularContenedor($idIncidencia, $idContenedor) {}
@@ -323,7 +301,6 @@ final class IncidenciaControllerTest extends GestionTestCase
         $this->assertStringContainsString('crítica', $mensaje);
     }
 
-    // --- asignarCuadrilla (RF10) ---
 
     public function testAsignarCuadrillaRechazaSiLaIncidenciaNoEstaAbierta(): void
     {
@@ -351,7 +328,6 @@ final class IncidenciaControllerTest extends GestionTestCase
         $controller->asignarCuadrilla(1, 999);
     }
 
-    // --- cerrar (RF13) ---
 
     public function testCerrarRechazaSiLaIncidenciaNoEstaEnCurso(): void
     {

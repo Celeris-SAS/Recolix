@@ -11,7 +11,6 @@ class CuadrillaModel
     {
         $this->conn = new conexion();
     }
-    // Métodos públicos del modelo que usan la BD
     public function esDisponible($id)
     {
         $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT estado FROM cuadrilla WHERE id_cuadrilla = ?");

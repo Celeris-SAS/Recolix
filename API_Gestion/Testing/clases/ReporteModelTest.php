@@ -2,11 +2,6 @@
 
 require_once __DIR__ . '/../../Modelo/reporteModel.php';
 
-/**
- * Cubre la parte de ReporteModel que es lógica pura (los fragmentos SQL de
- * rango de fechas), sin tocar la base de datos: el modelo se instancia sin
- * constructor porque su __construct() abre una conexión mysqli real.
- */
 final class ReporteModelTest extends GestionTestCase
 {
     private function model(): ReporteModel

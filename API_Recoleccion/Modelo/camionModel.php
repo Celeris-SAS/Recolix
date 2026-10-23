@@ -5,8 +5,6 @@ require_once __DIR__ . '/../../conexion.php';
 class CamionModel
 {
 
-    // Velocidad promedio asumida para estimar el tiempo hasta la próxima parada
-    // (no hay ruteo real por calles disponible en el proyecto).
     private const VELOCIDAD_PROMEDIO_KMH = 25.0;
 
     private $conn;
@@ -286,7 +284,6 @@ class CamionModel
         return $historial;
     }
 
-    // RF36: cambios de estado del camión (los registran los triggers de la tabla camion).
     public function obtenerEstados($id)
     {
         $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT estado_anterior, estado_nuevo, fecha_cambio FROM camion_estado_historial WHERE id_camion = ? ORDER BY fecha_cambio DESC, id DESC");
@@ -323,8 +320,6 @@ class CamionModel
         foreach ($camiones as $c) {
             $ubicacion = $this->obtenerUltimaUbicacion((int) $c['id_levante']);
             if (!$ubicacion) {
-                // Sin ningún contenedor vaciado todavía en este levante: no hay
-                // posición derivable, así que el camión no se muestra en el mapa.
                 continue;
             }
 
@@ -380,10 +375,6 @@ class CamionModel
 
     private function obtenerProximaParada($idLevante, $idRuta)
     {
-        // "Pendiente real": nunca vaciado NI marcado con motivo (o sea, sigue
-        // en el estado por defecto de la precarga). Evita que un contenedor ya
-        // visitado-pero-saltado (p. ej. 'contenedor_ausente') reaparezca como
-        // próxima parada solo por tener hora_vaciado NULL.
         $stmt = mysqli_prepare($this->conn->getConexion(), "
             SELECT cl.id_contenedor, cn.latitud, cn.longitud, cn.calle, cn.num_calle,
                    COALESCE(rc.orden_visita, 999999) AS orden_visita

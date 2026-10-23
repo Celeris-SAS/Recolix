@@ -29,7 +29,6 @@ final class RutaModelIntegrationTest extends DbTestCase
         $this->assertSame('Ruta Renombrada', $model->getRuta($id)['nombre']);
     }
 
-    // ERR-09: la baja es lógica; la ruta conserva sus contenedores y cuadrillas.
     public function testDeleteRutaLaDejaInactivaYConservaSusAsignaciones(): void
     {
         $model = new RutaModel();
@@ -142,7 +141,6 @@ final class RutaModelIntegrationTest extends DbTestCase
         $this->assertEqualsWithDelta(80.0, (float) $fila['llenado_promedio'], 0.001);
     }
 
-    // RF54
     public function testObtenerHistorialListaEjecucionesYAsignacionesVigentes(): void
     {
         $model = new RutaModel();
@@ -171,7 +169,6 @@ final class RutaModelIntegrationTest extends DbTestCase
         $this->assertSame([], $model->obtenerHistorial($rutaId));
     }
 
-    // ERR-08: la ruta expone el turno y la frecuencia heredados de su circuito.
     public function testGetRutaIncluyeTurnoYFrecuenciaDelCircuito(): void
     {
         $model = new RutaModel();
@@ -184,7 +181,6 @@ final class RutaModelIntegrationTest extends DbTestCase
         $this->assertSame('interdiaria (lunes, miércoles y viernes)', $ruta['frecuencia']);
     }
 
-    // Las rutas inactivas se conservan (historial) pero no aparecen en ningún listado.
     public function testLasRutasInactivasNoAparecenEnLosListados(): void
     {
         $model = new RutaModel();

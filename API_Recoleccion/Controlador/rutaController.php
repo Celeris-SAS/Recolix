@@ -1,12 +1,9 @@
 <?php
     require_once __DIR__ . '/frecuenciaCircuito.php';
+    require_once __DIR__ . '/cuadrillaSesion.php';
 
     class RutaController {
 
-        // Capacidad de referencia (kg) usada al generar una ruta óptima: un tope conservador
-        // para que la ruta resultante pueda ser cubierta por un camión real de la flota
-        // (equivale al camión de menor capacidad). No depende de qué camión se asigne después
-        // en el levante; solo evita generar rutas que ningún camión podría completar.
         private const CAPACIDAD_MAXIMA_RUTA_KG = 5000;
 
         private $rutaModel;
@@ -66,10 +63,6 @@
             ];
         }
 
-        // estado/estado_levante se derivan de los conteos de levante (en_curso/pendiente/
-        // completado) que trae SELECT_CON_LEVANTES. Se calculan acá (no en el modelo) y de
-        // forma centralizada para que el badge de estado sea el mismo sin importar por qué
-        // endpoint haya llegado la ruta (listado completo, por id, por circuito o filtrada).
         private function calcularEstadoLevante($r) {
             $enCurso = (int) ($r['en_curso_count'] ?? 0);
             $pendientes = (int) ($r['pendiente_count'] ?? 0);
@@ -85,7 +78,7 @@
             } elseif ($totalLevantes === 0) {
                 $estado = 'pendiente';
                 $estadoLevante = 'sin_levante';
-            } elseif ($completados > 0) {
+            } elseif ($completados > 0 && ($r['ultimo_estado'] ?? null) !== 'cancelado') {
                 $estado = 'finalizada';
                 $estadoLevante = 'completado';
             } else {
@@ -95,7 +88,6 @@
 
             $r['estado'] = $estado;
             $r['estado_levante'] = $estadoLevante;
-            // La ruta hereda turno y frecuencia de su circuito.
             if (array_key_exists('frecuencia', $r)) {
                 $r['veces_por_semana'] = count(FrecuenciaCircuito::dias($r['frecuencia']));
             }
@@ -197,6 +189,7 @@
 
         public function obtenerPorCuadrilla($cuadrillaId) {
             $cuadrillaId = $this->validarId($cuadrillaId);
+            CuadrillaSesion::exigir($cuadrillaId);
             return $this->rutaModel->obtenerPorCuadrilla($cuadrillaId);
         }
 
@@ -207,7 +200,7 @@
 
         public function obtenerLevantes($rutaId) {
             $rutaId = $this->validarId($rutaId);
-            return $this->rutaModel->obtenerLevantes($rutaId);
+            return CuadrillaSesion::soloPropios($this->rutaModel->obtenerLevantes($rutaId));
         }
 
         public function obtenerResumen() {
@@ -232,10 +225,6 @@
                 throw new InvalidArgumentException("Circuito no encontrado");
             }
 
-            // La ruta siempre debe poder generarse: no se descarta ningún contenedor por su
-            // nivel de llenado, solo por no estar físicamente disponible (roto/inactivo/en depósito)
-            // o no tener coordenadas. El orden de visita prioriza a los contenedores más llenos
-            // (ver Modelo/rutas.py, que pondera cada tramo por distancia / nivel de llenado).
             $contenedores = $circuitoModel->obtenerContenedores($circuitoId);
             $elegibles = array_values(array_filter($contenedores, function ($c) {
                 $estadoElegible = in_array($c['estado'], ['funcional', 'desbordado'], true);
@@ -269,6 +258,15 @@
                 );
             }
 
+            $seleccionados = array_values(array_filter($payload['contenedores'], function ($c) use ($orden) {
+                return in_array($c['id'], array_map('intval', $orden), true);
+            }));
+            $orden = $this->ejecutarRutas([
+                'base' => $payload['base'],
+                'contenedores' => $seleccionados,
+                'modo' => 'distancia'
+            ])['orden'];
+
             $idRuta = $this->rutaModel->insertRuta($circuitoId, $nombre, $actividad);
             $ordenVisita = 1;
             foreach ($orden as $idContenedor) {
@@ -283,10 +281,6 @@
             ];
         }
 
-        // Recorre el orden calculado acumulando el peso estimado de cada contenedor
-        // (capacidad * nivel_llenado) y descarta el que, sumado a lo ya recolectado,
-        // superaría la capacidad del camión. Sigue evaluando los siguientes por si
-        // alguno más chico todavía entra.
         private function limitarPorCapacidad($orden, $elegibles) {
             $pesoPorContenedor = [];
             foreach ($elegibles as $c) {
@@ -335,8 +329,6 @@
             return round($distanciaTotal, 3);
         }
 
-        // Suma el peso estimado (capacidad * nivel_llenado) de los contenedores de una ruta,
-        // usado para filtrar qué camiones tienen capacidad suficiente al planificar el levante.
         public function obtenerCargaEstimada($rutaId) {
             $rutaId = $this->validarId($rutaId);
             $contenedores = $this->rutaModel->obtenerContenedores($rutaId);

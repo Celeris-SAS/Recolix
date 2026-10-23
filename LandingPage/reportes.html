@@ -7,6 +7,7 @@
     <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= t('reportes_publicos.title') ?></title>
+    <link rel="icon" type="image/png" href="/recolix/LandingPage/img/Logo.png">
     <meta name="description" content="<?= htmlspecialchars(t('reportes_publicos.meta_description')) ?>">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,9 +15,9 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="styles_LandingPage.css">
-    <link rel="stylesheet" href="mapa.css">
-    <link rel="stylesheet" href="reportes.css">
+    <link rel="stylesheet" href="styles_LandingPage.css?v=<?= filemtime(__DIR__ . '/styles_LandingPage.css') ?>">
+    <link rel="stylesheet" href="mapa.css?v=<?= filemtime(__DIR__ . '/mapa.css') ?>">
+    <link rel="stylesheet" href="reportes.css?v=<?= filemtime(__DIR__ . '/reportes.css') ?>">
 </head>
 
 <body>
@@ -116,8 +117,8 @@
         const I18N_LOCALE = <?= json_encode(t_locale()) ?>;
         const I18N = <?= json_encode(t_array(['actualizado' => 'reportes_publicos.actualizado'])) ?>;
     </script>
-    <script src="reportes.js"></script>
-    <script src="sesionNav.js"></script>
+    <script src="reportes.js?v=<?= filemtime(__DIR__ . '/reportes.js') ?>"></script>
+    <script src="sesionNav.js?v=<?= filemtime(__DIR__ . '/sesionNav.js') ?>"></script>
 </body>
 
 </html>

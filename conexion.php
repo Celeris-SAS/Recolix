@@ -7,9 +7,6 @@ class conexion {
     private $conn = null;
 
     public function __construct() {
-        // Overrides por variable de entorno: solo las usa la suite de tests
-        // (apunta a una base "recolix_test" separada). Sin esas env vars el
-        // comportamiento es idéntico al de siempre.
         $this->host = getenv('RECOLIX_DB_HOST') ?: 'localhost';
         $this->user = getenv('RECOLIX_DB_USER') ?: 'root';
         $this->pass = getenv('RECOLIX_DB_PASS') ?: '';

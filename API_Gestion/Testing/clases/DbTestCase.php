@@ -2,18 +2,6 @@
 
 require_once __DIR__ . '/../../../conexion.php';
 
-/**
- * Base para tests de integración: instancian los Controller/Model reales
- * (constructor normal, conexión mysqli real) contra la base 'recolix_test'
- * -- nunca la 'recolix' de desarrollo -- para probar que las queries SQL
- * realmente funcionan contra el schema real, no solo la lógica en PHP.
- *
- * Antes de cada test se vacían (TRUNCATE) las tablas que usa API_Gestion,
- * así que cada test arranca de una base limpia y puede crear sus propios
- * datos de prueba con los helpers `crearX()` de abajo.
- *
- * Requiere haber corrido Testing/setup-test-db.sh al menos una vez.
- */
 abstract class DbTestCase extends GestionTestCase
 {
     private static ?mysqli $shared = null;
@@ -63,7 +51,6 @@ abstract class DbTestCase extends GestionTestCase
         $conn->query('SET FOREIGN_KEY_CHECKS=1');
     }
 
-    // --- Fixtures mínimas, cada una devuelve el id insertado ---
 
     protected function crearMunicipio(string $nombre = 'Municipio Test', string $departamento = 'Montevideo'): int
     {
@@ -183,8 +170,6 @@ abstract class DbTestCase extends GestionTestCase
         return $id;
     }
 
-    // Usada por ReporteModel, que agrega datos de recolección (LEVANTE) aunque
-    // esa tabla sea "de Recolección" — Reportes es un módulo transversal.
     protected function crearRuta(?int $circuitoId = null, array $overrides = []): int
     {
         $circuitoId ??= $this->crearCircuito();
@@ -203,7 +188,6 @@ abstract class DbTestCase extends GestionTestCase
         return $id;
     }
 
-    // Idem: LEVANTE es de Recolección, pero ReporteModel lo necesita para sus agregados.
     protected function crearLevante(?int $rutaId = null, array $overrides = []): int
     {
         $rutaId ??= $this->crearRuta();

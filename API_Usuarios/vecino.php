@@ -14,6 +14,7 @@ if (!isset($_SESSION['ci_usuario'])) {
     <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= t('perfil.title') ?></title>
+    <link rel="icon" type="image/png" href="/recolix/LandingPage/img/Logo.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -326,11 +327,8 @@ if (!isset($_SESSION['ci_usuario'])) {
         const LOCALE = <?= json_encode(t_locale()) ?>;
     </script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <!-- Mismo helper que usa la Landing Page: garantiza que ambos formularios de "reportar
-         incidencia" (y el mapa público) muestren siempre los mismos contenedores. -->
     <script src="../LandingPage/mapaContenedoresBase.js"></script>
     <script>
-        // Menú hamburguesa del portal de vecinos (el panel #mainNav ya existía, faltaba el botón).
         (function () {
             var boton = document.getElementById('navHamburger');
             var nav = document.getElementById('mainNav');

@@ -140,8 +140,6 @@ final class IncidenciaModelIntegrationTest extends DbTestCase
         $ci = $this->crearUsuario();
         $contenedorId = $this->crearContenedor();
 
-        // Resuelta primero y sola, sin hermanas sin resolver todavía en el contenedor:
-        // así no dispara la resolución en cascada de cerrar() sobre las que se crean después.
         $resuelta = $model->crearIncidencia($ci, 'otro', null, null, 0);
         $model->vincularContenedor($resuelta, $contenedorId);
         $model->cerrar($resuelta);
@@ -153,7 +151,6 @@ final class IncidenciaModelIntegrationTest extends DbTestCase
         $model->vincularContenedor($asignada, $contenedorId);
         $model->asignarCuadrilla($asignada, $this->crearCuadrilla());
 
-        // Cuenta la abierta y la asignada, pero no la ya resuelta.
         $this->assertSame(2, $model->contarIncidenciasAbiertasPorContenedor($contenedorId));
     }
 
@@ -165,9 +162,6 @@ final class IncidenciaModelIntegrationTest extends DbTestCase
         $this->assertSame(0, $model->contarIncidenciasAbiertasPorContenedor($contenedorId));
     }
 
-    // --- Deduplicación en los listados: dos reportes sin resolver sobre el mismo
-    // contenedor no deben verse como incidencias separadas en la lista general,
-    // aunque ambas sigan existiendo en la base y contando para la prioridad. ---
 
     public function testGetAllIncidenciasOcultaElReporteViejoDelMismoContenedorSinResolver(): void
     {
@@ -189,8 +183,6 @@ final class IncidenciaModelIntegrationTest extends DbTestCase
 
     public function testGetAllIncidenciasNoOcultaIncidenciasYaResueltas(): void
     {
-        // Dos reportes viejos sobre el mismo contenedor, ambos ya resueltos: no son
-        // "duplicados activos", son historial — tienen que seguir viéndose los dos.
         $model = new IncidenciaModel();
         $ci = $this->crearUsuario();
         $contenedorId = $this->crearContenedor();
@@ -248,8 +240,6 @@ final class IncidenciaModelIntegrationTest extends DbTestCase
 
     public function testElReporteOcultoSigueContandoParaLaPrioridad(): void
     {
-        // Aunque el primer reporte se oculte de los listados al llegar el segundo,
-        // sigue existiendo y sigue contando para escalar la prioridad del contenedor.
         $model = new IncidenciaModel();
         $ci = $this->crearUsuario();
         $contenedorId = $this->crearContenedor();
@@ -262,14 +252,11 @@ final class IncidenciaModelIntegrationTest extends DbTestCase
         $nueva = $model->crearIncidencia($ci, 'rotura', null, null, 0);
         $model->vincularContenedor($nueva, $contenedorId);
 
-        // Las dos siguen "abiertas" a efectos de conteo, aunque solo la nueva se vea en la lista.
         $this->assertSame(2, $model->contarIncidenciasAbiertasPorContenedor($contenedorId));
     }
 
     public function testCerrarResuelveEnCascadaLasOtrasIncidenciasDelMismoContenedor(): void
     {
-        // Si se resuelve la incidencia visible, la vieja oculta no debe poder
-        // "reaparecer" en los listados sin resolver — se cierra junto con ella.
         $model = new IncidenciaModel();
         $ci = $this->crearUsuario();
         $contenedorId = $this->crearContenedor();
@@ -286,7 +273,6 @@ final class IncidenciaModelIntegrationTest extends DbTestCase
         $this->assertNotNull($model->getIncidencia($vieja)['fecha_cierre']);
         $this->assertSame('resuelta', $model->getIncidencia($nueva)['estado']);
 
-        // Ya no puede "reaparecer" en la lista: está resuelta, no oculta.
         $ids = array_column($model->getAllIncidencias(), 'id_incidencia');
         $this->assertContains($vieja, $ids);
         $this->assertContains($nueva, $ids);
@@ -313,8 +299,6 @@ final class IncidenciaModelIntegrationTest extends DbTestCase
 
     public function testCerrarFuncionaConIncidenciaSinContenedorVinculado(): void
     {
-        // Caso defensivo: si por algún motivo la incidencia nunca se vinculó a un
-        // contenedor, cerrar() igual debe resolverla a ella misma.
         $model = new IncidenciaModel();
         $ci = $this->crearUsuario();
         $id = $model->crearIncidencia($ci, 'rotura', null, null, 0);

@@ -1,8 +1,5 @@
 <?php
 
-// Generador mínimo de PDF con una tabla (sin dependencias externas).
-// Usa las fuentes estándar Helvetica / Helvetica-Bold, A4 apaisado, con encabezado repetido
-// en cada página y pie "Página X de Y".
 class PdfTabla {
     const ANCHO = 841.89;
     const ALTO = 595.28;
@@ -11,7 +8,6 @@ class PdfTabla {
     const INTERLINEA = 10;
     const PADDING = 3;
 
-    // Anchos de Helvetica (AFM) para los caracteres 32..126, en milésimas de em.
     private static $anchos = [
         278,278,355,556,556,889,667,191,333,333,389,584,278,333,278,278,
         556,556,556,556,556,556,556,556,556,556,
@@ -28,7 +24,6 @@ class PdfTabla {
     private $filas;
     private $textos;
 
-    // $textos: ['pagina' => 'Página {n} de {total}', 'sinDatos' => 'Sin datos.']
     public function __construct($titulo, $subtitulo, array $encabezados, array $filas, array $textos = []) {
         $this->textos = $textos + ['pagina' => 'Página {n} de {total}', 'sinDatos' => 'Sin datos.'];
         $this->titulo = $titulo;
@@ -56,7 +51,6 @@ class PdfTabla {
         return str_replace(['\\', '(', ')', "\r", "\n"], ['\\\\', '\\(', '\\)', '', ' '], self::aLatin1($texto));
     }
 
-    // Parte el texto en líneas que entren en $maximo puntos.
     private static function envolver($texto, $maximo, $negrita = false) {
         $lineas = [];
         $actual = '';
@@ -100,7 +94,6 @@ class PdfTabla {
             $factor = $disponible / $total;
             return array_map(function ($a) use ($factor) { return $a * $factor; }, $naturales);
         }
-        // No entra: las columnas angostas conservan su ancho y las anchas se reparten el resto.
         $minimo = $disponible / count($naturales) * 0.6;
         $fijas = array_filter($naturales, function ($a) use ($minimo) { return $a <= $minimo; });
         $resto = $disponible - array_sum($fijas);
@@ -197,7 +190,6 @@ class PdfTabla {
             $paginas[$k] .= '0.4 0.4 0.4 rg BT /F1 8 Tf ' . sprintf('1 0 0 1 %.2f %.2f Tm (%s) Tj ET', $x, self::MARGEN - 10, self::escapar($pie));
         }
 
-        // Objetos: 1 catálogo, 2 páginas, 3 y 4 fuentes, luego (página, contenido) por cada página.
         $objetos = [];
         $kids = [];
         for ($k = 0; $k < $total; $k++) {

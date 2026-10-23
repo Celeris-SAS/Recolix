@@ -1,25 +1,4 @@
 <?php
-// Envío de mail para las notificaciones (vecino, admin, cuadrilla, operario), usando SMTP
-// directo contra Gmail (smtp.gmail.com) en vez de un servicio externo o el mail() nativo de PHP.
-//
-// Por qué así: un servicio como Resend/Brevo en su plan gratis, sin un dominio propio
-// verificado, no deja mandar a cualquier destinatario real. Gmail sí, porque es una cuenta de
-// mail real y ya tiene reputación de envío — no depende de verificar nada adicional, solo de
-// una "contraseña de aplicación" que genera Google para darle acceso SMTP a esta app sin
-// exponer la contraseña real de la cuenta.
-//
-// Cómo activarlo (dos formas, igual que RECOLIX_DB_* en conexion.php):
-//   1) Activá la verificación en 2 pasos en la cuenta de Gmail que va a enviar los mails
-//      (myaccount.google.com/security).
-//   2) Generá una "contraseña de aplicación": myaccount.google.com/apppasswords
-//      (elegí "Otra" / "Correo" como app, y copiá la contraseña de 16 letras que te da).
-//   3a) Variable de entorno (recomendado: anda para todos sin tocar código ni archivos por
-//       persona) — RECOLIX_MAIL_USER y RECOLIX_MAIL_APP_PASSWORD, definidas una vez en el
-//       Apache de cada entorno (SetEnv en httpd-vhosts.conf o httpd.conf) y listo.
-//   3b) O, si preferís no tocar la config de Apache, mail-config.php (copiá
-//       mail-config.example.php; ese archivo real no se versiona en git).
-// La variable de entorno tiene prioridad sobre el archivo si ambas existen. Sin ninguna de
-// las dos, no se envía nada: solo queda registrado en mail_log.txt.
 class Mailer {
     public static function enviar($destinatario, $asunto, $mensaje) {
         if (!$destinatario) {
@@ -65,6 +44,8 @@ class Mailer {
         }
         stream_set_timeout($socket, 10);
 
+        $timeoutPrevio = ini_get('default_socket_timeout');
+        ini_set('default_socket_timeout', 3);
         try {
             self::leerRespuesta($socket, '220');
             self::comando($socket, "EHLO recolix.local", '250');

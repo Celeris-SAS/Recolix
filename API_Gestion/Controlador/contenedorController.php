@@ -208,9 +208,6 @@ class contenedorController {
             throw new InvalidArgumentException("No existe un contenedor con el ID $id.");
         }
 
-        // No se notifica acá: la tarjeta "Contenedores Críticos" del panel del admin ya
-        // cuenta los contenedores en estado desbordado/roto, así que sería la misma
-        // información duplicada como notificación.
         return $this->contenedorModel->cambiarEstado($id, $nuevoEstado);
     }
     public function filtrarCriticos() {

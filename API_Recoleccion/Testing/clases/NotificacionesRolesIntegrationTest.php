@@ -3,8 +3,6 @@
 require_once __DIR__ . '/../../Modelo/levanteModel.php';
 require_once __DIR__ . '/../../Controlador/rutaController.php';
 
-// Verifica contra la base real los avisos a cuadrilla (ruta/contenedor asignado), a operario
-// (centro de acopio asignado como destino) y al admin (contenedor no recolectado por el levante).
 final class NotificacionesRolesIntegrationTest extends DbTestCase
 {
     private function integranteDeCuadrilla(int $idCuadrilla): int

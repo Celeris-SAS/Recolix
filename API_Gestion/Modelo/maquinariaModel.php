@@ -8,9 +8,6 @@ class MaquinariaModel {
         $this->conn = new conexion();
     }
 
-    // ==========================================
-    // CRUD PRINCIPAL
-    // ==========================================
 
     
     public function insertMaquinaria($idCentro, $nombre, $tipo, $fechaAdquisicion, $estado) {
@@ -59,7 +56,6 @@ class MaquinariaModel {
     }
 
     
-    // Centro de acopio donde está instalada una maquinaria (centro_maquinaria).
     public function centroDeMaquinaria($idMaquinaria) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT id_centro FROM centro_maquinaria WHERE id_maquinaria = ? LIMIT 1");
         mysqli_stmt_bind_param($stmt, "i", $idMaquinaria);
@@ -98,9 +94,6 @@ class MaquinariaModel {
         return $rows;
     }
 
-    // ==========================================
-    // CONSULTA POR CENTRO Y FILTROS
-    // ==========================================
 
     
     public function obtenerPorCentro($idCentro) {

@@ -32,8 +32,6 @@ class CentroModel {
         return $row;
     }
 
-    // Sitios de disposición final que una cuadrilla puede elegir como destino al
-    // planificar un levante (deben estar operativos para poder recibir carga).
     public function filtrarOperativos() {
         $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM centro_acopio WHERE estado = 'operativo' ORDER BY nombre ASC");
         mysqli_stmt_execute($stmt);

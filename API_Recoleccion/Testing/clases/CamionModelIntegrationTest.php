@@ -143,14 +143,12 @@ final class CamionModelIntegrationTest extends DbTestCase
 
         $historial = $model->obtenerHistorial($id);
 
-        // Además del mantenimiento y el traslado, figura el estado inicial del camión.
         $this->assertCount(3, $historial);
         $tipos = array_column($historial, 'tipo_evento');
         sort($tipos);
         $this->assertSame(['estado', 'mantenimiento', 'traslado'], $tipos);
     }
 
-    // RF36 / RF43: los triggers registran el alta y cada cambio de estado.
     public function testObtenerEstadosRegistraAltaYCambiosDeEstado(): void
     {
         $model = new CamionModel();
