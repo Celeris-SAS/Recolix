@@ -225,8 +225,6 @@ final class RutaControllerTest extends RecoleccionTestCase
     public function testLimitarPorCapacidadDescartaContenedorQueExcedeCapacidadDisponible(): void
     {
         $controller = $this->controller();
-        // 4000kg (80% de 5000) + 2000kg (100% de 2000) superaría los 5000kg de referencia:
-        // el segundo contenedor no debe entrar en la ruta.
         $elegibles = [
             $this->contenedorElegible(1, 5000, 80),
             $this->contenedorElegible(2, 2000, 100),
@@ -240,8 +238,6 @@ final class RutaControllerTest extends RecoleccionTestCase
     public function testLimitarPorCapacidadSigueEvaluandoContenedoresMasChicosLuegoDeDescartarUno(): void
     {
         $controller = $this->controller();
-        // Tras descartar el contenedor 2 (no entra), el 3 (500kg) sí entra porque
-        // la carga acumulada sigue en 4000kg.
         $elegibles = [
             $this->contenedorElegible(1, 5000, 80),
             $this->contenedorElegible(2, 2000, 100),

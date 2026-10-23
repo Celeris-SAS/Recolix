@@ -15,7 +15,6 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
 </head>
 <body>
 
-<!-- ── BARRA DE NAVEGACIÓN ─────────────────────────────────────────── -->
 <header class="navbar">
     <div class="nav-inner">
         <div class="nav-left">
@@ -64,13 +63,11 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
     <div class="nav-hr"></div>
 </header>
 
-<!-- ── HERO (ENCABEZADO) ───────────────────────────────────────────── -->
 <section class="hero">
     <h1 class="hero-title"><?= t('cuadrillas.hero_title') ?></h1>
     <p class="hero-sub"><?= t('cuadrillas.hero_sub') ?></p>
 </section>
 
-<!-- ── TARJETAS ─────────────────────────────────────────────────────── -->
 <section class="cards-section">
     <div class="cards-grid">
 
@@ -122,7 +119,6 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
     </div>
 </section>
 
-<!-- ── BARRA DE FILTROS ─────────────────────────────────────────────── -->
 <section class="control-bar" id="filterBar" style="display:none">
     <div class="control-inner">
         <select id="filtroTipo" class="ctrl-select" onchange="actualizarFiltroValor()">
@@ -138,7 +134,6 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
     </div>
 </section>
 
-<!-- ── BARRA DE BÚSQUEDA POR ID ─────────────────────────────────────── -->
 <section class="control-bar" id="searchBar" style="display:none">
     <div class="control-inner">
         <input type="number" id="buscarId" class="ctrl-input"
@@ -148,7 +143,6 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
     </div>
 </section>
 
-<!-- ── BARRA DE MODIFICACIÓN ──────────────────────────────────────── -->
 <section class="control-bar" id="modificarBar" style="display:none">
     <div class="control-inner">
         <input type="number" id="modificarId" class="ctrl-input"
@@ -165,7 +159,6 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
     </div>
 </section>
 
-<!-- ── BARRA DE ELIMINACIÓN ───────────────────────────────────────── -->
 <section class="control-bar" id="deleteBar" style="display:none">
     <div class="control-inner">
         <input type="number" id="deleteId" class="ctrl-input"
@@ -175,7 +168,6 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
     </div>
 </section>
 
-<!-- ── TABLA ────────────────────────────────────────────────────────── -->
 <section class="table-section">
     <div class="table-header">
         <h2 class="table-title" id="tableTitle"><?= t('cuadrillas.hero_title') ?></h2>
@@ -202,7 +194,6 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
     </div>
 </section>
 
-<!-- ── MODAL AGREGAR / MODIFICAR ────────────────────────────────────── -->
 <div class="modal-overlay" id="modalForm" style="display:none"
      onclick="onOverlayClick(event,'modalForm')">
     <div class="modal">
@@ -245,7 +236,6 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
     </div>
 </div>
 
-<!-- ── MODAL CONFIRMAR BAJA ─────────────────────────────────────────── -->
 <div class="modal-overlay" id="modalDelete" style="display:none"
      onclick="onOverlayClick(event,'modalDelete')">
     <div class="modal modal-sm">
@@ -263,10 +253,8 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
     </div>
 </div>
 
-<!-- ── NOTIFICACIÓN (TOAST) ─────────────────────────────────────────── -->
 <div id="toast" class="toast"></div>
 
-<!-- ── PIE DE PÁGINA ────────────────────────────────────────────────── -->
 <footer class="footer">
     <div class="footer-grid">
         <div class="footer-brand">
@@ -291,21 +279,6 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
 <?php include __DIR__ . '/../../extra/i18n/validacion_js.php'; ?>
 <script>
 const I18N = <?= json_encode(array_combine(['hero_title', 'resultado', 'resultados', 'th_acciones', 'th_municipio', 'th_estado', 'opt_activas', 'seleccionar', 'titulo_todas', 'label_estado', 'label_municipio', 'municipio_num', 'quitar_cuadrilla', 'sin_usuarios_disponibles', 'ya_en_cuadrilla', 'titulo_editar_btn', 'btn_eliminar', 'modal_editar', 'card_agregar_titulo', 'cargando', 'placeholder_selecciona_campo', 'estado_activa', 'estado_inactiva', 'api_error', 'ingresa_id', 'no_encontrada', 'selecciona_filtro', 'selecciona_valor', 'selecciona_municipio', 'selecciona_usuario', 'usuario_asignado', 'usuario_quitado', 'error_cargar_usuarios', 'error_asignar_usuario', 'error_quitar_usuario', 'error_guardar', 'error_eliminar', 'error_modificar', 'baja_ok', 'selecciona_campo_modificar', 'ingresa_nuevo_valor'], array_map(function ($k) { return t('cuadrillas.' . $k); }, ['hero_title', 'resultado', 'resultados', 'th_acciones', 'th_municipio', 'th_estado', 'opt_activas', 'seleccionar', 'titulo_todas', 'label_estado', 'label_municipio', 'municipio_num', 'quitar_cuadrilla', 'sin_usuarios_disponibles', 'ya_en_cuadrilla', 'titulo_editar_btn', 'btn_eliminar', 'modal_editar', 'card_agregar_titulo', 'cargando', 'placeholder_selecciona_campo', 'estado_activa', 'estado_inactiva', 'api_error', 'ingresa_id', 'no_encontrada', 'selecciona_filtro', 'selecciona_valor', 'selecciona_municipio', 'selecciona_usuario', 'usuario_asignado', 'usuario_quitado', 'error_cargar_usuarios', 'error_asignar_usuario', 'error_quitar_usuario', 'error_guardar', 'error_eliminar', 'error_modificar', 'baja_ok', 'selecciona_campo_modificar', 'ingresa_nuevo_valor'])), JSON_UNESCAPED_UNICODE) ?>;
-/*
-    GET    /cuadrillas                     → listado completo
-    GET    /cuadrillas?estado=activa        → filtro por estado
-    GET    /cuadrillas?idMunicipio=3        → filtro por municipio
-    GET    /cuadrillas/filtrarDisponibilidad → solo activas
-    GET    /cuadrillas/{id}                 → una cuadrilla
-    POST   /cuadrillas                      → alta
-    PUT    /cuadrillas/{id}                 → modificación
-    DELETE /cuadrillas/{id}                 → baja lógica (pasa estado a "inactiva")
-    GET    /cuadrillas/reglasValidacion      → reglas de validación (con fallback si no existe)
-    - Los municipios se listan desde API_Gestion: GET /municipios → [{ id_municipio, nombre }, ...]
-      Si ese endpoint todavía no existe, se usa una lista fija de los 8 municipios de Montevideo
-      (A–G, CH) con IDs de ejemplo 1–8: reemplazá esos IDs por los reales de tu tabla MUNICIPIO
-      apenas tengas el endpoint, o cargalos manualmente acá.
-*/
 
 const API_BASE       = '/recolix/API_Usuarios/api.php';
 const MUNICIPIOS_API = '/recolix/API_Gestion/api.php';
@@ -321,7 +294,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     listarCuadrillas();
 });
 
-// ── REGLAS DE VALIDACIÓN ────────────────────────────────────────────────
 function reglasFallback() {
     return {
         idMunicipio: { tipo: 'entero', min: 1, label: 'Municipio' },
@@ -339,7 +311,6 @@ async function cargarReglas() {
     }
 }
 
-// ── MUNICIPIOS ───────────────────────────────────────────────────────────
 function municipiosFallback() {
     return [
         { id_municipio: 1, nombre: 'Municipio A' },
@@ -378,7 +349,6 @@ function escaparTexto(texto) {
     return div.innerHTML;
 }
 
-// ── LISTAR TODAS ─────────────────────────────────────────────────────────
 async function listarCuadrillas() {
     ocultarControles();
     setLoading(true);
@@ -398,7 +368,6 @@ async function listarCuadrillas() {
     }
 }
 
-// ── BUSCAR POR ID ─────────────────────────────────────────────────────────
 async function buscarPorId() {
     const id = document.getElementById('buscarId').value.trim();
     if (!id) { mostrarToast(I18N.ingresa_id, 'warning'); return; }
@@ -420,7 +389,6 @@ async function buscarPorId() {
     }
 }
 
-// ── FILTRAR ──────────────────────────────────────────────────────────────
 function actualizarFiltroValor() {
     const tipo   = document.getElementById('filtroTipo').value;
     const input  = document.getElementById('filtroValor');
@@ -489,7 +457,6 @@ async function aplicarFiltro() {
     }
 }
 
-// ── AGREGAR ───────────────────────────────────────────────────────────────
 function abrirModalAgregar() {
     document.getElementById('modalTitle').textContent = I18N.card_agregar_titulo;
     document.getElementById('cuadrillaId').value = '';
@@ -498,7 +465,6 @@ function abrirModalAgregar() {
     document.getElementById('modalForm').style.display = 'flex';
 }
 
-// ── MODAL EDITAR ─────────────────────────────────────────────────────────
 function abrirModalEditar(cuadrilla) {
     document.getElementById('modalTitle').textContent = I18N.modal_editar;
     document.getElementById('cuadrillaId').value = cuadrilla.id_cuadrilla;
@@ -516,9 +482,6 @@ function abrirModalEditar(cuadrilla) {
     document.getElementById('modalForm').style.display = 'flex';
 }
 
-// ── MIEMBROS DE LA CUADRILLA (USUARIO.id_cuadrilla) ─────────────────────
-// Solo usuarios con rol 'cuadrilla' pueden pertenecer a una cuadrilla. Se
-// gestiona contra API_Usuarios porque id_cuadrilla vive en la tabla USUARIO.
 async function cargarMiembros(idCuadrilla) {
     const lista  = document.getElementById('miembrosList');
     const vacio  = document.getElementById('miembrosEmpty');
@@ -538,8 +501,6 @@ async function cargarMiembros(idCuadrilla) {
         const candidatos  = jsonCandidatos.status === 'success' ? jsonCandidatos.data : [];
 
         vacio.style.display = miembros.length ? 'none' : 'block';
-        // Tarjeta por miembro, no una lista plana: con muchos cuadrilleros, .miembros-list
-        // scrollea internamente (ver CSS) en vez de estirar el modal.
         miembros.forEach(m => {
             const li = document.createElement('li');
             li.className = 'miembro-item';
@@ -606,7 +567,6 @@ async function quitarMiembro(ci, idCuadrilla) {
     }
 }
 
-// ── GUARDAR (POST / PUT) ────────────────────────────────────────────────
 async function guardarCuadrilla(e) {
     e.preventDefault();
     const id = document.getElementById('cuadrillaId').value;
@@ -667,7 +627,6 @@ async function guardarCuadrilla(e) {
     }
 }
 
-// ── ELIMINAR (BAJA LÓGICA) ───────────────────────────────────────────────
 function confirmarBorrar(id, etiqueta) {
     cuadrillaIdParaEliminar = id;
     document.getElementById('deleteNombre').textContent = `#${id} — ${etiqueta}`;
@@ -710,7 +669,6 @@ async function darDeBajaCuadrilla() {
     }
 }
 
-// ── MODIFICAR CAMPO SUELTO ───────────────────────────────────────────────
 function actualizarPlaceholderModificar() {
     const campo  = document.getElementById('modificarCampo').value;
     const input  = document.getElementById('modificarValor');
@@ -784,7 +742,6 @@ async function modificarCuadrilla() {
     }
 }
 
-// ── RENDERIZAR TABLA ─────────────────────────────────────────────────────
 function renderTabla(cuadrillas) {
     const tbody = document.getElementById('cuadrillasBody');
     const noRes = document.getElementById('noResultados');
@@ -826,7 +783,6 @@ function badgeClass(estado) {
     return map[estado] ?? 'neutral';
 }
 
-// ── UTILIDADES ───────────────────────────────────────────────────────────
 function toggleFiltros() {
     const fb = document.getElementById('filterBar');
     const sb = document.getElementById('searchBar');

@@ -1,9 +1,3 @@
-// Paginación de tablas y listados (cliente). Se activa sola en:
-//  - cada <tbody id="..."> de la página (también los que se crean después, como las solicitudes),
-//  - cada contenedor marcado con data-paginar-lista (listas de tarjetas o <ul>); con el valor
-//    "compacta" muestra una sola barra, abajo, para paneles chicos.
-// Tamaños de página 10, 25, 50 y 100; controles « Anterior · 1 2 … N · Siguiente » arriba y abajo;
-// se recalcula cada vez que la página redibuja las filas / elementos.
 (function () {
     'use strict';
 
@@ -36,7 +30,6 @@
         document.head.appendChild(css);
     }
 
-    // Páginas a mostrar: primera, última, la actual y sus vecinas, con "…" en los saltos.
     function numerosVisibles(actual, total) {
         const set = new Set([1, total, actual, actual - 1, actual + 1]);
         if (actual <= 3) { set.add(2); set.add(3); set.add(4); }
@@ -50,11 +43,9 @@
         return salida;
     }
 
-    // Elementos hijos que son avisos (cargando, vacío) y no cuentan como filas del listado.
     const NO_CUENTA = '.estado-vacio, .estado-carga, .resumen-empty, .maquinaria-meta, [data-no-paginar]';
 
     class TablaPaginada {
-        // contenedor: un <tbody> (filas <tr>) o cualquier elemento cuyos hijos son los ítems del listado.
         constructor(contenedor, compacta = false) {
             this.contenedor = contenedor;
             this.esTabla = contenedor.tagName === 'TBODY';
@@ -79,7 +70,6 @@
             this.programar();
         }
 
-        // Quita los controles cuando la página reemplaza el listado por otro.
         destruir() {
             this.observador.disconnect();
             [this.barraArriba, this.barraAbajo].forEach(b => b && b.remove());
@@ -122,7 +112,6 @@
             return barra;
         }
 
-        // Agrupa varios cambios seguidos del tbody (filas agregadas de a una) en un solo cálculo.
         programar() {
             if (this.pendiente) return;
             this.pendiente = true;
@@ -153,8 +142,6 @@
 
             filas.forEach((tr, i) => { tr.style.display = (i >= desde && i < hasta) ? '' : 'none'; });
 
-            // Los controles solo aparecen cuando hay más filas que la página mínima (10): con 10 o
-            // menos todo entra en una sola página y no hace falta paginar.
             const visible = total > TAMANOS[0];
             [this.barraArriba, this.barraAbajo].forEach(barra => {
                 if (!barra) return;
@@ -216,7 +203,6 @@
         });
     }
 
-    // Detecta tablas y listados que la página crea o reemplaza después de cargar.
     let revisionPendiente = false;
     function revisarMasTarde() {
         if (revisionPendiente) return;

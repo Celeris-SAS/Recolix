@@ -3,7 +3,6 @@
 require_once __DIR__ . '/../../Controlador/levanteController.php';
 require_once __DIR__ . '/../../Controlador/rutaController.php';
 
-// Una cuadrilla solo puede ver y operar sobre sus propios levantes y rutas; el administrador sobre todos.
 final class CuadrillaPropiaIntegrationTest extends DbTestCase
 {
     private int $cuadrillaA;

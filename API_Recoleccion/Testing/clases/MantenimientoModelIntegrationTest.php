@@ -124,7 +124,6 @@ final class MantenimientoModelIntegrationTest extends DbTestCase
         $this->assertSame(0.0, $model->obtenerCostoTotal($camionId));
     }
 
-    // RF37: la cuadrilla reporta un desperfecto y el administrador recibe la notificación.
     public function testNotificarDesperfectoAvisaAlAdministrador(): void
     {
         $admin = $this->crearUsuario(null, ['rol' => 'administrador', 'acceso' => 'habilitado']);
@@ -146,8 +145,6 @@ final class MantenimientoModelIntegrationTest extends DbTestCase
         $this->assertSame(1, $n);
     }
 
-    // Un desperfecto deja al camión en mantenimiento: el levante en curso se cancela y la ruta
-    // no queda como completada, con los contenedores sin recolectar.
     public function testRegistrarMantenimientoCancelaElLevanteEnCursoDelCamion(): void
     {
         require_once __DIR__ . '/../../Modelo/levanteModel.php';

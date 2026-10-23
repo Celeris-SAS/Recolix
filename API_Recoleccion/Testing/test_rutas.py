@@ -1,4 +1,3 @@
-"""Tests del ordenamiento de rutas. Correr con: python3 -m unittest API_Recoleccion/Testing/test_rutas.py"""
 import itertools
 import os
 import random
@@ -23,7 +22,6 @@ def longitud(base, contenedores, orden):
 
 class OrdenDistanciaTest(unittest.TestCase):
     def test_contenedores_cercanos_quedan_juntos(self):
-        # B y C a ~1 cuadra entre sí, A a ~10 cuadras de ambos: nunca debe quedar B, A, C.
         a = contenedor(1, -34.9000, -56.1600)
         b = contenedor(2, -34.9000, -56.1500)
         c = contenedor(3, -34.9000, -56.1490)

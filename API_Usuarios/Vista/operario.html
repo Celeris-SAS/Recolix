@@ -51,7 +51,6 @@
             <p>Gestioná el centro de acopio y su maquinaria</p>
         </div>
 
-        <!-- RF77: Listado de centros de acopio (el/los que tiene asignados este operario) -->
         <section class="dash-section">
             <div class="panel-card">
                 <div class="card-header">
@@ -83,7 +82,6 @@
             </div>
         </section>
 
-        <!-- RF78: Consulta de ocupación del centro de acopio -->
         <section class="dash-section">
             <div class="panel-card">
                 <div class="card-header">
@@ -140,9 +138,6 @@
             </div>
         </section>
 
-        <!-- Registro de ingreso de residuos: función descrita para el operario en 2.3
-             (no tiene un RF numerado propio en el documento; alimenta los datos que
-             RF78 consulta). Ver aclaración en el chat. -->
         <section class="dash-section">
             <div class="panel-card">
                 <div class="card-header">
@@ -193,7 +188,6 @@
             </div>
         </section>
 
-        <!-- RF80: Actualización del estado de la maquinaria -->
         <section class="dash-section">
             <div class="panel-card">
                 <div class="card-header">
@@ -235,11 +229,9 @@
         <p class="footer-copy">&copy; 2026 Recolix. Todos los derechos reservados.</p>
     </footer>
 
-    <!-- Toast de confirmación -->
     <div class="toast" id="toast"></div>
 
     <script>
-        // Toast
         const toast = document.getElementById('toast');
         let toastTimeout;
 
@@ -252,7 +244,6 @@
             }, 3500);
         }
 
-        // RF78 (datos base) — ocupación por tipo de residuo del centro
         const OCUPACION = {
             'Plástico': { actual: 2040, capacidad: 3000 },
             'Papel y cartón': { actual: 1350, capacidad: 3000 },
@@ -281,7 +272,6 @@
             }
         }
 
-        // Registro de ingreso de residuos (alimenta la ocupación que consulta RF78)
         const formIngreso = document.getElementById('form-ingreso');
         const ingresoFecha = document.getElementById('ingreso-fecha');
         ingresoFecha.valueAsDate = new Date();
@@ -309,9 +299,7 @@
             ingresoFecha.valueAsDate = new Date();
         });
 
-        // RF80 — Actualización del estado de la maquinaria
         const API_BASE_GESTION = '/recolix/API_Gestion';
-        // TODO: reemplazar por el centro real asignado al operario cuando la página tenga sesión propia.
         const ID_CENTRO = parseInt(new URLSearchParams(window.location.search).get('centro'), 10) || 1;
 
         const LABELS_TIPO_MAQUINARIA = {

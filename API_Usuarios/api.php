@@ -29,7 +29,7 @@ $config = [
                 'rechazar'                  => ['administrador'],
             ],
             'rolesMetodo' => [
-                'POST' => null, // crearSolicitud: alta pública de vecino
+                'POST' => null,
             ],
         ],
 
@@ -125,7 +125,7 @@ $config = [
 ];
 
 function verificarPermiso($rolesRequeridos) {
-    if ($rolesRequeridos === null) return; // público
+    if ($rolesRequeridos === null) return;
 
     $rol = $_SESSION['usuario']['rol'] ?? null;
     if (!$rol) {
@@ -133,7 +133,7 @@ function verificarPermiso($rolesRequeridos) {
         echo json_encode(['status' => 'error', 'message' => 'No autenticado']);
         exit;
     }
-    if ($rolesRequeridos === '*') return; // cualquier autenticado
+    if ($rolesRequeridos === '*') return;
 
     if (!in_array($rol, $rolesRequeridos)) {
         http_response_code(403);
@@ -190,7 +190,6 @@ if (strpos($uri, $basePath) === 0) {
         $action = $_GET['action'];
     }
 
-    // ── Chequeo de permisos: acá, porque ya existen $resourceConfig, $action y $method ──
     $rolesAccion = $resourceConfig['rolesAccion'] ?? [];
     $rolesMetodo = $resourceConfig['rolesMetodo'] ?? [];
 
@@ -207,7 +206,6 @@ if (strpos($uri, $basePath) === 0) {
         $callParams = [];
         if ($id !== null) $callParams[] = $id;
 
-        // Leer el body una sola vez
         $bodyRaw = file_get_contents('php://input');
 
         if ($method === 'GET') {
@@ -234,7 +232,6 @@ if (strpos($uri, $basePath) === 0) {
         }
         exit;
     } else {
-        // Debug cuando acción no es válida
         if (isset($_GET['debug'])) {
             echo json_encode([
                 'accion_no_valida' => true,

@@ -28,8 +28,6 @@ document.addEventListener('DOMContentLoaded', function () {
     popupAnchor: [0, -13]
   });
 
-  // COLORES_CONTENEDOR viene de mapaContenedoresBase.js (fuente única, compartida
-  // también con el hero-mapa y los mapas de selección al reportar una incidencia).
 
   const COLORES_CENTRO = {
     operativo: '#9b59b6',
@@ -144,7 +142,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const marker = L.marker([lat, lon], { icon: ICONO_CAMION }).addTo(grupo);
 
-    // Público: solo se muestra el tiempo hasta el próximo contenedor (sin matrícula ni modelo).
     let texto = I18N.sinPendientes;
     if (camion.eta) {
       const min = camion.eta.minutos;
@@ -157,9 +154,6 @@ document.addEventListener('DOMContentLoaded', function () {
     return [lat, lon];
   };
 
-  // RF72: incidencia activa dibujada como pin de "!" coloreado por prioridad,
-  // distinto de los circleMarker de contenedores para no confundirse aunque
-  // el color coincida (ej. crítica y desbordado comparten rojo).
   const addIncidenciaPoint = (inc) => {
     const lat = parseFloat(inc.latitud);
     const lon = parseFloat(inc.longitud);
@@ -313,7 +307,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   cargarVista('contenedores');
 
-  // Los camiones se mueven: la vista se refresca sola mientras está activa (sin reencuadrar el mapa).
   setInterval(() => { if (vistaActual === 'camiones') cargarVista('camiones', true); }, 30000);
 
   const btn = document.getElementById('hamburgerBtn');

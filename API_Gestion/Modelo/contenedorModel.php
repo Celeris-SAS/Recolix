@@ -88,7 +88,6 @@ class ContenedorModel {
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
 
-        // La reparación resuelve las roturas abiertas del contenedor: ya no hay nada que atender.
         $stmt = mysqli_prepare($this->conn->getConexion(), "
             UPDATE INCIDENCIA i
             JOIN INCIDENCIA_CONTENEDOR ic ON ic.id_incidencia = i.id_incidencia

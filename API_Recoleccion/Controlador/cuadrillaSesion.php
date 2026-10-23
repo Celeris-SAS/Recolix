@@ -2,8 +2,6 @@
 require_once __DIR__ . '/AccesoDenegadoException.php';
 require_once __DIR__ . '/../../conexion.php';
 
-// Una cuadrilla solo opera sobre sus propios levantes y rutas (la cuadrilla real del usuario se lee
-// de la base, no de la sesión, que puede quedar vieja). El administrador no tiene esta restricción.
 class CuadrillaSesion {
 
     public static function aplica() {
@@ -34,7 +32,6 @@ class CuadrillaSesion {
         }
     }
 
-    // Filas de levante (con id_cuadrilla): para una cuadrilla, solo las propias.
     public static function soloPropios(array $levantes) {
         if (!self::aplica()) {
             return $levantes;

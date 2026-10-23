@@ -2,12 +2,6 @@
 
 require_once __DIR__ . '/../../Controlador/UsuarioController.php';
 
-/**
- * UsuarioController valida todos sus argumentos antes de tocar el Model,
- * así que se puede instanciar sin constructor (sin UsuarioModel real, sin
- * conexión a MySQL) y ejercitar las validaciones directamente, inyectando
- * un stub del Model cuando un método sí necesita delegar en él.
- */
 final class UsuarioControllerTest extends UsuarioTestCase
 {
     private function controller(): UsuarioController
@@ -21,7 +15,6 @@ final class UsuarioControllerTest extends UsuarioTestCase
         parent::tearDown();
     }
 
-    // --- validarCI ---
 
     public function testValidarCIAceptaCedulaDeOchoDigitos(): void
     {
@@ -50,7 +43,6 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $this->callPrivate($controller, 'validarCI', ['123456789']);
     }
 
-    // --- validarNombre ---
 
     public function testValidarNombreAceptaLetrasYEspacios(): void
     {
@@ -72,7 +64,6 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $this->callPrivate($controller, 'validarNombre', ['Juan123', 'Nombre']);
     }
 
-    // --- validarEmail ---
 
     public function testValidarEmailAceptaFormatoValido(): void
     {
@@ -87,7 +78,6 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $this->callPrivate($controller, 'validarEmail', ['no-es-un-email']);
     }
 
-    // --- validarTel ---
 
     public function testValidarTelAceptaNueveDigitos(): void
     {
@@ -109,7 +99,6 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $this->callPrivate($controller, 'validarTel', ['12345']);
     }
 
-    // --- validarContrasenia ---
 
     public function testValidarContraseniaRechazaMenosDeOchoCaracteres(): void
     {
@@ -118,7 +107,6 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $this->callPrivate($controller, 'validarContrasenia', ['abc123']);
     }
 
-    // --- validarId / validarRol / validarAcceso / validarMunicipio ---
 
     public function testValidarIdRechazaCero(): void
     {
@@ -148,7 +136,6 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $this->callPrivate($controller, 'validarMunicipio', ['Municipio Inventado']);
     }
 
-    // --- verificarPropioCI / verificarAccesoPerfil ---
 
     public function testVerificarPropioCIPermiteAlMismoUsuario(): void
     {
@@ -184,7 +171,6 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $this->callPrivate($controller, 'verificarAccesoPerfil', [22222222]);
     }
 
-    // --- datos de otras personas: solo el administrador ---
 
     /** @dataProvider rolesInternosNoAdministradores */
     public function testVerificarAccesoPerfilRechazaAlPersonalNoAdministradorQueMiraOtroPerfil(string $rol): void
@@ -230,7 +216,6 @@ final class UsuarioControllerTest extends UsuarioTestCase
         return ['operario' => ['operario'], 'cuadrilla' => ['cuadrilla']];
     }
 
-    // --- reglasValidacion ---
 
     public function testReglasValidacionExponeValoresValidos(): void
     {
@@ -241,7 +226,6 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $this->assertSame(['pendiente', 'habilitado', 'deshabilitado'], $reglas['acceso']['valores']);
     }
 
-    // --- login ---
 
     public function testLoginRechazaContraseniaVacia(): void
     {
@@ -300,7 +284,6 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $this->assertSame(12345678, $usuario['ci_usuario']);
     }
 
-    // --- getPerfil ---
 
     public function testGetPerfilRechazaCiInexistente(): void
     {
@@ -315,7 +298,6 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $controller->getPerfil(99999999);
     }
 
-    // --- updatePerfil ---
 
     public function testUpdatePerfilRechazaSiElUsuarioNoExiste(): void
     {
@@ -340,7 +322,6 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $controller->updatePerfil(22222222, 'test@recolix.uy', '099123456');
     }
 
-    // --- cambiarContrasenia ---
 
     public function testCambiarContraseniaRechazaContraseniaActualIncorrecta(): void
     {
@@ -364,7 +345,6 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $controller->cambiarContrasenia(22222222, 'claveActual123', 'nuevaClave123');
     }
 
-    // --- getIncidencias / getNotificaciones / marcarNotificacionLeida ---
 
     public function testGetIncidenciasRechazaCiAjeno(): void
     {
@@ -393,7 +373,6 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $controller->marcarNotificacionLeida(1);
     }
 
-    // --- filtrarRol / filtrarAcceso ---
 
     public function testFiltrarRolRechazaValorNoListado(): void
     {
@@ -411,7 +390,6 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $controller->filtrarAcceso('bloqueado');
     }
 
-    // --- cambiarRol / cambiarAcceso ---
 
     public function testCambiarRolRechazaCiInexistente(): void
     {
@@ -439,7 +417,6 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $controller->cambiarAcceso(99999999, 'habilitado');
     }
 
-    // --- crearUsuario ---
 
     public function testCrearUsuarioRechazaCiYaExistente(): void
     {
@@ -454,7 +431,6 @@ final class UsuarioControllerTest extends UsuarioTestCase
         $controller->crearUsuario(12345678, 'Juan', 'Pérez', 'juan@recolix.uy', '099123456', 'claveTest123', 'vecino', 1);
     }
 
-    // --- setMunicipio ---
 
     public function testSetMunicipioRechazaMunicipioInvalido(): void
     {

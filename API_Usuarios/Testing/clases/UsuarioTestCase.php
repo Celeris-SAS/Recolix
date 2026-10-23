@@ -2,19 +2,6 @@
 
 use PHPUnit\Framework\TestCase;
 
-/**
- * Los Controller/Model de API_Usuarios abren una conexión MySQL real
- * dentro de su constructor (vía `new conexion()` o `new Conexion()`), así
- * que no se pueden instanciar normalmente en un test unitario sin una base
- * de datos.
- *
- * Esta clase base construye los objetos con ReflectionClass::newInstanceWithoutConstructor()
- * para probar la lógica de validación y las reglas de negocio puras sin
- * tocar la base de datos, e inyecta dobles de prueba en las propiedades
- * privadas (ej. el Model) cuando un método sí necesita delegar en él.
- *
- * Mismo patrón que GestionTestCase/RecoleccionTestCase (ver API_Gestion y API_Recoleccion).
- */
 abstract class UsuarioTestCase extends TestCase
 {
     protected function newWithoutConstructor(string $class): object

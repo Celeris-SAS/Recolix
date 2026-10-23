@@ -14,10 +14,7 @@ def haversine_km(lat1, lon1, lat2, lon2):
     return 2 * RADIO_TIERRA_KM * asin(sqrt(a))
 
 
-# Hasta este tamaño el orden se resuelve de forma exacta (Held-Karp); por encima se usa una
-# heurística (vecino más cercano + 2-opt + or-opt), que en la práctica queda muy cerca del óptimo.
 MAX_CONTENEDORES_EXACTO = 12
-# Tope de tiempo de la mejora heurística: pasado esto se devuelve el mejor camino encontrado.
 SEGUNDOS_MAXIMOS_MEJORA = 2.0
 
 
@@ -31,12 +28,10 @@ def _matriz_distancias(puntos):
 
 
 def _longitud(d, camino):
-    # camino[0] es siempre la base (índice 0); el recorrido es abierto: no vuelve a la base.
     return sum(d[camino[i]][camino[i + 1]] for i in range(len(camino) - 1))
 
 
 def _orden_exacto(d, n):
-    # Held-Karp para camino abierto desde la base (nodo 0) que visita los nodos 1..n.
     if n == 1:
         return [0, 1]
     mejor = {}
@@ -76,8 +71,6 @@ def _vecino_mas_cercano(d, n):
 
 
 def _mejorar(d, camino):
-    # 2-opt (invertir tramos) y or-opt (mover un contenedor a otra posición) hasta que no mejoren.
-    # La base (posición 0) queda fija.
     n = len(camino)
     limite = time.monotonic() + SEGUNDOS_MAXIMOS_MEJORA
     mejoro = True
@@ -102,7 +95,6 @@ def _mejorar(d, camino):
 
 
 def calcular_orden_distancia(base, contenedores):
-    """Orden de visita que minimiza la distancia recorrida partiendo de la base."""
     puntos = [(float(base[0]), float(base[1]))] + [(float(c["lat"]), float(c["lon"])) for c in contenedores]
     n = len(contenedores)
     d = _matriz_distancias(puntos)
@@ -114,8 +106,6 @@ def calcular_orden_distancia(base, contenedores):
 
 
 def calcular_orden(base, contenedores, modo="llenado"):
-    """modo "llenado": prioriza los más llenos (decide qué entra en el camión).
-    modo "distancia": ordena para minimizar el recorrido."""
     if not contenedores:
         raise ValueError("No hay contenedores para rutear")
 

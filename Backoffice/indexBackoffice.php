@@ -281,8 +281,6 @@ async function cargarNovedades() {
     }
 }
 
-// RF53: la alerta de levantes vencidos ya se genera desde la campana (extra/Comun/campana.js),
-// que corre en todas las páginas del Backoffice, no solo acá.
 document.addEventListener('DOMContentLoaded', () => {
     cargarNovedades();
 });

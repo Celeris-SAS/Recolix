@@ -1,8 +1,3 @@
-/* ==========================================================================
-   Recolix — Ajustes de navbar compartidos entre cuadrilla.html y
-   perfilCuadrilla.html. No modifica styleBackoffice.css ni styles_vecino.css:
-   solo agrega el centrado del menú y la línea verde animada al hacer hover.
-   ========================================================================== */
 
 .nav-inner {
   position: relative;

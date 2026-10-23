@@ -16,8 +16,6 @@
         </testsuite>
     </testsuites>
     <php>
-        <!-- Solo usadas por la suite de tests: apuntan a una base de datos
-             de test separada, nunca a la 'recolix' real. Ver setup-test-db.sh. -->
         <env name="RECOLIX_DB_HOST" value="localhost"/>
         <env name="RECOLIX_DB_USER" value="root"/>
         <env name="RECOLIX_DB_PASS" value=""/>

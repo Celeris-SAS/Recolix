@@ -7,16 +7,12 @@ header('Access-Control-Allow-Headers: Content-Type');
 
 require_once __DIR__ . '/../extra/Comun/ErroresApi.php';
 
-// ERR-22: los rechazos por restricciones de la base (clave foránea, duplicados) y los datos que faltan se
-// muestran con un mensaje de negocio en lugar del texto técnico (ver extra/Comun/ErroresApi.php).
 function mensajeError(Throwable $e) {
     return recolix_mensaje_error($e);
 }
 
 $config = [
     'base_path' => '/recolix/API_Gestion/',
-    // Endpoints que pueden usarse sin ser personal interno (landing pública y panel del vecino).
-    // Formato: 'METODO recurso', 'METODO recurso/accion' o 'METODO recurso/:id'.
     'publicos' => [
         'GET contenedores',
         'GET centros-acopio',
@@ -146,7 +142,6 @@ $config = [
             'insertMethod' => 'crearIncidencia',
             'updateMethod' => null,
             'deleteMethod' => null,
-            // Roles por acción, igual que en API_Usuarios. Sin entrada = solo la regla general de personal interno.
             'rolesMetodo' => [
                 'GET' => ['administrador'],
                 'POST' => ['*'],
@@ -303,9 +298,6 @@ if (strpos($uri, $basePath) === 0) {
         $action = $_GET['action'];
     }
 
-    // Control de acceso (igual que API_Usuarios): sin sesión solo se accede a lo listado en
-    // $config['publicos']. Con sesión, el rol tiene que estar permitido para la acción o, si no
-    // hay acción, para el método. Sin entrada en la lista, solo administrador.
     $claveEndpoint = $method . ' ' . $resource . ($action ? '/' . $action : ($id !== null ? '/:id' : ''));
     $rolSesion     = $_SESSION['usuario']['rol'] ?? '';
     if (!in_array($claveEndpoint, $config['publicos'], true)) {

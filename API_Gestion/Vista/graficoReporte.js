@@ -1,7 +1,3 @@
-// Gráfico individual de cada informe. renderGraficoReporte(tipo, filas, ayudas) dibuja el gráfico
-// que corresponde al informe a partir de las mismas filas que muestra la tabla.
-//   ayudas.titulos: { tipo: título }, ayudas.colorTipo(nombre), ayudas.etiquetaTipoIncidencia(valor),
-//   ayudas.etiquetaNivelAlerta(valor), ayudas.etiquetaEstado(valor)
 const PALETA_GRAFICO = ['#3f5a33', '#8bbd3f', '#e3b23c', '#4a90a4', '#c0392b', '#7d5ba6', '#d98e04', '#2e7d32', '#999999'];
 
 function agruparConteo(filas, clave, etiquetar) {

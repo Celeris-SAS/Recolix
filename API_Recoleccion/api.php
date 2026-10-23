@@ -7,16 +7,12 @@ header('Access-Control-Allow-Headers: Content-Type');
 
 require_once __DIR__ . '/../extra/Comun/ErroresApi.php';
 
-// ERR-22: los rechazos por restricciones de la base (clave foránea, duplicados) y los datos que faltan se
-// muestran con un mensaje de negocio en lugar del texto técnico (ver extra/Comun/ErroresApi.php).
 function mensajeError(Throwable $e) {
     return recolix_mensaje_error($e);
 }
 
 $config = [
     'base_path' => '/recolix/API_Recoleccion/',
-    // Endpoints que pueden usarse sin ser personal interno (landing pública).
-    // Formato: 'METODO recurso', 'METODO recurso/accion' o 'METODO recurso/:id'.
     'publicos' => [
         'GET camiones/obtenerEnOperativa',
     ],
@@ -361,8 +357,6 @@ if (strpos($uri, $basePath) === 0) {
         $action = $_GET['action'];
     }
 
-    // Control de acceso: todo exige sesión de personal interno (administrador, cuadrilla u operario),
-    // salvo los endpoints listados en $config['publicos'].
     $claveEndpoint = $method . ' ' . $resource . ($action ? '/' . $action : ($id !== null ? '/:id' : ''));
     $rolSesion     = $_SESSION['usuario']['rol'] ?? '';
     $esPersonalInterno = $rolSesion !== '' && $rolSesion !== 'vecino';
@@ -372,7 +366,6 @@ if (strpos($uri, $basePath) === 0) {
             echo json_encode(['status' => 'error', 'message' => 'No tenés permiso para acceder a este recurso.']);
             exit;
         }
-        // Permisos por rol: lo que no figura en rolesAccion / rolesMetodo es solo del administrador.
         if ($action) {
             $requerido = $resourceConfig['rolesAccion'][$action] ?? ['administrador'];
         } else {

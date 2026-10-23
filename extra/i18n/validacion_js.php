@@ -1,6 +1,4 @@
 <?php
-// Mensajes de validación de los formularios, traducidos. Se incluye antes del script de cada página:
-//   msgValidacion('noValido' | 'entero' | 'numero' | 'menor' | 'mayor' | 'maxCaracteres' | 'nueveDigitos' | 'formato' | 'requerido', campo, regla)
 $camposValidacion = ['municipioId', 'idMunicipio', 'nombre', 'codigo', 'actividad', 'turno', 'frecuencia', 'matricula', 'tipoCarga',
     'capacidad', 'anio', 'modelo', 'estado', 'calle', 'numCalle', 'latitud', 'longitud', 'idTipo', 'idCircuito', 'tipo',
     'capacidadTotal', 'email', 'tel', 'rol', 'acceso', 'circuitoId', 'ci', 'primerNombre', 'pApellido', 'contrasenia'];

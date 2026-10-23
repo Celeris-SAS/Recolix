@@ -327,11 +327,8 @@ if (!isset($_SESSION['ci_usuario'])) {
         const LOCALE = <?= json_encode(t_locale()) ?>;
     </script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <!-- Mismo helper que usa la Landing Page: garantiza que ambos formularios de "reportar
-         incidencia" (y el mapa público) muestren siempre los mismos contenedores. -->
     <script src="../LandingPage/mapaContenedoresBase.js"></script>
     <script>
-        // Menú hamburguesa del portal de vecinos (el panel #mainNav ya existía, faltaba el botón).
         (function () {
             var boton = document.getElementById('navHamburger');
             var nav = document.getElementById('mainNav');

@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-# Crea (o recrea) la base "recolix_test" a partir del schema versionado en
-# recolix.sql, renombrando la base de 'recolix' a 'recolix_test' al vuelo.
-# No toca la base 'recolix' real: nunca se conecta a ella ni la referencia.
 set -euo pipefail
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -13,8 +10,6 @@ if [ ! -f "$SQL_FUENTE" ]; then
     exit 1
 fi
 
-# Ubica el binario de mysql sin asumir una ruta fija de máquina/SO:
-# 1) override explícito, 2) PATH, 3) rutas típicas de XAMPP/MySQL por SO.
 MYSQL_BIN="${RECOLIX_MYSQL_BIN:-}"
 if [ -z "$MYSQL_BIN" ]; then
     MYSQL_BIN="$(command -v mysql 2>/dev/null || true)"

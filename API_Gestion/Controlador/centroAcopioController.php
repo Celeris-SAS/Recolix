@@ -11,9 +11,6 @@ class CentroAcopioController {
         $this->centroAcopioModel = new CentroAcopioModel();
     }
 
-    // ==========================================
-    // VALIDACIONES
-    // ==========================================
 
     private function validarId($valor) {
         if (!is_numeric($valor) || intval($valor) <= 0) {
@@ -39,8 +36,6 @@ class CentroAcopioController {
         return intval($valor);
     }
 
-    // A diferencia de validarEntero, acá el 0 es un valor válido: un centro
-    // recién asignado a un tipo de residuo empieza con ocupación 0.
     private function validarEnteroNoNegativo($valor, $nombre) {
         if (!is_numeric($valor) || floatval($valor) != intval($valor) || intval($valor) < 0) {
             throw new InvalidArgumentException("$nombre debe ser un número entero mayor o igual a 0.");
@@ -94,11 +89,7 @@ class CentroAcopioController {
         ];
     }
 
-    // ==========================================
-    // CRUD PRINCIPAL
-    // ==========================================
 
-    // RF74 — Alta de centro de acopio.
     public function insertCentro($idMunicipio, $nombre, $tipo, $calle, $numCalle, $latitud, $longitud, $capacidadTotal, $estado) {
         $idMunicipio = $this->validarId($idMunicipio);
         $nombre = $this->validarString($nombre, 'Nombre');
@@ -117,7 +108,6 @@ class CentroAcopioController {
         return $this->centroAcopioModel->insertCentro($idMunicipio, $nombre, $tipo, $calle, $numCalle, $latitud, $longitud, $capacidadTotal, $estado);
     }
 
-    // RF75 — Modificación de centro de acopio.
     public function updateCentro($id, $idMunicipio, $nombre, $tipo, $calle, $numCalle, $latitud, $longitud, $capacidadTotal, $estado) {
         $id = $this->validarId($id);
         $idMunicipio = $this->validarId($idMunicipio);
@@ -141,7 +131,6 @@ class CentroAcopioController {
         return $this->centroAcopioModel->updateCentro($id, $idMunicipio, $nombre, $tipo, $calle, $numCalle, $latitud, $longitud, $capacidadTotal, $estado);
     }
 
-    // RF76 — Baja de centro de acopio.
     public function bajaCentro($id) {
         $id = $this->validarId($id);
 
@@ -153,8 +142,6 @@ class CentroAcopioController {
         return $this->centroAcopioModel->bajaCentro($id);
     }
 
-    // RF77 — Obtener un centro de acopio por id.
-    // El operario solo opera sobre el centro de acopio asignado a su usuario.
     private function verificarCentroPropio($idCentro, $centroModel) {
         if (($_SESSION['usuario']['rol'] ?? '') !== 'operario') {
             return;
@@ -172,14 +159,10 @@ class CentroAcopioController {
         return $this->centroAcopioModel->getCentro($id);
     }
 
-    // RF77 — Listado de todos los centros de acopio.
     public function getAllCentros() {
         return $this->centroAcopioModel->getAllCentros();
     }
 
-    // ==========================================
-    // FILTROS (soporte de RF77)
-    // ==========================================
 
     public function filtrarMunicipio($idMunicipio) {
         $idMunicipio = $this->validarId($idMunicipio);
@@ -196,13 +179,7 @@ class CentroAcopioController {
         return $this->centroAcopioModel->filtrarEstado($estado);
     }
 
-    // ==========================================
-    // OPERACIONES DE NEGOCIO
-    // ==========================================
 
-    // RF78 — Consulta de ocupación del centro de acopio.
-    // El controller calcula el porcentaje a partir de los datos crudos del modelo,
-    // mismo criterio que getNivelLlenado en contenedorController.
     public function getOcupacion($idCentro) {
         $idCentro = $this->validarId($idCentro);
 
@@ -226,8 +203,6 @@ class CentroAcopioController {
         ];
     }
 
-    // Habilita/actualiza qué capacidad tiene el centro para un tipo de residuo.
-    // No es un RF en sí mismo, es la base sobre la que se calcula RF78.
     public function asignarTipoResiduo($idCentro, $idResiduo, $capacidad) {
         $idCentro = $this->validarId($idCentro);
         $idResiduo = $this->validarId($idResiduo);
@@ -244,7 +219,6 @@ class CentroAcopioController {
         return $this->centroAcopioModel->asignarTipoResiduo($idCentro, $idResiduo, $capacidad);
     }
 
-    // Lista los tipos de residuo configurados para un centro, con su capacidad y ocupación.
     public function getResiduosPorCentro($idCentro) {
         $idCentro = $this->validarId($idCentro);
 
@@ -256,9 +230,6 @@ class CentroAcopioController {
         return $this->centroAcopioModel->getResiduosPorCentro($idCentro);
     }
 
-    // Actualiza la ocupación de un tipo de residuo puntual dentro de un centro.
-    // Reemplazo manual de lo que en el futuro debería derivarse del registro de
-    // traslados (RF42), que todavía no está implementado.
     public function actualizarOcupacion($idCentro, $idResiduo, $ocupacionActual) {
         $idCentro = $this->validarId($idCentro);
         $idResiduo = $this->validarId($idResiduo);

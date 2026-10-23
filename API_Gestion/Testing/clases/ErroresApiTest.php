@@ -4,7 +4,6 @@ use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/../../../extra/Comun/ErroresApi.php';
 
-// Mensaje de error compartido por las tres APIs (extra/Comun/ErroresApi.php).
 final class ErroresApiTest extends TestCase
 {
     public function testArgumentCountErrorNoFiltraDetallesInternos(): void

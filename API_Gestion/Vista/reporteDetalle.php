@@ -164,9 +164,7 @@ $reportEmptyKey = [
 ];
 
 $esReporteGenerico = isset($reportEndpoints[$tipo]);
-// RF59: el informe de volumen arranca mostrando el último mes.
 $rangoInicial = in_array($tipo, ['volumen', 'zonas_criticas', 'ingresos'], true) ? 'mes' : 'siempre';
-// Informes con filtro de período (rango fijo o fechas desde/hasta).
 $tiposConPeriodo = ['zonas_criticas', 'volumen', 'incidencias', 'tiempos_resolucion', 'camiones', 'usuarios', 'clasificacion', 'reciclaje', 'frecuencia', 'ingresos'];
 if ($tipo === 'usuarios') {
     $opcionesPeriodo = [['24h', 'reportes.usuarios_filtro_24h'], ['semana', 'reportes.usuarios_filtro_semana'], ['mes', 'reportes.usuarios_filtro_mes'], ['siempre', 'reportes.usuarios_filtro_siempre']];
@@ -357,7 +355,6 @@ if ($tipo === 'usuarios') {
             </div>
             <?php endif; ?>
             <?php
-            // Los filtros propios del informe (agrupación, estado, turno, día) van en la misma línea que el período.
             $filtrosExtra = ob_get_clean();
             if (in_array($tipo, $tiposConPeriodo, true)) {
                 include __DIR__ . '/filtroPeriodo.php';

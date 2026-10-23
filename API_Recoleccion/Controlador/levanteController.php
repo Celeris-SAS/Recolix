@@ -67,7 +67,6 @@
             ];
         }
 
-        // Una cuadrilla solo puede operar sobre levantes propios (el administrador, sobre todos).
         private function exigirLevantePropio($idLevante) {
             if (!CuadrillaSesion::aplica()) {
                 return;
@@ -161,7 +160,6 @@
             return CuadrillaSesion::soloPropios($this->levanteModel->obtenerPendientesVencidos());
         }
 
-        // RF53: genera (si no existían ya) las alertas de los levantes vencidos para el admin.
         public function generarAlertaVencidos() {
             return ['avisados' => $this->levanteModel->generarAlertaVencidos()];
         }

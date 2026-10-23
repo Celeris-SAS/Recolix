@@ -28,7 +28,6 @@ class RutaModel {
         return $affected > 0;
     }
 
-    // Baja lógica: la ruta queda inactiva y conserva sus contenedores, cuadrillas y levantes.
     public function deleteRuta($id) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE ruta_recoleccion SET activa = 0 WHERE id_ruta = ?");
         mysqli_stmt_bind_param($stmt, "i", $id);
@@ -37,9 +36,6 @@ class RutaModel {
         return true;
     }
 
-    // Todas las lecturas de ruta incluyen levantes_count (cantidad de levantes asignados)
-    // para que la UI pueda mostrar "Asignado"/"Sin asignar" sin importar por qué endpoint
-    // haya llegado la fila (listado completo, por id, o filtrada).
     private const SELECT_CON_LEVANTES = "
         SELECT r.*, ci.turno, ci.frecuencia,
                (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta) AS levantes_count,
@@ -51,8 +47,6 @@ class RutaModel {
         LEFT JOIN circuito ci ON ci.id_circuito = r.id_circuito
     ";
 
-    // Las rutas dadas de baja (activa = 0) se conservan por el historial (levantes, reportes) pero
-    // no aparecen en ningún listado; solo se llega a ellas por id.
     public function getAllRutas() {
         $stmt = mysqli_prepare($this->conn->getConexion(), self::SELECT_CON_LEVANTES . " WHERE r.activa = 1");
         mysqli_stmt_execute($stmt);
@@ -173,9 +167,6 @@ class RutaModel {
         return $cuadrillas;
     }
 
-    // RF54: eventos de la ruta. Cada levante es una ejecución con su cuadrilla, camión y estado
-    // (la asignación a una cuadrilla se conserva ahí aunque después se libere de ruta_cuadrilla);
-    // además se listan las cuadrillas asignadas hoy.
     public function obtenerHistorial($rutaId) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "
             SELECT 'ejecucion' AS tipo_evento, l.id_levante, l.hora_levante AS fecha, l.estado,
@@ -219,9 +210,6 @@ class RutaModel {
         return $levantes;
     }
 
-    // Rutas asignadas a una cuadrilla (dashboard de cuadrilla.php), con el id y
-    // estado de su levante más reciente en cada ruta para saber si hay uno
-    // pendiente/en_curso que mostrar.
     public function obtenerPorCuadrilla($idCuadrilla) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "
             SELECT r.id_ruta, r.nombre, r.actividad, ci.turno,

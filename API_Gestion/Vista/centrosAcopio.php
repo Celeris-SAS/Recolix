@@ -269,7 +269,6 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
         </div>
     </div>
 
-    <!-- ── MODAL MAQUINARIA DEL CENTRO ───────────────────────────────────── -->
     <div class="modal-overlay" id="modalMaquinaria" style="display:none" onclick="onOverlayClick(event,'modalMaquinaria')">
         <div class="modal" style="max-width:820px">
             <div class="modal-header">
@@ -329,7 +328,6 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
         </div>
     </div>
 
-    <!-- ── MODAL OPERARIOS DEL CENTRO ────────────────────────────────────── -->
     <div class="modal-overlay" id="modalOperarios" style="display:none" onclick="onOverlayClick(event,'modalOperarios')">
         <div class="modal">
             <div class="modal-header">
@@ -787,7 +785,6 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
             confirmarBorrar(id, nombreCentro);
         }
 
-        // ── MAQUINARIA (anidada dentro del centro) ─────────────────────────
 
         let maquinariaActual = [];
 
@@ -860,8 +857,6 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
             event.preventDefault();
             const idCentro = document.getElementById('maquinariaIdCentro').value;
             const idMaquinaria = document.getElementById('maquinariaId').value;
-            // Mismo orden que los parámetros del controller: insertMaquinaria($idCentro, $nombre, $tipo, $fechaAdquisicion, $estado)
-            // y updateMaquinaria($id, $nombre, $tipo, $fechaAdquisicion, $estado) — el update no lleva idCentro.
             const datosComunes = {
                 nombre: document.getElementById('maqNombre').value,
                 tipo: document.getElementById('maqTipo').value,
@@ -907,9 +902,6 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
             }
         }
 
-        // ── OPERARIOS DEL CENTRO (USUARIO.id_centro) ─────────────────────────
-        // Solo usuarios con rol 'operario' pueden pertenecer a un centro de acopio.
-        // Se gestiona contra API_Usuarios porque id_centro vive en la tabla USUARIO.
         let operariosCentroActual = null;
 
         async function abrirModalOperarios(centro) {
@@ -944,8 +936,6 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
                 const candidatos = jsonCandidatos.status === 'success' ? jsonCandidatos.data : [];
 
                 vacio.style.display = operarios.length ? 'none' : 'block';
-                // Tarjeta por operario, no una lista plana: con muchos asignados, .miembros-list
-                // scrollea internamente (ver CSS) en vez de estirar el modal.
                 lista.innerHTML = operarios.map(o => `
                     <li class="miembro-item">
                         <span class="miembro-datos">

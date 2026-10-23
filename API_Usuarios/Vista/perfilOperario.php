@@ -16,7 +16,6 @@ require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
 <link rel="stylesheet" href="../../Backoffice/styleBackoffice.css">
 <link rel="stylesheet" href="styles_vecino.css">
 <style>
-    /* Forzar menú hamburguesa siempre visible en esta vista */
     .nav-links {
         display: none !important;
     }

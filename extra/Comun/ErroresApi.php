@@ -1,10 +1,5 @@
 <?php
 
-/**
- * Mensaje de error que ven los clientes de las APIs. Los errores de programación (faltan o llegan mal
- * los parámetros) y las restricciones de la base se traducen a un texto de negocio, sin filtrar
- * detalles internos como el nombre de la clase o la función que falló.
- */
 function recolix_mensaje_error(Throwable $e): string
 {
     if ($e instanceof mysqli_sql_exception) {

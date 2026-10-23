@@ -1128,7 +1128,6 @@ async function poblarFrecuenciasGenerarRutas() {
         select.innerHTML = '<option value="">— Frecuencia —</option>' +
             frecuencias.map(f => `<option value="${f}">${f}</option>`).join('');
     } catch {
-        // si falla, se puede seguir usando solo el filtro por día
     }
 }
 

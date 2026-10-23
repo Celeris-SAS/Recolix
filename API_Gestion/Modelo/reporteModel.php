@@ -16,8 +16,6 @@ class ReporteModel {
         return 0;
     }
 
-    // ERR-17: además de los rangos fijos, se acepta un período por fechas "AAAA-MM-DD_AAAA-MM-DD".
-    // Devuelve [desde, hasta], null si $rango no es un período personalizado, o lanza si es inválido.
     private function rangoPersonalizado($rango) {
         if (!is_string($rango) || !preg_match('/^(\d{4}-\d{2}-\d{2})_(\d{4}-\d{2}-\d{2})$/', $rango, $m)) {
             return null;
@@ -34,7 +32,6 @@ class ReporteModel {
         return [$m[1], $m[2]];
     }
 
-    // Fragmento SQL para acotar una columna DATE (ej. LEVANTE.hora_levante) al rango elegido.
     private function condicionRangoFecha($columna, $rango) {
         if ($periodo = $this->rangoPersonalizado($rango)) {
             return "$columna BETWEEN '{$periodo[0]}' AND '{$periodo[1]}'";
@@ -52,7 +49,6 @@ class ReporteModel {
         }
     }
 
-    // Fragmento SQL para acotar una columna DATETIME (ej. USUARIO.fecha_registro) al rango elegido.
     private function condicionRangoFechaHora($columna, $rango) {
         if ($periodo = $this->rangoPersonalizado($rango)) {
             return "DATE($columna) BETWEEN '{$periodo[0]}' AND '{$periodo[1]}'";
@@ -157,9 +153,6 @@ class ReporteModel {
         return round(($completados / $total) * 100, 1);
     }
 
-    // Resumen público (landing e informes): incidencias reportadas y resueltas y volumen recolectado (kg)
-    // en las últimas 24 horas, semana, mes y año. Se usan ventanas móviles sobre datetime
-    // (hora_salida, no hora_levante, que es solo fecha) para que "24 h" sea real.
     const PERIODOS_PUBLICOS = [
         '24h'    => '1 DAY',
         'semana' => '7 DAY',
@@ -199,7 +192,6 @@ class ReporteModel {
         return $resumen;
     }
 
-    // Umbrales que definen una zona urbana crítica.
     const UMBRAL_INCIDENCIAS_MES = 10;
     const UMBRAL_PORCENTAJE_DESBORDADOS = 20;
 
@@ -243,7 +235,6 @@ class ReporteModel {
         return $porMunicipio;
     }
 
-    // Contenedores en alerta crítica (24 h) o máxima (48 h) sin recolectar, por municipio (RF70).
     private function getContenedoresEnAlertaPorMunicipio() {
         $sql = "SELECT t.id_municipio, COUNT(*) AS enAlerta
                 FROM (
@@ -265,9 +256,6 @@ class ReporteModel {
         return $porMunicipio;
     }
 
-    // Una zona es crítica si supera los umbrales de incidencias en el período (por defecto el último
-    // mes) o de contenedores desbordados, o si más del 20 % de sus contenedores está en alerta
-    // crítica o máxima por tiempo sin recolección.
     public function getZonasCriticas($rango = 'mes') {
         $contenedores = $this->getContenedoresPorMunicipio();
         $incidencias  = $this->getIncidenciasPorMunicipio($rango);
@@ -331,7 +319,6 @@ class ReporteModel {
         return $zonas;
     }
 
-    // RF59: la agregación temporal puede ser por día, semana (ISO) o mes.
     public function getVolumenPorTipoYPeriodo($rango = 'siempre', $agrupacion = 'mes') {
         switch ($agrupacion) {
             case 'dia':
@@ -372,7 +359,6 @@ class ReporteModel {
         return $filas;
     }
 
-    // RF57 / RF58: $estado 'abiertas' (abierta, asignada o en curso) o 'resueltas'; sin valor, todas.
     public function getIncidenciasDetalle($rango = 'siempre', $estado = null) {
         switch ($estado) {
             case 'abiertas':
@@ -412,8 +398,6 @@ class ReporteModel {
         return $filas;
     }
 
-    // RF61: por cuadrilla, cantidad de incidencias resueltas en el rango y tiempo de resolución
-    // (horas entre apertura y cierre) promedio, mínimo y máximo.
     public function getTiemposResolucion($rango = 'siempre') {
         $sql = "SELECT i.id_cuadrilla, m.nombre AS municipio,
                        COUNT(*) AS incidenciasCerradas,
@@ -443,7 +427,6 @@ class ReporteModel {
         return $filas;
     }
 
-    // RF63: municipios con más incidencias en el período (por defecto el último mes), para el panel.
     public function getTopZonasIncidencias($limite = 5, $rango = 'mes') {
         $limite = max(1, min(20, (int) $limite));
         $sql = "SELECT m.nombre AS municipio, COUNT(DISTINCT i.id_incidencia) AS incidencias
@@ -465,7 +448,6 @@ class ReporteModel {
         return $filas;
     }
 
-    // RF70: contenedores sin recolectar. Crítica a las 24 h desde su último vaciado y máxima a las 48 h.
     const HORAS_ALERTA_CRITICA = 24;
     const HORAS_ALERTA_MAXIMA = 48;
 
@@ -503,8 +485,6 @@ class ReporteModel {
         return $filas;
     }
 
-    // RF69: última proyección de llenado calculada por contenedor (PREDICCION_LLENADO), de mayor a
-    // menor nivel proyectado. Con 90 % o más se considera riesgo de sobrecarga.
     const UMBRAL_SOBRECARGA = 90;
 
     public function getProyeccionesLlenado() {
@@ -543,9 +523,6 @@ class ReporteModel {
         return "ci.turno = '$turnoEsc'";
     }
 
-    // La frecuencia de un circuito es texto libre (ej. "interdiaria (lunes, miércoles y viernes)"),
-    // por eso el filtro por día busca el nombre del día dentro del texto. Los circuitos "diaria
-    // (lunes a viernes...)" también matchean los días de semana intermedios (martes/miércoles/jueves).
     private function condicionDia($dia) {
         if (!$dia) return '1=1';
         $conn    = $this->conn->getConexion();
@@ -587,7 +564,6 @@ class ReporteModel {
         return $filas;
     }
 
-    // ERR-19: ingresos de residuos por centro de acopio (plantas, vertederos y rellenos) en el período.
     public function getIngresosPorCentro($rango = 'siempre') {
         $sql = "SELECT ca.nombre, m.nombre AS municipio, ca.tipo,
                        COUNT(cc.id) AS ingresos, COALESCE(SUM(cc.peso), 0) AS totalKg
@@ -646,7 +622,6 @@ class ReporteModel {
         return $filas;
     }
 
-    // RF68: cuántos kilos recolectados son de tipos reciclables, sobre el total.
     public function getReciclaje($rango = 'siempre') {
         $clasificacion = $this->getClasificacionResiduos($rango);
         $kgReciclable = 0.0;
@@ -780,8 +755,6 @@ class ReporteModel {
         return $filas;
     }
 
-    // Disponibilidad (estado actual) y uso (viajes, kg, horas en ruta y en mantenimiento
-    // dentro del rango elegido) por camión.
     public function getDisponibilidadCamiones($rango = 'siempre') {
         $condicionLevante      = $this->condicionRangoFecha('l.hora_levante', $rango);
         $condicionMantenimiento = $this->condicionRangoFechaHora('m.fecha_inicio', $rango);
@@ -827,9 +800,6 @@ class ReporteModel {
         return $filas;
     }
 
-    // Disponibilidad (estado actual) de la maquinaria por centro de acopio.
-    // No hay eventos de uso registrados para maquinaria (a diferencia de los
-    // camiones, que tienen LEVANTE), por eso no reporta métricas de uso.
     public function getDisponibilidadMaquinaria() {
         $sql = "SELECT mq.nombre, mq.tipo, mq.fecha_adquisicion, mq.estado,
                        ca.nombre AS centro, mu.nombre AS municipio

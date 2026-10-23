@@ -1,22 +1,13 @@
 <?php
-// Página de notificaciones, compartida por los cuatro portales (vecino, admin, cuadrilla,
-// operario): no hay datos específicos de rol en una notificación, así que una sola página
-// alcanza para los cuatro en vez de duplicarla por rol como perfil.php/perfilCuadrilla.php/
-// perfilOperario.php (esas sí difieren por rol).
 session_start();
 require_once $_SERVER['DOCUMENT_ROOT'] . '/recolix/extra/i18n/i18n.php';
 
-// Mismo fallback de sesión que usa el resto del código: admin/cuadrilla/operario guardan el CI
-// bajo 'usuario', el portal de vecinos lo guarda suelto.
 $ci = $_SESSION['usuario']['ci_usuario'] ?? $_SESSION['ci_usuario'] ?? null;
 if (!$ci) {
     header('Location: /recolix/LandingPage/login.php');
     exit;
 }
 
-// El "Inicio" y el ícono de perfil del navbar apuntan a un lugar distinto según el rol,
-// porque cada portal tiene su propia página de inicio y, para cuadrilla/operario, su propio
-// perfil (perfilCuadrilla.php/perfilOperario.php en vez de perfil.php).
 $rolSesion = $_SESSION['usuario']['rol'] ?? (isset($_SESSION['ci_usuario']) ? 'vecino' : null);
 $enlacesPorRol = [
     'administrador' => ['inicio' => '/recolix/Backoffice/indexBackoffice.php', 'perfil' => '/recolix/API_Usuarios/perfil.php'],

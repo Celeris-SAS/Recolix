@@ -2,7 +2,6 @@
 
 require_once __DIR__ . '/../../Util/PdfTabla.php';
 
-/** El generador de PDF no toca la base: se verifica la estructura del archivo producido. */
 final class PdfTablaTest extends GestionTestCase
 {
     public function testGeneraUnPdfValidoConElTitulo(): void

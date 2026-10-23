@@ -70,15 +70,12 @@
             return $val;
         }
 
-        // RNE 24: la fecha de fin no puede ser anterior a la de inicio.
         private function validarRangoFechas($fechaInicio, $fechaFin) {
             if ($fechaFin !== null && strtotime($fechaFin) < strtotime($fechaInicio)) {
                 throw new InvalidArgumentException("La fecha de fin no puede ser anterior a la fecha de inicio.");
             }
         }
 
-        // El camión pasa a mantenimiento y ya no puede completar su ruta: se cancelan sus levantes
-        // pendientes o en curso (no se dan por terminados) para poder replanificarlos con otro camión.
         private function ponerEnMantenimiento($camionId) {
             $this->camionModel->marcarCamionEnMantenimiento($camionId);
             $this->levanteModel->cancelarActivosDelCamion($camionId);
@@ -188,7 +185,6 @@
             return $this->mantenimientoModel->obtenerCostoTotal($camionId);
         }
 
-        // RF37: la cuadrilla avisa a los administradores de un desperfecto mecánico en su camión.
         public function notificarDesperfecto($camionId, $descripcion) {
             $camionId    = $this->validarId($camionId);
             $descripcion = $this->validarString($descripcion, 'Descripción');

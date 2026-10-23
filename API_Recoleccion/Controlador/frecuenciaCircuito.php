@@ -1,7 +1,4 @@
 <?php
-// La "frecuencia" de un circuito es texto libre (ej: "interdiaria (lunes, miércoles y viernes)",
-// "diaria (lunes a viernes y feriados)"). Esta clase extrae los días de la semana implicados,
-// incluyendo rangos ("lunes a viernes"), para poder filtrar y contar veces por semana.
 class FrecuenciaCircuito {
     const DIAS = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
 

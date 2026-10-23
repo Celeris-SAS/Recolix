@@ -405,13 +405,11 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
             });
         }
 
-        // Muestra el gráfico o, si no hay datos, el mensaje de vacío en su lugar.
         function alternarVacio(wrapId, vacioId, hayDatos) {
             document.getElementById(wrapId).hidden = !hayDatos;
             document.getElementById(vacioId).hidden = hayDatos;
         }
 
-        // RF63: municipios con más incidencias en el período elegido.
         async function cargarZonasIncidencias() {
             let filas = [];
             try {
@@ -438,7 +436,6 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
             });
         }
 
-        // RF63: volumen recolectado en el período elegido (por día; por mes si es "desde siempre").
         async function cargarVolumenMes() {
             let filas = [];
             const agrupacion = currentRango === 'siempre' ? 'mes' : 'dia';
