@@ -106,7 +106,9 @@ class UsuarioController {
         if ($this->ciSesion() !== null && (int)$this->ciSesion() === (int)$ci) {
             return;
         }
-        $this->verificarPersonalInterno();
+        // Los datos de otras personas (email, teléfono, rol) los gestiona solo el administrador; el
+        // resto del personal accede únicamente a su propio perfil.
+        $this->verificarAdministrador();
     }
 
     // Administrador, cuadrilla u operario (mismo criterio que Backoffice/verificacion_sesion.php).
@@ -286,19 +288,19 @@ class UsuarioController {
 
 
     public function listarUsuarios() {
-        $this->verificarPersonalInterno();
+        $this->verificarAdministrador();
         return $this->usuarioModel->listarUsuarios();
     }
 
 
     public function filtrarRol($rol) {
-        $this->verificarPersonalInterno();
+        $this->verificarAdministrador();
         $rol = $this->validarRol($rol);
         return $this->usuarioModel->filtrarRol($rol);
     }
 
     public function filtrarAcceso($acceso) {
-        $this->verificarPersonalInterno();
+        $this->verificarAdministrador();
         $acceso = $this->validarAcceso($acceso);
         return $this->usuarioModel->filtrarAcceso($acceso);
     }

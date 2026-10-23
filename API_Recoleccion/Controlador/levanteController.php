@@ -5,6 +5,7 @@
 
         public function __construct() {
             require_once __DIR__ . '/../Modelo/levanteModel.php';
+            require_once __DIR__ . '/cuadrillaSesion.php';
             $this->levanteModel = new LevanteModel();
         }
 
@@ -66,28 +67,43 @@
             ];
         }
 
+        // Una cuadrilla solo puede operar sobre levantes propios (el administrador, sobre todos).
+        private function exigirLevantePropio($idLevante) {
+            if (!CuadrillaSesion::aplica()) {
+                return;
+            }
+            $levante = $this->levanteModel->getLevante($idLevante);
+            CuadrillaSesion::exigir($levante ? $levante['id_cuadrilla'] : null);
+        }
+
         public function getAllLevantes() {
-            return $this->levanteModel->getAllLevantes();
+            return CuadrillaSesion::soloPropios($this->levanteModel->getAllLevantes());
         }
 
         public function getLevante($id) {
             $id = $this->validarId($id);
-            return $this->levanteModel->getLevante($id);
+            $levante = $this->levanteModel->getLevante($id);
+            if ($levante) {
+                CuadrillaSesion::exigir($levante['id_cuadrilla']);
+            }
+            return $levante;
         }
 
         public function obtenerActivoPorCuadrilla($idCuadrilla) {
             $idCuadrilla = $this->validarId($idCuadrilla);
+            CuadrillaSesion::exigir($idCuadrilla);
             return $this->levanteModel->obtenerActivoPorCuadrilla($idCuadrilla);
         }
 
         public function obtenerCompletadosPorCuadrilla($idCuadrilla) {
             $idCuadrilla = $this->validarId($idCuadrilla);
+            CuadrillaSesion::exigir($idCuadrilla);
             return $this->levanteModel->obtenerCompletadosPorCuadrilla($idCuadrilla);
         }
 
         public function obtenerPorRuta($idRuta) {
             $idRuta = $this->validarId($idRuta);
-            return $this->levanteModel->obtenerPorRuta($idRuta);
+            return CuadrillaSesion::soloPropios($this->levanteModel->obtenerPorRuta($idRuta));
         }
 
         public function obtenerCuadrillas() {
@@ -112,6 +128,7 @@
 
         public function iniciar($id) {
             $id = $this->validarId($id);
+            $this->exigirLevantePropio($id);
             return $this->levanteModel->iniciarLevante($id);
         }
 
@@ -121,11 +138,13 @@
             $estadoEncontrado = $this->validarString($estadoEncontrado, 'Estado encontrado');
             $peso = $this->validarPeso($peso);
             $motivo = $this->validarMotivo($motivo);
+            $this->exigirLevantePropio($idLevante);
             return $this->levanteModel->registrarContenedor($idLevante, $idContenedor, $estadoEncontrado, $peso, $motivo);
         }
 
         public function completar($id) {
             $id = $this->validarId($id);
+            $this->exigirLevantePropio($id);
             return $this->levanteModel->completarLevante($id);
         }
 
@@ -139,7 +158,7 @@
         }
 
         public function obtenerPendientesVencidos() {
-            return $this->levanteModel->obtenerPendientesVencidos();
+            return CuadrillaSesion::soloPropios($this->levanteModel->obtenerPendientesVencidos());
         }
 
         // RF53: genera (si no existían ya) las alertas de los levantes vencidos para el admin.

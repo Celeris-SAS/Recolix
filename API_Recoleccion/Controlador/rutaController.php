@@ -1,5 +1,6 @@
 <?php
     require_once __DIR__ . '/frecuenciaCircuito.php';
+    require_once __DIR__ . '/cuadrillaSesion.php';
 
     class RutaController {
 
@@ -199,6 +200,7 @@
 
         public function obtenerPorCuadrilla($cuadrillaId) {
             $cuadrillaId = $this->validarId($cuadrillaId);
+            CuadrillaSesion::exigir($cuadrillaId);
             return $this->rutaModel->obtenerPorCuadrilla($cuadrillaId);
         }
 
@@ -209,7 +211,7 @@
 
         public function obtenerLevantes($rutaId) {
             $rutaId = $this->validarId($rutaId);
-            return $this->rutaModel->obtenerLevantes($rutaId);
+            return CuadrillaSesion::soloPropios($this->rutaModel->obtenerLevantes($rutaId));
         }
 
         public function obtenerResumen() {
