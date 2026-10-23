@@ -228,7 +228,23 @@
         }
 
         public function obtenerEnOperativa() {
-            return $this->camionModel->obtenerEnOperativa();
+            $flota = $this->camionModel->obtenerEnOperativa();
+
+            // Personal interno: detalle completo. Público (landing) y vecinos: solo posición y
+            // minutos hasta el próximo contenedor, sin matrícula, modelo, ruta ni direcciones.
+            $rol = $_SESSION['usuario']['rol'] ?? '';
+            if ($rol !== '' && $rol !== 'vecino') {
+                return $flota;
+            }
+            return array_map(function ($camion) {
+                return [
+                    'ubicacion' => [
+                        'latitud'  => $camion['ubicacion']['latitud'],
+                        'longitud' => $camion['ubicacion']['longitud'],
+                    ],
+                    'eta' => $camion['eta'] ? ['minutos' => $camion['eta']['minutos']] : null,
+                ];
+            }, $flota);
         }
 
     }

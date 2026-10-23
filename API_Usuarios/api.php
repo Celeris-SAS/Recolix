@@ -145,22 +145,6 @@ $uri    = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
 $basePath = $config['base_path'];
 
-// DEBUG TEMPORAL - borrar después
-if (isset($_GET['debug'])) {
-    $relativePath = (strpos($uri, $basePath) === 0) ? substr($uri, strlen($basePath)) : 'NO COINCIDE';
-    $uriSegments = explode('/', trim($relativePath, '/'));
-    echo json_encode([
-        'uri_recibida' => $uri,
-        'base_path_esperado' => $basePath,
-        'coincide' => (strpos($uri, $basePath) === 0),
-        'relativePath' => $relativePath,
-        'uriSegments' => $uriSegments,
-        'method' => $method,
-        'resources_disponibles' => array_keys($config['resources'])
-    ]);
-    exit;
-}
-
 if (strpos($uri, $basePath) === 0) {
     $relativePath = substr($uri, strlen($basePath));
     $uriSegments  = explode('/', trim($relativePath, '/'));
@@ -237,20 +221,6 @@ if (strpos($uri, $basePath) === 0) {
                 unset($query['action']);
                 if (!empty($query)) $callParams = array_merge($callParams, array_values($query));
             }
-        }
-
-        // Debug de acción
-        if (isset($_GET['debug'])) {
-            echo json_encode([
-                'action' => $action,
-                'method' => $method,
-                'callParams' => $callParams,
-                'body_raw' => $bodyRaw,
-                'body_parsed' => json_decode($bodyRaw, true),
-                'inArray' => in_array($action, $resourceConfig['actions']),
-                'methodExists' => method_exists($controller, $action)
-            ]);
-            exit;
         }
 
         try {

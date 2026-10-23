@@ -28,9 +28,6 @@ $config = [
     'publicos' => [
         'GET contenedores',
         'GET centros-acopio',
-        'GET incidencias/getActivasConUbicacion',
-        'GET reportes/getIncidenciasDetalle',
-        'GET reportes/getResumenGeneral',
         'GET reportes/getResumenPublico',
         'POST incidencias',
     ],

@@ -373,20 +373,17 @@
         };
 
         try {
-          const [contenedores, incidenciasHoy, resumenMes] = await Promise.all([
+          const [contenedores, resumen] = await Promise.all([
             fetchJson(`${API_GESTION}/contenedores`),
-            fetchJson(`${API_GESTION}/reportes/getIncidenciasDetalle?rango=hoy`),
-            fetchJson(`${API_GESTION}/reportes/getResumenGeneral?rango=mes`)
+            fetchJson(`${API_GESTION}/reportes/getResumenPublico`)
           ]);
 
           const totalContenedores = Array.isArray(contenedores) ? contenedores.length : 0;
-          const totalIncidenciasHoy = Array.isArray(incidenciasHoy) ? incidenciasHoy.length : 0;
-          const toneladasMes = resumenMes && resumenMes.residuosRecolectados != null
-            ? resumenMes.residuosRecolectados / 1000
-            : 0;
+          const totalIncidencias24h = resumen ? resumen['24h'].incidenciasReportadas : 0;
+          const toneladasMes = resumen ? resumen.mes.volumenKg / 1000 : 0;
 
           elContenedores.textContent = totalContenedores.toLocaleString(I18N_LOCALE);
-          elIncidencias.textContent = totalIncidenciasHoy.toLocaleString(I18N_LOCALE);
+          elIncidencias.textContent = totalIncidencias24h.toLocaleString(I18N_LOCALE);
           elVolumen.textContent = `${toneladasMes.toLocaleString(I18N_LOCALE, { maximumFractionDigits: 1 })} t`;
 
           const hora = new Date().toLocaleTimeString(I18N_LOCALE, { hour: '2-digit', minute: '2-digit' });

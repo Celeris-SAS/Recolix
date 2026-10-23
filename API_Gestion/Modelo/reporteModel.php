@@ -157,7 +157,7 @@ class ReporteModel {
         return round(($completados / $total) * 100, 1);
     }
 
-    // Resumen para la página pública de reportes: incidencias resueltas y volumen recolectado (kg)
+    // Resumen público (landing e informes): incidencias reportadas y resueltas y volumen recolectado (kg)
     // en las últimas 24 horas, semana, mes y año. Se usan ventanas móviles sobre datetime
     // (hora_salida, no hora_levante, que es solo fecha) para que "24 h" sea real.
     const PERIODOS_PUBLICOS = [
@@ -176,6 +176,11 @@ class ReporteModel {
                 WHERE estado = 'resuelta' AND fecha_cierre >= (NOW() - INTERVAL $intervalo)
             ");
 
+            $reportadas = $this->contarFilas("
+                SELECT COUNT(*) FROM INCIDENCIA
+                WHERE fecha_apertura >= (NOW() - INTERVAL $intervalo)
+            ");
+
             $volumen = 0.0;
             $result = mysqli_query($conn, "
                 SELECT COALESCE(SUM(total_recolectado), 0) FROM LEVANTE
@@ -187,6 +192,7 @@ class ReporteModel {
 
             $resumen[$periodo] = [
                 'incidenciasResueltas' => $resueltas,
+                'incidenciasReportadas' => $reportadas,
                 'volumenKg'            => round($volumen, 2),
             ];
         }
