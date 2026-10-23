@@ -10,6 +10,7 @@
     "campana_volver": "Voltar",
     "nav_inicio": "Início",
     "nav_mapa": "Mapa",
+    "nav_reportes": "Relatórios",
     "nav_iniciar_sesion": "Entrar",
     "nav_mi_perfil": "Meu perfil",
     "nav_abrir_menu": "Abrir menu",
@@ -19,6 +20,7 @@
     "footer_navegacion": "Navegação",
     "footer_inicio": "Início",
     "footer_mapa": "Mapa",
+    "footer_reportes": "Relatórios",
     "footer_portal_empleados": "Portal de funcionários",
     "footer_canales": "Canais da Prefeitura",
     "footer_linea": "Telefone: 1950 3000",
@@ -141,6 +143,25 @@
     "feedback_error_conexion": "Erro ao conectar com o servidor."
   },
 
+  "reportes_publicos": {
+    "title": "Relatórios Recolix",
+    "meta_description": "Ocorrências resolvidas e resíduos coletados pelo Recolix em Montevidéu.",
+    "titulo": "Relatórios públicos",
+    "desc": "Acompanhe como a cidade trabalha: ocorrências resolvidas e resíduos coletados em diferentes períodos.",
+    "resueltas": "Ocorrências resolvidas",
+    "volumen": "Resíduos coletados",
+    "periodo_24h": "Últimas 24 horas",
+    "periodo_semana": "Última semana",
+    "periodo_mes": "Último mês",
+    "periodo_anio": "Último ano",
+    "unidad_incidencias": "ocorrências",
+    "actualizado": "Última atualização",
+    "error": "Não foi possível carregar os relatórios. Tente novamente mais tarde.",
+    "nota": "As ocorrências são contadas pela data de resolução e o volume inclui apenas coletas concluídas.",
+    "th_periodo": "Período",
+    "th_volumen_kg": "Volume coletado (kg)",
+    "exportar": "Exportar"
+  },
   "mapa": {
     "title": "Mapa Recolix",
     "meta_description": "Mapa interativo de contêineres e zonas de coleta do Recolix.",
