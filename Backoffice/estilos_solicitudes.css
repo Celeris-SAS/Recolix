@@ -154,7 +154,8 @@ h3 {
 
 
 .dash-main {
-    padding: 36px 0 64px;
+    padding-top: 36px;
+    padding-bottom: 64px;
     display: flex;
     flex-direction: column;
     gap: 24px;

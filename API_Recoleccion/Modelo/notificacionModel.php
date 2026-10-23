@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../../conexion.php';
 require_once __DIR__ . '/../../extra/Comun/Mailer.php';
+require_once __DIR__ . '/../../extra/Comun/Etiquetas.php';
 
 class NotificacionModel {
     private $conn;
@@ -65,7 +66,7 @@ class NotificacionModel {
             }
             $this->crearParaUsuario(
                 (int) $inc['ci_usuario'],
-                "Tu incidencia #{$inc['id_incidencia']} ({$inc['tipo']}) {$this->textosEstadoIncidencia[$nuevoEstado]}.",
+                "Tu incidencia #{$inc['id_incidencia']} ({$this->etiqueta($inc['tipo'])}) {$this->textosEstadoIncidencia[$nuevoEstado]}.",
                 'incidencia',
                 'informativa'
             );
@@ -131,6 +132,10 @@ class NotificacionModel {
         mysqli_stmt_close($stmt);
 
         Mailer::enviar($email, $this->asunto($tipoOrigen), $mensaje);
+    }
+
+    private function etiqueta($valor) {
+        return Etiquetas::legible($valor);
     }
 
     private function asunto($tipoOrigen) {

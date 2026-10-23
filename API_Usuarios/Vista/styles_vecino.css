@@ -370,8 +370,11 @@ h3 {
 }
 
 
+/* Solo padding vertical: el horizontal lo da .container (16px, 24px desde 768px). Con `padding: 36px 0 64px`
+   se pisaba y en mobile el título y las tarjetas quedaban pegados al borde. */
 .dash-main {
-    padding: 36px 0 64px;
+    padding-top: 36px;
+    padding-bottom: 64px;
     display: flex;
     flex-direction: column;
     gap: 36px;
@@ -563,6 +566,10 @@ input:focus {
     display: block;
 }
 
+
+.resueltas-toggle {
+    margin: 16px 0;
+}
 
 .incidencia-card {
     background: var(--white);
