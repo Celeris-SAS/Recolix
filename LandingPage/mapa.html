@@ -7,6 +7,7 @@
     <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= t('mapa.title') ?></title>
+    <link rel="icon" type="image/png" href="/recolix/LandingPage/img/Logo.png">
     <meta name="description" content="<?= htmlspecialchars(t('mapa.meta_description')) ?>">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -47,6 +48,7 @@
         <div class="mapa-tabs" id="mapaTabs">
             <button class="mapa-tab is-active" data-tipo="contenedores"><?= t('mapa.tab_contenedores') ?></button>
             <button class="mapa-tab" data-tipo="centros"><?= t('mapa.tab_centros') ?></button>
+            <button class="mapa-tab" data-tipo="camiones"><?= t('mapa.tab_camiones') ?></button>
         </div>
 
         <section class="map-hero">
@@ -78,6 +80,11 @@
                         <li><span><?= t('mapa.saturados') ?></span><strong id="countSaturados">0</strong></li>
                         <li><span><?= t('mapa.cerrados') ?></span><strong id="countCerrados">0</strong></li>
                     </ul>
+                    <ul class="info-list" id="indicadores-camiones" style="display:none">
+                        <li><span><?= t('mapa.camiones_en_operativa') ?></span><strong id="countCamionesTotal">0</strong></li>
+                        <li><span><?= t('mapa.con_eta') ?></span><strong id="countCamionesConEta">0</strong></li>
+                        <li><span><?= t('mapa.sin_eta') ?></span><strong id="countCamionesSinEta">0</strong></li>
+                    </ul>
                 </div>
 
                 <div class="panel-card">
@@ -88,6 +95,9 @@
                         <p class="legend-item legend-warn"><?= t('mapa.js_estado_inactivo') ?></p>
                         <p class="legend-item legend-crit"><?= t('mapa.js_estado_desbordado') ?></p>
                         <p class="legend-item legend-off"><?= t('mapa.js_estado_roto') ?></p>
+                    </div>
+                    <div id="leyenda-camiones" style="display:none">
+                        <p class="legend-item legend-camion"><?= t('mapa.camion_en_ruta') ?></p>
                     </div>
                     <div id="leyenda-centros" style="display:none">
                         <p class="map-legend-title"><?= t('mapa.estado_centros') ?></p>
@@ -167,6 +177,7 @@
                 'unidadCentros' => 'mapa.js_unidad_centros',
                 'unidadCamiones' => 'mapa.js_unidad_camiones',
                 'unidadPuntos' => 'mapa.js_unidad_puntos',
+                'min' => 'mapa.js_min',
                 'respuestaInesperada' => 'mapa.js_respuesta_inesperada',
             ])) ?>;
             const I18N_LOCALE = <?= json_encode(t_locale()) ?>;

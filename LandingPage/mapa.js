@@ -144,16 +144,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const marker = L.marker([lat, lon], { icon: ICONO_CAMION }).addTo(grupo);
 
-    const filas = [`<b>${I18N.popupCamion} ${camion.matricula}</b>`];
-    if (camion.modelo) filas.push(`<b>${I18N.popupModelo}</b> ${camion.modelo}`);
-    filas.push(`<b>${I18N.popupUltimaPosicion}</b> ${camion.ubicacion.calle || I18N.sinDireccion}${camion.ubicacion.num_calle ? ' ' + camion.ubicacion.num_calle : ''}`);
-    if (camion.proxima_parada) {
-      filas.push(`<b>${I18N.popupProximaParada}</b> ${camion.proxima_parada.calle || I18N.sinDireccion}${camion.proxima_parada.num_calle ? ' ' + camion.proxima_parada.num_calle : ''}`);
-      filas.push(`<b>${I18N.popupTiempoProximo}</b> ${camion.eta.texto} (${camion.eta.distancia_km} km a ${camion.eta.velocidad_kmh} km/h)`);
-    } else {
-      filas.push(`<b>${I18N.popupProximaParada}</b> ${I18N.sinPendientes}`);
+    // Público: solo se muestra el tiempo hasta el próximo contenedor (sin matrícula ni modelo).
+    let texto = I18N.sinPendientes;
+    if (camion.eta) {
+      const min = camion.eta.minutos;
+      texto = min < 60
+        ? `≈ ${min} ${I18N.min}`
+        : `≈ ${Math.floor(min / 60)} h ${String(min % 60).padStart(2, '0')} ${I18N.min}`;
     }
-    marker.bindPopup(filas.join('<br>'), { maxWidth: 260 });
+    marker.bindTooltip(texto, { permanent: true, direction: 'top', offset: [0, -14], className: 'camion-eta-etiqueta' });
+    marker.bindPopup(camion.eta ? `<b>${I18N.popupTiempoProximo}</b><br>${texto}` : texto, { maxWidth: 260 });
     return [lat, lon];
   };
 
@@ -215,7 +215,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('mapSummaryValue').textContent = `${total} ${etiquetaTotal} · ${hora}`;
   };
 
-  async function cargarVista(vista) {
+  async function cargarVista(vista, silencioso) {
     vistaActual = vista;
     grupo.clearLayers();
     Object.keys(counts[vista]).forEach((k) => { counts[vista][k] = 0; });
@@ -276,7 +276,7 @@ document.addEventListener('DOMContentLoaded', function () {
         bounds.push(addCamionPoint(camion));
       }
       renderSummary('camiones', bounds.length);
-      if (bounds.length) map.fitBounds(bounds, { padding: [40, 40] });
+      if (bounds.length && !silencioso) map.fitBounds(bounds, { padding: [40, 40] });
       return;
     }
 
@@ -312,6 +312,9 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   cargarVista('contenedores');
+
+  // Los camiones se mueven: la vista se refresca sola mientras está activa (sin reencuadrar el mapa).
+  setInterval(() => { if (vistaActual === 'camiones') cargarVista('camiones', true); }, 30000);
 
   const btn = document.getElementById('hamburgerBtn');
   const nav = document.getElementById('mainNav');

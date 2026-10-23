@@ -182,6 +182,7 @@ if ($tipo === 'usuarios') {
     <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= t($config['titulo']) ?> — Recolix</title>
+    <link rel="icon" type="image/png" href="/recolix/LandingPage/img/Logo.png">
     <link rel="stylesheet" href="styleReporteDetalle.css">
 </head>
 

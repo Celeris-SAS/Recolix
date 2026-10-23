@@ -33,6 +33,7 @@ $enlaces = $enlacesPorRol[$rolSesion] ?? $enlacesPorRol['vecino'];
     <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars(t('common.campana_titulo')) ?> — Recolix</title>
+    <link rel="icon" type="image/png" href="/recolix/LandingPage/img/Logo.png">
     <link rel="stylesheet" href="/recolix/Backoffice/styleBackoffice.css">
 </head>
 <body>

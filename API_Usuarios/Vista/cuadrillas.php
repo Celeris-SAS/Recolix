@@ -9,6 +9,7 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
     <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= t('cuadrillas.title') ?></title>
+    <link rel="icon" type="image/png" href="/recolix/LandingPage/img/Logo.png">
     <link rel="stylesheet" href="../../Backoffice/styleBackoffice.css">
     <link rel="stylesheet" href="styleCuadrillas.css">
 </head>
