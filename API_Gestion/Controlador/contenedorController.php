@@ -109,16 +109,22 @@ class contenedorController {
     }
  
     public function insertContenedor($idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad, $estado) {
-    $idCircuito = $this->validarId($idCircuito);
     $idTipo     = $this->validarId($idTipo);
     $estado     = $this->validarEstado($estado);
 
+    // RNE 26: un contenedor en depósito no pertenece a ningún circuito; los demás
+    // estados sí necesitan uno (es parte de la ruta que lo recolecta).
     if ($estado === 'en_deposito') {
+        if ($idCircuito !== null && $idCircuito !== '') {
+            throw new InvalidArgumentException("Un contenedor en depósito no puede pertenecer a un circuito.");
+        }
+        $idCircuito = null;
         $calle    = null;
         $numCalle = null;
         $latitud  = null;
         $longitud = null;
     } else {
+        $idCircuito = $this->validarId($idCircuito);
         $calle    = $this->validarString($calle, 'Calle', 100);
         $numCalle = $this->validarEntero($numCalle, 'Número de puerta');
         $latitud  = $this->validarCoordenada($latitud, 'Latitud');
@@ -126,25 +132,42 @@ class contenedorController {
     }
     $capacidad  = $this->validarEntero($capacidad, 'Capacidad');
 
+    if (!$this->contenedorModel->tipoResiduoExiste($idTipo)) {
+        throw new InvalidArgumentException("No existe un tipo de residuo con el ID $idTipo.");
+    }
+    if ($idCircuito !== null && !$this->contenedorModel->circuitoExiste($idCircuito)) {
+        throw new InvalidArgumentException("No existe un circuito con el ID $idCircuito.");
+    }
+
     return $this->contenedorModel->insertContenedor($idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad, $estado);
 }
  
     public function updateContenedor($id, $idCircuito, $idTipo, $calle, $numCalle, $latitud, $longitud, $capacidad) {
-        $id         = $this->validarId($id);
-        $idCircuito = $this->validarId($idCircuito);
-        $idTipo     = $this->validarId($idTipo);
+        $id     = $this->validarId($id);
+        $idTipo = $this->validarId($idTipo);
 
         $contenedor = $this->contenedorModel->getContenedor($id);
         if (!$contenedor) {
             throw new InvalidArgumentException("No existe un contenedor con el ID $id.");
         }
 
+        // RNE 26: un contenedor en depósito no pertenece a ningún circuito; los demás
+        // estados sí necesitan uno. El estado se cambia aparte (cambiarEstado), así que
+        // acá se respeta el que ya tiene el contenedor en la base.
         if ($contenedor['estado'] === 'en_deposito') {
+            if ($idCircuito !== null && $idCircuito !== '') {
+                throw new InvalidArgumentException("Un contenedor en depósito no puede pertenecer a un circuito.");
+            }
+            $idCircuito = null;
             $calle    = null;
             $numCalle = null;
             $latitud  = null;
             $longitud = null;
         } else {
+            $idCircuito = $this->validarId($idCircuito);
+            if (!$this->contenedorModel->circuitoExiste($idCircuito)) {
+                throw new InvalidArgumentException("No existe un circuito con el ID $idCircuito.");
+            }
             $calle    = $this->validarString($calle, 'Calle', 100);
             $numCalle = $this->validarEntero($numCalle, 'Número de puerta');
             $latitud  = $this->validarCoordenada($latitud, 'Latitud');
@@ -274,6 +297,14 @@ class contenedorController {
     public function filtrarEstado($estado) {
         $estado = $this->validarEstado($estado);
         return $this->contenedorModel->filtrarEstado($estado);
+    }
+
+    // ERR-04: combina los filtros de estado y tipo de residuo (el router los llama
+    // juntos cuando la URL trae más de un query param soportado a la vez).
+    public function filtrarCombinado($filtros) {
+        $estado = isset($filtros['estado']) && $filtros['estado'] !== '' ? $this->validarEstado($filtros['estado']) : null;
+        $idTipo = isset($filtros['tipoResiduo']) && $filtros['tipoResiduo'] !== '' ? $this->validarId($filtros['tipoResiduo']) : null;
+        return $this->contenedorModel->filtrarCombinado($estado, $idTipo);
     }
 }
 ?>

@@ -18,7 +18,8 @@ document.addEventListener('DOMContentLoaded', function () {
     contenedores: '/recolix/API_Gestion/contenedores',
     centros: '/recolix/API_Gestion/centros-acopio',
     camiones: '/recolix/API_Recoleccion/camiones/obtenerEnOperativa',
-    incidencias: '/recolix/API_Gestion/incidencias/getActivasConUbicacion'
+    incidencias: '/recolix/API_Gestion/incidencias/getActivasConUbicacion',
+    proyeccion: '/recolix/API_Gestion/predicciones/proyectarLlenadoIA'
   };
 
   const ICONO_CAMION = L.icon({
@@ -113,9 +114,38 @@ document.addEventListener('DOMContentLoaded', function () {
       if (info && info.capacidad) filas.push(`<b>${I18N.popupCapacidad}</b> ${info.capacidad} L`);
       if (info && info.nivel_llenado != null) filas.push(`<b>${I18N.popupNivelLlenado}</b> ${info.nivel_llenado}%`);
       filas.push(`<b>${I18N.popupEstado}</b> ${etiqueta(ETIQUETAS_ESTADO_CONTENEDOR, info.estado)}`);
+      if (info && info.id_contenedor != null) {
+        filas.push(`<b>${I18N.popupProyeccion}</b> <span id="proy-${info.id_contenedor}">${I18N.proyeccionCalculando}</span>`);
+      }
     }
     return filas.join('<br>');
   };
+
+  // Mini modelo de IA (regresión lineal simple sobre el historial de levantes,
+  // ver API_Gestion/Modelo/prediccion_llenado.py): se pide al abrir el popup,
+  // no al dibujar el mapa, para no disparar un proceso Python por cada
+  // contenedor visible.
+  async function cargarProyeccion(idContenedor) {
+    const el = document.getElementById(`proy-${idContenedor}`);
+    if (!el) return;
+    try {
+      const resp = await fetch(`${API.proyeccion}/${idContenedor}`, { signal: AbortSignal.timeout(6000) });
+      const json = await resp.json();
+      if (json.status !== 'success' || !json.data || !Array.isArray(json.data.proyeccion)) {
+        throw new Error(I18N.respuestaInesperada);
+      }
+      const en3dias = json.data.proyeccion.find((p) => p.dias === 3) || json.data.proyeccion[0];
+      if (!en3dias) {
+        el.textContent = I18N.proyeccionSinDatos;
+        return;
+      }
+      el.textContent = I18N.proyeccionTexto
+        .replace('{nivel}', en3dias.nivel_proyectado)
+        .replace('{dias}', en3dias.dias);
+    } catch (_) {
+      el.textContent = I18N.proyeccionSinDatos;
+    }
+  }
 
   const addPoint = (lat, lon, estado, info, vista) => {
     const colores = vista === 'centros' ? COLORES_CENTRO : COLORES_CONTENEDOR;
@@ -133,6 +163,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }).addTo(grupo);
 
     marker.bindPopup(buildPopup(info, vista), { maxWidth: 240 });
+    if (vista === 'contenedores' && info && info.id_contenedor != null) {
+      marker.on('popupopen', () => cargarProyeccion(info.id_contenedor));
+    }
   };
 
   const addCamionPoint = (camion) => {

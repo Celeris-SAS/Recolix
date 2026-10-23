@@ -2,10 +2,13 @@
 
 class SolicitudRegistroController {
     private $solicitudModel;
+    private $notificacionModel;
 
     public function __construct() {
         require_once __DIR__ . '/../Modelo/solicitudRegistroModel.php';
+        require_once __DIR__ . '/../Modelo/notificacionModel.php';
         $this->solicitudModel = new SolicitudRegistroModel();
+        $this->notificacionModel = new NotificacionModel();
     }
 
 
@@ -99,7 +102,14 @@ class SolicitudRegistroController {
     
     public function aprobar($ci) {
         $ci = $this->validarCI($ci);
-        return $this->solicitudModel->aprobar($ci);
+        $resultado = $this->solicitudModel->aprobar($ci);
+        $this->notificacionModel->crearParaUsuario(
+            $ci,
+            'Tu solicitud de registro en Recolix fue aprobada. Ya podés iniciar sesión.',
+            'solicitud_registro',
+            'informativa'
+        );
+        return $resultado;
     }
 
     

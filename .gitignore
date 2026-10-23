@@ -12,3 +12,6 @@ API_Gestion/Testing/.phpunit.cache/
 
 # Registro local del Mailer (ver extra/Comun/Mailer.php): nunca se versiona.
 mail_log.txt
+
+# API key real del Mailer (ver extra/Comun/Mailer.php): nunca se versiona.
+extra/Comun/mail-config.php

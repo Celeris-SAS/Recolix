@@ -5,29 +5,113 @@ class Mailer {
             return false;
         }
 
-        if (getenv('RECOLIX_MAIL_ENABLED') !== '1') {
+        $config = self::cargarConfig();
+        if (empty($config['gmailUser']) || empty($config['gmailAppPassword'])) {
             self::registrar("[deshabilitado] Para: $destinatario | Asunto: $asunto | $mensaje");
             return false;
         }
 
-        $remitente = getenv('RECOLIX_MAIL_FROM') ?: 'celerisuy@gmail.com';
-        $headers = "From: Recolix <$remitente>\r\nContent-Type: text/plain; charset=UTF-8";
-        $asunto = '=?UTF-8?B?' . base64_encode($asunto) . '?=';
+        try {
+            self::enviarPorSmtp($config['gmailUser'], $config['gmailAppPassword'], $destinatario, $asunto, $mensaje);
+            return true;
+        } catch (Exception $e) {
+            self::registrar("[fallo] Para: $destinatario | Asunto: $asunto | " . $e->getMessage());
+            return false;
+        }
+    }
+
+    private static function enviarPorSmtp($usuario, $appPassword, $destinatario, $asunto, $mensaje) {
+        // cafile explícito: el PHP de XAMPP no trae un paquete de certificados CA configurado
+        // (y en esta máquina además hay un antivirus que intercepta el TLS saliente), así que
+        // sin esto la conexión STARTTLS no puede verificar el certificado del servidor.
+        $contexto = stream_context_create([
+            'ssl' => [
+                'cafile'            => __DIR__ . '/cacert.pem',
+                'verify_peer'       => true,
+                'verify_peer_name'  => true,
+            ],
+        ]);
+        $socket = @stream_socket_client(
+            'tcp://smtp.gmail.com:587',
+            $errno,
+            $errstr,
+            10,
+            STREAM_CLIENT_CONNECT,
+            $contexto
+        );
+        if (!$socket) {
+            throw new Exception("No se pudo conectar a smtp.gmail.com: $errstr ($errno)");
+        }
+        stream_set_timeout($socket, 10);
 
         $timeoutPrevio = ini_get('default_socket_timeout');
         ini_set('default_socket_timeout', 3);
         try {
-            $enviado = @mail($destinatario, $asunto, $mensaje, $headers);
-        } catch (\Throwable $e) {
-            $enviado = false;
+            self::leerRespuesta($socket, '220');
+            self::comando($socket, "EHLO recolix.local", '250');
+            self::comando($socket, "STARTTLS", '220');
+
+            if (!stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
+                throw new Exception("No se pudo iniciar TLS con smtp.gmail.com");
+            }
+
+            self::comando($socket, "EHLO recolix.local", '250');
+            self::comando($socket, "AUTH LOGIN", '334');
+            self::comando($socket, base64_encode($usuario), '334');
+            self::comando($socket, base64_encode($appPassword), '235');
+
+            self::comando($socket, "MAIL FROM:<$usuario>", '250');
+            self::comando($socket, "RCPT TO:<$destinatario>", '250');
+            self::comando($socket, "DATA", '354');
+
+            $cabeceras = "From: Recolix <$usuario>\r\n"
+                . "To: <$destinatario>\r\n"
+                . "Subject: $asunto\r\n"
+                . "MIME-Version: 1.0\r\n"
+                . "Content-Type: text/plain; charset=UTF-8\r\n";
+            $cuerpo = str_replace("\n.", "\n..", $mensaje);
+            self::comando($socket, $cabeceras . "\r\n" . $cuerpo . "\r\n.", '250');
+
+            self::comando($socket, "QUIT", '221');
         } finally {
-            ini_set('default_socket_timeout', $timeoutPrevio);
+            fclose($socket);
+        }
+    }
+
+    private static function comando($socket, $linea, $codigoEsperado) {
+        fwrite($socket, $linea . "\r\n");
+        self::leerRespuesta($socket, $codigoEsperado);
+    }
+
+    private static function leerRespuesta($socket, $codigoEsperado) {
+        $respuesta = '';
+        do {
+            $linea = fgets($socket, 1024);
+            if ($linea === false) {
+                throw new Exception("Conexión SMTP cerrada inesperadamente (esperaba $codigoEsperado)");
+            }
+            $respuesta .= $linea;
+        } while (isset($linea[3]) && $linea[3] === '-');
+
+        if (substr($respuesta, 0, 3) !== $codigoEsperado) {
+            throw new Exception("Respuesta SMTP inesperada (esperaba $codigoEsperado): " . trim($respuesta));
+        }
+        return $respuesta;
+    }
+
+    private static function cargarConfig() {
+        $envUser = getenv('RECOLIX_MAIL_USER');
+        $envPassword = getenv('RECOLIX_MAIL_APP_PASSWORD');
+        if ($envUser && $envPassword) {
+            return ['gmailUser' => $envUser, 'gmailAppPassword' => $envPassword];
         }
 
-        if (!$enviado) {
-            self::registrar("[fallo] Para: $destinatario | Asunto: $asunto");
+        $archivo = __DIR__ . '/mail-config.php';
+        if (!file_exists($archivo)) {
+            return ['gmailUser' => '', 'gmailAppPassword' => ''];
         }
-        return $enviado;
+        $config = require $archivo;
+        return is_array($config) ? $config : ['gmailUser' => '', 'gmailAppPassword' => ''];
     }
 
     private static function registrar($linea) {
