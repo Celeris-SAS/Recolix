@@ -1431,6 +1431,7 @@
     "badge_levante_completado": "Levante completado",
     "badge_levante_en_curso": "Levante en curso",
     "badge_levante_pendiente": "Levante pendiente",
+    "badge_levante_cancelado": "Levante cancelado",
     "badge_sin_levante": "Sin levante planificado",
     "camion_disponible": "Disponible",
     "camion_en_ruta": "En ruta",

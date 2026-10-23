@@ -355,6 +355,7 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             'badgeEnCurso' => 'cuadrilla.badge_levante_en_curso',
             'badgePendiente' => 'cuadrilla.badge_levante_pendiente',
             'badgeSinLevante' => 'cuadrilla.badge_sin_levante',
+            'badgeCancelado' => 'cuadrilla.badge_levante_cancelado',
             'camionDisponible' => 'cuadrilla.camion_disponible',
             'camionEnRuta' => 'cuadrilla.camion_en_ruta',
             'camionEnMantenimiento' => 'cuadrilla.camion_en_mantenimiento',
@@ -624,6 +625,7 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             if (estado === 'completado') return { clase: 'badge-ok', texto: I18N.badgeCompletado };
             if (estado === 'en_curso') return { clase: 'badge-info', texto: I18N.badgeEnCurso };
             if (estado === 'pendiente') return { clase: 'badge-warning', texto: I18N.badgePendiente };
+            if (estado === 'cancelado') return { clase: 'badge-danger', texto: I18N.badgeCancelado };
             return { clase: 'badge-neutral', texto: I18N.badgeSinLevante };
         }
 

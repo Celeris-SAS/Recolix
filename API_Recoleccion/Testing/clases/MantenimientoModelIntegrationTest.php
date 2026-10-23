@@ -145,4 +145,39 @@ final class MantenimientoModelIntegrationTest extends DbTestCase
 
         $this->assertSame(1, $n);
     }
+
+    // Un desperfecto deja al camión en mantenimiento: el levante en curso se cancela y la ruta
+    // no queda como completada, con los contenedores sin recolectar.
+    public function testRegistrarMantenimientoCancelaElLevanteEnCursoDelCamion(): void
+    {
+        require_once __DIR__ . '/../../Modelo/levanteModel.php';
+        $levanteModel = new LevanteModel();
+        $rutaId = $this->crearRuta($this->crearCircuito(), ['activa' => 1]);
+        $contenedorId = $this->crearContenedor();
+        $this->agregarContenedorARuta($rutaId, $contenedorId, 1);
+        $camionId = $this->crearCamion(['estado' => 'disponible']);
+        $cuadrillaId = $this->crearCuadrilla();
+        $idLevante = (int) $levanteModel->planificarLevante($rutaId, $camionId, $cuadrillaId, '2026-01-10 08:00:00', '2026-01-10')['id_levante'];
+        $levanteModel->iniciarLevante($idLevante);
+
+        (new MantenimientoController())->insertMantenimiento($camionId, 'correctivo', 'Falla de motor', '2026-01-10 09:00:00', null, 0);
+
+        $this->assertSame(1, $this->contarFilas('levante', "id_levante = $idLevante AND estado = 'cancelado'"));
+        $this->assertSame(1, $this->contarFilas('camion', "id_camion = $camionId AND estado = 'en_mantenimiento'"));
+        $this->assertSame(0, $this->contarFilas('contenedor_levante', "id_levante = $idLevante AND hora_vaciado IS NOT NULL"));
+    }
+
+    public function testRegistrarMantenimientoNoTocaLevantesDeOtrosCamiones(): void
+    {
+        require_once __DIR__ . '/../../Modelo/levanteModel.php';
+        $levanteModel = new LevanteModel();
+        $rutaId = $this->crearRuta($this->crearCircuito(), ['activa' => 1]);
+        $camionConLevante = $this->crearCamion(['matricula' => 'AAA1111', 'estado' => 'disponible']);
+        $camionAveriado = $this->crearCamion(['matricula' => 'BBB2222', 'estado' => 'disponible']);
+        $idLevante = (int) $levanteModel->planificarLevante($rutaId, $camionConLevante, $this->crearCuadrilla(), '2026-01-10 08:00:00', '2026-01-10')['id_levante'];
+
+        (new MantenimientoController())->insertMantenimiento($camionAveriado, 'correctivo', 'Falla de frenos', '2026-01-10 09:00:00', null, 0);
+
+        $this->assertSame(1, $this->contarFilas('levante', "id_levante = $idLevante AND estado = 'pendiente'"));
+    }
 }

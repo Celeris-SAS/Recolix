@@ -651,6 +651,28 @@ class LevanteModel {
         return $this->getLevante($idLevante);
     }
 
+    // Un camión que entra en mantenimiento no puede seguir recorriendo su ruta: los levantes
+    // pendientes o en curso que tenía se cancelan (los contenedores sin recolectar quedan sin
+    // recolectar, la ruta no figura como completada) y se pueden volver a planificar con otro camión.
+    public function cancelarActivosDelCamion($idCamion) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "
+            SELECT id_levante FROM levante WHERE id_camion = ? AND estado IN ('pendiente', 'en_curso')
+        ");
+        mysqli_stmt_bind_param($stmt, "i", $idCamion);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $ids = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $ids[] = (int) $row['id_levante'];
+        }
+        mysqli_stmt_close($stmt);
+
+        foreach ($ids as $id) {
+            $this->cancelarLevante($id);
+        }
+        return $ids;
+    }
+
     public function obtenerResumen() {
         $stmt = mysqli_prepare($this->conn->getConexion(), "
             SELECT estado, COUNT(*) AS cantidad

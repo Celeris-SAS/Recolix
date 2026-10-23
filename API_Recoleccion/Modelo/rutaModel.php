@@ -45,7 +45,8 @@ class RutaModel {
                (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta) AS levantes_count,
                (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta AND l.estado = 'en_curso') AS en_curso_count,
                (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta AND l.estado = 'pendiente') AS pendiente_count,
-               (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta AND l.estado = 'completado') AS completado_count
+               (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta AND l.estado = 'completado') AS completado_count,
+               (SELECT l.estado FROM levante l WHERE l.id_ruta = r.id_ruta ORDER BY l.id_levante DESC LIMIT 1) AS ultimo_estado
         FROM ruta_recoleccion r
         LEFT JOIN circuito ci ON ci.id_circuito = r.id_circuito
     ";
@@ -255,6 +256,7 @@ class RutaModel {
                 (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta AND l.estado = 'en_curso') AS en_curso_count,
                 (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta AND l.estado = 'pendiente') AS pendiente_count,
                 (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta AND l.estado = 'completado') AS completado_count,
+                (SELECT l.estado FROM levante l WHERE l.id_ruta = r.id_ruta ORDER BY l.id_levante DESC LIMIT 1) AS ultimo_estado,
                 (SELECT COUNT(*) FROM levante l WHERE l.id_ruta = r.id_ruta) AS levantes_count,
                 (SELECT COUNT(*) FROM ruta_contenedor rc WHERE rc.id_ruta = r.id_ruta) AS contenedores_count,
                 (SELECT AVG(c.nivel_llenado) FROM ruta_contenedor rc JOIN contenedor c ON c.id_contenedor = rc.id_contenedor WHERE rc.id_ruta = r.id_ruta) AS llenado_promedio

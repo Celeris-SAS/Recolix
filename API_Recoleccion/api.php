@@ -139,6 +139,7 @@ $config = [
                 'filtrarPorTipo' => ['administrador', 'cuadrilla'],
                 'obtenerCostoTotal' => ['administrador'],
                 'proximos' => ['administrador', 'cuadrilla'],
+                'notificarDesperfecto' => ['administrador', 'cuadrilla'],
             ],
             'actions' => [
                 'reglasValidacion',

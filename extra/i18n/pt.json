@@ -1431,6 +1431,7 @@
     "badge_levante_completado": "Coleta concluída",
     "badge_levante_en_curso": "Coleta em andamento",
     "badge_levante_pendiente": "Coleta pendente",
+    "badge_levante_cancelado": "Coleta cancelada",
     "badge_sin_levante": "Sem coleta planejada",
     "camion_disponible": "Disponível",
     "camion_en_ruta": "Em rota",

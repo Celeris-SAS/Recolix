@@ -163,6 +163,14 @@ final class RutaControllerTest extends RecoleccionTestCase
                 array_merge($base, ['levantes_count' => 1]),
                 'finalizada', 'cancelado',
             ],
+            'ultimo levante cancelado aunque haya uno completado antes' => [
+                array_merge($base, ['completado_count' => 1, 'levantes_count' => 2, 'ultimo_estado' => 'cancelado']),
+                'finalizada', 'cancelado',
+            ],
+            'ultimo levante completado con otro cancelado antes' => [
+                array_merge($base, ['completado_count' => 1, 'levantes_count' => 2, 'ultimo_estado' => 'completado']),
+                'finalizada', 'completado',
+            ],
         ];
     }
 

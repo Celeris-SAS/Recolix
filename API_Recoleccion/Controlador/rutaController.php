@@ -85,7 +85,9 @@
             } elseif ($totalLevantes === 0) {
                 $estado = 'pendiente';
                 $estadoLevante = 'sin_levante';
-            } elseif ($completados > 0) {
+            } elseif ($completados > 0 && ($r['ultimo_estado'] ?? null) !== 'cancelado') {
+                // Si el último levante se canceló (ej. desperfecto del camión) la ruta no figura como
+                // completada solo porque en el pasado haya tenido otros levantes completados.
                 $estado = 'finalizada';
                 $estadoLevante = 'completado';
             } else {
@@ -235,7 +237,8 @@
             // La ruta siempre debe poder generarse: no se descarta ningún contenedor por su
             // nivel de llenado, solo por no estar físicamente disponible (roto/inactivo/en depósito)
             // o no tener coordenadas. El orden de visita prioriza a los contenedores más llenos
-            // (ver Modelo/rutas.py, que pondera cada tramo por distancia / nivel de llenado).
+            // (ver Modelo/rutas.py). Primero se decide qué contenedores entran en el camión según su
+            // llenado y capacidad, y recién después se ordena esa selección para minimizar el recorrido.
             $contenedores = $circuitoModel->obtenerContenedores($circuitoId);
             $elegibles = array_values(array_filter($contenedores, function ($c) {
                 $estadoElegible = in_array($c['estado'], ['funcional', 'desbordado'], true);
@@ -268,6 +271,15 @@
                     self::CAPACIDAD_MAXIMA_RUTA_KG . " kg)"
                 );
             }
+
+            $seleccionados = array_values(array_filter($payload['contenedores'], function ($c) use ($orden) {
+                return in_array($c['id'], array_map('intval', $orden), true);
+            }));
+            $orden = $this->ejecutarRutas([
+                'base' => $payload['base'],
+                'contenedores' => $seleccionados,
+                'modo' => 'distancia'
+            ])['orden'];
 
             $idRuta = $this->rutaModel->insertRuta($circuitoId, $nombre, $actividad);
             $ordenVisita = 1;

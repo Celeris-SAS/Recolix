@@ -4,15 +4,18 @@
     private $mantenimientoModel;
     private $camionModel;
     private $notificacionModel;
+    private $levanteModel;
     private $tiposValidos = ['preventivo', 'correctivo'];
 
         public function __construct() {
             require_once __DIR__ . '/../Modelo/mantenimientoModel.php';
             require_once __DIR__ . '/../Modelo/camionModel.php';
             require_once __DIR__ . '/../Modelo/notificacionModel.php';
+            require_once __DIR__ . '/../Modelo/levanteModel.php';
             $this->mantenimientoModel = new MantenimientoModel();
             $this->camionModel = new CamionModel();
             $this->notificacionModel = new NotificacionModel();
+            $this->levanteModel = new LevanteModel();
         }
 
         private function validarId($valor) {
@@ -74,6 +77,13 @@
             }
         }
 
+        // El camión pasa a mantenimiento y ya no puede completar su ruta: se cancelan sus levantes
+        // pendientes o en curso (no se dan por terminados) para poder replanificarlos con otro camión.
+        private function ponerEnMantenimiento($camionId) {
+            $this->camionModel->marcarCamionEnMantenimiento($camionId);
+            $this->levanteModel->cancelarActivosDelCamion($camionId);
+        }
+
         public function reglasValidacion() {
             return [
                 'camionId' => ['tipo' => 'entero', 'min' => 1, 'label' => 'ID del camión'],
@@ -120,7 +130,7 @@
             $costo = $this->validarDecimal($costo, 'Costo');
             $this->validarRangoFechas($fechaInicio, $fechaFin);
             $id = $this->mantenimientoModel->registrar($camionId, $tipo, $descripcion, $fechaInicio, $fechaFin, $costo);
-            $this->camionModel->marcarCamionEnMantenimiento($camionId);
+            $this->ponerEnMantenimiento($camionId);
             return $id;
         }
 
@@ -156,7 +166,7 @@
             $fechaFin = $this->validarFecha($fechaFin, 'Fecha de fin');
             $this->validarRangoFechas($fechaInicio, $fechaFin);
             $id = $this->mantenimientoModel->programar($camionId, $tipo, $descripcion, $fechaInicio, $fechaFin);
-            $this->camionModel->marcarCamionEnMantenimiento($camionId);
+            $this->ponerEnMantenimiento($camionId);
             return $id;
         }
 

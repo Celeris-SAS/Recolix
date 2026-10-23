@@ -1430,6 +1430,7 @@
     "badge_levante_completado": "Pickup completed",
     "badge_levante_en_curso": "Pickup in progress",
     "badge_levante_pendiente": "Pickup pending",
+    "badge_levante_cancelado": "Run cancelled",
     "badge_sin_levante": "No pickup planned",
     "camion_disponible": "Available",
     "camion_en_ruta": "On route",
