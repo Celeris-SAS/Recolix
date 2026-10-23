@@ -90,9 +90,20 @@ class IncidenciaModel {
         return $existe;
     }
 
+    // Municipio de la incidencia: se deduce de sus contenedores (contenedor -> circuito -> municipio).
+    // Si estuviera vinculada a contenedores de más de un municipio, se listan todos.
+    private function columnaMunicipio($alias) {
+        return "(SELECT GROUP_CONCAT(DISTINCT m.nombre ORDER BY m.nombre SEPARATOR ', ')
+                 FROM INCIDENCIA_CONTENEDOR icm
+                 JOIN CONTENEDOR cm ON cm.id_contenedor = icm.id_contenedor
+                 JOIN CIRCUITO cim ON cim.id_circuito = cm.id_circuito
+                 JOIN MUNICIPIO m ON m.id_municipio = cim.id_municipio
+                 WHERE icm.id_incidencia = $alias.id_incidencia) AS municipio";
+    }
+
     public function getAllIncidencias() {
         $stmt = mysqli_prepare($this->conn->getConexion(),
-            "SELECT i.* FROM INCIDENCIA i WHERE " . $this->condicionSinDuplicadosAbiertos('i') . " ORDER BY fecha_apertura DESC");
+            "SELECT i.*, " . $this->columnaMunicipio('i') . " FROM INCIDENCIA i WHERE " . $this->condicionSinDuplicadosAbiertos('i') . " ORDER BY fecha_apertura DESC");
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
         $rows = [];
@@ -104,7 +115,7 @@ class IncidenciaModel {
     }
 
     public function getIncidencia($id) {
-        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM INCIDENCIA WHERE id_incidencia = ?");
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT i.*, " . $this->columnaMunicipio('i') . " FROM INCIDENCIA i WHERE i.id_incidencia = ?");
         mysqli_stmt_bind_param($stmt, "i", $id);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
@@ -115,7 +126,7 @@ class IncidenciaModel {
 
     public function filtrarEstado($estado) {
         $stmt = mysqli_prepare($this->conn->getConexion(),
-            "SELECT i.* FROM INCIDENCIA i WHERE i.estado = ? AND " . $this->condicionSinDuplicadosAbiertos('i') . " ORDER BY fecha_apertura DESC");
+            "SELECT i.*, " . $this->columnaMunicipio('i') . " FROM INCIDENCIA i WHERE i.estado = ? AND " . $this->condicionSinDuplicadosAbiertos('i') . " ORDER BY fecha_apertura DESC");
         mysqli_stmt_bind_param($stmt, "s", $estado);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
@@ -129,7 +140,7 @@ class IncidenciaModel {
 
     public function filtrarTipo($tipo) {
         $stmt = mysqli_prepare($this->conn->getConexion(),
-            "SELECT i.* FROM INCIDENCIA i WHERE i.tipo = ? AND " . $this->condicionSinDuplicadosAbiertos('i') . " ORDER BY fecha_apertura DESC");
+            "SELECT i.*, " . $this->columnaMunicipio('i') . " FROM INCIDENCIA i WHERE i.tipo = ? AND " . $this->condicionSinDuplicadosAbiertos('i') . " ORDER BY fecha_apertura DESC");
         mysqli_stmt_bind_param($stmt, "s", $tipo);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
@@ -143,7 +154,7 @@ class IncidenciaModel {
 
     public function filtrarPrioridad($prioridad) {
         $stmt = mysqli_prepare($this->conn->getConexion(),
-            "SELECT i.* FROM INCIDENCIA i WHERE i.prioridad = ? AND " . $this->condicionSinDuplicadosAbiertos('i') . " ORDER BY fecha_apertura DESC");
+            "SELECT i.*, " . $this->columnaMunicipio('i') . " FROM INCIDENCIA i WHERE i.prioridad = ? AND " . $this->condicionSinDuplicadosAbiertos('i') . " ORDER BY fecha_apertura DESC");
         mysqli_stmt_bind_param($stmt, "s", $prioridad);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
@@ -182,7 +193,7 @@ class IncidenciaModel {
     public function listarUrgentes() {
         $stmt = mysqli_prepare($this->conn->getConexion(),
             "SELECT DISTINCT i.*, c.id_contenedor, c.estado AS estado_contenedor, c.nivel_llenado,
-                    c.calle, c.num_calle
+                    c.calle, c.num_calle, " . $this->columnaMunicipio('i') . "
              FROM INCIDENCIA i
              JOIN INCIDENCIA_CONTENEDOR ic ON i.id_incidencia = ic.id_incidencia
              JOIN CONTENEDOR c ON ic.id_contenedor = c.id_contenedor
