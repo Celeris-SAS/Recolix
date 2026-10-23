@@ -15,8 +15,8 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="styles_LandingPage.css">
-    <link rel="stylesheet" href="mapa.css">
+    <link rel="stylesheet" href="styles_LandingPage.css?v=<?= filemtime(__DIR__ . '/styles_LandingPage.css') ?>">
+    <link rel="stylesheet" href="mapa.css?v=<?= filemtime(__DIR__ . '/mapa.css') ?>">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 
@@ -186,9 +186,9 @@
             ])) ?>;
             const I18N_LOCALE = <?= json_encode(t_locale()) ?>;
         </script>
-        <script src="mapaContenedoresBase.js"></script>
-        <script src="mapa.js"></script>
-        <script src="sesionNav.js"></script>
+        <script src="mapaContenedoresBase.js?v=<?= filemtime(__DIR__ . '/mapaContenedoresBase.js') ?>"></script>
+        <script src="mapa.js?v=<?= filemtime(__DIR__ . '/mapa.js') ?>"></script>
+        <script src="sesionNav.js?v=<?= filemtime(__DIR__ . '/sesionNav.js') ?>"></script>
 </body>
 
 

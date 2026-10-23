@@ -239,6 +239,10 @@
                         'latitud'  => $camion['ubicacion']['latitud'],
                         'longitud' => $camion['ubicacion']['longitud'],
                     ],
+                    'proxima_parada' => $camion['proxima_parada'] ? [
+                        'calle'     => $camion['proxima_parada']['calle'],
+                        'num_calle' => $camion['proxima_parada']['num_calle'],
+                    ] : null,
                     'eta' => $camion['eta'] ? ['minutos' => $camion['eta']['minutos']] : null,
                 ];
             }, $flota);

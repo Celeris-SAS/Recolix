@@ -175,15 +175,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const marker = L.marker([lat, lon], { icon: ICONO_CAMION }).addTo(grupo);
 
-    let texto = I18N.sinPendientes;
+    const escapar = (t) => String(t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+    let tiempo = I18N.sinPendientes;
     if (camion.eta) {
       const min = camion.eta.minutos;
-      texto = min < 60
+      tiempo = min < 60
         ? `≈ ${min} ${I18N.min}`
         : `≈ ${Math.floor(min / 60)} h ${String(min % 60).padStart(2, '0')} ${I18N.min}`;
     }
-    marker.bindTooltip(texto, { permanent: true, direction: 'top', offset: [0, -14], className: 'camion-eta-etiqueta' });
-    marker.bindPopup(camion.eta ? `<b>${I18N.popupTiempoProximo}</b><br>${texto}` : texto, { maxWidth: 260 });
+
+    let parada = '';
+    if (camion.proxima_parada) {
+      const p = camion.proxima_parada;
+      parada = escapar(`${p.calle || I18N.sinDireccion}${p.num_calle ? ' ' + p.num_calle : ''}`);
+    }
+
+    const etiqueta = parada ? `${parada}<br><b>${tiempo}</b>` : `<b>${tiempo}</b>`;
+    marker.bindTooltip(etiqueta, { permanent: true, direction: 'top', offset: [0, -14], className: 'camion-eta-etiqueta' });
+
+    const filas = [];
+    if (parada) filas.push(`<b>${I18N.popupProximaParada}</b> ${parada}`);
+    filas.push(`<b>${camion.eta ? I18N.popupTiempoProximo : I18N.popupProximaParada}</b> ${tiempo}`);
+    marker.bindPopup(filas.join('<br>'), { maxWidth: 260 });
     return [lat, lon];
   };
 
