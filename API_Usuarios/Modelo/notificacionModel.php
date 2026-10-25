@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../../conexion.php';
-require_once __DIR__ . '/../../Mailer.php';
+require_once __DIR__ . '/../../extra/Comun/Mailer.php';
 
 class NotificacionModel {
     private $conn;

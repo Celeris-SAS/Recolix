@@ -112,10 +112,40 @@ class SolicitudRegistroController {
         return $resultado;
     }
 
-    
+
     public function rechazar($ci) {
         $ci = $this->validarCI($ci);
         return $this->solicitudModel->rechazar($ci);
+    }
+
+
+    public function aprobarTodas() {
+        $pendientes = $this->solicitudModel->getSolicitudesPendientes();
+        $resultados = [];
+        foreach ($pendientes as $fila) {
+            try {
+                $this->aprobar($fila['ci_usuario']);
+                $resultados[] = ['ci' => $fila['ci_usuario'], 'status' => 'ok'];
+            } catch (Throwable $e) {
+                $resultados[] = ['ci' => $fila['ci_usuario'], 'status' => 'error', 'message' => $e->getMessage()];
+            }
+        }
+        return $resultados;
+    }
+
+
+    public function rechazarTodas() {
+        $pendientes = $this->solicitudModel->getSolicitudesPendientes();
+        $resultados = [];
+        foreach ($pendientes as $fila) {
+            try {
+                $this->rechazar($fila['ci_usuario']);
+                $resultados[] = ['ci' => $fila['ci_usuario'], 'status' => 'ok'];
+            } catch (Throwable $e) {
+                $resultados[] = ['ci' => $fila['ci_usuario'], 'status' => 'error', 'message' => $e->getMessage()];
+            }
+        }
+        return $resultados;
     }
 
    

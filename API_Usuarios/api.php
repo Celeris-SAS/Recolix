@@ -20,13 +20,15 @@ $config = [
             'insertMethod' => 'crearSolicitud',
             'updateMethod' => null,
             'deleteMethod' => null,
-            'actions' => ['reglasValidacion', 'getSolicitudesPendientes', 'aprobar', 'rechazar'],
+            'actions' => ['reglasValidacion', 'getSolicitudesPendientes', 'aprobar', 'rechazar', 'aprobarTodas', 'rechazarTodas'],
             'filters' => [],
             'rolesAccion' => [
                 'reglasValidacion'          => null,
                 'getSolicitudesPendientes'  => ['administrador'],
                 'aprobar'                   => ['administrador'],
                 'rechazar'                  => ['administrador'],
+                'aprobarTodas'              => ['administrador'],
+                'rechazarTodas'             => ['administrador'],
             ],
             'rolesMetodo' => [
                 'POST' => null,
