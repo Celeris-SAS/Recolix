@@ -604,6 +604,25 @@ class LevanteModel {
         return $this->getLevante($idLevante);
     }
 
+    public function cancelarActivosDeRutaCuadrilla($idRuta, $idCuadrilla) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "
+            SELECT id_levante FROM levante WHERE id_ruta = ? AND id_cuadrilla = ? AND estado IN ('pendiente', 'en_curso')
+        ");
+        mysqli_stmt_bind_param($stmt, "ii", $idRuta, $idCuadrilla);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $ids = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $ids[] = (int) $row['id_levante'];
+        }
+        mysqli_stmt_close($stmt);
+
+        foreach ($ids as $id) {
+            $this->cancelarLevante($id);
+        }
+        return $ids;
+    }
+
     public function cancelarActivosDelCamion($idCamion) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "
             SELECT id_levante FROM levante WHERE id_camion = ? AND estado IN ('pendiente', 'en_curso')

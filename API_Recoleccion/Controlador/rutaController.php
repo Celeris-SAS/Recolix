@@ -9,11 +9,15 @@
         private $rutaModel;
         private $notificacionModel;
 
+        private $levanteModel;
+
         public function __construct() {
             require_once __DIR__ . '/../Modelo/rutaModel.php';
             require_once __DIR__ . '/../Modelo/notificacionModel.php';
+            require_once __DIR__ . '/../Modelo/levanteModel.php';
             $this->rutaModel = new RutaModel();
             $this->notificacionModel = new NotificacionModel();
+            $this->levanteModel = new LevanteModel();
         }
 
         private function validarId($valor) {
@@ -179,6 +183,7 @@
         public function quitarCuadrilla($rutaId, $cuadrillaId) {
             $rutaId = $this->validarId($rutaId);
             $cuadrillaId = $this->validarId($cuadrillaId);
+            $this->levanteModel->cancelarActivosDeRutaCuadrilla($rutaId, $cuadrillaId);
             return $this->rutaModel->quitarCuadrilla($rutaId, $cuadrillaId);
         }
 

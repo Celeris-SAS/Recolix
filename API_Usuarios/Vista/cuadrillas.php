@@ -116,6 +116,15 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
             </div>
         </div>
 
+        <div class="card-operar" onclick="toggleAsignarUsuario()">
+            <div class="card-content">
+                <div class="card-icon"><img src="img/user.svg" alt="" class="card-svg-icon"></div>
+                <h3><?= t('cuadrillas.card_asignar_usuario_titulo') ?></h3>
+                <p><?= t('cuadrillas.card_asignar_usuario_desc') ?></p>
+                <button class="card-btn"><?= t('cuadrillas.btn_asignar') ?></button>
+            </div>
+        </div>
+
     </div>
 </section>
 
@@ -164,6 +173,17 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
         <input type="number" id="deleteId" class="ctrl-input"
                placeholder="<?= htmlspecialchars(t('cuadrillas.placeholder_id_baja')) ?>" min="1" style="max-width:260px">
         <button class="btn-danger" onclick="darDeBajaCuadrilla()"><?= t('cuadrillas.card_baja_titulo') ?></button>
+        <button class="btn-secondary" onclick="ocultarControles()"><?= t('cuadrillas.btn_cancelar') ?></button>
+    </div>
+</section>
+
+<section class="control-bar" id="asignarUsuarioBar" style="display:none">
+    <div class="control-inner">
+        <input type="number" id="asignarCi" class="ctrl-input"
+               placeholder="<?= htmlspecialchars(t('cuadrillas.placeholder_ci_usuario')) ?>" min="1" style="max-width:220px">
+        <input type="number" id="asignarIdCuadrilla" class="ctrl-input"
+               placeholder="<?= htmlspecialchars(t('cuadrillas.placeholder_id_cuadrilla')) ?>" min="1" style="max-width:200px">
+        <button class="btn-primary" onclick="asignarUsuarioPorCi()"><?= t('cuadrillas.btn_asignar') ?></button>
         <button class="btn-secondary" onclick="ocultarControles()"><?= t('cuadrillas.btn_cancelar') ?></button>
     </div>
 </section>
@@ -278,7 +298,10 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
 
 <?php include __DIR__ . '/../../extra/i18n/validacion_js.php'; ?>
 <script>
-const I18N = <?= json_encode(array_combine(['hero_title', 'resultado', 'resultados', 'th_acciones', 'th_municipio', 'th_estado', 'opt_activas', 'seleccionar', 'titulo_todas', 'label_estado', 'label_municipio', 'municipio_num', 'quitar_cuadrilla', 'sin_usuarios_disponibles', 'ya_en_cuadrilla', 'titulo_editar_btn', 'btn_eliminar', 'modal_editar', 'card_agregar_titulo', 'cargando', 'placeholder_selecciona_campo', 'estado_activa', 'estado_inactiva', 'api_error', 'ingresa_id', 'no_encontrada', 'selecciona_filtro', 'selecciona_valor', 'selecciona_municipio', 'selecciona_usuario', 'usuario_asignado', 'usuario_quitado', 'error_cargar_usuarios', 'error_asignar_usuario', 'error_quitar_usuario', 'error_guardar', 'error_eliminar', 'error_modificar', 'baja_ok', 'selecciona_campo_modificar', 'ingresa_nuevo_valor'], array_map(function ($k) { return t('cuadrillas.' . $k); }, ['hero_title', 'resultado', 'resultados', 'th_acciones', 'th_municipio', 'th_estado', 'opt_activas', 'seleccionar', 'titulo_todas', 'label_estado', 'label_municipio', 'municipio_num', 'quitar_cuadrilla', 'sin_usuarios_disponibles', 'ya_en_cuadrilla', 'titulo_editar_btn', 'btn_eliminar', 'modal_editar', 'card_agregar_titulo', 'cargando', 'placeholder_selecciona_campo', 'estado_activa', 'estado_inactiva', 'api_error', 'ingresa_id', 'no_encontrada', 'selecciona_filtro', 'selecciona_valor', 'selecciona_municipio', 'selecciona_usuario', 'usuario_asignado', 'usuario_quitado', 'error_cargar_usuarios', 'error_asignar_usuario', 'error_quitar_usuario', 'error_guardar', 'error_eliminar', 'error_modificar', 'baja_ok', 'selecciona_campo_modificar', 'ingresa_nuevo_valor'])), JSON_UNESCAPED_UNICODE) ?>;
+<?php
+$I18N_KEYS = ['hero_title', 'resultado', 'resultados', 'th_acciones', 'th_municipio', 'th_estado', 'opt_activas', 'seleccionar', 'titulo_todas', 'label_estado', 'label_municipio', 'municipio_num', 'quitar_cuadrilla', 'sin_usuarios_disponibles', 'ya_en_cuadrilla', 'titulo_editar_btn', 'btn_eliminar', 'modal_editar', 'card_agregar_titulo', 'cargando', 'placeholder_selecciona_campo', 'estado_activa', 'estado_inactiva', 'api_error', 'ingresa_id', 'no_encontrada', 'selecciona_filtro', 'selecciona_valor', 'selecciona_municipio', 'selecciona_usuario', 'usuario_asignado', 'usuario_quitado', 'error_cargar_usuarios', 'error_asignar_usuario', 'error_quitar_usuario', 'error_guardar', 'error_eliminar', 'error_modificar', 'baja_ok', 'selecciona_campo_modificar', 'ingresa_nuevo_valor', 'ingresa_ci'];
+?>
+const I18N = <?= json_encode(array_combine($I18N_KEYS, array_map(function ($k) { return t('cuadrillas.' . $k); }, $I18N_KEYS)), JSON_UNESCAPED_UNICODE) ?>;
 
 const API_BASE       = '/recolix/API_Usuarios/api.php';
 const MUNICIPIOS_API = '/recolix/API_Gestion/api.php';
@@ -785,23 +808,13 @@ function badgeClass(estado) {
 
 function toggleFiltros() {
     const fb = document.getElementById('filterBar');
-    const sb = document.getElementById('searchBar');
-    const mb = document.getElementById('modificarBar');
-    const db = document.getElementById('deleteBar');
-    sb.style.display = 'none';
-    mb.style.display = 'none';
-    db.style.display = 'none';
+    ocultarControles();
     fb.style.display = fb.style.display === 'none' ? 'block' : 'none';
 }
 
 function toggleBusquedaId() {
     const sb = document.getElementById('searchBar');
-    const fb = document.getElementById('filterBar');
-    const mb = document.getElementById('modificarBar');
-    const db = document.getElementById('deleteBar');
-    fb.style.display = 'none';
-    mb.style.display = 'none';
-    db.style.display = 'none';
+    ocultarControles();
     sb.style.display = sb.style.display === 'none' ? 'block' : 'none';
 }
 
@@ -810,28 +823,52 @@ function ocultarControles() {
     document.getElementById('searchBar').style.display = 'none';
     document.getElementById('modificarBar').style.display = 'none';
     document.getElementById('deleteBar').style.display = 'none';
+    document.getElementById('asignarUsuarioBar').style.display = 'none';
 }
 
 function toggleModificar() {
     const mb = document.getElementById('modificarBar');
-    const fb = document.getElementById('filterBar');
-    const sb = document.getElementById('searchBar');
-    const db = document.getElementById('deleteBar');
-    fb.style.display = 'none';
-    sb.style.display = 'none';
-    db.style.display = 'none';
+    ocultarControles();
     mb.style.display = mb.style.display === 'none' ? 'block' : 'none';
 }
 
 function toggleDarDeBaja() {
     const db = document.getElementById('deleteBar');
-    const fb = document.getElementById('filterBar');
-    const sb = document.getElementById('searchBar');
-    const mb = document.getElementById('modificarBar');
-    fb.style.display = 'none';
-    sb.style.display = 'none';
-    mb.style.display = 'none';
+    ocultarControles();
     db.style.display = db.style.display === 'none' ? 'block' : 'none';
+}
+
+function toggleAsignarUsuario() {
+    const ab = document.getElementById('asignarUsuarioBar');
+    ocultarControles();
+    ab.style.display = ab.style.display === 'none' ? 'block' : 'none';
+}
+
+async function asignarUsuarioPorCi() {
+    const ci = document.getElementById('asignarCi').value.trim();
+    const idCuadrilla = document.getElementById('asignarIdCuadrilla').value.trim();
+
+    if (!ci) { mostrarToast(I18N.ingresa_ci, 'warning'); return; }
+    if (!idCuadrilla) { mostrarToast(I18N.ingresa_id, 'warning'); return; }
+
+    try {
+        const res = await fetch(`${API_BASE}/usuarios/asignarCuadrilla`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ci: parseInt(ci), idCuadrilla: parseInt(idCuadrilla) })
+        });
+        const json = await res.json();
+        if (json.status === 'success') {
+            mostrarToast(I18N.usuario_asignado, 'success');
+            document.getElementById('asignarCi').value = '';
+            document.getElementById('asignarIdCuadrilla').value = '';
+            ocultarControles();
+        } else {
+            mostrarToast(json.message, 'error');
+        }
+    } catch {
+        mostrarToast(I18N.error_asignar_usuario, 'error');
+    }
 }
 
 function cerrarModal() {
