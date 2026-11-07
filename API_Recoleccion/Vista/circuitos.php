@@ -9,6 +9,7 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
     <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= t('circuitos.title') ?></title>
+    <link rel="icon" type="image/png" href="/recolix/LandingPage/img/Logo.png">
     <link rel="stylesheet" href="styleRecoleccion.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css">
@@ -1127,7 +1128,6 @@ async function poblarFrecuenciasGenerarRutas() {
         select.innerHTML = '<option value="">— Frecuencia —</option>' +
             frecuencias.map(f => `<option value="${f}">${f}</option>`).join('');
     } catch {
-        // si falla, se puede seguir usando solo el filtro por día
     }
 }
 

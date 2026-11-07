@@ -1,8 +1,4 @@
 #!/usr/bin/env bash
-# Corre toda la suite de tests de API_Recoleccion de punta a punta:
-# recrea la base de test 'recolix_test' desde recolix.sql y ejecuta phpunit.
-# Requiere haber corrido antes API_Recoleccion/Testing/install.sh una vez
-# (para tener el phpunit.phar).
 set -euo pipefail
 
 TESTING_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -13,8 +9,6 @@ if [ ! -f "$PHPUNIT" ]; then
     exit 1
 fi
 
-# Ubica el binario de php sin asumir una ruta fija de máquina/SO:
-# 1) override explícito, 2) PATH, 3) rutas típicas de XAMPP por SO.
 PHP_BIN="${RECOLIX_PHP_BIN:-}"
 if [ -z "$PHP_BIN" ]; then
     PHP_BIN="$(command -v php 2>/dev/null || true)"

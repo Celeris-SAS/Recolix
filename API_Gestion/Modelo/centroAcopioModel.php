@@ -8,11 +8,7 @@ class CentroAcopioModel {
         $this->conn = new conexion();
     }
 
-    // ==========================================
-    // CRUD PRINCIPAL
-    // ==========================================
 
-    // RF74 — Alta de centro de acopio.
     public function insertCentro($idMunicipio, $nombre, $tipo, $calle, $numCalle, $latitud, $longitud, $capacidadTotal, $estado) {
         $stmt = mysqli_prepare($this->conn->getConexion(),
             "INSERT INTO CENTRO_ACOPIO (id_municipio, nombre, tipo, calle, num_calle, latitud, longitud, capacidad_total, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -23,7 +19,6 @@ class CentroAcopioModel {
         return $id;
     }
 
-    // RF75 — Modificación de centro de acopio.
     public function updateCentro($id, $idMunicipio, $nombre, $tipo, $calle, $numCalle, $latitud, $longitud, $capacidadTotal, $estado) {
         $stmt = mysqli_prepare($this->conn->getConexion(),
             "UPDATE CENTRO_ACOPIO SET id_municipio = ?, nombre = ?, tipo = ?, calle = ?, num_calle = ?, latitud = ?, longitud = ?, capacidad_total = ?, estado = ? WHERE id_centro = ?");
@@ -33,7 +28,6 @@ class CentroAcopioModel {
         return true;
     }
 
-    // RF76 — Baja de centro de acopio. Baja lógica: no se borra la fila, se cierra.
     public function bajaCentro($id) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE CENTRO_ACOPIO SET estado = 'cerrado' WHERE id_centro = ?");
         mysqli_stmt_bind_param($stmt, "i", $id);
@@ -42,8 +36,6 @@ class CentroAcopioModel {
         return true;
     }
 
-    // RF77 — Obtener un centro de acopio por id.
-    // Centro de acopio al que pertenece un usuario operario (USUARIO.id_centro).
     public function centroDeUsuario($ci) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT id_centro FROM USUARIO WHERE ci_usuario = ?");
         mysqli_stmt_bind_param($stmt, "i", $ci);
@@ -63,7 +55,6 @@ class CentroAcopioModel {
         return $row;
     }
 
-    // RF77 — Listado de todos los centros de acopio.
     public function getAllCentros() {
         $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM CENTRO_ACOPIO");
         mysqli_stmt_execute($stmt);
@@ -76,9 +67,6 @@ class CentroAcopioModel {
         return $rows;
     }
 
-    // ==========================================
-    // FILTROS (soporte de RF77 — listado filtrable)
-    // ==========================================
 
     public function filtrarMunicipio($idMunicipio) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM CENTRO_ACOPIO WHERE id_municipio = ?");
@@ -119,13 +107,7 @@ class CentroAcopioModel {
         return $rows;
     }
 
-    // ==========================================
-    // OPERACIONES DE NEGOCIO
-    // ==========================================
 
-    // RF78 — Consulta de ocupación del centro de acopio.
-    // Devuelve los valores crudos agregados (ocupado/capacidad); el % lo calcula el controller,
-    // igual que con el nivel de llenado de CONTENEDOR.
     public function getOcupacion($idCentro) {
         $stmt = mysqli_prepare($this->conn->getConexion(),
             "SELECT SUM(ocupacion_actual) AS ocupado, SUM(capacidad) AS capacidad FROM CENTRO_RESIDUO WHERE id_centro = ?");
@@ -137,8 +119,6 @@ class CentroAcopioModel {
         return $row;
     }
 
-    // Da de alta o actualiza la capacidad que el centro tiene para un tipo de residuo.
-    // Es la base sobre la que se calcula RF78 (CENTRO_RESIDUO tiene PK compuesta id_centro+id_residuo).
     public function asignarTipoResiduo($idCentro, $idResiduo, $capacidad) {
         $stmt = mysqli_prepare($this->conn->getConexion(),
             "INSERT INTO CENTRO_RESIDUO (id_centro, id_residuo, ocupacion_actual, capacidad) VALUES (?, ?, 0, ?)
@@ -149,8 +129,6 @@ class CentroAcopioModel {
         return true;
     }
 
-    // Lista los tipos de residuo que un centro ya tiene configurados, con su
-    // capacidad y ocupación actual. Es lo que arma la tabla del panel de residuos.
     public function getResiduosPorCentro($idCentro) {
         $stmt = mysqli_prepare($this->conn->getConexion(),
             "SELECT cr.id_residuo, tr.color, tr.descripcion, cr.capacidad, cr.ocupacion_actual
@@ -168,8 +146,6 @@ class CentroAcopioModel {
         return $rows;
     }
 
-    // Trae una asignación puntual centro+residuo (el controller la usa para saber
-    // si ya existe y cuál es su capacidad, antes de dejar actualizar la ocupación).
     public function getCentroResiduo($idCentro, $idResiduo) {
         $stmt = mysqli_prepare($this->conn->getConexion(),
             "SELECT id_centro, id_residuo, capacidad, ocupacion_actual FROM CENTRO_RESIDUO WHERE id_centro = ? AND id_residuo = ?");
@@ -181,9 +157,6 @@ class CentroAcopioModel {
         return $row;
     }
 
-    // Actualiza cuánto hay ocupado de un tipo de residuo puntual en un centro.
-    // Es el reemplazo manual de lo que en el futuro debería actualizar el
-    // registro de traslados de residuos (RF42, todavía no implementado).
     public function actualizarOcupacion($idCentro, $idResiduo, $ocupacionActual) {
         $stmt = mysqli_prepare($this->conn->getConexion(),
             "UPDATE CENTRO_RESIDUO SET ocupacion_actual = ? WHERE id_centro = ? AND id_residuo = ?");
@@ -193,9 +166,6 @@ class CentroAcopioModel {
         return true;
     }
 
-    // ==========================================
-    // VALIDACIONES DE EXISTENCIA (FK)
-    // ==========================================
 
     public function municipioExiste($idMunicipio) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT 1 FROM MUNICIPIO WHERE id_municipio = ?");

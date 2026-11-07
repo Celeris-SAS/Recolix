@@ -1,6 +1,3 @@
-// Botón "Borrar cuenta" compartido por los perfiles (vecino.php, perfil.php, perfilCuadrilla.php, perfilOperario.php).
-// Si la sesión es de un vecino pide confirmación y borra la cuenta; si es personal, solo muestra el aviso
-// de que tiene que pedirle a un administrador que la dé de baja (la deshabilita, no la borra). El backend vuelve a validar el rol.
 document.addEventListener('DOMContentLoaded', function () {
     const btn = document.getElementById('borrarCuentaBtn');
     if (!btn) return;

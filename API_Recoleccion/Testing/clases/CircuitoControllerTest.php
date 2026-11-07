@@ -78,7 +78,6 @@ final class CircuitoControllerTest extends RecoleccionTestCase
     public function testDiasDesdeFrecuenciaExpandeRangoConWraparound(): void
     {
         $controller = $this->controller();
-        // El rango "viernes a lunes" cruza el fin de la semana (viernes, sábado, domingo, lunes).
         $dias = $this->callPrivate($controller, 'diasDesdeFrecuencia', ['viernes a lunes']);
         sort($dias);
         $this->assertSame(['domingo', 'lunes', 'sabado', 'viernes'], $dias);

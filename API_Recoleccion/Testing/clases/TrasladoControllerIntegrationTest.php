@@ -2,8 +2,6 @@
 
 require_once __DIR__ . '/../../Controlador/trasladoController.php';
 
-// Ingreso de residuos del operario: el camión se identifica por matrícula y debe existir; el centro
-// sale del usuario de la sesión. Se prueba contra la base de test.
 final class TrasladoControllerIntegrationTest extends DbTestCase
 {
     protected function tearDown(): void

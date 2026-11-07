@@ -10,6 +10,7 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
     <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= t('contenedores.title') ?></title>
+    <link rel="icon" type="image/png" href="/recolix/LandingPage/img/Logo.png">
     <link rel="stylesheet" href="styleContenedores.css">
 </head>
 
@@ -260,7 +261,7 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
                             <option value=""><?= t('crud.seleccionar') ?></option>
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" id="idCircuitoGroup">
                         <label for="idCircuito"><?= t('contenedores.field_idcircuito') ?></label>
                         <input type="number" id="idCircuito" class="form-input" placeholder="1" min="1" required>
                     </div>
@@ -655,6 +656,11 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
             ['calle', 'numCalle', 'latitud', 'longitud'].forEach(campo => {
                 document.getElementById(campo).required = !esDeposito;
             });
+            // RNE 26: un contenedor en depósito no pertenece a ningún circuito.
+            document.getElementById('idCircuito').required = !esDeposito;
+            document.getElementById('idCircuito').disabled = esDeposito;
+            if (esDeposito) document.getElementById('idCircuito').value = '';
+            document.getElementById('idCircuitoGroup').style.display = esDeposito ? 'none' : '';
         }
 
         function onEstadoFormChange() {
@@ -697,7 +703,7 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
 
             const body = esDeposito
                 ? {
-                    idCircuito: parseInt(document.getElementById('idCircuito').value),
+                    idCircuito: null,
                     idTipo: parseInt(document.getElementById('idTipo').value),
                     calle: null,
                     numCalle: null,
@@ -718,11 +724,6 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
                 body.estado = document.getElementById('estado').value;
             }
 
-            // Al editar, el estado no viaja en este PUT (updateContenedor no lo acepta como
-            // parámetro) — se cambia aparte con cambiarEstado, y tiene que ir ANTES del PUT de
-            // datos: updateContenedor decide si nulear o exigir dirección leyendo el estado
-            // actual del contenedor en la base, así que primero hay que dejar el estado nuevo
-            // asentado para que esa regla evalúe correctamente (RF27).
             if (id) {
                 try {
                     const estadoRes = await fetch(`${API_BASE}/contenedores/cambiarEstado/${id}`, {
@@ -741,7 +742,7 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
                 }
             }
 
-            const camposDireccion = ['calle', 'numCalle', 'latitud', 'longitud'];
+            const camposDireccion = ['calle', 'numCalle', 'latitud', 'longitud', 'idCircuito'];
             for (const [campo, valor] of Object.entries(body)) {
                 if (esDeposito && camposDireccion.includes(campo)) continue;
                 const regla = reglas[campo];
@@ -961,7 +962,6 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
             }
         }
 
-        // Dirección para mostrar en títulos. Un contenedor en depósito no tiene calle ni número.
         function direccionContenedor(c) {
             const partes = [c.calle, c.num_calle].filter(p => p !== null && p !== undefined && String(p).trim() !== '');
             return partes.length ? partes.join(' ') : I18N.sinDireccion;
@@ -1118,7 +1118,6 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
             return limpio.charAt(0).toUpperCase() + limpio.slice(1);
         }
 
-        // RF27: solo un contenedor roto se puede marcar como reparado.
         function confirmarReparacion(c) {
             contenedorReparandoId = c.id_contenedor;
             document.getElementById('reparacionMensaje').textContent = I18N.reparacionMensaje;

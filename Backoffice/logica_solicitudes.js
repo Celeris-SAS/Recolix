@@ -3,6 +3,14 @@
 const API = '/recolix/API_Usuarios/api.php/';
 document.addEventListener('DOMContentLoaded', function () {
   cargarSolicitudes();
+
+  document.getElementById('btnAprobarTodas').addEventListener('click', aprobarTodas);
+  document.getElementById('btnRechazarTodas').addEventListener('click', rechazarTodas);
+
+  document.getElementById('formAprobarCi').addEventListener('submit', function (e) {
+    e.preventDefault();
+    aprobarPorCi();
+  });
 });
 
 
@@ -109,6 +117,108 @@ async function rechazar(ci) {
 
     eliminarFila(ci);
     mostrarFeedback(I18N.rechazadaOk, true);
+
+  } catch (e) {
+    mostrarFeedback(I18N.errorConexion, false);
+  }
+}
+
+
+async function aprobarTodas() {
+  if (!await pedirConfirmacion(I18N.confirmarAprobarTodas)) return;
+
+  try {
+    const resp = await fetch(`${API}/solicitudes/aprobarTodas`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    });
+    const json = await resp.json();
+
+    if (json.status !== 'success') {
+      mostrarFeedback(json.message || I18N.errorAprobar, false);
+      return;
+    }
+
+    const resultados = json.data || [];
+    if (!resultados.length) {
+      mostrarFeedback(I18N.sinPendientes, true);
+    } else {
+      const ok = resultados.filter(r => r.status === 'ok').length;
+      mostrarFeedback(
+        I18N.resultadoAprobarTodas.replace('{ok}', ok).replace('{total}', resultados.length),
+        true
+      );
+    }
+    cargarSolicitudes();
+
+  } catch (e) {
+    mostrarFeedback(I18N.errorConexion, false);
+  }
+}
+
+
+async function rechazarTodas() {
+  if (!await pedirConfirmacion(I18N.confirmarRechazarTodas)) return;
+
+  try {
+    const resp = await fetch(`${API}/solicitudes/rechazarTodas`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    });
+    const json = await resp.json();
+
+    if (json.status !== 'success') {
+      mostrarFeedback(json.message || I18N.errorRechazar, false);
+      return;
+    }
+
+    const resultados = json.data || [];
+    if (!resultados.length) {
+      mostrarFeedback(I18N.sinPendientes, true);
+    } else {
+      const ok = resultados.filter(r => r.status === 'ok').length;
+      mostrarFeedback(
+        I18N.resultadoRechazarTodas.replace('{ok}', ok).replace('{total}', resultados.length),
+        true
+      );
+    }
+    cargarSolicitudes();
+
+  } catch (e) {
+    mostrarFeedback(I18N.errorConexion, false);
+  }
+}
+
+
+async function aprobarPorCi() {
+  const input = document.getElementById('inputAprobarCi');
+  const ci = input.value.trim();
+
+  if (!/^\d{7,8}$/.test(ci)) {
+    mostrarFeedback(I18N.ciInvalida, false);
+    return;
+  }
+
+  if (!await pedirConfirmacion(I18N.confirmarAprobar)) return;
+
+  try {
+    const resp = await fetch(`${API}/solicitudes/aprobar`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ci })
+    });
+    const json = await resp.json();
+
+    if (json.status !== 'success') {
+      mostrarFeedback(json.message || I18N.errorAprobar, false);
+      return;
+    }
+
+    input.value = '';
+    eliminarFila(Number(ci));
+    mostrarFeedback(I18N.aprobadaOk, true);
 
   } catch (e) {
     mostrarFeedback(I18N.errorConexion, false);

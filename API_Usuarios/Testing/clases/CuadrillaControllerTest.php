@@ -9,7 +9,6 @@ final class CuadrillaControllerTest extends UsuarioTestCase
         return $this->newWithoutConstructor(CuadrillaController::class);
     }
 
-    // --- validarId / validarString / validarEntero ---
 
     public function testValidarIdRechazaCero(): void
     {
@@ -45,7 +44,6 @@ final class CuadrillaControllerTest extends UsuarioTestCase
         $this->callPrivate($controller, 'validarEntero', [1.5, 'Municipio']);
     }
 
-    // --- validarIdMunicipio (delega en el Model) ---
 
     public function testValidarIdMunicipioRechazaMenorAUno(): void
     {
@@ -77,7 +75,6 @@ final class CuadrillaControllerTest extends UsuarioTestCase
         $this->assertSame(1, $this->callPrivate($controller, 'validarIdMunicipio', [1]));
     }
 
-    // --- reglasValidacion ---
 
     public function testReglasValidacionExponeValoresValidos(): void
     {
@@ -87,7 +84,6 @@ final class CuadrillaControllerTest extends UsuarioTestCase
         $this->assertSame(['activa', 'inactiva'], $reglas['estado']['valores']);
     }
 
-    // --- insertCuadrilla / updateCuadrilla ---
 
     public function testInsertCuadrillaRechazaEstadoInvalido(): void
     {
@@ -125,7 +121,6 @@ final class CuadrillaControllerTest extends UsuarioTestCase
         $controller->updateCuadrilla(1, 1, 'rota');
     }
 
-    // --- filtrarEstado ---
 
     public function testFiltrarEstadoRechazaValorNoListado(): void
     {
@@ -134,7 +129,6 @@ final class CuadrillaControllerTest extends UsuarioTestCase
         $controller->filtrarEstado('rota');
     }
 
-    // --- getCuadrilla / deleteCuadrilla / esDisponible / obtenerHistorial delegan al Model tras validar ---
 
     public function testGetCuadrillaDelegaEnElModelTrasValidar(): void
     {

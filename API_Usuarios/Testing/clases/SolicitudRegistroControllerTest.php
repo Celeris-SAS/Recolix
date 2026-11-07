@@ -9,7 +9,6 @@ final class SolicitudRegistroControllerTest extends UsuarioTestCase
         return $this->newWithoutConstructor(SolicitudRegistroController::class);
     }
 
-    // --- validarCI ---
 
     public function testValidarCIRechazaMenosDeSieteDigitos(): void
     {
@@ -18,7 +17,6 @@ final class SolicitudRegistroControllerTest extends UsuarioTestCase
         $this->callPrivate($controller, 'validarCI', ['123']);
     }
 
-    // --- validarNombre ---
 
     public function testValidarNombreRechazaNumeros(): void
     {
@@ -27,7 +25,6 @@ final class SolicitudRegistroControllerTest extends UsuarioTestCase
         $this->callPrivate($controller, 'validarNombre', ['Juan123', 'Nombre']);
     }
 
-    // --- validarEmail ---
 
     public function testValidarEmailRechazaFormatoInvalido(): void
     {
@@ -36,7 +33,6 @@ final class SolicitudRegistroControllerTest extends UsuarioTestCase
         $this->callPrivate($controller, 'validarEmail', ['no-es-un-email']);
     }
 
-    // --- validarTel ---
 
     public function testValidarTelRechazaMenosDeNueveDigitos(): void
     {
@@ -45,7 +41,6 @@ final class SolicitudRegistroControllerTest extends UsuarioTestCase
         $this->callPrivate($controller, 'validarTel', ['12345']);
     }
 
-    // --- validarIdMunicipio ---
 
     public function testValidarIdMunicipioRechazaNoNumerico(): void
     {
@@ -60,7 +55,6 @@ final class SolicitudRegistroControllerTest extends UsuarioTestCase
         $this->assertSame(3, $this->callPrivate($controller, 'validarIdMunicipio', ['3']));
     }
 
-    // --- validarContrasenia ---
 
     public function testValidarContraseniaRechazaMenosDeOchoCaracteres(): void
     {
@@ -69,7 +63,6 @@ final class SolicitudRegistroControllerTest extends UsuarioTestCase
         $this->callPrivate($controller, 'validarContrasenia', ['1234567']);
     }
 
-    // --- reglasValidacion ---
 
     public function testReglasValidacionMarcaMunicipioComoOpcional(): void
     {
@@ -79,7 +72,6 @@ final class SolicitudRegistroControllerTest extends UsuarioTestCase
         $this->assertTrue($reglas['idMunicipio']['opcional']);
     }
 
-    // --- crearSolicitud ---
 
     public function testCrearSolicitudRechazaCiYaRegistrado(): void
     {
@@ -123,7 +115,6 @@ final class SolicitudRegistroControllerTest extends UsuarioTestCase
         $controller->crearSolicitud(12345678, 'Juan', 'Pérez', 'juan@recolix.uy', '099123456', 'claveTest123', 'no-es-un-id');
     }
 
-    // --- aprobar / rechazar ---
 
     public function testAprobarRechazaCiInvalido(): void
     {

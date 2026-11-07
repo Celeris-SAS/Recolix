@@ -86,7 +86,6 @@ class UsuarioController {
         return $municipio;
     }
 
-    // El login de la API guarda $_SESSION['ci_usuario']; el del Backoffice solo $_SESSION['usuario'].
     private function ciSesion() {
         return $_SESSION['usuario']['ci_usuario'] ?? $_SESSION['ci_usuario'] ?? null;
     }
@@ -106,10 +105,9 @@ class UsuarioController {
         if ($this->ciSesion() !== null && (int)$this->ciSesion() === (int)$ci) {
             return;
         }
-        $this->verificarPersonalInterno();
+        $this->verificarAdministrador();
     }
 
-    // Administrador, cuadrilla u operario (mismo criterio que Backoffice/verificacion_sesion.php).
     private function verificarPersonalInterno() {
         $rol = $this->rolSesion();
         if (empty($rol) || $rol === 'vecino') {
@@ -178,7 +176,6 @@ class UsuarioController {
     }
 
 
-    // Nombre y apellido son opcionales: el admin (usuarios.php) solo manda email y tel.
     public function updatePerfil($ci, $email, $tel, $primerNombre = null, $pApellido = null) {
         $ci    = $this->validarCI($ci);
         $email = $this->validarEmail($email);
@@ -192,7 +189,6 @@ class UsuarioController {
             throw new InvalidArgumentException("No existe un usuario con la cédula $ci.");
         }
 
-        // Solo se controla si el dato cambió, para no bloquear a quien ya tenía un duplicado previo.
         if (strcasecmp($email, (string)$perfil['email']) !== 0 && $this->usuarioModel->existeEmail($email)) {
             throw new InvalidArgumentException('Ya existe una cuenta registrada con ese correo electrónico.');
         }
@@ -207,9 +203,6 @@ class UsuarioController {
         );
     }
 
-    // Solo el propio usuario puede borrar su cuenta, y solo si su rol en la base es 'vecino'.
-    // Las cuentas del personal nunca se borran: un administrador las deshabilita desde usuarios.php
-    // (cambiarAcceso) y sus datos quedan en la base.
     public function eliminarCuenta($ci) {
         $ci = $this->validarCI($ci);
         $this->verificarPropioCI($ci);
@@ -286,19 +279,19 @@ class UsuarioController {
 
 
     public function listarUsuarios() {
-        $this->verificarPersonalInterno();
+        $this->verificarAdministrador();
         return $this->usuarioModel->listarUsuarios();
     }
 
 
     public function filtrarRol($rol) {
-        $this->verificarPersonalInterno();
+        $this->verificarAdministrador();
         $rol = $this->validarRol($rol);
         return $this->usuarioModel->filtrarRol($rol);
     }
 
     public function filtrarAcceso($acceso) {
-        $this->verificarPersonalInterno();
+        $this->verificarAdministrador();
         $acceso = $this->validarAcceso($acceso);
         return $this->usuarioModel->filtrarAcceso($acceso);
     }

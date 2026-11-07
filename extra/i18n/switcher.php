@@ -1,8 +1,4 @@
 <?php
-/**
- * Partial: selector de idioma. Requiere que i18n.php ya haya sido incluido.
- * Genera links ?lang=es|en|pt preservando la URL y el resto del query string actual.
- */
 
 $recolixIdiomaActual = $RECOLIX_IDIOMA ?? recolix_idioma();
 
@@ -10,7 +6,6 @@ $rutaActual = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: '';
 parse_str(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_QUERY) ?: '', $queryActual);
 ?>
 <div class="lang-switcher" role="group" aria-label="Idioma / Language / Idioma">
-    <!-- Solo se ve en mobile: botón con el idioma activo que abre la lista como dropdown. -->
     <button type="button" class="lang-switcher-toggle" aria-haspopup="true" aria-expanded="false"><?= strtoupper($recolixIdiomaActual) ?></button>
     <div class="lang-switcher-menu">
     <?php foreach (RECOLIX_IDIOMAS as $idiomaOpcion):
@@ -26,7 +21,6 @@ parse_str(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_QUERY) ?: '', $queryA
     </div>
 </div>
 <style>
-    /* Escritorio: el menú no genera caja propia, así los tres idiomas quedan en fila como siempre. */
     .lang-switcher-toggle { display: none; }
     .lang-switcher-menu { display: contents; }
 

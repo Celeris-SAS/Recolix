@@ -14,9 +14,6 @@ class MaquinariaController {
         $this->centroAcopioModel = new CentroAcopioModel();
     }
 
-    // ==========================================
-    // VALIDACIONES
-    // ==========================================
 
     private function validarId($valor) {
         if (!is_numeric($valor) || intval($valor) <= 0) {
@@ -79,11 +76,7 @@ class MaquinariaController {
         ];
     }
 
-    // ==========================================
-    // CRUD PRINCIPAL
-    // ==========================================
 
-    // RF79 — Registro de maquinaria de un centro de acopio.
     public function insertMaquinaria($idCentro, $nombre, $tipo, $fechaAdquisicion, $estado) {
         $idCentro = $this->validarId($idCentro);
         $nombre = $this->validarString($nombre, 'Nombre');
@@ -114,7 +107,6 @@ class MaquinariaController {
         return $this->maquinariaModel->updateMaquinaria($id, $nombre, $tipo, $fechaAdquisicion, $estado);
     }
 
-    // RF80 — Actualización del estado de la maquinaria.
     public function cambiarEstado($id, $nuevoEstado) {
         $id = $this->validarId($id);
         $nuevoEstado = $this->validarEstado($nuevoEstado);
@@ -128,7 +120,6 @@ class MaquinariaController {
         return $this->maquinariaModel->cambiarEstado($id, $nuevoEstado);
     }
 
-    // Baja lógica de maquinaria (no hay DELETE físico en la base).
     public function bajaMaquinaria($id) {
         $id = $this->validarId($id);
 
@@ -149,12 +140,7 @@ class MaquinariaController {
         return $this->maquinariaModel->getAllMaquinarias();
     }
 
-    // ==========================================
-    // CONSULTA POR CENTRO Y FILTROS
-    // ==========================================
 
-    // Consulta que reemplaza al listado propio: la maquinaria de un centro puntual.
-    // El operario solo opera sobre el centro de acopio asignado a su usuario.
     private function verificarCentroPropio($idCentro, $centroModel) {
         if (($_SESSION['usuario']['rol'] ?? '') !== 'operario') {
             return;

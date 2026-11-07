@@ -1,10 +1,3 @@
-/* ==========================================================================
-   Recolix — Vista Cuadrilla
-   Complementa a styleBackoffice.css + styles_vecino.css (navbar, footer,
-   botones, tarjetas y variables ya vienen de ahí). Acá solo va lo específico
-   de esta página: formulario de levante, rutas asignadas, camión asignado,
-   lista de urgentes, modales y el toast.
-   ========================================================================== */
 
 .page-title h1 {
   margin: 0 0 6px;
@@ -18,9 +11,6 @@
   color: var(--ink-soft);
 }
 
-/* ==========================================================================
-   Alerta del sistema (RF52 — levante no completado)
-   ========================================================================== */
 
 .alert-banner[hidden] {
   display: none;
@@ -50,9 +40,6 @@
   flex-shrink: 0;
 }
 
-/* ==========================================================================
-   Encabezado de cada tarjeta (ícono + título + subtítulo)
-   ========================================================================== */
 
 .card-header {
   display: flex;
@@ -105,11 +92,7 @@
   color: var(--ink-soft);
 }
 
-/* ==========================================================================
-   Formulario — Registrar levante
-   ========================================================================== */
 
-/* .form-grid y .form-group fuerzan display propio, que le gana a [hidden] */
 .form-grid[hidden],
 .form-group[hidden] {
   display: none;
@@ -189,7 +172,6 @@
   font-weight: 500;
 }
 
-/* RF71 — ¿Se recolectó el contenedor? */
 
 .radio-toggle {
   display: flex;
@@ -215,9 +197,6 @@
   accent-color: var(--moss);
 }
 
-/* ==========================================================================
-   Rutas asignadas + camión (RF35, RF36)
-   ========================================================================== */
 
 .routes-list {
   display: flex;
@@ -226,8 +205,6 @@
   margin-bottom: 16px;
 }
 
-/* Los botones .btn son inline-flex: dentro de un bloque dejan un hueco bajo la línea de texto y
-   los márgenes no se combinan. Como flex a ancho completo, todos los espacios quedan en 12px. */
 .completadas-toggle {
   display: flex;
   margin: 12px 0;
@@ -305,9 +282,6 @@
   flex-shrink: 0;
 }
 
-/* ==========================================================================
-   Contenedores de la ruta del levante activo
-   ========================================================================== */
 
 .contenedores-ruta {
   margin-top: 20px;
@@ -379,23 +353,16 @@
   color: var(--ink);
 }
 
-/* ==========================================================================
-   Botones
-   ========================================================================== */
 
 .btn-full {
   width: 100%;
 }
 
-/* .btn fuerza display:inline-flex, que le gana a [hidden] del navegador */
 #btn-iniciar-levante[hidden],
 #btn-completar-levante[hidden] {
   display: none;
 }
 
-/* ==========================================================================
-   Tabla — Lista de urgentes
-   ========================================================================== */
 
 .table-wrapper {
   overflow-x: auto;
@@ -495,9 +462,6 @@
   white-space: normal;
 }
 
-/* ==========================================================================
-   Modales de confirmación
-   ========================================================================== */
 
 .modal-overlay {
   position: fixed;
@@ -562,9 +526,6 @@
   margin-top: 18px;
 }
 
-/* ==========================================================================
-   Toast
-   ========================================================================== */
 
 .toast {
   position: fixed;
@@ -594,9 +555,6 @@
   background-color: var(--status-warn);
 }
 
-/* ==========================================================================
-   Responsive
-   ========================================================================== */
 
 @media (max-width: 768px) {
   .form-grid,
@@ -634,13 +592,9 @@
   }
 }
 
-/* .dash-section define display:flex en styles_vecino.css con la misma
-   especificidad que [hidden], así que sin esto el atributo hidden no alcanza
-   a ocultar la sección (se ocultaba el contenido interno, pero no la tarjeta). */
 .dash-section[hidden] {
   display: none;
 }
-/* Lista de contenedores dentro de cada incidencia asignada */
 .incidencia-contenedores {
     margin: 6px 0 0;
     padding-left: 18px;

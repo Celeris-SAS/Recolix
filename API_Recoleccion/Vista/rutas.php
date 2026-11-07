@@ -9,6 +9,7 @@ require_once __DIR__ . '/../../extra/i18n/i18n.php';
     <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= t('rutas.title') ?></title>
+    <link rel="icon" type="image/png" href="/recolix/LandingPage/img/Logo.png">
     <link rel="stylesheet" href="styleRecoleccion.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <style>
@@ -676,8 +677,6 @@ async function cargarContenedoresLevante(rutaId) {
     actualizarDestinoFinalMapa();
 }
 
-// Dibuja (o redibuja) el sitio de disposición final elegido como último punto
-// de la ruta, con una línea punteada desde el último contenedor hasta ahí.
 function actualizarDestinoFinalMapa() {
     if (!mapaLevante) return;
 
@@ -696,11 +695,6 @@ function actualizarDestinoFinalMapa() {
         radius: 8, color: '#fff', weight: 2, fillColor: '#8a3b12', fillOpacity: 1
     }).addTo(mapaLevante).bindPopup(`<strong>${centro.nombre}</strong><br><small>${I18N.popupDestinoFinal}</small>`);
 
-    // Nunca se reencuadra el mapa en base al centro (ni aunque todavía no haya
-    // contenedores cargados): el centro suele estar lejos de la ruta y, si esta función
-    // se dispara antes de que cargarContenedoresLevante termine de cargar los contenedores,
-    // reencuadrar acá dejaría el mapa centrado en el centro solo. El encuadre es
-    // responsabilidad exclusiva de cargarContenedoresLevante.
     if (puntosContenedoresLevante.length) {
         const ultimo = puntosContenedoresLevante[puntosContenedoresLevante.length - 1];
         polylineCentroLevante = L.polyline([ultimo, puntoCentro], { color: '#8a3b12', weight: 2, dashArray: '2 8' }).addTo(mapaLevante);

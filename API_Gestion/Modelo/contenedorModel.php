@@ -88,7 +88,6 @@ class ContenedorModel {
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
 
-        // La reparación resuelve las roturas abiertas del contenedor: ya no hay nada que atender.
         $stmt = mysqli_prepare($this->conn->getConexion(), "
             UPDATE INCIDENCIA i
             JOIN INCIDENCIA_CONTENEDOR ic ON ic.id_incidencia = i.id_incidencia
@@ -188,6 +187,42 @@ class ContenedorModel {
         mysqli_stmt_close($stmt);
         return $rows;
     }
+    // ERR-04: filtrarEstado/filtrarTipoResiduo solo podían aplicarse de a uno. Esta
+    // combina ambos con AND cuando están presentes (cualquiera puede venir null).
+    public function filtrarCombinado($estado, $idTipo) {
+        $condiciones = [];
+        $tipos  = '';
+        $valores = [];
+        if ($estado !== null) {
+            $condiciones[] = 'estado = ?';
+            $tipos  .= 's';
+            $valores[] = $estado;
+        }
+        if ($idTipo !== null) {
+            $condiciones[] = 'id_tipo = ?';
+            $tipos  .= 'i';
+            $valores[] = $idTipo;
+        }
+
+        $sql = 'SELECT * FROM CONTENEDOR';
+        if ($condiciones) {
+            $sql .= ' WHERE ' . implode(' AND ', $condiciones);
+        }
+
+        $stmt = mysqli_prepare($this->conn->getConexion(), $sql);
+        if ($valores) {
+            mysqli_stmt_bind_param($stmt, $tipos, ...$valores);
+        }
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $rows   = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $rows[] = $row;
+        }
+        mysqli_stmt_close($stmt);
+        return $rows;
+    }
+
     public function filtrarCriticos() {
     $stmt = mysqli_prepare($this->conn->getConexion(),
         "SELECT * FROM CONTENEDOR WHERE estado IN ('desbordado', 'roto')");

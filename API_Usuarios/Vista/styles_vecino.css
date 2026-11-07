@@ -370,8 +370,6 @@ h3 {
 }
 
 
-/* Solo padding vertical: el horizontal lo da .container (16px, 24px desde 768px). Con `padding: 36px 0 64px`
-   se pisaba y en mobile el título y las tarjetas quedaban pegados al borde. */
 .dash-main {
     padding-top: 36px;
     padding-bottom: 64px;
@@ -472,9 +470,6 @@ h3 {
     z-index: 0;
 }
 
-/* Pin en forma de gota (estilo Google Maps), distinto de los círculos de los contenedores.
-   Leaflet posiciona el ícono con su propio transform (translate), por eso la rotación va en un
-   span interno (.mapa-marcador-usuario) y no en el div que Leaflet mueve (.mapa-marcador-usuario-wrap). */
 .mapa-marcador-usuario-wrap {
     background: transparent !important;
     border: none !important;

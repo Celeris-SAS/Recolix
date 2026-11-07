@@ -319,7 +319,6 @@ final class ReporteModelIntegrationTest extends DbTestCase
         return $id;
     }
 
-    // RF61
     public function testGetTiemposResolucionCalculaPromedioMinimoYMaximoPorCuadrilla(): void
     {
         $model = new ReporteModel();
@@ -357,7 +356,6 @@ final class ReporteModelIntegrationTest extends DbTestCase
         $this->assertCount(1, $model->getTiemposResolucion('siempre'));
     }
 
-    // RF57 / RF58
     public function testGetIncidenciasDetalleFiltraAbiertasYResueltas(): void
     {
         $model = new ReporteModel();
@@ -372,7 +370,6 @@ final class ReporteModelIntegrationTest extends DbTestCase
         $this->assertCount(3, $model->getIncidenciasDetalle('siempre'));
     }
 
-    // RF59
     public function testGetVolumenPorTipoYPeriodoAgrupaPorDiaSemanaOMes(): void
     {
         $model = new ReporteModel();
@@ -398,14 +395,12 @@ final class ReporteModelIntegrationTest extends DbTestCase
         $this->assertMatchesRegularExpression('/^\d{4}-S\d{2}$/', $porSemana[0]['periodo']);
     }
 
-    // Hora de la base de datos hace $horas horas (el reloj de MySQL puede diferir del de PHP).
     private function horaBdHace(int $horas): string
     {
         $fila = $this->conn()->query("SELECT DATE_FORMAT(NOW() - INTERVAL $horas HOUR, '%Y-%m-%d %H:%i:%s') AS h")->fetch_assoc();
         return $fila['h'];
     }
 
-    // RF70
     public function testGetAlertasContenedoresEscalaACriticaA24HorasYMaximaA48(): void
     {
         $model = new ReporteModel();
@@ -426,7 +421,6 @@ final class ReporteModelIntegrationTest extends DbTestCase
         $this->assertSame($maximo, $alertas[0]['idContenedor'], 'El de más horas sin recolectar va primero');
     }
 
-    // RF69
     public function testGetProyeccionesLlenadoDevuelveLaUltimaPorContenedorYMarcaSobrecarga(): void
     {
         $model = new ReporteModel();
@@ -441,7 +435,6 @@ final class ReporteModelIntegrationTest extends DbTestCase
         $this->assertTrue($filas[0]['sobrecarga']);
     }
 
-    // RF63
     public function testGetTopZonasIncidenciasOrdenaPorCantidadDelUltimoMes(): void
     {
         $model = new ReporteModel();
@@ -462,7 +455,6 @@ final class ReporteModelIntegrationTest extends DbTestCase
         $this->assertSame(1, $top[1]['incidencias']);
     }
 
-    // ERR-17: período por fechas
     public function testGetIncidenciasDetalleAceptaUnPeriodoPorFechas(): void
     {
         $model = new ReporteModel();
@@ -518,7 +510,6 @@ final class ReporteModelIntegrationTest extends DbTestCase
         $this->assertEquals(40.0, $totalKg('2026-09-01_2026-09-30'));
     }
 
-    // ERR-19
     public function testGetIngresosPorCentroIncluyeLasPlantasYFiltraPorPeriodo(): void
     {
         $model = new ReporteModel();
@@ -535,7 +526,6 @@ final class ReporteModelIntegrationTest extends DbTestCase
         $this->assertEquals(3200.0, $septiembre[0]['totalKg']);
     }
 
-    // ERR-18
     public function testGetZonasCriticasIncluyeMunicipiosConMuchosContenedoresEnAlerta(): void
     {
         $model = new ReporteModel();

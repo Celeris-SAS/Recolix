@@ -2,9 +2,6 @@
 $rolesPermitidos = ['operario'];
 require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
 
-// El centro se vuelve a leer de la base en cada carga (no solo de la sesión):
-// si un admin asigna o cambia el centro del usuario mientras ya tenía la sesión
-// abierta, el dato en $_SESSION quedaría viejo (mismo criterio que cuadrilla.php).
 require_once __DIR__ . '/../../conexion.php';
 $conn = new conexion();
 $stmt = mysqli_prepare($conn->getConexion(), "SELECT id_centro FROM USUARIO WHERE ci_usuario = ?");
@@ -23,6 +20,7 @@ $_SESSION['usuario']['id_centro'] = $idCentro;
 <meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?= t('operario.title') ?></title>
+<link rel="icon" type="image/png" href="/recolix/LandingPage/img/Logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
@@ -30,7 +28,6 @@ $_SESSION['usuario']['id_centro'] = $idCentro;
 <link rel="stylesheet" href="styles_vecino.css">
 <link rel="stylesheet" href="operario.css">
 <style>
-    /* Forzar menú hamburguesa siempre visible en esta vista */
     .nav-links {
         display: none !important;
     }
@@ -76,13 +73,11 @@ $_SESSION['usuario']['id_centro'] = $idCentro;
             <p><?= t('operario.page_sub') ?></p>
         </div>
 
-        <!-- Usuario sin id_centro asignado (USUARIO.id_centro) -->
         <div class="alert-banner alert-banner--info" id="sin-centro-banner" hidden>
             <span class="alert-banner-icon">ℹ</span>
             <span><?= t('operario.msg_sin_centro') ?></span>
         </div>
 
-        <!-- RF77: Listado de centros de acopio (el/los que tiene asignados este operario) -->
         <section class="dash-section" id="seccion-centro">
             <div class="panel-card">
                 <div class="card-header">
@@ -111,7 +106,6 @@ $_SESSION['usuario']['id_centro'] = $idCentro;
             </div>
         </section>
 
-        <!-- RF78: Consulta de ocupación del centro de acopio -->
         <section class="dash-section" id="seccion-ocupacion">
             <div class="panel-card">
                 <div class="card-header">
@@ -168,9 +162,6 @@ $_SESSION['usuario']['id_centro'] = $idCentro;
             </div>
         </section>
 
-        <!-- Registro de ingreso de residuos: función descrita para el operario en 2.3
-             (no tiene un RF numerado propio en el documento; alimenta los datos que
-             RF78 consulta). Ver aclaración en el chat. -->
         <section class="dash-section" id="seccion-ingreso">
             <div class="panel-card">
                 <div class="card-header">
@@ -221,7 +212,6 @@ $_SESSION['usuario']['id_centro'] = $idCentro;
             </div>
         </section>
 
-        <!-- RF80: Actualización del estado de la maquinaria -->
         <section class="dash-section" id="seccion-maquinaria">
             <div class="panel-card">
                 <div class="card-header">
@@ -263,7 +253,6 @@ $_SESSION['usuario']['id_centro'] = $idCentro;
         <p class="footer-copy"><?= t('backoffice.footer_copyright') ?></p>
     </footer>
 
-    <!-- Toast de confirmación -->
     <div class="toast" id="toast"></div>
 
     <script>
@@ -296,7 +285,6 @@ $_SESSION['usuario']['id_centro'] = $idCentro;
             'sinDireccion' => 'operario.centro_sin_direccion',
         ])) ?>;
 
-        // Toast
         const toast = document.getElementById('toast');
         let toastTimeout;
 
@@ -309,9 +297,6 @@ $_SESSION['usuario']['id_centro'] = $idCentro;
             }, 3500);
         }
 
-        // ---- Carga inicial ----
-        // Si el operario no tiene centro asignado, se avisa y no se muestra nada más
-        // (mismo criterio que cuadrilla.php con ID_CUADRILLA).
         const sinCentroBanner = document.getElementById('sin-centro-banner');
         const seccionesCentro = ['seccion-centro', 'seccion-ocupacion', 'seccion-ingreso', 'seccion-maquinaria']
             .map(id => document.getElementById(id));
@@ -367,7 +352,6 @@ $_SESSION['usuario']['id_centro'] = $idCentro;
             await cargarMaquinaria();
         }
 
-        // RF78 (datos base) — ocupación por tipo de residuo del centro
         const OCUPACION = {
             'Plástico': { actual: 2040, capacidad: 3000 },
             'Papel y cartón': { actual: 1350, capacidad: 3000 },
@@ -396,7 +380,6 @@ $_SESSION['usuario']['id_centro'] = $idCentro;
             }
         }
 
-        // Registro de ingreso de residuos (alimenta la ocupación que consulta RF78)
         const formIngreso = document.getElementById('form-ingreso');
         const ingresoFecha = document.getElementById('ingreso-fecha');
         ingresoFecha.valueAsDate = new Date();
@@ -414,8 +397,6 @@ $_SESSION['usuario']['id_centro'] = $idCentro;
                 return;
             }
 
-            // El servidor verifica que el camión exista (por matrícula) y guarda el ingreso en el
-            // centro del operario; solo si lo acepta se actualiza la barra de ocupación.
             const botonIngreso = formIngreso.querySelector('button[type="submit"]');
             botonIngreso.disabled = true;
             try {
@@ -446,11 +427,8 @@ $_SESSION['usuario']['id_centro'] = $idCentro;
             ingresoFecha.valueAsDate = new Date();
         });
 
-        // RF80 — Actualización del estado de la maquinaria
         const API_BASE_GESTION = '/recolix/API_Gestion';
         const API_BASE_USUARIOS = '/recolix/API_Usuarios/api.php';
-        // Centro real asignado al operario (USUARIO.id_centro), leído fresco de la
-        // base en cada carga de la página — ver el bloque PHP del principio del archivo.
         const ID_CENTRO = <?= json_encode($idCentro) ?>;
 
         const LABELS_TIPO_MAQUINARIA = {

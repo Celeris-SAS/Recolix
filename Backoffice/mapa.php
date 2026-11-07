@@ -9,6 +9,7 @@ require_once __DIR__ . '/../extra/i18n/i18n.php';
     <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= t('backoffice.mapa_title') ?></title>
+    <link rel="icon" type="image/png" href="/recolix/LandingPage/img/Logo.png">
     <link rel="stylesheet" href="styleBackoffice.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
@@ -184,6 +185,10 @@ require_once __DIR__ . '/../extra/i18n/i18n.php';
         'popupMunicipio' => 'mapa.js_popup_municipio',
         'popupCapacidad' => 'mapa.js_popup_capacidad',
         'popupNivelLlenado' => 'mapa.js_popup_nivel_llenado',
+        'popupProyeccion' => 'mapa.js_popup_proyeccion',
+        'proyeccionCalculando' => 'mapa.js_proyeccion_calculando',
+        'proyeccionSinDatos' => 'mapa.js_proyeccion_sin_datos',
+        'proyeccionTexto' => 'mapa.js_proyeccion_texto',
         'popupCamion' => 'mapa.js_popup_camion',
         'popupModelo' => 'mapa.js_popup_modelo',
         'popupUltimaPosicion' => 'mapa.js_popup_ultima_posicion',

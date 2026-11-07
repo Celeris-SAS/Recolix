@@ -407,7 +407,7 @@ INSERT INTO `circuito` (`id_circuito`, `id_municipio`, `nombre`, `codigo`, `acti
 
 CREATE TABLE `contenedor` (
   `id_contenedor` int(11) NOT NULL,
-  `id_circuito` int(11) NOT NULL,
+  `id_circuito` int(11) DEFAULT NULL,
   `id_tipo` int(11) DEFAULT NULL,
   `calle` varchar(100) DEFAULT NULL,
   `num_calle` int(11) DEFAULT NULL,

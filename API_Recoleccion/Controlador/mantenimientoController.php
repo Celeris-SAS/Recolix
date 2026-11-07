@@ -4,15 +4,18 @@
     private $mantenimientoModel;
     private $camionModel;
     private $notificacionModel;
+    private $levanteModel;
     private $tiposValidos = ['preventivo', 'correctivo'];
 
         public function __construct() {
             require_once __DIR__ . '/../Modelo/mantenimientoModel.php';
             require_once __DIR__ . '/../Modelo/camionModel.php';
             require_once __DIR__ . '/../Modelo/notificacionModel.php';
+            require_once __DIR__ . '/../Modelo/levanteModel.php';
             $this->mantenimientoModel = new MantenimientoModel();
             $this->camionModel = new CamionModel();
             $this->notificacionModel = new NotificacionModel();
+            $this->levanteModel = new LevanteModel();
         }
 
         private function validarId($valor) {
@@ -67,11 +70,15 @@
             return $val;
         }
 
-        // RNE 24: la fecha de fin no puede ser anterior a la de inicio.
         private function validarRangoFechas($fechaInicio, $fechaFin) {
             if ($fechaFin !== null && strtotime($fechaFin) < strtotime($fechaInicio)) {
                 throw new InvalidArgumentException("La fecha de fin no puede ser anterior a la fecha de inicio.");
             }
+        }
+
+        private function ponerEnMantenimiento($camionId) {
+            $this->camionModel->marcarCamionEnMantenimiento($camionId);
+            $this->levanteModel->cancelarActivosDelCamion($camionId);
         }
 
         public function reglasValidacion() {
@@ -120,7 +127,7 @@
             $costo = $this->validarDecimal($costo, 'Costo');
             $this->validarRangoFechas($fechaInicio, $fechaFin);
             $id = $this->mantenimientoModel->registrar($camionId, $tipo, $descripcion, $fechaInicio, $fechaFin, $costo);
-            $this->camionModel->marcarCamionEnMantenimiento($camionId);
+            $this->ponerEnMantenimiento($camionId);
             return $id;
         }
 
@@ -156,7 +163,7 @@
             $fechaFin = $this->validarFecha($fechaFin, 'Fecha de fin');
             $this->validarRangoFechas($fechaInicio, $fechaFin);
             $id = $this->mantenimientoModel->programar($camionId, $tipo, $descripcion, $fechaInicio, $fechaFin);
-            $this->camionModel->marcarCamionEnMantenimiento($camionId);
+            $this->ponerEnMantenimiento($camionId);
             return $id;
         }
 
@@ -178,7 +185,6 @@
             return $this->mantenimientoModel->obtenerCostoTotal($camionId);
         }
 
-        // RF37: la cuadrilla avisa a los administradores de un desperfecto mecánico en su camión.
         public function notificarDesperfecto($camionId, $descripcion) {
             $camionId    = $this->validarId($camionId);
             $descripcion = $this->validarString($descripcion, 'Descripción');

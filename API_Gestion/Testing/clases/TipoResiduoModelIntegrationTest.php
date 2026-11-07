@@ -2,7 +2,6 @@
 
 require_once __DIR__ . '/../../Modelo/tipoResiduoModel.php';
 
-// Ojo: la clase real se llama 'tipoResiduoModel' (minúscula inicial).
 final class TipoResiduoModelIntegrationTest extends DbTestCase
 {
     public function testInsertYGetTipoResiduoRoundtrip(): void
