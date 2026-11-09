@@ -14,6 +14,7 @@ $apellido       = htmlspecialchars($usuario['p_apellido'] ?? '');
     <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= t('backoffice.index_title') ?></title>
+    <link rel="icon" type="image/png" href="/recolix/LandingPage/img/Logo.png">
     <link rel="stylesheet" href="styleBackoffice.css">
 </head>
 <body>
@@ -280,8 +281,6 @@ async function cargarNovedades() {
     }
 }
 
-// RF53: la alerta de levantes vencidos ya se genera desde la campana (extra/Comun/campana.js),
-// que corre en todas las páginas del Backoffice, no solo acá.
 document.addEventListener('DOMContentLoaded', () => {
     cargarNovedades();
 });

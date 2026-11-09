@@ -68,7 +68,6 @@
             return $this->trasladoModel->insertTrasladoResiduo($camionId, $centroId, $peso, $fechaIngreso);
         }
 
-        // Mensaje claro en vez del error de clave foránea de MySQL.
         private function verificarExistencia($camionId, $centroId) {
             if (!$this->trasladoModel->existeCamion($camionId)) {
                 throw new InvalidArgumentException("No existe un camión con el ID $camionId.");
@@ -78,8 +77,6 @@
             }
         }
 
-        // Ingreso de residuos que registra el operario en su centro: el camión se identifica por
-        // matrícula (debe existir) y el centro sale del usuario de la sesión, nunca del cliente.
         public function registrarIngreso($matricula, $peso, $fechaIngreso) {
             if (!is_string($matricula) || trim($matricula) === '') {
                 throw new InvalidArgumentException("La matrícula del camión es obligatoria.");

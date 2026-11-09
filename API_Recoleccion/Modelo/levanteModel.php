@@ -14,7 +14,6 @@ class LevanteModel {
         $this->notificacionModel = new NotificacionModel();
     }
 
-    // Filas (id_incidencia, ci_usuario, tipo) que cumple la consulta, para avisarle a cada vecino.
     private function buscarIncidencias($sql, $types, $params) {
         $stmt = mysqli_prepare($this->conn->getConexion(), $sql);
         mysqli_stmt_bind_param($stmt, $types, ...$params);
@@ -98,9 +97,6 @@ class LevanteModel {
         return $levantes;
     }
 
-    // El levante pendiente/en_curso de una cuadrilla, por LEVANTE.id_cuadrilla
-    // directo (FK real del MER) en vez de derivarlo de ruta_cuadrilla, que es
-    // una relación aparte y puede no coincidir con quién ejecuta el levante.
     public function obtenerActivoPorCuadrilla($idCuadrilla) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "
             SELECT id_levante FROM levante
@@ -116,8 +112,6 @@ class LevanteModel {
         return $row ? (int) $row['id_levante'] : null;
     }
 
-    // Levantes ya completados de una cuadrilla (más recientes primero). Al completarse, la ruta
-    // sale de "rutas asignadas" (ver completarLevante), así que este es su historial.
     public function obtenerCompletadosPorCuadrilla($idCuadrilla) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "
             SELECT l.id_levante, l.id_ruta, r.nombre, ci.turno, l.hora_salida, l.hora_llegada,
@@ -239,8 +233,6 @@ class LevanteModel {
             }
         }
 
-        // Todo o nada: si falla un paso (por ej. el centro de disposición final) no queda un
-        // levante a medias ni el camión en depósito.
         $conexion = $this->conn->getConexion();
         mysqli_begin_transaction($conexion);
         try {
@@ -267,9 +259,6 @@ class LevanteModel {
         $this->precargarContenedores($idLevante, $idRuta);
         $this->asignarIncidenciasDeLaRuta($idRuta, $idCuadrilla);
 
-            // Planificar un levante para una cuadrilla implica que esa cuadrilla queda
-            // asignada a la ruta (ruta_cuadrilla), aunque nadie la haya asignado antes a
-            // mano: si no, el panel de la cuadrilla no mostraría la ruta ni sus contenedores.
             $stmt = mysqli_prepare($this->conn->getConexion(), "
                 INSERT IGNORE INTO ruta_cuadrilla (id_ruta, id_cuadrilla) VALUES (?, ?)
             ");
@@ -280,9 +269,6 @@ class LevanteModel {
             $this->precargarContenedores($idLevante, $idRuta);
             $this->asignarIncidenciasDeLaRuta($idRuta, $idCuadrilla);
 
-            // El destino final elegido queda registrado en centro_levante (no en camion_centro,
-            // que es solo para ingresos ya ocurridos con peso y fecha reales): una vez que el
-            // camión termina la ruta, debe dirigirse a este centro como última parada.
             if ($idCentro !== null) {
                 $stmt = mysqli_prepare($this->conn->getConexion(), "INSERT INTO centro_levante (id_levante, id_centro) VALUES (?, ?)");
                 mysqli_stmt_bind_param($stmt, "ii", $idLevante, $idCentro);
@@ -307,9 +293,6 @@ class LevanteModel {
         return $this->getLevante($idLevante);
     }
 
-    // Al planificar la ruta, las incidencias abiertas de desborde y de falta de recolección de
-    // sus contenedores pasan a la cuadrilla. Las roturas no: la cuadrilla no puede repararlas, y
-    // quedan abiertas para que el administrador las repare y las cierre.
     private function asignarIncidenciasDeLaRuta($idRuta, $idCuadrilla) {
         $afectadas = $this->buscarIncidencias("
             SELECT DISTINCT i.id_incidencia, i.ci_usuario, i.tipo, ic.id_contenedor
@@ -336,7 +319,6 @@ class LevanteModel {
 
         $this->notificacionModel->notificarCambioIncidencias($afectadas, 'asignada');
 
-        // RF: la cuadrilla se entera de qué contenedor tiene asignado por cada incidencia.
         foreach ($afectadas as $inc) {
             $this->notificacionModel->crearParaCuadrilla(
                 $idCuadrilla,
@@ -413,8 +395,6 @@ class LevanteModel {
         return $this->getLevante($idLevante);
     }
 
-    // Al salir la cuadrilla, las incidencias ya asignadas de los contenedores de esta
-    // ruta pasan a "en_curso": la cuadrilla las va a atender en el mismo recorrido.
     private function iniciarIncidenciasDeLaRuta($idLevante) {
         $afectadas = $this->buscarIncidencias("
             SELECT DISTINCT i.id_incidencia, i.ci_usuario, i.tipo
@@ -438,9 +418,6 @@ class LevanteModel {
         $this->notificacionModel->notificarCambioIncidencias($afectadas, 'en_curso');
     }
 
-    // Recolectar un contenedor resuelve por sí solo las incidencias de desborde y de falta de
-    // recolección que la cuadrilla estaba atendiendo. Las roturas, el vandalismo y "otro" no:
-    // requieren reparación o revisión, y se cierran a mano desde la interfaz de la cuadrilla.
     private function cerrarIncidenciasRecolectadas($idContenedor) {
         $afectadas = $this->buscarIncidencias("
             SELECT DISTINCT i.id_incidencia, i.ci_usuario, i.tipo
@@ -489,15 +466,10 @@ class LevanteModel {
         $existe = mysqli_fetch_assoc($result);
         mysqli_stmt_close($stmt);
 
-        // El contenedor_levante se precarga completo con la ruta al planificar el levante
-        // (ver precargarContenedores). Si no hay fila para este contenedor, no pertenece a
-        // la ruta de este levante y la cuadrilla no puede registrarlo.
         if (!$existe) {
             throw new InvalidArgumentException("El contenedor #$idContenedor no pertenece a la ruta de este levante");
         }
 
-        // El motivo es una nota libre y opcional: lo obligatorio es elegir el estado
-        // encontrado (ya validado en el controller contra la lista de estados válidos).
         if ($estadoEncontrado === 'todo_ok' && $peso === null) {
             throw new InvalidArgumentException("El peso es obligatorio cuando el contenedor se recolecta");
         }
@@ -524,8 +496,6 @@ class LevanteModel {
         if ($estadoEncontrado === 'todo_ok') {
             $this->cerrarIncidenciasRecolectadas($idContenedor);
         } else {
-            // El admin se entera de que el levante no pudo recolectar este contenedor y por qué.
-            // El motivo es opcional: si no lo cargaron, el mensaje no se queda con un ":" colgando.
             $detalle = $motivoVal !== null && $motivoVal !== '' ? ": $motivoVal" : '';
             $this->notificacionModel->crearParaAdministradores(
                 "El levante #$idLevante no pudo recolectar el contenedor #$idContenedor (" . Etiquetas::legible($estadoEncontrado) . ")$detalle",
@@ -536,9 +506,6 @@ class LevanteModel {
 
         $contenedor = $this->obtenerContenedor($idLevante, $idContenedor);
 
-        // Cuando el último contenedor pendiente queda registrado (recolectado o con el
-        // motivo de por qué no se recolectó) el levante se cierra solo: no hay botón de
-        // "completar" y la ruta deja de figurar como asignada a la cuadrilla.
         if (empty($this->contenedoresPendientes($idLevante))) {
             $this->completarLevante($idLevante);
         }
@@ -546,12 +513,6 @@ class LevanteModel {
         return $contenedor;
     }
 
-    // El contenedor_levante se precarga con estado_encontrado='todo_ok' por defecto
-    // para cada contenedor de la ruta (ver precargarContenedores), así que ese campo
-    // solo no alcanza para saber si la cuadrilla ya pasó por él. Se considera
-    // procesado recién cuando tiene hora_vaciado (se recolectó) o cuando el estado
-    // encontrado dejó de ser el 'todo_ok' por defecto (no se recolectó; el motivo es
-    // opcional, así que no se puede exigir).
     private function contenedoresPendientes($idLevante) {
         $pendientes = [];
         foreach ($this->obtenerContenedores($idLevante) as $c) {
@@ -606,18 +567,11 @@ class LevanteModel {
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
 
-        // Lo libera salvo que en el medio se haya reportado un desperfecto ("en_mantenimiento")
-        // o se haya dado de baja: ahí no se lo pisa a 'disponible' como si estuviera bien.
-        // (Cubre tanto el camión "en_ruta" normal como el "en_deposito" de un levante que se
-        // cancela antes de arrancar.)
         $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE camion SET estado = 'disponible' WHERE id_camion = ? AND estado NOT IN ('en_mantenimiento', 'de_baja')");
         mysqli_stmt_bind_param($stmt, "i", $levante['id_camion']);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
 
-        // El levante ya terminó: la ruta deja de estar "asignada" a la cuadrilla en su
-        // panel (si se planifica un levante nuevo para ese mismo par ruta/cuadrilla,
-        // planificarLevante() vuelve a crear este vínculo).
         $stmt = mysqli_prepare($this->conn->getConexion(), "
             DELETE FROM ruta_cuadrilla WHERE id_ruta = ? AND id_cuadrilla = ?
         ");
@@ -642,13 +596,50 @@ class LevanteModel {
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
 
-        // Mismo criterio que completarLevante(): no pisa un camión en mantenimiento o de baja.
         $stmt = mysqli_prepare($this->conn->getConexion(), "UPDATE camion SET estado = 'disponible' WHERE id_camion = ? AND estado NOT IN ('en_mantenimiento', 'de_baja')");
         mysqli_stmt_bind_param($stmt, "i", $levante['id_camion']);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
 
         return $this->getLevante($idLevante);
+    }
+
+    public function cancelarActivosDeRutaCuadrilla($idRuta, $idCuadrilla) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "
+            SELECT id_levante FROM levante WHERE id_ruta = ? AND id_cuadrilla = ? AND estado IN ('pendiente', 'en_curso')
+        ");
+        mysqli_stmt_bind_param($stmt, "ii", $idRuta, $idCuadrilla);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $ids = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $ids[] = (int) $row['id_levante'];
+        }
+        mysqli_stmt_close($stmt);
+
+        foreach ($ids as $id) {
+            $this->cancelarLevante($id);
+        }
+        return $ids;
+    }
+
+    public function cancelarActivosDelCamion($idCamion) {
+        $stmt = mysqli_prepare($this->conn->getConexion(), "
+            SELECT id_levante FROM levante WHERE id_camion = ? AND estado IN ('pendiente', 'en_curso')
+        ");
+        mysqli_stmt_bind_param($stmt, "i", $idCamion);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $ids = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $ids[] = (int) $row['id_levante'];
+        }
+        mysqli_stmt_close($stmt);
+
+        foreach ($ids as $id) {
+            $this->cancelarLevante($id);
+        }
+        return $ids;
     }
 
     public function obtenerResumen() {
@@ -673,9 +664,6 @@ class LevanteModel {
         ];
     }
 
-    // RF53: levantes pendientes o en curso cuyo turno ya terminó. Un levante de un día anterior
-    // siempre está vencido; el de hoy, recién cuando pasó la hora de fin del turno del circuito
-    // (mañana 12:00, tarde 18:00, noche 24:00; sin turno definido, al terminar el día).
     public function obtenerPendientesVencidos() {
         $stmt = mysqli_prepare($this->conn->getConexion(), "
             SELECT l.*, r.nombre AS ruta_nombre, r.actividad, c.matricula, ci.turno
@@ -706,9 +694,6 @@ class LevanteModel {
         return $levantes;
     }
 
-    // RF53/RF94: avisa a los administradores de cada levante vencido (pendiente o en curso
-    // al finalizar el turno) que todavía no tenía su alerta generada. Se dispara al abrir
-    // el Backoffice, porque el sistema no tiene una tarea programada.
     public function generarAlertaVencidos() {
         $avisados = 0;
         foreach ($this->obtenerPendientesVencidos() as $levante) {

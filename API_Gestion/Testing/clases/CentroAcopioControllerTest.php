@@ -18,8 +18,6 @@ final class CentroAcopioControllerTest extends GestionTestCase
 
     public function testValidarEnteroNoNegativoAceptaCero(): void
     {
-        // A diferencia de validarEntero, acá 0 es válido: un centro recién
-        // asignado a un tipo de residuo empieza con ocupación 0.
         $controller = $this->controller();
         $this->assertSame(0, $this->callPrivate($controller, 'validarEnteroNoNegativo', [0, 'Ocupación actual']));
     }

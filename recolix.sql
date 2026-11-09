@@ -407,7 +407,7 @@ INSERT INTO `circuito` (`id_circuito`, `id_municipio`, `nombre`, `codigo`, `acti
 
 CREATE TABLE `contenedor` (
   `id_contenedor` int(11) NOT NULL,
-  `id_circuito` int(11) NOT NULL,
+  `id_circuito` int(11) DEFAULT NULL,
   `id_tipo` int(11) DEFAULT NULL,
   `calle` varchar(100) DEFAULT NULL,
   `num_calle` int(11) DEFAULT NULL,
@@ -1045,7 +1045,9 @@ CREATE TABLE `incidencia` (
   `urgencia` tinyint(1) DEFAULT 0,
   `url_imagen` varchar(255) DEFAULT NULL,
   `fecha_apertura` datetime NOT NULL DEFAULT current_timestamp(),
-  `fecha_cierre` datetime DEFAULT NULL
+  `fecha_cierre` datetime DEFAULT NULL,
+  -- RF13 / ERR-07: peso recolectado al cerrar la incidencia (cerrar()/cerrarPorCuadrilla()).
+  `peso_recolectado` decimal(8,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -1993,6 +1995,44 @@ DELIMITER ;
 INSERT INTO `camion_estado_historial` (`id_camion`, `estado_anterior`, `estado_nuevo`)
 SELECT c.`id_camion`, NULL, c.`estado` FROM `camion` c
 WHERE NOT EXISTS (SELECT 1 FROM `camion_estado_historial` h WHERE h.`id_camion` = c.`id_camion`);
+
+--
+-- ERR-02: historial de alta y cambios de estado del contenedor (mismo patrón que
+-- camion_estado_historial para RF36/RF43). ContenedorModel::getHistorial() la suma
+-- a las consultas de incidencia/levante/reparación ya existentes.
+--
+CREATE TABLE IF NOT EXISTS `contenedor_estado_historial` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_contenedor` int(11) NOT NULL,
+  `estado_anterior` varchar(20) DEFAULT NULL,
+  `estado_nuevo` varchar(20) NOT NULL,
+  `fecha_cambio` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_contenedor_fecha` (`id_contenedor`, `fecha_cambio`),
+  CONSTRAINT `contenedor_estado_historial_ibfk_1` FOREIGN KEY (`id_contenedor`) REFERENCES `contenedor` (`id_contenedor`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+DROP TRIGGER IF EXISTS `contenedor_estado_alta`;
+DROP TRIGGER IF EXISTS `contenedor_estado_cambio`;
+
+DELIMITER $$
+CREATE TRIGGER `contenedor_estado_alta` AFTER INSERT ON `contenedor` FOR EACH ROW
+BEGIN
+  INSERT INTO `contenedor_estado_historial` (`id_contenedor`, `estado_anterior`, `estado_nuevo`) VALUES (NEW.`id_contenedor`, NULL, NEW.`estado`);
+END$$
+
+CREATE TRIGGER `contenedor_estado_cambio` AFTER UPDATE ON `contenedor` FOR EACH ROW
+BEGIN
+  IF NOT (OLD.`estado` <=> NEW.`estado`) THEN
+    INSERT INTO `contenedor_estado_historial` (`id_contenedor`, `estado_anterior`, `estado_nuevo`) VALUES (NEW.`id_contenedor`, OLD.`estado`, NEW.`estado`);
+  END IF;
+END$$
+DELIMITER ;
+
+-- Estado inicial de los contenedores ya existentes.
+INSERT INTO `contenedor_estado_historial` (`id_contenedor`, `estado_anterior`, `estado_nuevo`)
+SELECT c.`id_contenedor`, NULL, c.`estado` FROM `contenedor` c
+WHERE NOT EXISTS (SELECT 1 FROM `contenedor_estado_historial` h WHERE h.`id_contenedor` = c.`id_contenedor`);
 
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

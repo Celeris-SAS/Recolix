@@ -224,7 +224,6 @@ final class LevanteModelIntegrationTest extends DbTestCase
 
     public function testRegistrarContenedorNoRecolectadoAceptaMotivoVacio(): void
     {
-        // El motivo es una nota libre y opcional: lo único obligatorio es el estado encontrado.
         [$model, $idLevante, , $contenedorId] = $this->levantePendiente();
         $model->iniciarLevante($idLevante);
 
@@ -242,7 +241,6 @@ final class LevanteModelIntegrationTest extends DbTestCase
         $model->registrarContenedor($idLevante, $contenedorId, 'todo_ok', 50, null);
 
         $nivel = $this->conn()->query("SELECT nivel_llenado FROM contenedor WHERE id_contenedor = $contenedorId")->fetch_assoc()['nivel_llenado'];
-        // capacidad=100, peso=50 -> 50%
         $this->assertSame(50, (int) $nivel);
     }
 
@@ -258,8 +256,6 @@ final class LevanteModelIntegrationTest extends DbTestCase
 
     public function testCompletarLevanteRechazaSiHayContenedoresPendientes(): void
     {
-        // La precarga marca 'todo_ok' a cada contenedor de la ruta, pero un contenedor
-        // al que la cuadrilla todavía no pasó (sin hora_vaciado ni motivo) sigue pendiente.
         [$model, $idLevante] = $this->levantePendiente();
         $model->iniciarLevante($idLevante);
 
@@ -316,7 +312,6 @@ final class LevanteModelIntegrationTest extends DbTestCase
         $idLevante = (int) $model->planificarLevante($rutaId, $this->crearCamion(), $cuadrillaId, '2026-01-10 08:00:00', '2026-01-10')['id_levante'];
         $model->iniciarLevante($idLevante);
 
-        // No levanta el primero (sin motivo) y sigue con la ruta hasta levantar el último.
         $model->registrarContenedor($idLevante, $primero, 'acceso_bloqueado', null, null);
         $this->assertSame('en_curso', $model->getLevante($idLevante)['estado']);
         $model->registrarContenedor($idLevante, $ultimo, 'todo_ok', 20, null);
@@ -339,7 +334,6 @@ final class LevanteModelIntegrationTest extends DbTestCase
 
         $model->registrarContenedor($idLevante, $primero, 'otro', null, null);
 
-        // Solo el segundo sigue pendiente.
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("#$segundo");
         $model->completarLevante($idLevante);
@@ -377,7 +371,6 @@ final class LevanteModelIntegrationTest extends DbTestCase
         $model->registrarContenedor($idLevante, $contenedorId, 'todo_ok', 30, null);
         $idCuadrilla = (int) $model->getLevante($idLevante)['id_cuadrilla'];
 
-        // Otra cuadrilla con un levante pendiente (no completado) y una ajena completada.
         [$otroModel, $otroLevante] = $this->levantePendiente();
         $ajena = (int) $otroModel->getLevante($otroLevante)['id_cuadrilla'];
 
@@ -434,7 +427,6 @@ final class LevanteModelIntegrationTest extends DbTestCase
         $idLevante = (int) $levante['id_levante'];
 
         $model->iniciarLevante($idLevante);
-        // Registrar el último contenedor cierra el levante solo (no hay que llamar a completarLevante).
         $model->registrarContenedor($idLevante, $contenedorId, 'todo_ok', 42, null);
 
         $this->assertSame('completado', $model->getLevante($idLevante)['estado']);
@@ -524,7 +516,6 @@ final class LevanteModelIntegrationTest extends DbTestCase
         $this->assertCount(1, $vencidos);
     }
 
-    // RF53: un levante de hoy solo vence cuando terminó el turno del circuito.
     public function testObtenerPendientesVencidosRespetaElFinDelTurnoDelCircuito(): void
     {
         $model = new LevanteModel();
@@ -556,7 +547,6 @@ final class LevanteModelIntegrationTest extends DbTestCase
         $this->assertSame([], $model->obtenerPendientesVencidos());
     }
 
-    // ERR-01: si falla un paso (acá, un destino inexistente en la base) no queda nada a medias.
     public function testPlanificarLevanteDeshaceTodoSiFallaUnPaso(): void
     {
         $model = new LevanteModel();
@@ -576,11 +566,10 @@ final class LevanteModelIntegrationTest extends DbTestCase
         }
     }
 
-    // RF53: alerta de levante no completado al vencer el turno.
     public function testGenerarAlertaVencidosAvisaAlAdministradorUnaSolaVez(): void
     {
         $admin = $this->crearUsuario(null, ['rol' => 'administrador', 'acceso' => 'habilitado']);
-        [$model, $idLevante] = $this->levantePendiente(); // hora_levante en el pasado: ya está vencido
+        [$model, $idLevante] = $this->levantePendiente();
 
         $primera = $model->generarAlertaVencidos();
         $segunda = $model->generarAlertaVencidos();
@@ -608,7 +597,6 @@ final class LevanteModelIntegrationTest extends DbTestCase
         $camionId = $this->crearCamion();
         $cuadrillaId = $this->crearCuadrilla();
         $model = new LevanteModel();
-        // Turno a futuro: no debería generar ninguna alerta.
         $model->planificarLevante($rutaId, $camionId, $cuadrillaId, '2099-01-10 08:00:00', '2099-01-10');
 
         $avisados = $model->generarAlertaVencidos();
@@ -616,8 +604,6 @@ final class LevanteModelIntegrationTest extends DbTestCase
         $this->assertSame(0, $avisados);
     }
 
-    // Si se reportó un desperfecto a mitad de ruta (el camión queda "en_mantenimiento"),
-    // terminar o cancelar el levante no debe devolverlo a "disponible" como si nada.
     public function testCompletarLevanteNoLiberaUnCamionEnMantenimiento(): void
     {
         [$model, $idLevante, $camionId, $contenedorId] = $this->levantePendiente();

@@ -2,12 +2,6 @@
 
 require_once __DIR__ . '/../../Controlador/prediccionLlenadoController.php';
 
-/**
- * calcularPrediccion() es la única lógica de negocio real de este
- * controller (promedio de los levantes de los últimos 7 días, proyectado
- * sobre la capacidad del contenedor); se ejercita con dobles de
- * prediccionModel/contenedorModel para no depender de la base de datos.
- */
 final class PrediccionLlenadoControllerTest extends GestionTestCase
 {
     private function controller(): prediccionLlenadoController
@@ -88,9 +82,7 @@ final class PrediccionLlenadoControllerTest extends GestionTestCase
             public $nivelRecibido = null;
             public function getDatosLevantes($id) {
                 return [
-                    // Descartado: tiene más de 7 días.
                     ['peso' => 1000, 'hora_levante' => date('Y-m-d', strtotime('-30 days'))],
-                    // Los dos siguientes sí cuentan: promedio (60+80)/2 = 70.
                     ['peso' => 60, 'hora_levante' => date('Y-m-d', strtotime('-1 day'))],
                     ['peso' => 80, 'hora_levante' => date('Y-m-d', strtotime('-2 days'))],
                 ];
@@ -106,7 +98,6 @@ final class PrediccionLlenadoControllerTest extends GestionTestCase
 
         $resultado = $controller->calcularPrediccion(1);
 
-        // promedio 70 / capacidad 200 * 100 = 35.
         $this->assertSame(1, $prediccionModelStub->idRecibido);
         $this->assertSame(35, $prediccionModelStub->nivelRecibido);
         $this->assertSame(123, $resultado);

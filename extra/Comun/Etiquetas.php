@@ -1,5 +1,4 @@
 <?php
-// Texto legible para valores internos (enums de la base) que se muestran en notificaciones y mails.
 class Etiquetas {
     private static $especiales = [
         'falta_recoleccion' => 'falta de recolección',

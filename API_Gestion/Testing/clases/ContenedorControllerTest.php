@@ -2,11 +2,6 @@
 
 require_once __DIR__ . '/../../Controlador/contenedorController.php';
 
-/**
- * contenedorController valida todos sus argumentos antes de tocar el Model,
- * así que se puede instanciar sin constructor (sin contenedorModel real,
- * sin conexión a MySQL) y ejercitar las validaciones directamente.
- */
 final class ContenedorControllerTest extends GestionTestCase
 {
     private function controller(): contenedorController

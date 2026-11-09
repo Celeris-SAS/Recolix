@@ -4,7 +4,6 @@ require_once __DIR__ . '/../../conexion.php';
 require_once __DIR__ . '/../Modelo/reporteModel.php';
 require_once __DIR__ . '/../../extra/i18n/i18n.php';
 
-// Los archivos exportados salen en el idioma activo de la página (cookie recolix_lang / ?lang=).
 $r = function ($clave) { return t('reportes.' . $clave); };
 
 $tiposExportables = [
@@ -33,7 +32,6 @@ if (!isset($tiposExportables[$tipo])) {
 
 $reporteModel = new ReporteModel();
 
-// Rango fijo permitido o período por fechas "AAAA-MM-DD_AAAA-MM-DD" (el modelo valida que sea coherente).
 function rangoDesdeGet(array $permitidos, $defecto) {
     $valor = $_GET['rango'] ?? '';
     if (in_array($valor, $permitidos, true)) {
@@ -47,7 +45,6 @@ function rangoDesdeGet(array $permitidos, $defecto) {
 
 $formato = ($_GET['formato'] ?? 'csv') === 'pdf' ? 'pdf' : 'csv';
 
-// Cada fila (la primera es el encabezado) se acumula y se vuelca al final como CSV o PDF.
 $tabla = [];
 $emitir = function (array $fila) use (&$tabla) {
     $tabla[] = $fila;
@@ -260,7 +257,6 @@ switch ($tipo) {
     exit;
 }
 
-// Queda registrado quién exportó qué y en qué formato (tabla REPORTE).
 $ciUsuario = $_SESSION['usuario']['ci_usuario'] ?? null;
 if ($ciUsuario) {
     $conn = new conexion();

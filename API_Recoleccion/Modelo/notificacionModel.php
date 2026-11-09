@@ -6,7 +6,6 @@ require_once __DIR__ . '/../../extra/Comun/Etiquetas.php';
 class NotificacionModel {
     private $conn;
 
-    // Texto que ve el vecino según el nuevo estado de su incidencia.
     private $textosEstadoIncidencia = [
         'asignada' => 'fue asignada a una cuadrilla',
         'en_curso' => 'está siendo atendida',
@@ -17,7 +16,6 @@ class NotificacionModel {
         $this->conn = (new conexion())->getConexion();
     }
 
-    // RF94/RF95: notificación para todos los administradores habilitados.
     public function crearParaAdministradores($mensaje, $tipoOrigen, $prioridad) {
         $idNotificacion = $this->insertarNotificacion($mensaje, $tipoOrigen, $prioridad);
         foreach ($this->administradoresHabilitados() as $destinatario) {
@@ -26,15 +24,12 @@ class NotificacionModel {
         return $idNotificacion;
     }
 
-    // RF94/RF95: notificación dirigida a un vecino concreto (dueño de una incidencia).
     public function crearParaUsuario($ci, $mensaje, $tipoOrigen, $prioridad) {
         $idNotificacion = $this->insertarNotificacion($mensaje, $tipoOrigen, $prioridad);
         $this->entregar($idNotificacion, (int) $ci, $this->emailDe($ci), $mensaje, $tipoOrigen);
         return $idNotificacion;
     }
 
-    // Notificación a todos los integrantes habilitados de una cuadrilla
-    // (ruta asignada, contenedor/incidencia asignada).
     public function crearParaCuadrilla($idCuadrilla, $mensaje, $tipoOrigen, $prioridad) {
         $idNotificacion = $this->insertarNotificacion($mensaje, $tipoOrigen, $prioridad);
         foreach ($this->cuadrillaHabilitada($idCuadrilla) as $destinatario) {
@@ -43,8 +38,6 @@ class NotificacionModel {
         return $idNotificacion;
     }
 
-    // Notificación a los operarios habilitados de un centro de acopio
-    // (ej. ese centro fue asignado como destino de un levante).
     public function crearParaOperariosDeCentro($idCentro, $mensaje, $tipoOrigen, $prioridad) {
         $idNotificacion = $this->insertarNotificacion($mensaje, $tipoOrigen, $prioridad);
         foreach ($this->operariosDeCentro($idCentro) as $destinatario) {
@@ -53,9 +46,6 @@ class NotificacionModel {
         return $idNotificacion;
     }
 
-    // Avisa a cada vecino que reportó una de estas incidencias que su caso cambió de estado.
-    // Las incidencias sin dueño (cuenta borrada, ci_usuario null) se omiten.
-    // $incidencias: filas con id_incidencia, ci_usuario y tipo, tomadas antes del cambio.
     public function notificarCambioIncidencias(array $incidencias, $nuevoEstado) {
         if (!isset($this->textosEstadoIncidencia[$nuevoEstado])) {
             return;
@@ -73,8 +63,6 @@ class NotificacionModel {
         }
     }
 
-    // RF53: para no avisar del mismo levante vencido en cada carga del panel, antes de
-    // crear la alerta se chequea si ya existe una notificación con ese texto exacto.
     public function existeMensaje($mensaje) {
         $stmt = mysqli_prepare($this->conn, "SELECT 1 FROM NOTIFICACION WHERE mensaje = ? LIMIT 1");
         mysqli_stmt_bind_param($stmt, 's', $mensaje);

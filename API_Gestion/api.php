@@ -5,33 +5,20 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('Access-Control-Allow-Headers: Content-Type');
 
-// ERR-22: los rechazos por restricciones de la base (clave foránea, duplicados) se muestran
-// con un mensaje de negocio en lugar del texto técnico de MySQL.
+require_once __DIR__ . '/../extra/Comun/ErroresApi.php';
+
 function mensajeError(Throwable $e) {
-    if ($e instanceof mysqli_sql_exception) {
-        switch ((int) $e->getCode()) {
-            case 1452:
-                return 'El registro referenciado no existe. Verificá los datos ingresados.';
-            case 1451:
-                return 'No se puede eliminar o modificar porque tiene registros asociados.';
-            case 1062:
-                return 'Ya existe un registro con esos datos.';
-        }
-    }
-    return $e->getMessage();
+    return recolix_mensaje_error($e);
 }
 
 $config = [
     'base_path' => '/recolix/API_Gestion/',
-    // Endpoints que pueden usarse sin ser personal interno (landing pública y panel del vecino).
-    // Formato: 'METODO recurso', 'METODO recurso/accion' o 'METODO recurso/:id'.
     'publicos' => [
         'GET contenedores',
         'GET centros-acopio',
-        'GET incidencias/getActivasConUbicacion',
-        'GET reportes/getIncidenciasDetalle',
-        'GET reportes/getResumenGeneral',
+        'GET reportes/getResumenPublico',
         'POST incidencias',
+        'GET predicciones/proyectarLlenadoIA',
     ],
     'resources' => [
         'contenedores' => [
@@ -63,13 +50,17 @@ $config = [
                 'filtrarMunicipio',
                 'filtrarTipoResiduo',
                 'filtrarEstado',
-                'filtrarCriticos'
+                'filtrarCriticos',
+                'filtrarCombinado'
             ],
             'filters' => [
                 'municipio'   => 'filtrarMunicipio',
                 'tipoResiduo' => 'filtrarTipoResiduo',
                 'estado'      => 'filtrarEstado'
-            ]
+            ],
+            // ERR-04: cuando la URL trae más de uno de estos query params a la vez,
+            // el router llama a este método único en lugar de aplicar solo el primero.
+            'combinedFilter' => 'filtrarCombinado'
         ],
         'tipos-residuo' => [
             'singular'    => 'TipoResiduo',
@@ -106,10 +97,15 @@ $config = [
             'insertMethod' => 'calcularPrediccion',
             'updateMethod' => null,
             'deleteMethod' => null,
+            'rolesAccion' => [
+                // Pública: la consume el mapa de contenedores, visible sin iniciar sesión.
+                'proyectarLlenadoIA' => ['*'],
+            ],
             'actions' => [
                 'calcularPrediccion',
                 'getUltimaPrediccion',
-                'getAllPredicciones'
+                'getAllPredicciones',
+                'proyectarLlenadoIA'
             ],
             'filters' => []
         ],
@@ -156,7 +152,6 @@ $config = [
             'insertMethod' => 'crearIncidencia',
             'updateMethod' => null,
             'deleteMethod' => null,
-            // Roles por acción, igual que en API_Usuarios. Sin entrada = solo la regla general de personal interno.
             'rolesMetodo' => [
                 'GET' => ['administrador'],
                 'POST' => ['*'],
@@ -202,6 +197,7 @@ $config = [
             'deleteMethod' => null,
             'actions' => [
                 'getResumenGeneral',
+                'getResumenPublico',
                 'getDistribucionLlenado',
                 'getIndicadores',
                 'getZonasCriticas',
@@ -312,9 +308,6 @@ if (strpos($uri, $basePath) === 0) {
         $action = $_GET['action'];
     }
 
-    // Control de acceso (igual que API_Usuarios): sin sesión solo se accede a lo listado en
-    // $config['publicos']. Con sesión, el rol tiene que estar permitido para la acción o, si no
-    // hay acción, para el método. Sin entrada en la lista, solo administrador.
     $claveEndpoint = $method . ' ' . $resource . ($action ? '/' . $action : ($id !== null ? '/:id' : ''));
     $rolSesion     = $_SESSION['usuario']['rol'] ?? '';
     if (!in_array($claveEndpoint, $config['publicos'], true)) {
@@ -384,28 +377,48 @@ if (strpos($uri, $basePath) === 0) {
                 $handled = false;
 
                 if (!empty($query) && isset($resourceConfig['filters']) && is_array($resourceConfig['filters'])) {
-                    foreach ($query as $qk => $qv) {
-                        if (isset($resourceConfig['filters'][$qk])) {
-                            $filterMethod = $resourceConfig['filters'][$qk];
-                            if (method_exists($controller, $filterMethod)) {
-                                try {
-                                    if (is_array($qv)) {
-                                        $result = call_user_func_array([$controller, $filterMethod], array_values($qv));
-                                    } else {
-                                        $result = $controller->{$filterMethod}($qv);
+                    $filtrosPresentes = array_intersect_key($query, $resourceConfig['filters']);
+
+                    // Más de un filtro soportado a la vez: si el recurso define un método
+                    // que los combina (AND), se usa ese en lugar de aplicar solo el primero.
+                    if (count($filtrosPresentes) > 1 && isset($resourceConfig['combinedFilter'])) {
+                        $combinedMethod = $resourceConfig['combinedFilter'];
+                        if (method_exists($controller, $combinedMethod)) {
+                            try {
+                                $result = $controller->{$combinedMethod}($filtrosPresentes);
+                                echo json_encode(['status' => 'success', 'data' => $result]);
+                            } catch (Throwable $e) {
+                                http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
+                                echo json_encode(['status' => 'error', 'message' => mensajeError($e)]);
+                            }
+                            $handled = true;
+                        }
+                    }
+
+                    if (!$handled) {
+                        foreach ($query as $qk => $qv) {
+                            if (isset($resourceConfig['filters'][$qk])) {
+                                $filterMethod = $resourceConfig['filters'][$qk];
+                                if (method_exists($controller, $filterMethod)) {
+                                    try {
+                                        if (is_array($qv)) {
+                                            $result = call_user_func_array([$controller, $filterMethod], array_values($qv));
+                                        } else {
+                                            $result = $controller->{$filterMethod}($qv);
+                                        }
+                                        echo json_encode(['status' => 'success', 'data' => $result]);
+                                    } catch (Throwable $e) {
+                                        http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
+                                        echo json_encode(['status' => 'error', 'message' => mensajeError($e)]);
                                     }
-                                    echo json_encode(['status' => 'success', 'data' => $result]);
-                                } catch (Throwable $e) {
-                                    http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
-                                    echo json_encode(['status' => 'error', 'message' => mensajeError($e)]);
+                                    $handled = true;
+                                    break;
+                                } else {
+                                    http_response_code(400);
+                                    echo json_encode(['status' => 'error', 'message' => 'Filtro no soportado por el controller']);
+                                    $handled = true;
+                                    break;
                                 }
-                                $handled = true;
-                                break;
-                            } else {
-                                http_response_code(400);
-                                echo json_encode(['status' => 'error', 'message' => 'Filtro no soportado por el controller']);
-                                $handled = true;
-                                break;
                             }
                         }
                     }

@@ -5,6 +5,8 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('Access-Control-Allow-Headers: Content-Type');
 
+require_once __DIR__ . '/../extra/Comun/ErroresApi.php';
+
 $config = [
     'base_path' => '/recolix/API_Usuarios/api.php/',
     'resources' => [
@@ -18,16 +20,18 @@ $config = [
             'insertMethod' => 'crearSolicitud',
             'updateMethod' => null,
             'deleteMethod' => null,
-            'actions' => ['reglasValidacion', 'getSolicitudesPendientes', 'aprobar', 'rechazar'],
+            'actions' => ['reglasValidacion', 'getSolicitudesPendientes', 'aprobar', 'rechazar', 'aprobarTodas', 'rechazarTodas'],
             'filters' => [],
             'rolesAccion' => [
                 'reglasValidacion'          => null,
                 'getSolicitudesPendientes'  => ['administrador'],
                 'aprobar'                   => ['administrador'],
                 'rechazar'                  => ['administrador'],
+                'aprobarTodas'              => ['administrador'],
+                'rechazarTodas'             => ['administrador'],
             ],
             'rolesMetodo' => [
-                'POST' => null, // crearSolicitud: alta pública de vecino
+                'POST' => null,
             ],
         ],
 
@@ -123,7 +127,7 @@ $config = [
 ];
 
 function verificarPermiso($rolesRequeridos) {
-    if ($rolesRequeridos === null) return; // público
+    if ($rolesRequeridos === null) return;
 
     $rol = $_SESSION['usuario']['rol'] ?? null;
     if (!$rol) {
@@ -131,7 +135,7 @@ function verificarPermiso($rolesRequeridos) {
         echo json_encode(['status' => 'error', 'message' => 'No autenticado']);
         exit;
     }
-    if ($rolesRequeridos === '*') return; // cualquier autenticado
+    if ($rolesRequeridos === '*') return;
 
     if (!in_array($rol, $rolesRequeridos)) {
         http_response_code(403);
@@ -144,22 +148,6 @@ $method = $_SERVER['REQUEST_METHOD'];
 $uri    = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
 $basePath = $config['base_path'];
-
-// DEBUG TEMPORAL - borrar después
-if (isset($_GET['debug'])) {
-    $relativePath = (strpos($uri, $basePath) === 0) ? substr($uri, strlen($basePath)) : 'NO COINCIDE';
-    $uriSegments = explode('/', trim($relativePath, '/'));
-    echo json_encode([
-        'uri_recibida' => $uri,
-        'base_path_esperado' => $basePath,
-        'coincide' => (strpos($uri, $basePath) === 0),
-        'relativePath' => $relativePath,
-        'uriSegments' => $uriSegments,
-        'method' => $method,
-        'resources_disponibles' => array_keys($config['resources'])
-    ]);
-    exit;
-}
 
 if (strpos($uri, $basePath) === 0) {
     $relativePath = substr($uri, strlen($basePath));
@@ -204,7 +192,6 @@ if (strpos($uri, $basePath) === 0) {
         $action = $_GET['action'];
     }
 
-    // ── Chequeo de permisos: acá, porque ya existen $resourceConfig, $action y $method ──
     $rolesAccion = $resourceConfig['rolesAccion'] ?? [];
     $rolesMetodo = $resourceConfig['rolesMetodo'] ?? [];
 
@@ -221,7 +208,6 @@ if (strpos($uri, $basePath) === 0) {
         $callParams = [];
         if ($id !== null) $callParams[] = $id;
 
-        // Leer el body una sola vez
         $bodyRaw = file_get_contents('php://input');
 
         if ($method === 'GET') {
@@ -239,30 +225,15 @@ if (strpos($uri, $basePath) === 0) {
             }
         }
 
-        // Debug de acción
-        if (isset($_GET['debug'])) {
-            echo json_encode([
-                'action' => $action,
-                'method' => $method,
-                'callParams' => $callParams,
-                'body_raw' => $bodyRaw,
-                'body_parsed' => json_decode($bodyRaw, true),
-                'inArray' => in_array($action, $resourceConfig['actions']),
-                'methodExists' => method_exists($controller, $action)
-            ]);
-            exit;
-        }
-
         try {
             $result = call_user_func_array([$controller, $action], $callParams);
             echo json_encode(['status' => 'success', 'data' => $result]);
         } catch (Throwable $e) {
             http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
-            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+            echo json_encode(['status' => 'error', 'message' => recolix_mensaje_error($e)]);
         }
         exit;
     } else {
-        // Debug cuando acción no es válida
         if (isset($_GET['debug'])) {
             echo json_encode([
                 'accion_no_valida' => true,
@@ -294,7 +265,7 @@ if (strpos($uri, $basePath) === 0) {
                     }
                 } catch (Throwable $e) {
                     http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
-                    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                    echo json_encode(['status' => 'error', 'message' => recolix_mensaje_error($e)]);
                 }
             } else {
                 if (!$resourceConfig['getAllMethod']) {
@@ -307,7 +278,7 @@ if (strpos($uri, $basePath) === 0) {
                     echo json_encode(['status' => 'success', 'data' => $result]);
                 } catch (Throwable $e) {
                     http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
-                    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                    echo json_encode(['status' => 'error', 'message' => recolix_mensaje_error($e)]);
                 }
             }
             break;
@@ -332,7 +303,7 @@ if (strpos($uri, $basePath) === 0) {
                     echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' creado', 'data' => $result]);
                 } catch (Throwable $e) {
                     http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
-                    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                    echo json_encode(['status' => 'error', 'message' => recolix_mensaje_error($e)]);
                 }
             }
             break;
@@ -356,7 +327,7 @@ if (strpos($uri, $basePath) === 0) {
                         echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' actualizado', 'data' => $result]);
                     } catch (Throwable $e) {
                         http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
-                        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                        echo json_encode(['status' => 'error', 'message' => recolix_mensaje_error($e)]);
                     }
                 }
             }
@@ -375,7 +346,7 @@ if (strpos($uri, $basePath) === 0) {
                     echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' dado de baja', 'data' => $result]);
                 } catch (Throwable $e) {
                     http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
-                    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                    echo json_encode(['status' => 'error', 'message' => recolix_mensaje_error($e)]);
                 }
             }
             break;

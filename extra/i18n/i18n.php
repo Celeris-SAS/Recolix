@@ -1,8 +1,4 @@
 <?php
-/**
- * Núcleo de internacionalización de Recolix.
- * Idioma activo: ?lang=xx (setea cookie) > cookie recolix_lang > 'es' por defecto.
- */
 
 const RECOLIX_IDIOMAS = ['es', 'en', 'pt'];
 const RECOLIX_IDIOMA_DEFECTO = 'es';

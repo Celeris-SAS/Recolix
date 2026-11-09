@@ -28,8 +28,6 @@ final class MantenimientoControllerTest extends RecoleccionTestCase
 
     public function testValidarFechaSoloDiaCompletaConLaHoraActual(): void
     {
-        // Sin hora en la entrada, DateTime::createFromFormat rellena con la hora
-        // actual (no medianoche) — se verifica el formato, no un valor fijo.
         $controller = $this->controller();
         $resultado = $this->callPrivate($controller, 'validarFecha', ['2026-03-05', 'Fecha']);
         $this->assertMatchesRegularExpression('/^2026-03-05 \d{2}:\d{2}:\d{2}$/', $resultado);
@@ -115,7 +113,6 @@ final class MantenimientoControllerTest extends RecoleccionTestCase
         $this->assertSame(['preventivo', 'correctivo'], $controller->reglasValidacion()['tipo']['valores']);
     }
 
-    // ERR-16 / RNE 24
     public function testValidarRangoFechasRechazaFinAnteriorAlInicio(): void
     {
         $controller = $this->controller();

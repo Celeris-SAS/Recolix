@@ -5,26 +5,14 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('Access-Control-Allow-Headers: Content-Type');
 
-// ERR-22: los rechazos por restricciones de la base (clave foránea, duplicados) se muestran
-// con un mensaje de negocio en lugar del texto técnico de MySQL.
+require_once __DIR__ . '/../extra/Comun/ErroresApi.php';
+
 function mensajeError(Throwable $e) {
-    if ($e instanceof mysqli_sql_exception) {
-        switch ((int) $e->getCode()) {
-            case 1452:
-                return 'El registro referenciado no existe. Verificá los datos ingresados.';
-            case 1451:
-                return 'No se puede eliminar o modificar porque tiene registros asociados.';
-            case 1062:
-                return 'Ya existe un registro con esos datos.';
-        }
-    }
-    return $e->getMessage();
+    return recolix_mensaje_error($e);
 }
 
 $config = [
     'base_path' => '/recolix/API_Recoleccion/',
-    // Endpoints que pueden usarse sin ser personal interno (landing pública).
-    // Formato: 'METODO recurso', 'METODO recurso/accion' o 'METODO recurso/:id'.
     'publicos' => [
         'GET camiones/obtenerEnOperativa',
     ],
@@ -139,6 +127,7 @@ $config = [
                 'filtrarPorTipo' => ['administrador', 'cuadrilla'],
                 'obtenerCostoTotal' => ['administrador'],
                 'proximos' => ['administrador', 'cuadrilla'],
+                'notificarDesperfecto' => ['administrador', 'cuadrilla'],
             ],
             'actions' => [
                 'reglasValidacion',
@@ -339,6 +328,7 @@ if (strpos($uri, $basePath) === 0) {
     }
 
     $resourceConfig = $config['resources'][$resource];
+    require_once __DIR__ . '/Controlador/AccesoDenegadoException.php';
     require_once __DIR__ . '/' . $resourceConfig['file'];
 
     $controllerClass = $resourceConfig['controller'];
@@ -367,8 +357,6 @@ if (strpos($uri, $basePath) === 0) {
         $action = $_GET['action'];
     }
 
-    // Control de acceso: todo exige sesión de personal interno (administrador, cuadrilla u operario),
-    // salvo los endpoints listados en $config['publicos'].
     $claveEndpoint = $method . ' ' . $resource . ($action ? '/' . $action : ($id !== null ? '/:id' : ''));
     $rolSesion     = $_SESSION['usuario']['rol'] ?? '';
     $esPersonalInterno = $rolSesion !== '' && $rolSesion !== 'vecino';
@@ -378,7 +366,6 @@ if (strpos($uri, $basePath) === 0) {
             echo json_encode(['status' => 'error', 'message' => 'No tenés permiso para acceder a este recurso.']);
             exit;
         }
-        // Permisos por rol: lo que no figura en rolesAccion / rolesMetodo es solo del administrador.
         if ($action) {
             $requerido = $resourceConfig['rolesAccion'][$action] ?? ['administrador'];
         } else {
@@ -412,7 +399,7 @@ if (strpos($uri, $basePath) === 0) {
             $result = call_user_func_array([$controller, $action], $callParams);
             echo json_encode(['status' => 'success', 'data' => $result]);
         } catch (Throwable $e) {
-            http_response_code(400);
+            http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
             echo json_encode(['status' => 'error', 'message' => mensajeError($e)]);
         }
         exit;
@@ -430,7 +417,7 @@ if (strpos($uri, $basePath) === 0) {
                         echo json_encode(['status' => 'error', 'message' => $resourceConfig['singular'] . ' no encontrado']);
                     }
                 } catch (Throwable $e) {
-                    http_response_code(400);
+                    http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
                     echo json_encode(['status' => 'error', 'message' => mensajeError($e)]);
                 }
             } else {
@@ -452,7 +439,7 @@ if (strpos($uri, $basePath) === 0) {
                                     }
                                     echo json_encode(['status' => 'success', 'data' => $result]);
                                 } catch (Throwable $e) {
-                                    http_response_code(400);
+                                    http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
                                     echo json_encode(['status' => 'error', 'message' => mensajeError($e)]);
                                 }
                                 $handled = true;
@@ -472,7 +459,7 @@ if (strpos($uri, $basePath) === 0) {
                         $result = $controller->{$resourceConfig['getAllMethod']}();
                         echo json_encode(['status' => 'success', 'data' => $result]);
                     } catch (Throwable $e) {
-                        http_response_code(400);
+                        http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
                         echo json_encode(['status' => 'error', 'message' => mensajeError($e)]);
                     }
                 }
@@ -494,7 +481,7 @@ if (strpos($uri, $basePath) === 0) {
                     http_response_code(201);
                     echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' creado', 'data' => $result]);
                 } catch (Throwable $e) {
-                    http_response_code(400);
+                    http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
                     echo json_encode(['status' => 'error', 'message' => mensajeError($e)]);
                 }
             }
@@ -519,7 +506,7 @@ if (strpos($uri, $basePath) === 0) {
                         );
                         echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' actualizado', 'data' => $result]);
                     } catch (Throwable $e) {
-                        http_response_code(400);
+                        http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
                         echo json_encode(['status' => 'error', 'message' => mensajeError($e)]);
                     }
                 }
@@ -535,7 +522,7 @@ if (strpos($uri, $basePath) === 0) {
                     $result = $controller->{$resourceConfig['deleteMethod']}($id);
                     echo json_encode(['status' => 'success', 'message' => $resourceConfig['singular'] . ' eliminado']);
                 } catch (Throwable $e) {
-                    http_response_code(400);
+                    http_response_code($e instanceof AccesoDenegadoException ? 403 : 400);
                     echo json_encode(['status' => 'error', 'message' => mensajeError($e)]);
                 }
             }

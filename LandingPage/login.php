@@ -9,6 +9,7 @@
   <title>
     <?= t('login.title') ?>
   </title>
+  <link rel="icon" type="image/png" href="/recolix/LandingPage/img/Logo.png">
   <meta name="description" content="<?= htmlspecialchars(t('login.meta_description')) ?>">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">

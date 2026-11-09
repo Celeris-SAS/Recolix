@@ -4,9 +4,6 @@ require_once __DIR__ . '/../../Controlador/AccesoDenegadoException.php';
 require_once __DIR__ . '/../../Controlador/incidenciaController.php';
 require_once __DIR__ . '/../../Modelo/notificacionModel.php';
 
-// Verifica contra la base real que cada cambio de estado de una incidencia le llega
-// como notificación al vecino que la reportó (RF94/RF95), y que las notificaciones
-// para administradores llegan solo a los habilitados.
 final class NotificacionesIntegrationTest extends DbTestCase
 {
     private function crearIncidenciaDeVecino(int $ci, int $contenedorId, string $tipo = 'desborde'): int
@@ -53,7 +50,6 @@ final class NotificacionesIntegrationTest extends DbTestCase
         $this->assertStringContainsString('fue asignada a una cuadrilla', $mensaje);
     }
 
-    // iniciarAtencion y cerrarPorCuadrilla exigen sesión de un integrante de la cuadrilla.
     private function loguearComoIntegranteDe(int $cuadrillaId): void
     {
         $ci = $this->crearUsuario(null, ['rol' => 'cuadrilla']);
@@ -90,9 +86,8 @@ final class NotificacionesIntegrationTest extends DbTestCase
         $this->loguearComoIntegranteDe($cuadrillaId);
         $controller->iniciarAtencion($idA);
 
-        $controller->cerrar($idA);
+        $controller->cerrar($idA, 10);
 
-        // La cascada por contenedor resuelve también la incidencia de B: ambos vecinos son avisados.
         $this->assertStringContainsString('fue resuelta', $this->ultimoMensajeDe($ciA));
         $this->assertStringContainsString('fue resuelta', $this->ultimoMensajeDe($ciB));
         $this->assertStringContainsString("#$idB", $this->ultimoMensajeDe($ciB));

@@ -26,7 +26,6 @@ class TrasladoModel {
         return $this->existe("SELECT 1 FROM centro_acopio WHERE id_centro = ?", "i", $centroId);
     }
 
-    // Id del camión con esa matrícula, o null si no existe.
     public function idCamionPorMatricula($matricula) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT id_camion FROM camion WHERE matricula = ?");
         mysqli_stmt_bind_param($stmt, "s", $matricula);
@@ -36,7 +35,6 @@ class TrasladoModel {
         return $fila ? (int) $fila['id_camion'] : null;
     }
 
-    // Centro de acopio asignado al usuario (USUARIO.id_centro), o null si no tiene.
     public function centroDeUsuario($ci) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT id_centro FROM usuario WHERE ci_usuario = ?");
         mysqli_stmt_bind_param($stmt, "i", $ci);

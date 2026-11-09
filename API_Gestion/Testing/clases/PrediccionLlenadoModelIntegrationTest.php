@@ -2,8 +2,6 @@
 
 require_once __DIR__ . '/../../Modelo/prediccionLlenadoModel.php';
 
-// Ojo: la clase real se llama 'prediccionLlenadoModel' (minúscula inicial),
-// a diferencia del resto de los Model de esta API que son PascalCase.
 final class PrediccionLlenadoModelIntegrationTest extends DbTestCase
 {
     public function testInsertYGetPrediccionRoundtrip(): void
@@ -26,9 +24,6 @@ final class PrediccionLlenadoModelIntegrationTest extends DbTestCase
         $contenedorId = $this->crearContenedor();
 
         $idVieja = $model->insertPrediccion($contenedorId, 40);
-        // insertPrediccion calcula fecha_calculo = NOW() internamente, así que
-        // para tener dos fechas distintas y deterministas atrasamos la primera
-        // en vez de esperar un segundo real entre inserts.
         $conn = $this->conn();
         $stmt = $conn->prepare('UPDATE prediccion_llenado SET fecha_calculo = DATE_SUB(NOW(), INTERVAL 1 DAY) WHERE id_prediccion = ?');
         $stmt->bind_param('i', $idVieja);

@@ -2,10 +2,13 @@
 
 class SolicitudRegistroController {
     private $solicitudModel;
+    private $notificacionModel;
 
     public function __construct() {
         require_once __DIR__ . '/../Modelo/solicitudRegistroModel.php';
+        require_once __DIR__ . '/../Modelo/notificacionModel.php';
         $this->solicitudModel = new SolicitudRegistroModel();
+        $this->notificacionModel = new NotificacionModel();
     }
 
 
@@ -93,21 +96,56 @@ class SolicitudRegistroController {
             throw new InvalidArgumentException('Ya existe una cuenta registrada con ese teléfono.');
         }
 
-        // No se notifica acá: la tarjeta "Usuarios Nuevos" del panel del admin ya cuenta
-        // las solicitudes pendientes, así que sería la misma información duplicada.
         return $this->solicitudModel->crearSolicitud($ci, $primerNombre, $pApellido, $email, $tel, $idMunicipio, $contrasenia);
     }
 
     
     public function aprobar($ci) {
         $ci = $this->validarCI($ci);
-        return $this->solicitudModel->aprobar($ci);
+        $resultado = $this->solicitudModel->aprobar($ci);
+        $this->notificacionModel->crearParaUsuario(
+            $ci,
+            'Tu solicitud de registro en Recolix fue aprobada. Ya podés iniciar sesión.',
+            'solicitud_registro',
+            'informativa'
+        );
+        return $resultado;
     }
 
-    
+
     public function rechazar($ci) {
         $ci = $this->validarCI($ci);
         return $this->solicitudModel->rechazar($ci);
+    }
+
+
+    public function aprobarTodas() {
+        $pendientes = $this->solicitudModel->getSolicitudesPendientes();
+        $resultados = [];
+        foreach ($pendientes as $fila) {
+            try {
+                $this->aprobar($fila['ci_usuario']);
+                $resultados[] = ['ci' => $fila['ci_usuario'], 'status' => 'ok'];
+            } catch (Throwable $e) {
+                $resultados[] = ['ci' => $fila['ci_usuario'], 'status' => 'error', 'message' => $e->getMessage()];
+            }
+        }
+        return $resultados;
+    }
+
+
+    public function rechazarTodas() {
+        $pendientes = $this->solicitudModel->getSolicitudesPendientes();
+        $resultados = [];
+        foreach ($pendientes as $fila) {
+            try {
+                $this->rechazar($fila['ci_usuario']);
+                $resultados[] = ['ci' => $fila['ci_usuario'], 'status' => 'ok'];
+            } catch (Throwable $e) {
+                $resultados[] = ['ci' => $fila['ci_usuario'], 'status' => 'error', 'message' => $e->getMessage()];
+            }
+        }
+        return $resultados;
     }
 
    

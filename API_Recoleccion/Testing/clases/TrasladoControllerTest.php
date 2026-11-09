@@ -26,8 +26,6 @@ final class TrasladoControllerTest extends RecoleccionTestCase
     {
         $controller = $this->controller();
         $this->expectException(InvalidArgumentException::class);
-        // DateTime normaliza 2026-02-30 a marzo, así que el round-trip
-        // contra el string original falla y debe rechazarse.
         $this->callPrivate($controller, 'validarFecha', ['2026-02-30', 'Fecha']);
     }
 
@@ -40,8 +38,6 @@ final class TrasladoControllerTest extends RecoleccionTestCase
 
     public function testValidarDecimalAceptaCeroPeseAQueReglasValidacionPidaMinimoPositivo(): void
     {
-        // reglasValidacion() documenta min=0.001 para 'peso', pero validarDecimal()
-        // usa min=0 en la práctica: este test fija el comportamiento real del código.
         $controller = $this->controller();
         $this->assertSame(0.0, $this->callPrivate($controller, 'validarDecimal', [0, 'Peso']));
     }

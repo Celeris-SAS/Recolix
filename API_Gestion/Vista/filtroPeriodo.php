@@ -1,6 +1,4 @@
 <?php
-// Filtro de período de los informes: rangos fijos + período por fechas (desde / hasta).
-// Espera $opcionesPeriodo (lista de [valor, clave i18n]) y $rangoInicial.
 ?>
 <div class="filtro-periodo">
     <div class="filtro-rango" id="filtroRango">

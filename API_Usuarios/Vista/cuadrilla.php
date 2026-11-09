@@ -2,9 +2,6 @@
 $rolesPermitidos = ['cuadrilla'];
 require_once __DIR__ . '/../../Backoffice/verificacion_sesion.php';
 
-// La cuadrilla se vuelve a leer de la base en cada carga (no solo de la sesión):
-// si un admin asigna o cambia la cuadrilla del usuario mientras ya tenía la sesión
-// abierta, el dato en $_SESSION queda viejo y mostraba "sin cuadrilla" por error.
 require_once __DIR__ . '/../../conexion.php';
 $conn = new conexion();
 $stmt = mysqli_prepare($conn->getConexion(), "SELECT id_cuadrilla FROM USUARIO WHERE ci_usuario = ?");
@@ -24,6 +21,7 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
     <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= t('cuadrilla.title') ?></title>
+    <link rel="icon" type="image/png" href="/recolix/LandingPage/img/Logo.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -74,19 +72,16 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             <p><?= t('cuadrilla.page_sub') ?></p>
         </div>
 
-        <!-- Usuario sin id_cuadrilla asignado (USUARIO.id_cuadrilla) -->
         <div class="alert-banner alert-banner--info" id="sin-cuadrilla-banner" hidden>
             <span class="alert-banner-icon">ℹ</span>
             <span><?= t('cuadrilla.msg_sin_cuadrillas') ?></span>
         </div>
 
-        <!-- RF52: alerta generada por el sistema cuando un levante queda pendiente/en curso pasado el turno -->
         <div class="alert-banner" id="alerta-levante" hidden>
             <span class="alert-banner-icon">⚠</span>
             <span id="alerta-levante-texto"></span>
         </div>
 
-        <!-- Incidencias asignadas por el administrador (RF10, RF13) -->
         <section class="dash-section" id="seccion-incidencias">
             <div class="panel-card">
                 <h2><?= t('cuadrilla.inc_titulo') ?></h2>
@@ -95,7 +90,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             </div>
         </section>
 
-        <!-- Registrar levante -->
         <section class="dash-section" id="seccion-levante">
             <div class="panel-card">
                 <div class="card-header card-header--accion">
@@ -146,7 +140,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
                         </div>
                     </div>
 
-                    <!-- RF71: registro de motivo de no recolección -->
                                        <div class="form-group form-group-full">
                         <label><?= t('cuadrilla.levante_pregunta_recolectado') ?></label>
                         <div class="radio-toggle">
@@ -204,7 +197,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
                     </div>
                 </form>
 
-                <!-- Lista de contenedores de la ruta del levante activo: solo estos se pueden registrar -->
                 <div class="contenedores-ruta" id="contenedores-ruta-wrap" hidden>
                     <h3 class="contenedores-ruta-titulo"><?= t('cuadrilla.contenedores_ruta_titulo') ?></h3>
                     <ul class="contenedores-ruta-list" id="contenedores-ruta-list" data-paginar-lista></ul>
@@ -212,7 +204,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             </div>
         </section>
 
-        <!-- Rutas asignadas + camión (RF35, RF36) -->
         <section class="dash-section">
             <div class="panel-card">
                 <div class="card-header">
@@ -276,7 +267,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
         <p class="footer-copy"><?= t('backoffice.footer_copyright') ?></p>
     </footer>
 
-    <!-- RF36: Modal de reporte de desperfecto mecánico -->
     <div class="modal-overlay" id="modal-desperfecto">
         <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-desperfecto-titulo">
             <h3 id="modal-desperfecto-titulo"><?= t('cuadrilla.modal_desperfecto_titulo') ?></h3>
@@ -294,7 +284,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
         </div>
     </div>
 
-    <!-- Toast de confirmación -->
     <div class="toast" id="toast"></div>
 
     <script>
@@ -319,6 +308,8 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             'incCerrar' => 'cuadrilla.inc_btn_cerrar',
             'incIniciada' => 'cuadrilla.inc_msg_iniciada',
             'incCerrada' => 'cuadrilla.inc_msg_cerrada',
+            'incPesoPh' => 'cuadrilla.inc_peso_ph',
+            'incPesoError' => 'cuadrilla.inc_peso_error',
             'incEstadoAsignada' => 'cuadrilla.inc_estado_asignada',
             'incEstadoEnCurso' => 'cuadrilla.inc_estado_en_curso',
             'incContenedor' => 'cuadrilla.inc_contenedor',
@@ -354,6 +345,7 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             'badgeEnCurso' => 'cuadrilla.badge_levante_en_curso',
             'badgePendiente' => 'cuadrilla.badge_levante_pendiente',
             'badgeSinLevante' => 'cuadrilla.badge_sin_levante',
+            'badgeCancelado' => 'cuadrilla.badge_levante_cancelado',
             'camionDisponible' => 'cuadrilla.camion_disponible',
             'camionEnRuta' => 'cuadrilla.camion_en_ruta',
             'camionEnMantenimiento' => 'cuadrilla.camion_en_mantenimiento',
@@ -382,10 +374,9 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
         const contenedoresRutaWrap = document.getElementById('contenedores-ruta-wrap');
         const contenedoresRutaList = document.getElementById('contenedores-ruta-list');
 
-        // Estado en memoria: lo que hoy hay en la base, no datos simulados.
         let cuadrilla = null;
         let levanteActivo = null;
-        let CONTENEDORES = {}; // id_contenedor -> datos, se llena al cargar el levante activo
+        let CONTENEDORES = {};
 
         function escapeHtml(valor) {
             const div = document.createElement('div');
@@ -393,7 +384,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             return div.innerHTML;
         }
 
-        // Toast
         const toast = document.getElementById('toast');
         let toastTimeout;
 
@@ -430,7 +420,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             }
         }
 
-        // Se puede tipear cualquier ID a mano; el datalist solo sugiere los del levante activo
         inputContenedor.addEventListener('input', function () {
             actualizarInfoContenedor(inputContenedor.value.trim());
         });
@@ -439,10 +428,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             Array.from(formLevante.elements).forEach(function (el) { el.disabled = !habilitado; });
         }
 
-        // ---- Carga inicial ----
-        // ID_CUADRILLA viene de sesión (USUARIO.id_cuadrilla, FK real). Si el
-        // usuario no tiene cuadrilla asignada, se avisa y no se carga nada.
-        // Incidencias asignadas por el administrador (RF10, RF13)
         const listaIncidencias = document.getElementById('incidencias-lista');
         const incidenciasVacio = document.getElementById('incidencias-vacio');
 
@@ -500,6 +485,8 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
                         <small>${escapeHtml(estadoIncidencia[inc.estado] || inc.estado)}</small>
                         <ul class="incidencia-contenedores">${contenedores}</ul>
                     </div>
+                    ${enCurso ? `<input type="number" class="ctrl-input inc-peso-input" step="0.01" min="0.01"
+                        placeholder="${escapeHtml(I18N.incPesoPh)}" data-id="${inc.id_incidencia}">` : ''}
                     <button type="button" class="btn ${enCurso ? 'btn-primary' : 'btn-outline'}"
                         data-accion="${enCurso ? 'cerrar' : 'iniciar'}" data-id="${inc.id_incidencia}">
                         ${enCurso ? I18N.incCerrar : I18N.incIniciar}
@@ -508,8 +495,13 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             });
         }
 
-        async function cerrarIncidencia(id) {
-            await apiFetch(`${API_GESTION}/incidencias/cerrarPorCuadrilla/${id}`, { method: 'POST' });
+        // ERR-07: "Total recolectado (Kg)" obligatorio y mayor a cero al cerrar.
+        async function cerrarIncidencia(id, peso) {
+            await apiFetch(`${API_GESTION}/incidencias/cerrarPorCuadrilla/${id}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pesoRecolectado: peso }),
+            });
         }
 
         listaIncidencias.addEventListener('click', async function (e) {
@@ -518,7 +510,13 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
 
             try {
                 if (boton.dataset.accion === 'cerrar') {
-                    await cerrarIncidencia(boton.dataset.id);
+                    const input = listaIncidencias.querySelector(`.inc-peso-input[data-id="${boton.dataset.id}"]`);
+                    const peso = input ? parseFloat(input.value) : NaN;
+                    if (!Number.isFinite(peso) || peso <= 0) {
+                        mostrarToast(I18N.incPesoError, 'warning');
+                        return;
+                    }
+                    await cerrarIncidencia(boton.dataset.id, peso);
                     mostrarToast(I18N.incCerrada, 'success');
                 } else {
                     await apiFetch(`${API_GESTION}/incidencias/iniciarAtencion/${boton.dataset.id}`, { method: 'POST' });
@@ -543,8 +541,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             await cargarIncidencias();
         }
 
-        // Registrar levante solo tiene sentido si la cuadrilla tiene al menos una
-        // ruta asignada por un admin: sin ruta no hay nada para iniciar.
         async function cargarRutas() {
             let rutas = [];
             try {
@@ -563,8 +559,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             await cargarAlertaLevante();
         }
 
-        // Las rutas completadas salen de "rutas asignadas" (ver LevanteModel::completarLevante):
-        // se consultan recién al tocar "Ver rutas completadas", y quedan ocultas hasta entonces.
         const btnVerCompletadas = document.getElementById('btn-ver-completadas');
         const completadasList = document.getElementById('routes-completed-list');
         const completadasWrap = document.getElementById('routes-completed-wrap');
@@ -612,7 +606,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
         btnVerCompletadas.addEventListener('click', async function () {
             const mostrar = completadasWrap.hidden;
             if (mostrar) await cargarRutasCompletadas();
-            // El contenedor incluye las barras de paginación, que la lista deja como hermanas.
             completadasWrap.hidden = !mostrar;
             completadasWrap.style.display = mostrar ? '' : 'none';
             btnVerCompletadas.textContent = mostrar ? I18N.btnOcultarCompletadas : I18N.btnVerCompletadas;
@@ -623,6 +616,7 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             if (estado === 'completado') return { clase: 'badge-ok', texto: I18N.badgeCompletado };
             if (estado === 'en_curso') return { clase: 'badge-info', texto: I18N.badgeEnCurso };
             if (estado === 'pendiente') return { clase: 'badge-warning', texto: I18N.badgePendiente };
+            if (estado === 'cancelado') return { clase: 'badge-danger', texto: I18N.badgeCancelado };
             return { clase: 'badge-neutral', texto: I18N.badgeSinLevante };
         }
 
@@ -664,9 +658,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             });
         }
 
-        // El levante activo de la cuadrilla, por LEVANTE.id_cuadrilla directo
-        // (no se deriva de la lista de rutas: ruta_cuadrilla es una relación
-        // aparte y puede no coincidir con quién ejecuta el levante).
         async function actualizarLevanteActivo() {
             let idLevante = null;
             try {
@@ -694,10 +685,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             }
         }
 
-        // Lista visible de los contenedores que la ruta de este levante cubre. Es también
-        // la única fuente de "qué se puede registrar": los botones acá son la forma normal
-        // de elegir un contenedor, y CONTENEDORES (usado para validar el ID tipeado a mano)
-        // sale de este mismo array.
         function renderContenedoresRuta(contenedores) {
             contenedoresRutaList.innerHTML = '';
             contenedores.forEach(function (c) {
@@ -753,9 +740,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             const esPendiente = levanteActivo.estado === 'pendiente';
             btnIniciar.hidden = !esPendiente;
             levantePendienteMsg.hidden = !esPendiente;
-            // Se puede completar el formulario (tipear, elegir contenedor) aunque la ruta
-            // todavía no haya arrancado; solo el envío final queda bloqueado hasta iniciarla
-            // (ver validación en el submit de form-levante).
             habilitarFormLevante(true);
         }
 
@@ -770,7 +754,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             }
         });
 
-        // RF71 — Registro de motivo de no recolección
         const grupoNoRecolectado = document.getElementById('grupo-no-recolectado');
         const estadoEncontrado = document.getElementById('estado-encontrado');
         const motivoInput = document.getElementById('observaciones');
@@ -788,7 +771,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             });
         });
 
-        // Registrar levante (formulario principal) — contra el levante en curso real
         formLevante.addEventListener('submit', async function (e) {
             e.preventDefault();
             if (!levanteActivo) {
@@ -824,7 +806,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
                 }
                 if (!valido) return;
                 estadoEncontradoVal = estadoEncontrado.value;
-                // El motivo es una nota libre y opcional (ver placeholder del campo): null si no se cargó.
                 motivoVal = motivoInput.value.trim() || null;
             } else {
                 if (!pesoInput.value) {
@@ -847,7 +828,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
                     })
                 });
 
-                // Si la recolección resolvió alguna incidencia, sale de la lista.
                 await cargarIncidencias();
 
                 let mensaje;
@@ -868,8 +848,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
                 grupoNoRecolectado.hidden = true;
                 await cargarLevante(levanteActivo.id_levante);
 
-                // Al registrar el último contenedor pendiente el backend cierra el levante
-                // solo: se vuelve a cargar el panel para que la ruta deje de aparecer.
                 if (levanteActivo && levanteActivo.estado === 'completado') {
                     mensaje += ' ' + I18N.badgeCompletado + '.';
                     await cargarRutas();
@@ -880,7 +858,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             }
         });
 
-        // RF35 — Actualización del estado del camión asignado contra la API real
         async function onCambioEstadoCamion(e) {
             const select = e.target;
             const idCamion = select.dataset.camionId;
@@ -905,7 +882,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             }
         }
 
-        // RF36 — Reporte de desperfecto mecánico, contra mantenimientos reales
         const modalDesperfecto = document.getElementById('modal-desperfecto');
         const desperfectoMatricula = document.getElementById('desperfecto-matricula');
         const desperfectoDescripcion = document.getElementById('desperfecto-descripcion');
@@ -953,7 +929,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
                         costo: 0
                     })
                 });
-                // RF37: además del mantenimiento, se notifica a los administradores.
                 await apiFetch(`${API_RECOLECCION}/mantenimientos/notificarDesperfecto`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -970,7 +945,6 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             }
         });
 
-        // RF52 — Alerta generada por el sistema: levante propio pendiente/en curso con el turno vencido
         async function cargarAlertaLevante() {
             let vencidos = [];
             try {

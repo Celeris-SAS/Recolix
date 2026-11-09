@@ -17,6 +17,10 @@ class reporteController {
         ];
     }
 
+    public function getResumenPublico() {
+        return $this->reporteModel->getResumenPublico();
+    }
+
     public function getDistribucionLlenado($rango = 'hoy') {
         $niveles = $this->reporteModel->getNivelesLlenado($rango);
         $buckets = array_fill(0, 10, 0);

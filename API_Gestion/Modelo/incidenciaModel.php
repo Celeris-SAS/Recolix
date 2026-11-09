@@ -8,11 +8,6 @@ class IncidenciaModel {
         $this->conn = new conexion();
     }
 
-    // RF03/RF04: registro de una incidencia por un usuario autenticado.
-    // RF07: url_imagen queda null cuando el reporte no adjunta foto.
-    // RF09: urgencia la calcula el controller según el estado del contenedor al momento del alta.
-    // Prioridad escalonada: la calcula el controller según la cantidad de incidencias
-    // abiertas que ya tiene el contenedor (ver contarIncidenciasAbiertasPorContenedor).
     public function crearIncidencia($ciUsuario, $tipo, $descripcion, $urlImagen = null, $urgencia = 0, $prioridad = 'baja') {
         $stmt = mysqli_prepare($this->conn->getConexion(),
             "INSERT INTO INCIDENCIA (ci_usuario, tipo, descripcion, url_imagen, urgencia, prioridad) VALUES (?, ?, ?, ?, ?, ?)");
@@ -31,8 +26,6 @@ class IncidenciaModel {
         mysqli_stmt_close($stmt);
     }
 
-    // Prioridad escalonada: cuenta solo las incidencias no resueltas de este contenedor,
-    // para que uno reparado y sin problemas nuevos no quede "crítico" para siempre.
     public function contarIncidenciasAbiertasPorContenedor($idContenedor) {
         $stmt = mysqli_prepare($this->conn->getConexion(),
             "SELECT COUNT(*) AS total FROM INCIDENCIA i
@@ -46,13 +39,6 @@ class IncidenciaModel {
         return (int) $row['total'];
     }
 
-    // Evita que dos reportes sobre el mismo contenedor se vean como incidencias
-    // "duplicadas" en los listados: cuando hay más de una incidencia sin resolver
-    // vinculada al mismo contenedor, solo deja pasar la más reciente. Las demás
-    // siguen existiendo en la base (cuentan para la prioridad escalonada, ver
-    // contarIncidenciasAbiertasPorContenedor) y siguen visibles en el historial
-    // del contenedor y en el perfil de quien las reportó — solo se ocultan de
-    // estos listados generales. Las ya resueltas nunca se ocultan.
     private function condicionSinDuplicadosAbiertos($alias) {
         return "($alias.estado = 'resuelta' OR NOT EXISTS (
             SELECT 1 FROM INCIDENCIA i2
@@ -65,9 +51,6 @@ class IncidenciaModel {
         ))";
     }
 
-    // Evita que el mismo usuario spamee reportes sobre el mismo contenedor: si ya
-    // tiene una incidencia suya sin resolver ahí, no puede cargar otra hasta que
-    // se resuelva. No bloquea si ya la resolvieron (puede volver a romperse).
     public function usuarioTieneIncidenciaAbiertaEnContenedor($ciUsuario, $idContenedor) {
         $stmt = mysqli_prepare($this->conn->getConexion(),
             "SELECT 1 FROM INCIDENCIA i
@@ -90,9 +73,18 @@ class IncidenciaModel {
         return $existe;
     }
 
+    private function columnaMunicipio($alias) {
+        return "(SELECT GROUP_CONCAT(DISTINCT m.nombre ORDER BY m.nombre SEPARATOR ', ')
+                 FROM INCIDENCIA_CONTENEDOR icm
+                 JOIN CONTENEDOR cm ON cm.id_contenedor = icm.id_contenedor
+                 JOIN CIRCUITO cim ON cim.id_circuito = cm.id_circuito
+                 JOIN MUNICIPIO m ON m.id_municipio = cim.id_municipio
+                 WHERE icm.id_incidencia = $alias.id_incidencia) AS municipio";
+    }
+
     public function getAllIncidencias() {
         $stmt = mysqli_prepare($this->conn->getConexion(),
-            "SELECT i.* FROM INCIDENCIA i WHERE " . $this->condicionSinDuplicadosAbiertos('i') . " ORDER BY fecha_apertura DESC");
+            "SELECT i.*, " . $this->columnaMunicipio('i') . " FROM INCIDENCIA i WHERE " . $this->condicionSinDuplicadosAbiertos('i') . " ORDER BY fecha_apertura DESC");
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
         $rows = [];
@@ -104,7 +96,7 @@ class IncidenciaModel {
     }
 
     public function getIncidencia($id) {
-        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT * FROM INCIDENCIA WHERE id_incidencia = ?");
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT i.*, " . $this->columnaMunicipio('i') . " FROM INCIDENCIA i WHERE i.id_incidencia = ?");
         mysqli_stmt_bind_param($stmt, "i", $id);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
@@ -115,7 +107,7 @@ class IncidenciaModel {
 
     public function filtrarEstado($estado) {
         $stmt = mysqli_prepare($this->conn->getConexion(),
-            "SELECT i.* FROM INCIDENCIA i WHERE i.estado = ? AND " . $this->condicionSinDuplicadosAbiertos('i') . " ORDER BY fecha_apertura DESC");
+            "SELECT i.*, " . $this->columnaMunicipio('i') . " FROM INCIDENCIA i WHERE i.estado = ? AND " . $this->condicionSinDuplicadosAbiertos('i') . " ORDER BY fecha_apertura DESC");
         mysqli_stmt_bind_param($stmt, "s", $estado);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
@@ -129,7 +121,7 @@ class IncidenciaModel {
 
     public function filtrarTipo($tipo) {
         $stmt = mysqli_prepare($this->conn->getConexion(),
-            "SELECT i.* FROM INCIDENCIA i WHERE i.tipo = ? AND " . $this->condicionSinDuplicadosAbiertos('i') . " ORDER BY fecha_apertura DESC");
+            "SELECT i.*, " . $this->columnaMunicipio('i') . " FROM INCIDENCIA i WHERE i.tipo = ? AND " . $this->condicionSinDuplicadosAbiertos('i') . " ORDER BY fecha_apertura DESC");
         mysqli_stmt_bind_param($stmt, "s", $tipo);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
@@ -143,7 +135,7 @@ class IncidenciaModel {
 
     public function filtrarPrioridad($prioridad) {
         $stmt = mysqli_prepare($this->conn->getConexion(),
-            "SELECT i.* FROM INCIDENCIA i WHERE i.prioridad = ? AND " . $this->condicionSinDuplicadosAbiertos('i') . " ORDER BY fecha_apertura DESC");
+            "SELECT i.*, " . $this->columnaMunicipio('i') . " FROM INCIDENCIA i WHERE i.prioridad = ? AND " . $this->condicionSinDuplicadosAbiertos('i') . " ORDER BY fecha_apertura DESC");
         mysqli_stmt_bind_param($stmt, "s", $prioridad);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
@@ -155,9 +147,6 @@ class IncidenciaModel {
         return $rows;
     }
 
-    // RF72: incidencias activas (sin resolver) con la ubicación de su contenedor,
-    // para dibujarlas en el mapa del backoffice. Reutiliza la misma deduplicación
-    // que los listados (una sola incidencia visible por contenedor).
     public function getActivasConUbicacion() {
         $stmt = mysqli_prepare($this->conn->getConexion(),
             "SELECT i.id_incidencia, i.tipo, i.prioridad, i.estado, i.urgencia, i.fecha_apertura,
@@ -178,11 +167,10 @@ class IncidenciaModel {
         return $rows;
     }
 
-    // RF11/RF12: contenedores con incidencia urgente, priorizando desbordado y luego nivel_llenado.
     public function listarUrgentes() {
         $stmt = mysqli_prepare($this->conn->getConexion(),
             "SELECT DISTINCT i.*, c.id_contenedor, c.estado AS estado_contenedor, c.nivel_llenado,
-                    c.calle, c.num_calle
+                    c.calle, c.num_calle, " . $this->columnaMunicipio('i') . "
              FROM INCIDENCIA i
              JOIN INCIDENCIA_CONTENEDOR ic ON i.id_incidencia = ic.id_incidencia
              JOIN CONTENEDOR c ON ic.id_contenedor = c.id_contenedor
@@ -214,9 +202,6 @@ class IncidenciaModel {
         return $rows;
     }
 
-    // Incidencias asignadas a una cuadrilla que todavía no están resueltas,
-    // con los contenedores vinculados (para que la cuadrilla sepa a dónde ir).
-    // Cuadrilla a la que pertenece un usuario, leída de la base (no de la sesión).
     public function cuadrillaDeUsuario($ci) {
         $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT id_cuadrilla FROM USUARIO WHERE ci_usuario = ?");
         mysqli_stmt_bind_param($stmt, "i", $ci);
@@ -242,7 +227,6 @@ class IncidenciaModel {
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
 
-        // Una fila por contenedor: se agrupan en una sola incidencia con su lista de contenedores.
         $incidencias = [];
         while ($row = mysqli_fetch_assoc($result)) {
             $id = $row['id_incidencia'];
@@ -297,19 +281,19 @@ class IncidenciaModel {
     // qué tipo reportó cada una (confirmado con el usuario 2026-08-28).
     // $id se resuelve siempre (el "OR i2.id_incidencia = ?"), incluso si por algún
     // motivo no llegó a vincularse a ningún contenedor.
-    public function cerrar($id) {
+    // ERR-07: $peso ("Total recolectado (Kg)") se registra en todas las incidencias que
+    // cierra la cascada, porque corresponden a una misma visita/limpieza del contenedor.
+    public function cerrar($id, $peso) {
         $stmt = mysqli_prepare($this->conn->getConexion(),
             "UPDATE INCIDENCIA i2
-             SET i2.estado = 'resuelta', i2.fecha_cierre = NOW()
+             SET i2.estado = 'resuelta', i2.fecha_cierre = NOW(), i2.peso_recolectado = ?
              WHERE " . $this->condicionCascadaCierre());
-        mysqli_stmt_bind_param($stmt, "ii", $id, $id);
+        mysqli_stmt_bind_param($stmt, "dii", $peso, $id, $id);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
         return true;
     }
 
-    // Las mismas incidencias que cerrar($id) va a resolver, tomadas antes del cambio
-    // para poder avisarle a cada vecino. Filas con id_incidencia, ci_usuario y tipo.
     public function incidenciasQueSeCerrarian($id) {
         $stmt = mysqli_prepare($this->conn->getConexion(),
             "SELECT i2.id_incidencia, i2.ci_usuario, i2.tipo FROM INCIDENCIA i2
@@ -325,7 +309,6 @@ class IncidenciaModel {
         return $rows;
     }
 
-    // Condición compartida por cerrar() y incidenciasQueSeCerrarian(); espera 2 parámetros (id, id).
     private function condicionCascadaCierre() {
         return "i2.estado != 'resuelta'
                AND (

@@ -18,3 +18,6 @@ mail_log.txt
 certs/*.key
 certs/*.crt
 db/init/*.sql
+
+# API key real del Mailer (ver extra/Comun/Mailer.php): nunca se versiona.
+extra/Comun/mail-config.php

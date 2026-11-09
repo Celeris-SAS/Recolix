@@ -14,6 +14,7 @@ require_once __DIR__ . '/../extra/i18n/i18n.php';
     <meta name="google" content="notranslate">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= t('backoffice.solicitudes_title') ?></title>
+  <link rel="icon" type="image/png" href="/recolix/LandingPage/img/Logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
@@ -97,6 +98,17 @@ require_once __DIR__ . '/../extra/i18n/i18n.php';
 
 
     <div class="panel-card">
+      <div class="solicitudes-toolbar">
+        <div class="toolbar-masivo">
+          <button type="button" class="btn-aprobar" id="btnAprobarTodas"><?= t('backoffice.solicitudes_js_aprobar_todas') ?></button>
+          <button type="button" class="btn-rechazar" id="btnRechazarTodas"><?= t('backoffice.solicitudes_js_rechazar_todas') ?></button>
+        </div>
+        <form class="toolbar-ci" id="formAprobarCi">
+          <label for="inputAprobarCi"><?= t('backoffice.solicitudes_js_ci_label') ?></label>
+          <input type="text" id="inputAprobarCi" placeholder="<?= htmlspecialchars(t('backoffice.solicitudes_js_ci_placeholder')) ?>" inputmode="numeric">
+          <button type="submit" class="btn-aprobar"><?= t('backoffice.solicitudes_js_ci_btn') ?></button>
+        </form>
+      </div>
       <div id="solicitudesContenedor">
         <p class="estado-carga"><?= t('backoffice.solicitudes_cargando') ?></p>
       </div>
@@ -144,6 +156,14 @@ require_once __DIR__ . '/../extra/i18n/i18n.php';
       'aprobadaOk' => 'backoffice.solicitudes_js_aprobada_ok',
       'errorRechazar' => 'backoffice.solicitudes_js_error_rechazar',
       'rechazadaOk' => 'backoffice.solicitudes_js_rechazada_ok',
+      'aprobarTodas' => 'backoffice.solicitudes_js_aprobar_todas',
+      'rechazarTodas' => 'backoffice.solicitudes_js_rechazar_todas',
+      'confirmarAprobarTodas' => 'backoffice.solicitudes_js_confirmar_aprobar_todas',
+      'confirmarRechazarTodas' => 'backoffice.solicitudes_js_confirmar_rechazar_todas',
+      'sinPendientes' => 'backoffice.solicitudes_js_sin_pendientes',
+      'resultadoAprobarTodas' => 'backoffice.solicitudes_js_resultado_aprobar_todas',
+      'resultadoRechazarTodas' => 'backoffice.solicitudes_js_resultado_rechazar_todas',
+      'ciInvalida' => 'backoffice.solicitudes_js_ci_invalida',
     ])) ?>;
   </script>
   <script src="logica_solicitudes.js"></script>

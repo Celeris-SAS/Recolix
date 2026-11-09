@@ -214,7 +214,6 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
     `;
 
-        // Las resueltas no se mezclan con las abiertas: quedan detrás del botón "Ver incidencias resueltas".
         const activas = lista.filter(inc => inc.estado !== 'resuelta');
         const resueltas = lista.filter(inc => inc.estado === 'resuelta');
 
@@ -245,10 +244,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
-    // RF05/RF06 — mapa interactivo: muestra la ubicación del usuario y permite elegir el
-    // contenedor de la incidencia tocándolo directamente en el mapa. Los contenedores y sus
-    // colores salen de cargarContenedoresEnMapa() (mapaContenedoresBase.js), la misma fuente
-    // que usan la Landing Page y el mapa público.
     let incMapa = null;
     let incMapaMarcadores = null;
     let incMarcadorUsuario = null;
@@ -275,8 +270,6 @@ document.addEventListener('DOMContentLoaded', function () {
         incMarcadorSeleccionado = marker;
     }
 
-    // Si el usuario no toca ningún contenedor en el mapa, se preselecciona el más cercano
-    // a su ubicación detectada — nunca queda sin elegir uno.
     function incPreseleccionarMasCercano(latitude, longitude) {
         if (!incMapaMarcadores || !incMapaMarcadores.length) return;
         let masCercano = null;
@@ -341,7 +334,6 @@ document.addEventListener('DOMContentLoaded', function () {
         );
     }
 
-    // RF04 — registro de incidencia desde el perfil del vecino.
     document.getElementById('nuevaIncidenciaBtn').addEventListener('click', () => {
         const form = document.getElementById('nuevaIncidenciaForm');
         form.hidden = !form.hidden;
@@ -361,8 +353,6 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('nuevaIncidenciaForm').hidden = true;
     });
 
-    // RF07: adjunto de foto (JPG/PNG, máx 5 MB) — se manda como data URL base64 dentro
-    // del mismo JSON del reporte, ya que el endpoint de incidencias solo acepta JSON.
     const MAX_FOTO_BYTES = 5 * 1024 * 1024;
     function leerFotoComoBase64(input, errorEl) {
         errorEl.textContent = '';
@@ -403,7 +393,6 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // La identidad del usuario la resuelve el servidor a partir de la sesión.
         const resp = await fetch(`${API_GESTION}/incidencias`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

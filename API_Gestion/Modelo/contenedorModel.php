@@ -88,7 +88,6 @@ class ContenedorModel {
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
 
-        // La reparación resuelve las roturas abiertas del contenedor: ya no hay nada que atender.
         $stmt = mysqli_prepare($this->conn->getConexion(), "
             UPDATE INCIDENCIA i
             JOIN INCIDENCIA_CONTENEDOR ic ON ic.id_incidencia = i.id_incidencia
@@ -113,6 +112,18 @@ class ContenedorModel {
 
     public function getHistorial($id) {
         $historial = [];
+
+        // ERR-02: alta y cambios de estado, registrados por los triggers de
+        // contenedor_estado_historial (ver recolix.sql).
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT IF(estado_anterior IS NULL, 'alta', 'cambio_estado') AS tipo_evento, CONCAT_WS(' -> ', estado_anterior, estado_nuevo) AS descripcion, fecha_cambio AS fecha FROM CONTENEDOR_ESTADO_HISTORIAL WHERE id_contenedor = ?");
+        mysqli_stmt_bind_param($stmt, "i", $id);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        while ($row = mysqli_fetch_assoc($result))
+        {
+            $historial[] = $row;
+        }
+        mysqli_stmt_close($stmt);
 
         $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT 'incidencia' AS tipo_evento, i.tipo AS descripcion, i.fecha_apertura AS fecha FROM INCIDENCIA i JOIN INCIDENCIA_CONTENEDOR ic ON i.id_incidencia = ic.id_incidencia WHERE ic.id_contenedor = ?");
         mysqli_stmt_bind_param($stmt, "i", $id);
@@ -188,6 +199,42 @@ class ContenedorModel {
         mysqli_stmt_close($stmt);
         return $rows;
     }
+    // ERR-04: filtrarEstado/filtrarTipoResiduo solo podían aplicarse de a uno. Esta
+    // combina ambos con AND cuando están presentes (cualquiera puede venir null).
+    public function filtrarCombinado($estado, $idTipo) {
+        $condiciones = [];
+        $tipos  = '';
+        $valores = [];
+        if ($estado !== null) {
+            $condiciones[] = 'estado = ?';
+            $tipos  .= 's';
+            $valores[] = $estado;
+        }
+        if ($idTipo !== null) {
+            $condiciones[] = 'id_tipo = ?';
+            $tipos  .= 'i';
+            $valores[] = $idTipo;
+        }
+
+        $sql = 'SELECT * FROM CONTENEDOR';
+        if ($condiciones) {
+            $sql .= ' WHERE ' . implode(' AND ', $condiciones);
+        }
+
+        $stmt = mysqli_prepare($this->conn->getConexion(), $sql);
+        if ($valores) {
+            mysqli_stmt_bind_param($stmt, $tipos, ...$valores);
+        }
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $rows   = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $rows[] = $row;
+        }
+        mysqli_stmt_close($stmt);
+        return $rows;
+    }
+
     public function filtrarCriticos() {
     $stmt = mysqli_prepare($this->conn->getConexion(),
         "SELECT * FROM CONTENEDOR WHERE estado IN ('desbordado', 'roto')");
