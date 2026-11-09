@@ -112,6 +112,23 @@ final class ContenedorModelIntegrationTest extends DbTestCase
 
         $tipos = array_column($historial, 'tipo_evento');
         sort($tipos);
-        $this->assertSame(['incidencia', 'reparacion'], $tipos);
+        $this->assertSame(['alta', 'incidencia', 'reparacion'], $tipos);
+    }
+
+    public function testGetHistorialIncluyeAltaYCambiosDeEstado(): void
+    {
+        $model = new ContenedorModel();
+        $contenedorId = $this->crearContenedor(null, ['estado' => 'funcional']);
+
+        $model->cambiarEstado($contenedorId, 'desbordado');
+        $model->cambiarEstado($contenedorId, 'roto');
+
+        $historial = $model->getHistorial($contenedorId);
+        $eventos = array_filter($historial, fn($e) => in_array($e['tipo_evento'], ['alta', 'cambio_estado'], true));
+
+        $this->assertCount(3, $eventos);
+        $tipos = array_column($eventos, 'tipo_evento');
+        sort($tipos);
+        $this->assertSame(['alta', 'cambio_estado', 'cambio_estado'], $tipos);
     }
 }

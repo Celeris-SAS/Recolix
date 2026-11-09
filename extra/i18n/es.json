@@ -1407,6 +1407,8 @@
     "inc_btn_cerrar": "Cerrar incidencia",
     "inc_msg_iniciada": "Atención iniciada.",
     "inc_msg_cerrada": "Incidencia cerrada.",
+    "inc_peso_ph": "Total recolectado (Kg)",
+    "inc_peso_error": "Ingresá el total recolectado (Kg), mayor a cero.",
     "inc_estado_asignada": "Asignada",
     "inc_estado_en_curso": "En curso",
     "inc_contenedor": "Contenedor",

@@ -272,12 +272,23 @@ class IncidenciaModel {
         return true;
     }
 
-    public function cerrar($id) {
+    // Cierra $id y, en cascada, cualquier otra incidencia sin resolver que comparta
+    // contenedor con ella (las que estaban ocultas por condicionSinDuplicadosAbiertos):
+    // si se solucionó el contenedor, se solucionó el problema que reportó cada una.
+    // A propósito no filtra por 'tipo': la cuadrilla va físicamente al contenedor y
+    // atiende lo que encuentra ahí (esté roto, desbordado, etc.), así que una sola
+    // visita cierra todas las incidencias pendientes de ese contenedor, sin importar
+    // qué tipo reportó cada una (confirmado con el usuario 2026-08-28).
+    // $id se resuelve siempre (el "OR i2.id_incidencia = ?"), incluso si por algún
+    // motivo no llegó a vincularse a ningún contenedor.
+    // ERR-07: $peso ("Total recolectado (Kg)") se registra en todas las incidencias que
+    // cierra la cascada, porque corresponden a una misma visita/limpieza del contenedor.
+    public function cerrar($id, $peso) {
         $stmt = mysqli_prepare($this->conn->getConexion(),
             "UPDATE INCIDENCIA i2
-             SET i2.estado = 'resuelta', i2.fecha_cierre = NOW()
+             SET i2.estado = 'resuelta', i2.fecha_cierre = NOW(), i2.peso_recolectado = ?
              WHERE " . $this->condicionCascadaCierre());
-        mysqli_stmt_bind_param($stmt, "ii", $id, $id);
+        mysqli_stmt_bind_param($stmt, "dii", $peso, $id, $id);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_close($stmt);
         return true;

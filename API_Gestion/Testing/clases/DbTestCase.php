@@ -9,6 +9,7 @@ abstract class DbTestCase extends GestionTestCase
     private const TABLAS_GESTION = [
         'incidencia_contenedor',
         'incidencia',
+        'contenedor_estado_historial',
         'centro_residuo',
         'centro_maquinaria',
         'maquinaria',

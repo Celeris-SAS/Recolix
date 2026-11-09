@@ -1406,6 +1406,8 @@
     "inc_btn_cerrar": "Close incident",
     "inc_msg_iniciada": "Work started.",
     "inc_msg_cerrada": "Incident closed.",
+    "inc_peso_ph": "Total collected (Kg)",
+    "inc_peso_error": "Enter the total collected (Kg), greater than zero.",
     "inc_estado_asignada": "Assigned",
     "inc_estado_en_curso": "In progress",
     "inc_contenedor": "Container",

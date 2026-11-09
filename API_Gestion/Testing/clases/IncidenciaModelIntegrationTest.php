@@ -83,7 +83,7 @@ final class IncidenciaModelIntegrationTest extends DbTestCase
 
         $idIncidencia = $model->crearIncidencia($ci, 'rotura', null, null, 1);
         $model->vincularContenedor($idIncidencia, $contenedorId);
-        $model->cerrar($idIncidencia);
+        $model->cerrar($idIncidencia, 10);
 
         $this->assertSame([], $model->listarUrgentes());
     }
@@ -108,11 +108,31 @@ final class IncidenciaModelIntegrationTest extends DbTestCase
         $ci = $this->crearUsuario();
         $idIncidencia = $model->crearIncidencia($ci, 'rotura', null, null, 0);
 
-        $model->cerrar($idIncidencia);
+        $model->cerrar($idIncidencia, 45.5);
 
         $incidencia = $model->getIncidencia($idIncidencia);
         $this->assertSame('resuelta', $incidencia['estado']);
         $this->assertNotNull($incidencia['fecha_cierre']);
+        $this->assertSame(45.5, (float) $incidencia['peso_recolectado']);
+    }
+
+    // ERR-07: el peso se registra en todas las incidencias que cierra la cascada,
+    // porque corresponden a la misma visita/limpieza del contenedor.
+    public function testCerrarRegistraElMismoPesoEnTodaLaCascada(): void
+    {
+        $model = new IncidenciaModel();
+        $contenedorId = $this->crearContenedor();
+        $ciA = $this->crearUsuario();
+        $ciB = $this->crearUsuario();
+        $idA = $model->crearIncidencia($ciA, 'rotura', null, null, 0);
+        $model->vincularContenedor($idA, $contenedorId);
+        $idB = $model->crearIncidencia($ciB, 'desborde', null, null, 0);
+        $model->vincularContenedor($idB, $contenedorId);
+
+        $model->cerrar($idA, 12.25);
+
+        $this->assertSame(12.25, (float) $model->getIncidencia($idA)['peso_recolectado']);
+        $this->assertSame(12.25, (float) $model->getIncidencia($idB)['peso_recolectado']);
     }
 
     public function testCuadrillaExiste(): void
@@ -142,7 +162,7 @@ final class IncidenciaModelIntegrationTest extends DbTestCase
 
         $resuelta = $model->crearIncidencia($ci, 'otro', null, null, 0);
         $model->vincularContenedor($resuelta, $contenedorId);
-        $model->cerrar($resuelta);
+        $model->cerrar($resuelta, 10);
 
         $abierta = $model->crearIncidencia($ci, 'rotura', null, null, 0);
         $model->vincularContenedor($abierta, $contenedorId);
@@ -189,11 +209,11 @@ final class IncidenciaModelIntegrationTest extends DbTestCase
 
         $primera = $model->crearIncidencia($ci, 'rotura', null, null, 0);
         $model->vincularContenedor($primera, $contenedorId);
-        $model->cerrar($primera);
+        $model->cerrar($primera, 10);
 
         $segunda = $model->crearIncidencia($ci, 'rotura', null, null, 0);
         $model->vincularContenedor($segunda, $contenedorId);
-        $model->cerrar($segunda);
+        $model->cerrar($segunda, 10);
 
         $ids = array_column($model->getAllIncidencias(), 'id_incidencia');
 
@@ -267,7 +287,7 @@ final class IncidenciaModelIntegrationTest extends DbTestCase
         $nueva = $model->crearIncidencia($ci, 'rotura', null, null, 0);
         $model->vincularContenedor($nueva, $contenedorId);
 
-        $model->cerrar($nueva);
+        $model->cerrar($nueva, 10);
 
         $this->assertSame('resuelta', $model->getIncidencia($vieja)['estado']);
         $this->assertNotNull($model->getIncidencia($vieja)['fecha_cierre']);
@@ -291,7 +311,7 @@ final class IncidenciaModelIntegrationTest extends DbTestCase
         $enB = $model->crearIncidencia($ci, 'rotura', null, null, 0);
         $model->vincularContenedor($enB, $contenedorB);
 
-        $model->cerrar($enA);
+        $model->cerrar($enA, 10);
 
         $this->assertSame('resuelta', $model->getIncidencia($enA)['estado']);
         $this->assertSame('abierta', $model->getIncidencia($enB)['estado']);
@@ -303,7 +323,7 @@ final class IncidenciaModelIntegrationTest extends DbTestCase
         $ci = $this->crearUsuario();
         $id = $model->crearIncidencia($ci, 'rotura', null, null, 0);
 
-        $model->cerrar($id);
+        $model->cerrar($id, 10);
 
         $this->assertSame('resuelta', $model->getIncidencia($id)['estado']);
     }
@@ -330,7 +350,7 @@ final class IncidenciaModelIntegrationTest extends DbTestCase
 
         $id = $model->crearIncidencia($ci, 'rotura', null, null, 0);
         $model->vincularContenedor($id, $contenedorId);
-        $model->cerrar($id);
+        $model->cerrar($id, 10);
 
         $this->assertFalse($model->usuarioTieneIncidenciaAbiertaEnContenedor($ci, $contenedorId));
     }

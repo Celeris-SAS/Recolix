@@ -339,7 +339,7 @@ final class IncidenciaControllerTest extends GestionTestCase
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("'en_curso'");
-        $controller->cerrar(1);
+        $controller->cerrar(1, 10);
     }
 
     public function testCerrarRechazaIdInexistente(): void
@@ -351,7 +351,26 @@ final class IncidenciaControllerTest extends GestionTestCase
         $this->setPrivateProperty($controller, 'incidenciaModel', $incidenciaModelStub);
 
         $this->expectException(InvalidArgumentException::class);
-        $controller->cerrar(999);
+        $controller->cerrar(999, 10);
+    }
+
+    // ERR-07: "Total recolectado (Kg)" es obligatorio y debe ser mayor a cero.
+    public function testCerrarRechazaPesoNoPositivo(): void
+    {
+        $controller = $this->controller();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("mayor a cero");
+        $controller->cerrar(1, 0);
+    }
+
+    public function testCerrarRechazaPesoNoNumerico(): void
+    {
+        $controller = $this->controller();
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("mayor a cero");
+        $controller->cerrar(1, 'abc');
     }
 
     public function testReglasValidacionExponeValoresValidos(): void

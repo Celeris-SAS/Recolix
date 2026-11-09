@@ -113,6 +113,18 @@ class ContenedorModel {
     public function getHistorial($id) {
         $historial = [];
 
+        // ERR-02: alta y cambios de estado, registrados por los triggers de
+        // contenedor_estado_historial (ver recolix.sql).
+        $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT IF(estado_anterior IS NULL, 'alta', 'cambio_estado') AS tipo_evento, CONCAT_WS(' -> ', estado_anterior, estado_nuevo) AS descripcion, fecha_cambio AS fecha FROM CONTENEDOR_ESTADO_HISTORIAL WHERE id_contenedor = ?");
+        mysqli_stmt_bind_param($stmt, "i", $id);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        while ($row = mysqli_fetch_assoc($result))
+        {
+            $historial[] = $row;
+        }
+        mysqli_stmt_close($stmt);
+
         $stmt = mysqli_prepare($this->conn->getConexion(), "SELECT 'incidencia' AS tipo_evento, i.tipo AS descripcion, i.fecha_apertura AS fecha FROM INCIDENCIA i JOIN INCIDENCIA_CONTENEDOR ic ON i.id_incidencia = ic.id_incidencia WHERE ic.id_contenedor = ?");
         mysqli_stmt_bind_param($stmt, "i", $id);
         mysqli_stmt_execute($stmt);

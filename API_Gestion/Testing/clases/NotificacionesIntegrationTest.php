@@ -86,7 +86,7 @@ final class NotificacionesIntegrationTest extends DbTestCase
         $this->loguearComoIntegranteDe($cuadrillaId);
         $controller->iniciarAtencion($idA);
 
-        $controller->cerrar($idA);
+        $controller->cerrar($idA, 10);
 
         $this->assertStringContainsString('fue resuelta', $this->ultimoMensajeDe($ciA));
         $this->assertStringContainsString('fue resuelta', $this->ultimoMensajeDe($ciB));

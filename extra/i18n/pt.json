@@ -1407,6 +1407,8 @@
     "inc_btn_cerrar": "Fechar ocorrência",
     "inc_msg_iniciada": "Atendimento iniciado.",
     "inc_msg_cerrada": "Ocorrência fechada.",
+    "inc_peso_ph": "Total coletado (Kg)",
+    "inc_peso_error": "Informe o total coletado (Kg), maior que zero.",
     "inc_estado_asignada": "Atribuída",
     "inc_estado_en_curso": "Em andamento",
     "inc_contenedor": "Contêiner",

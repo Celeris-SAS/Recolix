@@ -308,6 +308,8 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             'incCerrar' => 'cuadrilla.inc_btn_cerrar',
             'incIniciada' => 'cuadrilla.inc_msg_iniciada',
             'incCerrada' => 'cuadrilla.inc_msg_cerrada',
+            'incPesoPh' => 'cuadrilla.inc_peso_ph',
+            'incPesoError' => 'cuadrilla.inc_peso_error',
             'incEstadoAsignada' => 'cuadrilla.inc_estado_asignada',
             'incEstadoEnCurso' => 'cuadrilla.inc_estado_en_curso',
             'incContenedor' => 'cuadrilla.inc_contenedor',
@@ -483,6 +485,8 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
                         <small>${escapeHtml(estadoIncidencia[inc.estado] || inc.estado)}</small>
                         <ul class="incidencia-contenedores">${contenedores}</ul>
                     </div>
+                    ${enCurso ? `<input type="number" class="ctrl-input inc-peso-input" step="0.01" min="0.01"
+                        placeholder="${escapeHtml(I18N.incPesoPh)}" data-id="${inc.id_incidencia}">` : ''}
                     <button type="button" class="btn ${enCurso ? 'btn-primary' : 'btn-outline'}"
                         data-accion="${enCurso ? 'cerrar' : 'iniciar'}" data-id="${inc.id_incidencia}">
                         ${enCurso ? I18N.incCerrar : I18N.incIniciar}
@@ -491,8 +495,13 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
             });
         }
 
-        async function cerrarIncidencia(id) {
-            await apiFetch(`${API_GESTION}/incidencias/cerrarPorCuadrilla/${id}`, { method: 'POST' });
+        // ERR-07: "Total recolectado (Kg)" obligatorio y mayor a cero al cerrar.
+        async function cerrarIncidencia(id, peso) {
+            await apiFetch(`${API_GESTION}/incidencias/cerrarPorCuadrilla/${id}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pesoRecolectado: peso }),
+            });
         }
 
         listaIncidencias.addEventListener('click', async function (e) {
@@ -501,7 +510,13 @@ $_SESSION['usuario']['id_cuadrilla'] = $idCuadrilla;
 
             try {
                 if (boton.dataset.accion === 'cerrar') {
-                    await cerrarIncidencia(boton.dataset.id);
+                    const input = listaIncidencias.querySelector(`.inc-peso-input[data-id="${boton.dataset.id}"]`);
+                    const peso = input ? parseFloat(input.value) : NaN;
+                    if (!Number.isFinite(peso) || peso <= 0) {
+                        mostrarToast(I18N.incPesoError, 'warning');
+                        return;
+                    }
+                    await cerrarIncidencia(boton.dataset.id, peso);
                     mostrarToast(I18N.incCerrada, 'success');
                 } else {
                     await apiFetch(`${API_GESTION}/incidencias/iniciarAtencion/${boton.dataset.id}`, { method: 'POST' });

@@ -104,7 +104,7 @@ final class ReporteModelIntegrationTest extends DbTestCase
         $incidencias = new IncidenciaModel();
         $ci = $this->crearUsuario();
         $resuelta = $incidencias->crearIncidencia($ci, 'rotura', null, null, 0);
-        $incidencias->cerrar($resuelta);
+        $incidencias->cerrar($resuelta, 10);
         $incidencias->crearIncidencia($ci, 'desborde', null, null, 0);
 
         $this->assertSame(50.0, $model->getPorcentajeIncidenciasResueltas('hoy'));
@@ -210,7 +210,7 @@ final class ReporteModelIntegrationTest extends DbTestCase
         $incidencias = new IncidenciaModel();
         $ci = $this->crearUsuario();
         $id = $incidencias->crearIncidencia($ci, 'rotura', null, null, 0);
-        $incidencias->cerrar($id);
+        $incidencias->cerrar($id, 10);
 
         $detalle = $model->getIncidenciasDetalle('hoy');
 

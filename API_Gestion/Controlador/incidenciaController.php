@@ -50,6 +50,14 @@ class IncidenciaController {
         return $prioridad;
     }
 
+    // ERR-07: "Total recolectado (Kg)" al cerrar una incidencia; debe ser un número mayor a cero.
+    private function validarPeso($peso) {
+        if (!is_numeric($peso) || (float) $peso <= 0) {
+            throw new InvalidArgumentException("El total recolectado (Kg) debe ser un número mayor a cero.");
+        }
+        return (float) $peso;
+    }
+
     private function obtenerOFallar($id) {
         $incidencia = $this->incidenciaModel->getIncidencia($id);
         if (!$incidencia) {
@@ -235,18 +243,23 @@ class IncidenciaController {
         return $resultado;
     }
 
-    public function cerrar($id) {
+    // RF13: cierre de la cuadrilla, de 'en_curso' a 'resuelta'. ERR-07: $pesoRecolectado
+    // ("Total recolectado (Kg)") es obligatorio y debe ser mayor a cero.
+    public function cerrar($id, $pesoRecolectado) {
         $id = $this->validarId($id);
+        $peso = $this->validarPeso($pesoRecolectado);
         $incidencia = $this->obtenerOFallar($id);
         if ($incidencia['estado'] !== 'en_curso') {
             throw new InvalidArgumentException("Solo se puede cerrar una incidencia en estado 'en_curso'. Estado actual: " . $incidencia['estado']);
         }
-        return $this->cerrarYNotificar($id);
+        return $this->cerrarYNotificar($id, $peso);
     }
 
-    private function cerrarYNotificar($id) {
+    // Cierra $id y en cascada las del mismo contenedor (ver incidenciaModel::cerrar).
+    // Cada vecino afectado recibe el aviso de que su incidencia fue resuelta.
+    private function cerrarYNotificar($id, $peso) {
         $afectadas = $this->incidenciaModel->incidenciasQueSeCerrarian($id);
-        $resultado = $this->incidenciaModel->cerrar($id);
+        $resultado = $this->incidenciaModel->cerrar($id, $peso);
         $this->notificacionModel->notificarCambioIncidencias($afectadas, 'resuelta');
         return $resultado;
     }
@@ -277,14 +290,17 @@ class IncidenciaController {
         return $resultado;
     }
 
-    public function cerrarPorCuadrilla($id) {
+    // RF13: la cuadrilla cierra la incidencia que está atendiendo (de 'en_curso' a 'resuelta').
+    // ERR-07: $pesoRecolectado ("Total recolectado (Kg)") es obligatorio y debe ser mayor a cero.
+    public function cerrarPorCuadrilla($id, $pesoRecolectado) {
         $id = $this->validarId($id);
+        $peso = $this->validarPeso($pesoRecolectado);
         $incidencia = $this->obtenerOFallar($id);
         $this->verificarCuadrillaPropia($incidencia['id_cuadrilla']);
         if ($incidencia['estado'] !== 'en_curso') {
             throw new InvalidArgumentException("Solo se puede cerrar una incidencia en estado 'en_curso'. Estado actual: " . $incidencia['estado']);
         }
-        return $this->cerrarYNotificar($id);
+        return $this->cerrarYNotificar($id, $peso);
     }
 }
 ?>
