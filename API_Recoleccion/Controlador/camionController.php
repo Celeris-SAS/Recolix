@@ -6,7 +6,7 @@
         private $estadosValidos = ['disponible', 'en_ruta', 'en_mantenimiento', 'de_baja', 'en_deposito'];
 
         public function __construct() {
-            require_once __DIR__ . '/../Modelo/CamionModel.php';
+            require_once __DIR__ . '/../Modelo/camionModel.php';
             $this->camionModel = new CamionModel();
         }
 

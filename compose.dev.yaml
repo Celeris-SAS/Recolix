@@ -1,0 +1,56 @@
+services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: ${RECOLIX_DB_NAME}
+      MYSQL_USER: ${RECOLIX_DB_USER}
+      MYSQL_PASSWORD: ${RECOLIX_DB_PASS}
+      MYSQL_ROOT_PASSWORD: ${RECOLIX_DB_ROOT_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "127.0.0.1:3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      retries: 20
+    networks: [recolix_red]
+
+  landing:
+    volumes:
+      - ./LandingPage:/var/www/html
+      - ./conexion.php:/var/www/conexion.php
+      - ./extra:/var/www/html/recolix/extra
+      - ./extra:/var/www/extra
+  backoffice:
+    volumes:
+      - ./Backoffice:/var/www/html
+      - ./conexion.php:/var/www/conexion.php
+      - ./extra:/var/www/html/recolix/extra
+      - ./extra:/var/www/extra
+    depends_on: { db: { condition: service_healthy } }
+  api-usuarios:
+    volumes:
+      - ./API_Usuarios:/var/www/html
+      - ./conexion.php:/var/www/conexion.php
+      - ./extra:/var/www/html/recolix/extra
+      - ./extra:/var/www/extra
+    depends_on: { db: { condition: service_healthy } }
+  api-gestion:
+    volumes:
+      - ./API_Gestion:/var/www/html
+      - ./conexion.php:/var/www/conexion.php
+      - ./extra:/var/www/html/recolix/extra
+      - ./extra:/var/www/extra
+    depends_on: { db: { condition: service_healthy } }
+  api-recoleccion:
+    volumes:
+      - ./API_Recoleccion:/var/www/html
+      - ./conexion.php:/var/www/conexion.php
+      - ./extra:/var/www/html/recolix/extra
+      - ./extra:/var/www/extra
+    depends_on: { db: { condition: service_healthy } }
+
+volumes:
+  mysql_data:
